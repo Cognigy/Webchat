@@ -33,7 +33,7 @@ With the release of our Webchat v3, we are also announcing the deprecation of ol
 
 ### What This Means for You:
 Effective immediately, there will be
-- No Further Updates: We will no longer release updates for the deprecated Webchat versions.
+- No Further Feature Updates: We will no longer release feature updates for the deprecated Webchat versions.
 - No Bug Fixes: Issues reported in the deprecated versions will not be addressed.
 - Limited Support: Customer support for the deprecated versions will be significantly reduced and eventually unavailable after the end of support date.
 - Security Fixes: We will continue to provide security fixes until the end of the support date. 
