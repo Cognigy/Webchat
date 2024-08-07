@@ -29,7 +29,7 @@ If you are already using Webchat 2 and want to migrate to Webchat v3, please fol
 
 With the release of our Webchat v3, we are also announcing the deprecation of older versions of [Webchat (v2.X)](https://github.com/Cognigy/WebchatWidget).
 
-**End of Support: 1st February 2026**
+**End of Support: 31st January 2026**
 
 ### What This Means for You:
 Effective immediately, there will be
