@@ -1030,6 +1030,7 @@ export class WebchatUI extends React.PureComponent<
 			requestRatingEventBannerText,
 			showRatingScreen,
 			onShowRatingScreen,
+			onShowChatScreen,
 			onSwitchSession,
 			onClose,
 			onEmitAnalytics,
@@ -1110,6 +1111,7 @@ export class WebchatUI extends React.PureComponent<
 				},
 			};
 
+			onShowChatScreen();
 			this.props.onSendMessage("", data);
 		};
 

@@ -66,14 +66,6 @@ export const createConnectionMiddleware = (client: SocketClient): Middleware<obj
             break;
         }
 
-        case "SET_HAS_ACCEPTED_TERMS": {
-            if (!client.connected) {
-                store.dispatch(connect(true));
-            }
-
-            break;
-        }
-
         case "SEND_MESSAGE": {
             store.dispatch(connect());
 
