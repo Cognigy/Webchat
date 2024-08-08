@@ -6,7 +6,7 @@ import { ConnectedWebchatUI, FromProps } from './ConnectedWebchatUI';
 import { MessagePlugin } from '../../common/interfaces/message-plugin';
 import { sendMessage } from '../store/messages/message-middleware';
 import { MessageSender } from '../../webchat-ui/interfaces';
-import { setHasAcceptedTerms, setOpen, setShowHomeScreen, toggleOpen } from '../store/ui/ui-reducer';
+import { setHasAcceptedTerms, setOpen, setShowHomeScreen, showChatScreen, toggleOpen } from '../store/ui/ui-reducer';
 import { loadConfig } from '../store/config/config-middleware';
 import { connect } from '../store/connection/connection-middleware';
 import { EventEmitter } from 'events';
@@ -139,7 +139,8 @@ export class Webchat extends React.PureComponent<WebchatProps> {
     }
 
     startConversation = () => {
-       this.store.dispatch(setShowHomeScreen(false));
+        this.store.dispatch(setShowHomeScreen(false));
+        this.store.dispatch(showChatScreen());
     }
 
     on = (event, handler) => {
