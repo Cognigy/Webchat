@@ -766,9 +766,16 @@ export class WebchatUI extends React.PureComponent<
 	}
 
 	openConversationFromTeaser = () => {
-		// in this case we always open to current session
 		this.props.onToggle();
-		this.handleStartConversation();
+		this.props.onSetShowHomeScreen(false);
+		this.props.onSetShowChatOptionsScreen(false);
+
+		const showPrivacyScreen = this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
+		if (showPrivacyScreen) {
+			this.setState({ lastUnseenMessageText: "" });
+		} else {
+			this.props.onShowChatScreen();
+		}
 	};
 
 	render() {
