@@ -128,6 +128,7 @@ export interface WebchatUIProps {
 	fileUploadError: boolean;
 	onSetFileUploadError: (hasError: boolean) => void;
 
+	onShowChatScreen: () => void;
 	showPrevConversations: boolean;
 	onSetShowPrevConversations: (show: boolean) => void;
 	prevConversations: PrevConversationsState;
@@ -740,31 +741,34 @@ export class WebchatUI extends React.PureComponent<
 				options,
 			});
 		} else {
+			this.props.onShowChatScreen();
 			this.props.onSendMessage(text, data, options);
 		}
 	};
 
 	handleStartConversation = () => {
-		if (!this.props.config.settings.privacyNotice.enabled || this.props.hasAcceptedTerms) {
-			const { initialSessionId } = this.props.config;
-			if (!initialSessionId) {
-				this.props.onSwitchSession();
-			}
-			if (initialSessionId && initialSessionId !== this.props.currentSession) {
-				this.props.onSwitchSession(initialSessionId);
-			}
-		}
-
-		if (!this.props.open) this.props.onToggle();
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
+
+		const showPrivacyScreen = this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
+		if (!showPrivacyScreen) {
+			this.props.onShowChatScreen();
+		}
 	};
+
+	handleFabClick = () => {
+		this.props.onToggle();
+
+		const homeScreenEnabled = this.props.config.settings.homeScreen.enabled === true;
+		if (!homeScreenEnabled) {
+			this.handleStartConversation();
+		}
+	}
 
 	openConversationFromTeaser = () => {
 		// in this case we always open to current session
 		this.props.onToggle();
-		this.props.onSetShowHomeScreen(false);
-		this.props.onSetShowChatOptionsScreen(false);
+		this.handleStartConversation();
 	};
 
 	render() {
@@ -800,6 +804,7 @@ export class WebchatUI extends React.PureComponent<
 			onSetHasGivenRating,
 			onSetShowPrevConversations,
 			onSetShowChatOptionsScreen,
+			onShowChatScreen,
 			onSwitchSession,
 			requestRatingScreenTitle,
 			customRatingTitle,
@@ -974,7 +979,7 @@ export class WebchatUI extends React.PureComponent<
 										) : (
 											<FAB
 												data-cognigy-webchat-toggle
-												onClick={onToggle}
+												onClick={this.handleFabClick}
 												{...webchatToggleProps}
 												type="button"
 												className="webchat-toggle-button"
@@ -1072,14 +1077,12 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const handleCloseAndReset = () => {
-			onSwitchSession();
 			onSetShowHomeScreen(true);
 			onClose();
 			// Restore focus to chat toggle button
 			this.chatToggleButtonRef?.current?.focus?.();
 		}
 
-		// TODO implement proper navigation solution
 		const handleOnGoBack = () => {
 			if (!showChatOptionsScreen && !showRatingScreen) {
 				onSetShowPrevConversations(false);
@@ -1141,6 +1144,7 @@ export class WebchatUI extends React.PureComponent<
 						onSetShowPrevConversations={onSetShowPrevConversations}
 						onSwitchSession={onSwitchSession}
 						config={config}
+						currentSession={currentSession}
 					/>
 				);
 

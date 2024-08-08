@@ -55,13 +55,14 @@ const StartButton = styled(PrimaryButton)(() => ({
 
 interface IPrevConversationsListProps {
 	config: IWebchatConfig;
+	currentSession?: string;
 	conversations: PrevConversationsState;
 	onSetShowPrevConversations: (show: boolean) => void;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 }
 
 export const PrevConversationsList = (props: IPrevConversationsListProps) => {
-	const { conversations, config, onSetShowPrevConversations, onSwitchSession } = props;
+	const { conversations, config, onSetShowPrevConversations, onSwitchSession, currentSession } = props;
 
 	// we sort the conversation based on last message timestamp
 	// result: the last updated conversation goes on top
@@ -91,7 +92,10 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 
 	const switchSession = useCallback(
 		(sessionId?: string, conversation?: PrevConversationsState[string]) => {
-			onSwitchSession(sessionId, conversation);
+			if (sessionId && sessionId !== currentSession) {
+				console.log(sessionId, currentSession);
+				onSwitchSession(sessionId, conversation);
+			}
 			onSetShowPrevConversations(false);
 		},
 		[],

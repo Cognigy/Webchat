@@ -8,6 +8,7 @@ import { SetPrevStateAction, setPrevState } from "../reducer";
 import { SocketClient } from "@cognigy/socket-client";
 import { autoInjectHandledReset, triggerAutoInject } from "../autoinject/autoinject-reducer";
 import { setConnecting } from "../connection/connection-reducer";
+import { setOptions } from "../options/options-reducer";
 
 const SWITCH_SESSION = "SWITCH_SESSION";
 export const switchSession = (
@@ -51,6 +52,7 @@ export const createPrevConversationsMiddleware =
 					.switchSession(targetSession)
 					.then(() => {
 						store.dispatch(setConnecting(false));
+						store.dispatch(setOptions(client.socketOptions));
 						store.dispatch(autoInjectHandledReset());
 						store.dispatch(triggerAutoInject());
 					})

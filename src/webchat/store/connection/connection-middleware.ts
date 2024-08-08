@@ -1,6 +1,6 @@
 import { Middleware } from "redux";
 import { StoreState } from "../store";
-import { SetHasAcceptedTermsAction, SetOpenAction, SetPageVisibleAction, ToggleOpenAction, setStoredMessage } from "../ui/ui-reducer";
+import { SetHasAcceptedTermsAction, SetPageVisibleAction, ShowChatScreenAction, ToggleOpenAction, setStoredMessage } from "../ui/ui-reducer";
 import { SendMessageAction, sendMessage } from "../messages/message-middleware";
 import { setOptions } from "../options/options-reducer";
 import { SocketClient } from "@cognigy/socket-client";
@@ -25,57 +25,62 @@ type announceNetworkOnAction = ReturnType<typeof announceNetworkOn>;
 
 
 // forwards messages to the socket
-export const createConnectionMiddleware = (client: SocketClient): Middleware<object, StoreState> => store => next => (action: SetOpenAction | ToggleOpenAction | ConnectAction | SetHasAcceptedTermsAction | SendMessageAction | SetPageVisibleAction | announceNetworkOnAction) => {
+export const createConnectionMiddleware = (client: SocketClient): Middleware<object, StoreState> => store => next => (action: ToggleOpenAction | ConnectAction | SetHasAcceptedTermsAction | SendMessageAction | ShowChatScreenAction | SetPageVisibleAction | announceNetworkOnAction) => {
     switch (action.type) {
-        case 'CONNECT': {
-            const { hasAcceptedTerms, storedMessage } = store.getState().ui;
+        case "CONNECT": {
+            const { storedMessage } = store.getState().ui;
 
-			if (!client.connected && !store.getState().connection.connecting && (!store.getState().config.settings.privacyNotice.enabled || hasAcceptedTerms || action.termsAccepted)) {
+            if (!client.connected && !store.getState().connection.connecting) {
                 store.dispatch(setConnecting(true));
-                
-                client.connect()
-                .then(() => {
-                    // set options
-                    store.dispatch(setConnecting(false));
-                    store.dispatch(setReconnectionLimit(false))
-                    store.dispatch(setOptions(client.socketOptions));
 
-                    if (storedMessage) {
-                        store.dispatch(sendMessage({ text: storedMessage.text, data: storedMessage.data }, storedMessage.options));
-                        store.dispatch(setStoredMessage(null));
-                    }
-                    }).catch(error => {
+                client
+                    .connect()
+                    .then(() => {
+                        // set options
                         store.dispatch(setConnecting(false));
+                        store.dispatch(setReconnectionLimit(false));
+                        store.dispatch(setOptions(client.socketOptions));
+
+                        if (storedMessage) {
+                            store.dispatch(
+                                sendMessage(
+                                    { text: storedMessage.text, data: storedMessage.data },
+                                    storedMessage.options,
+                                ),
+                            );
+                            store.dispatch(setStoredMessage(null));
+                        }
                     })
+                    .catch(() => {
+                        store.dispatch(setConnecting(false));
+                    });
             }
             break;
         }
 
-        case 'SET_OPEN': {
-            if (action.open) {
-                if (!client.connected) {
-                    store.dispatch(connect())
-                }
-            }
-
-            break;
-        }
-
-        case 'SET_HAS_ACCEPTED_TERMS': {
+        case "SHOW_CHAT_SCREEN": {
             if (!client.connected) {
-                store.dispatch(connect(true))
+                store.dispatch(connect());
             }
 
             break;
         }
 
-        case 'SEND_MESSAGE': {
-            store.dispatch(connect())
+        case "SET_HAS_ACCEPTED_TERMS": {
+            if (!client.connected) {
+                store.dispatch(connect(true));
+            }
 
             break;
         }
 
-        case 'SET_PAGE_VISIBLE': {
+        case "SEND_MESSAGE": {
+            store.dispatch(connect());
+
+            break;
+        }
+
+        case "SET_PAGE_VISIBLE": {
             if (action.visible && shouldReestablishConnection(store.getState())) {
                 store.dispatch(connect());
             }
@@ -83,7 +88,7 @@ export const createConnectionMiddleware = (client: SocketClient): Middleware<obj
             break;
         }
 
-        case 'NETWORK_ON': {
+        case "NETWORK_ON": {
             if (shouldReestablishConnection(store.getState())) {
                 store.dispatch(connect());
             }

@@ -22,6 +22,7 @@ import { isDisabledDueToConnectivity } from '../helper/connectivity';
 import { createNotification } from '../../webchat-ui/components/presentational/Notifications';
 import { getStorage } from '../helper/storage';
 import { hasAcceptedTermsInStorage } from '../helper/privacyPolicy';
+import { setUserId } from '../store/options/options-reducer';
 
 export interface WebchatProps extends FromProps {
     url: string;
@@ -72,6 +73,9 @@ export class Webchat extends React.PureComponent<WebchatProps> {
         this.store.dispatch(loadConfig());
         if (this.props.options?.sessionId) {
             this.store.dispatch(setInitialSessionId(this.props.options.sessionId));
+        }
+        if (this.props.options?.userId) {
+            this.store.dispatch(setUserId(this.props.options?.userId));
         }
     }
 
