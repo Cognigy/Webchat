@@ -210,8 +210,12 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 	}, [showHomeScreen]);
 
 	return (
-		<HomeScreenRoot className="webchat-homescreen-root" aria-hidden={!showHomeScreen} ref={homeScreenRef}>
-			<h2 className="sr-only">Home Screen</h2> 
+		<HomeScreenRoot
+			className="webchat-homescreen-root"
+			aria-hidden={!showHomeScreen}
+			ref={homeScreenRef}
+		>
+			<h2 className="sr-only">Home Screen</h2>
 			<HomeScreenContent className="webchat-homescreen-content" settings={config?.settings}>
 				<HomeScreenHeader className="webchat-homescreen-header">
 					{config?.settings?.layout?.logoUrl ? (
@@ -244,18 +248,20 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 				>
 					{homeScreen.welcomeText || "Welcome to the Cognigy Webchat"}
 				</HomeScreenTitle>
-				<HomeScreenButtons className="webchat-homescreen-buttons">
-					<ActionButtons
-						size="large"
-						showUrlIcon
-						buttonClassName="webchat-homescreen-button"
-						containerClassName="webchat-homescreen-button-container"
-						payload={buttons}
-						config={config}
-						action={showHomeScreen ? onSendActionButtonMessage : undefined}
-						onEmitAnalytics={onEmitAnalytics}
-					/>
-				</HomeScreenButtons>
+				{config.settings.homeScreen.conversationStarters.enabled && (
+					<HomeScreenButtons className="webchat-homescreen-buttons">
+						<ActionButtons
+							size="large"
+							showUrlIcon
+							buttonClassName="webchat-homescreen-button"
+							containerClassName="webchat-homescreen-button-container"
+							payload={buttons}
+							config={config}
+							action={showHomeScreen ? onSendActionButtonMessage : undefined}
+							onEmitAnalytics={onEmitAnalytics}
+						/>
+					</HomeScreenButtons>
+				)}
 			</HomeScreenContent>
 			<HomeScreenActions className="webchat-homescreen-actions">
 				<StartButton
