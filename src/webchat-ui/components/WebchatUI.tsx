@@ -1104,14 +1104,13 @@ export class WebchatUI extends React.PureComponent<
 
 		const handleAcceptTerms = () => {
 			onAcceptTerms(this.props?.options?.userId || "");
+			onShowChatScreen();
 
 			const data = {
 				_cognigy: {
 					controlCommands: [{ type: "acceptPrivacyPolicy" }],
 				},
 			};
-
-			onShowChatScreen();
 			this.props.onSendMessage("", data);
 		};
 
