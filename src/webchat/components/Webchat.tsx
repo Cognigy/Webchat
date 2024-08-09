@@ -6,7 +6,7 @@ import { ConnectedWebchatUI, FromProps } from './ConnectedWebchatUI';
 import { MessagePlugin } from '../../common/interfaces/message-plugin';
 import { sendMessage } from '../store/messages/message-middleware';
 import { MessageSender } from '../../webchat-ui/interfaces';
-import { setHasAcceptedTerms, setOpen, setShowHomeScreen, toggleOpen } from '../store/ui/ui-reducer';
+import { setHasAcceptedTerms, setOpen, setShowHomeScreen, showChatScreen, toggleOpen } from '../store/ui/ui-reducer';
 import { loadConfig } from '../store/config/config-middleware';
 import { connect } from '../store/connection/connection-middleware';
 import { EventEmitter } from 'events';
@@ -22,6 +22,7 @@ import { isDisabledDueToConnectivity } from '../helper/connectivity';
 import { createNotification } from '../../webchat-ui/components/presentational/Notifications';
 import { getStorage } from '../helper/storage';
 import { hasAcceptedTermsInStorage } from '../helper/privacyPolicy';
+import { setUserId } from '../store/options/options-reducer';
 
 export interface WebchatProps extends FromProps {
     url: string;
@@ -72,6 +73,9 @@ export class Webchat extends React.PureComponent<WebchatProps> {
         this.store.dispatch(loadConfig());
         if (this.props.options?.sessionId) {
             this.store.dispatch(setInitialSessionId(this.props.options.sessionId));
+        }
+        if (this.props.options?.userId) {
+            this.store.dispatch(setUserId(this.props.options?.userId));
         }
     }
 
@@ -135,7 +139,8 @@ export class Webchat extends React.PureComponent<WebchatProps> {
     }
 
     startConversation = () => {
-       this.store.dispatch(setShowHomeScreen(false));
+        this.store.dispatch(setShowHomeScreen(false));
+        this.store.dispatch(showChatScreen());
     }
 
     on = (event, handler) => {

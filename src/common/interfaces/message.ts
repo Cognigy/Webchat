@@ -6,7 +6,7 @@ export interface IBaseMessage {
 	prevMessage?: IMessage;
 	source: string;
 	text?: string;
-	timestamp: number;
+	timestamp?: number;
 }
 
 export interface IUserMessage extends IBaseMessage {

@@ -7,6 +7,7 @@ import { getAvatars, getLastMessagePreview, getParticipants, getRelativeTime } f
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { PrevConversationsState } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { Typography } from "@cognigy/chat-components";
+import { IMessage } from "../../../../common/interfaces/message";
 
 const ListItem = styled.div(({ theme }) => ({
 	display: "flex",
@@ -101,7 +102,9 @@ interface IConversationsListItemProps {
 export const ConversationsListItem = (props: IConversationsListItemProps) => {
 	const { sessionId, conversation, config, index, switchSession } = props;
 
-	const avatars = getAvatars(conversation.messages);
+	const messages = conversation.messages as IMessage[]
+
+	const avatars = getAvatars(messages);
 
 	const handleClick = () => {
 		switchSession(sessionId, conversation);
@@ -136,12 +139,12 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 			</Left>
 			<Center>
 				<CenterTitle variant="body-regular" component="div">
-					{getLastMessagePreview(conversation.messages)}
+					{getLastMessagePreview(messages)}
 				</CenterTitle>
 				<CenterMeta variant="title2-regular" component="div">
-					<MetaNames>{getParticipants(conversation.messages, config)}</MetaNames>
+					<MetaNames>{getParticipants(messages, config)}</MetaNames>
 					<Ellipsis />
-					<MetaTime>{getRelativeTime(conversation.messages)}</MetaTime>
+					<MetaTime>{getRelativeTime(messages)}</MetaTime>
 				</CenterMeta>
 			</Center>
 			<Right>

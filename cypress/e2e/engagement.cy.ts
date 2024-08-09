@@ -79,6 +79,9 @@ describe("Engagement Message", () => {
 				unreadMessages: {
 					enablePreview: false,
 				},
+				homeScreen: {
+					enabled: false,
+			}
 			},
 		});
 		cy.get("[data-cognigy-webchat-toggle]").click().click();
@@ -137,6 +140,9 @@ describe("Engagement Message", () => {
 				unreadMessages: {
 					enablePreview: false,
 				},
+				homeScreen: {
+					enabled: false,
+			}
 			},
 		});
 		cy.wait(500);

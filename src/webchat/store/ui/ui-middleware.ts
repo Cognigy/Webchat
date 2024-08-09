@@ -4,7 +4,7 @@ import { clearUnseenMessages } from "../unseen-messages/unseen-message-reducer";
 import {
 	setOpen,
 	ToggleOpenAction,
-	SetOpenAction,
+	ShowChatScreenAction,
 	SetPageVisibleAction,
 	SetHasAcceptedTermsAction,
 } from "./ui-reducer";
@@ -15,7 +15,7 @@ export const uiMiddleware: Middleware<object, StoreState> =
 	store =>
 	next =>
 	(
-		action: ToggleOpenAction | SetOpenAction | SetPageVisibleAction | SetHasAcceptedTermsAction,
+		action: ToggleOpenAction | ShowChatScreenAction | SetPageVisibleAction | SetHasAcceptedTermsAction,
 	) => {
 		const { disableLocalStorage, useSessionStorage } =
 			store.getState().config.settings.embeddingConfiguration;
@@ -30,9 +30,9 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				break;
 			}
 
-			// if the webchat is opened while the page is active, reset unread messages
-			case "SET_OPEN": {
-				if (action.open && store.getState().ui.isPageVisible) {
+			// if the chat screen is opened while the page is active, reset unread messages
+			case "SHOW_CHAT_SCREEN": {
+				if (store.getState().ui.isPageVisible) {
 					store.dispatch(clearUnseenMessages());
 				}
 

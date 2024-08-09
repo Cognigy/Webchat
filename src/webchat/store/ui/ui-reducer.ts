@@ -58,6 +58,12 @@ export const setShowHomeScreen = (showHomeScreen: boolean) => ({
 });
 export type SetShowHomeScreenAction = ReturnType<typeof setShowHomeScreen>;
 
+export const SHOW_CHAT_SCREEN = 'SHOW_CHAT_SCREEN';
+export const showChatScreen = () => ({
+    type: SHOW_CHAT_SCREEN as 'SHOW_CHAT_SCREEN'
+});
+export type ShowChatScreenAction = ReturnType<typeof showChatScreen>;
+
 export const SET_SHOW_PREV_CONVERSATIONS = 'SET_SHOW_PREV_CONVERSATIONS';
 export const setShowPrevConversations = (showPrevConversations: boolean) => ({
     type: SET_SHOW_PREV_CONVERSATIONS as 'SET_SHOW_PREV_CONVERSATIONS',

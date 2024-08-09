@@ -9,18 +9,18 @@ export const createAutoInjectMiddleware = (webchat: Webchat): Middleware<unknown
     switch (action.type) {
         case 'SET_CONFIG':
         case 'SET_CONNECTED':
-        case 'SET_OPEN':
+        case 'SHOW_CHAT_SCREEN':
         case 'SET_OPTIONS': {
             const nextActionResult = next(action);
             
             (() => {
                 const state = api.getState();
-                const { isAutoInjectHandled: isAutoInjectTriggered, isConfiguredOnce, isConnectedOnce, isOpenedOnce, isSessionRestoredOnce } = state.autoInject;
+                const { isAutoInjectHandled: isAutoInjectTriggered, isConfiguredOnce, isConnectedOnce, isChatOpenedOnce, isSessionRestoredOnce } = state.autoInject;
                 
                 if (isAutoInjectTriggered)
                     return;
                 
-                if (!isConfiguredOnce || !isConnectedOnce || !isOpenedOnce || !isSessionRestoredOnce)
+                if (!isConfiguredOnce || !isConnectedOnce || !isChatOpenedOnce || !isSessionRestoredOnce)
                     return;
                 
                 api.dispatch(triggerAutoInject());
