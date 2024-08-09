@@ -13,9 +13,8 @@ export interface ISendMessageOptions {
 }
 
 const CONNECT = 'CONNECT'
-export const connect = (termsAccepted?: boolean) => ({
-    type: CONNECT as 'CONNECT',
-    termsAccepted
+export const connect = () => ({
+    type: CONNECT as 'CONNECT'
 });
 export type ConnectAction = ReturnType<typeof connect>;
 
