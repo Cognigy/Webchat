@@ -760,7 +760,9 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onToggle();
 
 		const homeScreenEnabled = this.props.config.settings.homeScreen.enabled === true;
-		if (!homeScreenEnabled) {
+		if (homeScreenEnabled) {
+			this.setState({ lastUnseenMessageText: "" });
+		} else {
 			this.handleStartConversation();
 		}
 	}
