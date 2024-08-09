@@ -248,7 +248,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 				>
 					{homeScreen.welcomeText || "Welcome to the Cognigy Webchat"}
 				</HomeScreenTitle>
-				{config.settings.homeScreen.conversationStarters.enabled && (
+				{homeScreen?.conversationStarters?.enabled && (
 					<HomeScreenButtons className="webchat-homescreen-buttons">
 						<ActionButtons
 							size="large"
