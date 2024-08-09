@@ -93,7 +93,6 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 	const switchSession = useCallback(
 		(sessionId?: string, conversation?: PrevConversationsState[string]) => {
 			if (sessionId && sessionId !== currentSession) {
-				console.log(sessionId, currentSession);
 				onSwitchSession(sessionId, conversation);
 			}
 			onSetShowPrevConversations(false);
