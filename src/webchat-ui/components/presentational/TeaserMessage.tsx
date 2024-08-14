@@ -88,7 +88,9 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 		wasOpen,
 	} = props;
 
-	const buttons: IWebchatButton[] = config.settings.teaserMessage.conversationStarters.starters;
+	const { teaserMessage } = config.settings;
+
+	const buttons: IWebchatButton[] = teaserMessage.conversationStarters.starters;
 
 	const isDesktopMedia = useMediaQuery({ query: "(min-width: 576px)" });
 
@@ -155,7 +157,7 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 					{messageText}
 				</Typography>
 			</UnreadMessagePreview>
-			{!wasOpen && (
+			{!wasOpen && teaserMessage?.conversationStarters?.enabled && (
 				<ButtonContainer className="webchat-teaser-message-action-buttons">
 					<ActionButtons
 						showUrlIcon

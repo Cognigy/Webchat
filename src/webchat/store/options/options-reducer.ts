@@ -16,13 +16,27 @@ export const setOptions = (options: Options) => ({
 });
 export type SetOptionsAction = ReturnType<typeof setOptions>;
 
-export const options: Reducer<OptionsState, SetOptionsAction> = (state = getInitialState(), action) => {
+const SET_USER_ID = 'SET_USER_ID';
+export const setUserId = (userId: string) => ({
+    type: SET_USER_ID as 'SET_USER_ID',
+    userId
+});
+export type SetUserIdAction = ReturnType<typeof setUserId>;
+
+export const options: Reducer<OptionsState, SetOptionsAction | SetUserIdAction> = (state = getInitialState(), action) => {
     switch (action.type) {
         case 'SET_OPTIONS': {
             return action.options;
-        };
+        }
+            
+        case 'SET_USER_ID': {
+            return {
+				...state,
+				userId: action.userId,
+			};
+        }
 
         default:
             return state;
-    };
+    }
 };

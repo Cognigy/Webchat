@@ -2,7 +2,7 @@ import { WebchatUI, WebchatUIProps } from "../../webchat-ui";
 import { connect } from "react-redux";
 import { StoreState } from "../store/store";
 import { sendMessage, triggerEngagementMessage } from '../store/messages/message-middleware';
-import { setInputMode, setFullscreenMessage, setOpen, toggleOpen, setScrollToPosition, setLastScrolledPosition, setShowHomeScreen, setShowPrevConversations, setShowChatOptionsScreen, setHasAcceptedTerms, UIState, setStoredMessage } from '../store/ui/ui-reducer';
+import { setInputMode, setFullscreenMessage, setOpen, toggleOpen, setScrollToPosition, setLastScrolledPosition, setShowHomeScreen, showChatScreen, setShowPrevConversations, setShowChatOptionsScreen, setHasAcceptedTerms, UIState, setStoredMessage } from '../store/ui/ui-reducer';
 import { getPluginsForMessage, isFullscreenPlugin } from '../../plugins/helper';
 import { connect as doConnect } from "../store/connection/connection-middleware";
 import { setHasGivenRating, showRatingScreen } from "../store/rating/rating-reducer";
@@ -79,6 +79,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
         onSetShowHomeScreen: (show: boolean) => dispatch(setShowHomeScreen(show)),
         onSetShowPrevConversations: (show: boolean) => dispatch(setShowPrevConversations(show)),
         onSetShowChatOptionsScreen: (show: boolean) => dispatch(setShowChatOptionsScreen(show)),
+        onShowChatScreen: () => dispatch(showChatScreen()),
         onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => dispatch(switchSession(sessionId, conversation)),
         onAcceptTerms: (userId: string) => dispatch(setHasAcceptedTerms(userId)),
         onSetStoredMessage: (message: UIState['storedMessage']) => dispatch(setStoredMessage(message)),
