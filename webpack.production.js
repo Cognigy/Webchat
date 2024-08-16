@@ -10,7 +10,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 config.mode = "production";
 config.plugins.push(
 	new webpack.BannerPlugin({
-		banner: `[file] v${version}\nhttps://github.com/Cognigy/WebchatWidget/tree/v${version}\nhttps://github.com/Cognigy/WebchatWidget/tree/v${version}/OSS_LICENSES.txt`,
+		banner: `[file] v${version}\nhttps://github.com/Cognigy/Webchat/tree/v${version}\nhttps://github.com/Cognigy/Webchat/tree/v${version}/OSS_LICENSES.txt`,
 	}),
 );
 
