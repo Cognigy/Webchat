@@ -202,6 +202,7 @@ const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	display: "flex",
 	flexDirection: "column",
 	backgroundColor: theme.white,
+	overflow: "auto",
 
 	"&.slide-in-enter": {
 		transform: "translateX(100%)",
