@@ -24,6 +24,7 @@ const ChatOptionsContainer = styled.div(() => ({
 	display: "flex",
 	padding: "0 20px",
 	flexDirection: "column",
+	overflowY: "auto",
 }));
 
 const DividerWrapper = styled.div(() => ({
