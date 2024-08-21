@@ -1380,10 +1380,9 @@ export class WebchatUI extends React.PureComponent<
 
 		const isEnded = isConversationEnded(messages);
 
-		// Find specifics controlCommands messages and remove from the messages list (these message types are not displayed in the chat log). 
-		// If we do not remove, they will conflict with funcitonalities like messages collation and QR buttons disabling.
+		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log). 
+		// If we do not remove, it will cause the collatation of the first user message.
 		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
-		const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messages);
 
 		return (
 			<>				
@@ -1392,9 +1391,13 @@ export class WebchatUI extends React.PureComponent<
 				</TopStatusMessage>
 				{messagesExcludingPrivacyMessage.map((message, index) => {
 					// Lookahead if there is a user reply
-					const hasReply = messagesExcludingControlCommands
+					const hasReply = messagesExcludingPrivacyMessage
 						.slice(index + 1)
-						.some(message => message.source === "user");
+						.some(
+							message =>
+								message.source === "user" &&
+								!(message?.data?._cognigy as any)?.controlCommands,
+						);
 
 					return (
 						<Message
@@ -1409,7 +1412,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
 							plugins={messagePlugins}
-							prevMessage={messagesExcludingControlCommands?.[index - 1]}
+							prevMessage={messagesExcludingPrivacyMessage?.[index - 1]}
 							theme={this.state.theme}
 						/>
 					);
