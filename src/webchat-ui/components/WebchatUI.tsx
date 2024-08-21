@@ -67,7 +67,7 @@ import XAppOverlay from "./functional/xapp-overlay/XAppOverlay";
 import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
-import getMessagesListWithoutPrivacyMessage from "../utils/filter-out-privacy-message";
+import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -1380,18 +1380,18 @@ export class WebchatUI extends React.PureComponent<
 
 		const isEnded = isConversationEnded(messages);
 
-		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log). 
-		// If we do not remove, it will cause the collatation of the first user message.
-		const messagesExcludingPrivacyMessage = getMessagesListWithoutPrivacyMessage(messages);
+		// Find specifics controlCommands messages and remove from the messages list (these message types are not displayed in the chat log). 
+		// If we do not remove, they will conflict with funcitonalities like messages collation and QR buttons disabling.
+		const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messages);
 
 		return (
 			<>				
 				<TopStatusMessage variant="body-regular" component="div">
 					You are now talking to an AI agent.
 				</TopStatusMessage>
-				{messagesExcludingPrivacyMessage.map((message, index) => {
+				{messagesExcludingControlCommands.map((message, index) => {
 					// Lookahead if there is a user reply
-					const hasReply = messages
+					const hasReply = messagesExcludingControlCommands
 						.slice(index + 1)
 						.some(message => message.source === "user");
 
