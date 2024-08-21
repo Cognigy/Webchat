@@ -1408,7 +1408,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
 							plugins={messagePlugins}
-							prevMessage={messages?.[index - 1]}
+							prevMessage={messagesExcludingControlCommands?.[index - 1]}
 							theme={this.state.theme}
 						/>
 					);
