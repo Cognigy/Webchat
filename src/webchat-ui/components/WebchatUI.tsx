@@ -1383,7 +1383,7 @@ export class WebchatUI extends React.PureComponent<
 		// Find specifics controlCommands messages and remove from the messages list (these message types are not displayed in the chat log). 
 		// If we do not remove, they will conflict with funcitonalities like messages collation and QR buttons disabling.
 		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
-		const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy", "setRating"]);
+		const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messages);
 
 		return (
 			<>				

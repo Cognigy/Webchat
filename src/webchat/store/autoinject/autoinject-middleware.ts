@@ -51,7 +51,7 @@ export const createAutoInjectMiddleware = (webchat: Webchat): Middleware<unknown
                 // Exclude engagement messages from state.messages
                 const messagesExcludingEngagementMessages = state.messages?.filter(message => message.source !== 'engagement');
                 // Exclude controlCommands messages from filtered message list 
-                const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messagesExcludingEngagementMessages, ["acceptPrivacyPolicy", "setRating"]);                
+                const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messagesExcludingEngagementMessages);                
                 const isEmptyExceptEngagementAndControlCommands = messagesExcludingControlCommands.length === 0;
 
                 if (!isEmptyExceptEngagementAndControlCommands) {
