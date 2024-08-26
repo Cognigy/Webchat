@@ -1,4 +1,4 @@
-Created on 26-08-2024 at 16:41:34
+Created on 26-08-2024 at 18:02:17
 
 {
   "@babel/code-frame@7.24.2": {
@@ -63,12 +63,12 @@ Created on 26-08-2024 at 16:41:34
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.31.0": {
+  "@cognigy/chat-components@0.32.1": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
   },
-  "@cognigy/socket-client@5.0.0-beta.18": {
+  "@cognigy/socket-client@5.0.0-beta.20": {
     "licenses": "MIT*",
     "publisher": "Robin Schuster",
     "email": "r.schuster@cognigy.com",
@@ -212,6 +212,27 @@ Created on 26-08-2024 at 16:41:34
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/weak-memoize",
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
+  },
+  "@floating-ui/core@1.6.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "publisher": "atomiks",
+    "licenseFile": "node_modules/@floating-ui/core/LICENSE",
+    "copyright": "Copyright (c) 2021-present Floating UI contributors"
+  },
+  "@floating-ui/dom@1.6.10": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "publisher": "atomiks",
+    "licenseFile": "node_modules/@floating-ui/dom/LICENSE",
+    "copyright": "Copyright (c) 2021-present Floating UI contributors"
+  },
+  "@floating-ui/utils@0.2.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "publisher": "atomiks",
+    "licenseFile": "node_modules/@floating-ui/utils/LICENSE",
+    "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
   "@fontsource/figtree@5.0.19": {
     "licenses": "OFL-1.1",
@@ -2013,6 +2034,13 @@ Created on 26-08-2024 at 16:41:34
     "url": "httsps://andreypopp.com/",
     "licenseFile": "node_modules/react-textarea-autosize/LICENSE",
     "copyright": "Copyright (c) 2013 Andrey Popp"
+  },
+  "react-tooltip@5.28.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ReactTooltip/react-tooltip",
+    "publisher": "ReactTooltip",
+    "licenseFile": "node_modules/react-tooltip/LICENSE",
+    "copyright": "Copyright (c) 2022 ReactTooltip Team Github"
   },
   "react-transition-group@4.4.5": {
     "licenses": "BSD-3-Clause",
