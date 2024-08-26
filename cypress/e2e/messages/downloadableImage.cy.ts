@@ -20,7 +20,7 @@ describe("Message with Downloadable Image", () => {
     it("should render download button", () => {
         cy.withMessageFixture('downloadableImage', () => {
             cy
-                .get("button").contains("Download");
+                .get(".webchat-message-row a").contains("Download");
         })
     });
 })
