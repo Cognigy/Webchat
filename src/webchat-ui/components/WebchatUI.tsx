@@ -67,7 +67,7 @@ import XAppOverlay from "./functional/xapp-overlay/XAppOverlay";
 import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
-import getMessagesListWithoutPrivacyMessage from "../utils/filter-out-privacy-message";
+import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -1382,7 +1382,7 @@ export class WebchatUI extends React.PureComponent<
 
 		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log). 
 		// If we do not remove, it will cause the collatation of the first user message.
-		const messagesExcludingPrivacyMessage = getMessagesListWithoutPrivacyMessage(messages);
+		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
 
 		return (
 			<>				
@@ -1391,9 +1391,13 @@ export class WebchatUI extends React.PureComponent<
 				</TopStatusMessage>
 				{messagesExcludingPrivacyMessage.map((message, index) => {
 					// Lookahead if there is a user reply
-					const hasReply = messages
+					const hasReply = messagesExcludingPrivacyMessage
 						.slice(index + 1)
-						.some(message => message.source === "user");
+						.some(
+							message =>
+								message.source === "user" &&
+								!(message?.data?._cognigy as any)?.controlCommands,
+						);
 
 					return (
 						<Message
@@ -1408,7 +1412,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
 							plugins={messagePlugins}
-							prevMessage={messages?.[index - 1]}
+							prevMessage={messagesExcludingPrivacyMessage?.[index - 1]}
 							theme={this.state.theme}
 						/>
 					);
