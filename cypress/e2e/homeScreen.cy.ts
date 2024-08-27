@@ -255,6 +255,7 @@ describe('Home Screen', () => {
                             {
                                 type: "phone_number",
                                 title: "Phone number starter",
+                                payload: "123456789"
                             },
                         ]
                     }
@@ -263,8 +264,8 @@ describe('Home Screen', () => {
         });
         cy.openWebchat();
         cy.get('button').contains('Postback starter');
-        cy.get('button').contains('Web URL starter');
-        cy.get('button').contains('Phone number starter');
+        cy.get('a').contains('Web URL starter');
+        cy.get('a').contains('Phone number starter');
     });
 
     it('has postback buttons that starts a conversation when clicked', () => {
@@ -291,7 +292,7 @@ describe('Home Screen', () => {
         cy.get('.webchat-message-row.user .chat-bubble', { timeout: 100 }).contains('Postback starter');
     });
 
-    it('has web url button with correct role when configured', () => {
+    it('has web url button with correct aria-label when configured', () => {
         cy.initMockWebchat({
             settings: {
                 homeScreen: {
@@ -311,7 +312,6 @@ describe('Home Screen', () => {
             }
         });
         cy.openWebchat();
-        cy.get('.webchat-homescreen-button').should('have.attr', 'role', 'link');
         cy.get('.webchat-homescreen-button').should('have.attr', 'aria-label', 'Web URL starter. Opens in new tab');
     });
 

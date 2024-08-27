@@ -8,7 +8,7 @@ describe("Message with Image", { retries: 3 }, () => {
 
 	it("should render image", () => {
 		cy.withMessageFixture("image", () => {
-			cy.get(".webchat-message-row > div > img").should("be.visible");
+			cy.get(".webchat-message-row img").should("be.visible");
 		});
 	});
 
@@ -20,15 +20,14 @@ describe("Message with Image", { retries: 3 }, () => {
 
 	it("should have alt attibute", () => {
 		cy.withMessageFixture("image", () => {
-			cy.get(".webchat-message-row > div > img")
-				.should("have.attr", "alt")
-				.and("match", /Attachment Image/);
+			cy.get(".webchat-media-template-image img")
+				.should("have.attr", "alt", "Attachment Image")
 		});
 	});
 
 	it("should render the image in a fixed aspect ratio", () => {
 		cy.withMessageFixture("image", () => {
-			cy.get(".webchat-media-template-image > img")
+			cy.get(".webchat-media-template-image img")
 				.should("be.visible")
 				.then(element => {
 					const imageRatio = (element.innerWidth() / element.innerHeight()).toFixed(1);
@@ -51,7 +50,7 @@ describe("Message with Image", { retries: 3 }, () => {
 		cy.startConversation();
 
 		cy.withMessageFixture("image", () => {
-			cy.get(".webchat-media-template-image > img")
+			cy.get(".webchat-media-template-image img")
 				.should("be.visible")
 				.then(element => {
 					expect(element.innerHeight().toFixed()).to.equal(
