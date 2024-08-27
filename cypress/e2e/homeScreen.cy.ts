@@ -233,7 +233,7 @@ describe('Home Screen', () => {
         cy.get('h2').contains('My Previous conversations');   
     });
 
-    it.only('has the conversation starters displayed when configured', () => {
+    it('has the conversation starters displayed when configured', () => {
         cy.initMockWebchat({
             settings: {
                 homeScreen: {
