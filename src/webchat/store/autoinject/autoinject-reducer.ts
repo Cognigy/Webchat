@@ -2,10 +2,10 @@ import { Reducer } from "redux";
 import { SetConfigAction } from '../config/config-reducer';
 import { SetConnectedAction } from '../connection/connection-reducer';
 import { SetOptionsAction } from "../options/options-reducer";
-import { SetOpenAction } from '../ui/ui-reducer';
+import { ShowChatScreenAction } from '../ui/ui-reducer';
 
 const getInitialState = () => ({
-    isOpenedOnce: false,
+    isChatOpenedOnce: false,
     isConnectedOnce: false,
     isConfiguredOnce: false,
     isSessionRestoredOnce: false,
@@ -34,7 +34,7 @@ export type TAutoInjectResetAction = ReturnType<typeof autoInjectHandledReset>;
 
 export type TAutoInjectAction =
     | SetConnectedAction
-    | SetOpenAction
+    | ShowChatScreenAction
     | SetOptionsAction
     | SetConfigAction
     | TTriggerAutoInjectAction
@@ -59,11 +59,11 @@ export const autoInject: Reducer<TAutoInjectState, TAutoInjectAction> = (state =
             break;
         }
 
-        case 'SET_OPEN': {
-            if (action.open && !state.isOpenedOnce) {
+        case 'SHOW_CHAT_SCREEN': {
+            if (!state.isChatOpenedOnce) {
                 return {
                     ...state,
-                    isOpenedOnce: true
+                    isChatOpenedOnce: true
                 }
             }
 
