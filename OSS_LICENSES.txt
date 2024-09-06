@@ -1,4 +1,4 @@
-Created on 07-08-2024 at 16:11:49
+Created on 29-08-2024 at 11:10:23
 
 {
   "@babel/code-frame@7.24.2": {
@@ -63,19 +63,19 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.29.0": {
+  "@cognigy/chat-components@0.33.1": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
   },
-  "@cognigy/socket-client@5.0.0-beta.17": {
+  "@cognigy/socket-client@5.0.0-beta.20": {
     "licenses": "MIT*",
     "publisher": "Robin Schuster",
     "email": "r.schuster@cognigy.com",
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.0.0": {
+  "@cognigy/webchat@3.3.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -213,6 +213,27 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
+  "@floating-ui/core@1.6.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "publisher": "atomiks",
+    "licenseFile": "node_modules/@floating-ui/core/LICENSE",
+    "copyright": "Copyright (c) 2021-present Floating UI contributors"
+  },
+  "@floating-ui/dom@1.6.10": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "publisher": "atomiks",
+    "licenseFile": "node_modules/@floating-ui/dom/LICENSE",
+    "copyright": "Copyright (c) 2021-present Floating UI contributors"
+  },
+  "@floating-ui/utils@0.2.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "publisher": "atomiks",
+    "licenseFile": "node_modules/@floating-ui/utils/LICENSE",
+    "copyright": "Copyright (c) 2021-present Floating UI contributors"
+  },
   "@fontsource/figtree@5.0.19": {
     "licenses": "OFL-1.1",
     "repository": "https://github.com/fontsource/font-files",
@@ -228,7 +249,7 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/@reduxjs/toolkit/LICENSE",
     "copyright": "Copyright (c) 2018 Mark Erikson"
   },
-  "@socket.io/component-emitter@3.1.0": {
+  "@socket.io/component-emitter@3.1.2": {
     "licenses": "MIT",
     "repository": "https://github.com/socketio/emitter",
     "licenseFile": "node_modules/@socket.io/component-emitter/LICENSE",
@@ -457,7 +478,7 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/aws4/LICENSE",
     "copyright": "Copyright 2013 Michael Hart (michael.hart.au@gmail.com)"
   },
-  "axios@1.6.4": {
+  "axios@1.7.4": {
     "licenses": "MIT",
     "repository": "https://github.com/axios/axios",
     "publisher": "Matt Zabriskie",
@@ -906,17 +927,17 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/end-of-stream/LICENSE",
     "copyright": "Copyright (c) 2014 Mathias Buus"
   },
-  "engine.io-client@6.5.3": {
+  "engine.io-client@6.5.4": {
     "licenses": "MIT",
     "repository": "https://github.com/socketio/engine.io-client",
     "licenseFile": "node_modules/engine.io-client/LICENSE",
     "copyright": "Copyright (c) 2014-2015 Automattic <dev@cloudup.com>"
   },
-  "engine.io-parser@5.2.2": {
+  "engine.io-parser@5.2.3": {
     "licenses": "MIT",
-    "repository": "https://github.com/socketio/engine.io-parser",
+    "repository": "https://github.com/socketio/socket.io",
     "licenseFile": "node_modules/engine.io-parser/LICENSE",
-    "copyright": "Copyright (c) 2016 Guillermo Rauch (@rauchg)"
+    "copyright": "Copyright (c) 2014-present Guillermo Rauch and Socket.IO contributors"
   },
   "enquirer@2.4.1": {
     "licenses": "MIT",
@@ -1927,7 +1948,7 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/qs/LICENSE.md",
     "copyright": "Copyright (c) 2014, Nathan LaFreniere and other [contributors](https://github.com/ljharb/qs/graphs/contributors). All rights reserved."
   },
-  "qs@6.12.0": {
+  "qs@6.13.0": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/ljharb/qs",
     "licenseFile": "node_modules/url/node_modules/qs/LICENSE.md",
@@ -2013,6 +2034,13 @@ Created on 07-08-2024 at 16:11:49
     "url": "httsps://andreypopp.com/",
     "licenseFile": "node_modules/react-textarea-autosize/LICENSE",
     "copyright": "Copyright (c) 2013 Andrey Popp"
+  },
+  "react-tooltip@5.28.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ReactTooltip/react-tooltip",
+    "publisher": "ReactTooltip",
+    "licenseFile": "node_modules/react-tooltip/LICENSE",
+    "copyright": "Copyright (c) 2022 ReactTooltip Team Github"
   },
   "react-transition-group@4.4.5": {
     "licenses": "BSD-3-Clause",
@@ -2260,7 +2288,7 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/slide/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter"
   },
-  "socket.io-client@4.7.2": {
+  "socket.io-client@4.7.5": {
     "licenses": "MIT",
     "repository": "https://github.com/socketio/socket.io-client",
     "licenseFile": "node_modules/socket.io-client/LICENSE",
@@ -2656,14 +2684,14 @@ Created on 07-08-2024 at 16:11:49
     "licenseFile": "node_modules/wrappy/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
-  "ws@8.11.0": {
+  "ws@8.17.1": {
     "licenses": "MIT",
     "repository": "https://github.com/websockets/ws",
     "publisher": "Einar Otto Stangvik",
     "email": "einaros@gmail.com",
     "url": "http://2x.io",
     "licenseFile": "node_modules/ws/LICENSE",
-    "copyright": "Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>"
+    "copyright": "Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>. Copyright (c) 2013 Arnout Kazemier and contributors. Copyright (c) 2016 Luigi Pinca and contributors"
   },
   "xmlhttprequest-ssl@2.0.0": {
     "licenses": "MIT",

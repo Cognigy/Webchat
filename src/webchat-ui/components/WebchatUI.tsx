@@ -67,7 +67,7 @@ import XAppOverlay from "./functional/xapp-overlay/XAppOverlay";
 import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
-import getMessagesListWithoutPrivacyMessage from "../utils/filter-out-privacy-message";
+import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -128,6 +128,7 @@ export interface WebchatUIProps {
 	fileUploadError: boolean;
 	onSetFileUploadError: (hasError: boolean) => void;
 
+	onShowChatScreen: () => void;
 	showPrevConversations: boolean;
 	onSetShowPrevConversations: (show: boolean) => void;
 	prevConversations: PrevConversationsState;
@@ -201,6 +202,7 @@ const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	display: "flex",
 	flexDirection: "column",
 	backgroundColor: theme.white,
+	overflow: "auto",
 
 	"&.slide-in-enter": {
 		transform: "translateX(100%)",
@@ -740,31 +742,63 @@ export class WebchatUI extends React.PureComponent<
 				options,
 			});
 		} else {
+			this.props.onSwitchSession();
+			this.props.onSendMessage(text, data, options);
+		}
+	};
+
+	handleSendActionButtonMessageFromTeaser = (
+		text?: string,
+		data?: any,
+		options?: Partial<ISendMessageOptions>,
+	) => {
+		this.props.onSetShowHomeScreen(false);
+		this.props.onSetShowChatOptionsScreen(false);
+
+		if (this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms) {
+			this.props.onSetStoredMessage({
+				text,
+				data,
+				options,
+			});
+		} else {
+			this.props.onShowChatScreen();
 			this.props.onSendMessage(text, data, options);
 		}
 	};
 
 	handleStartConversation = () => {
-		if (!this.props.config.settings.privacyNotice.enabled || this.props.hasAcceptedTerms) {
-			const { initialSessionId } = this.props.config;
-			if (!initialSessionId) {
-				this.props.onSwitchSession();
-			}
-			if (initialSessionId && initialSessionId !== this.props.currentSession) {
-				this.props.onSwitchSession(initialSessionId);
-			}
-		}
-
-		if (!this.props.open) this.props.onToggle();
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
+
+		const showPrivacyScreen = this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
+		if (!showPrivacyScreen) {
+			this.props.onShowChatScreen();
+		}
 	};
 
+	handleFabClick = () => {
+		this.props.onToggle();
+
+		const homeScreenEnabled = this.props.config.settings.homeScreen.enabled === true;
+		if (homeScreenEnabled) {
+			this.setState({ lastUnseenMessageText: "" });
+		} else {
+			this.handleStartConversation();
+		}
+	}
+
 	openConversationFromTeaser = () => {
-		// in this case we always open to current session
 		this.props.onToggle();
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
+
+		const showPrivacyScreen = this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
+		if (showPrivacyScreen) {
+			this.setState({ lastUnseenMessageText: "" });
+		} else {
+			this.props.onShowChatScreen();
+		}
 	};
 
 	render() {
@@ -800,6 +834,7 @@ export class WebchatUI extends React.PureComponent<
 			onSetHasGivenRating,
 			onSetShowPrevConversations,
 			onSetShowChatOptionsScreen,
+			onShowChatScreen,
 			onSwitchSession,
 			requestRatingScreenTitle,
 			customRatingTitle,
@@ -946,7 +981,7 @@ export class WebchatUI extends React.PureComponent<
 													config={config}
 													onEmitAnalytics={onEmitAnalytics}
 													onSendActionButtonMessage={
-														this.handleSendActionButtonMessage
+														this.handleSendActionButtonMessageFromTeaser
 													}
 													onHideTeaserMessage={onHideTeaserMessage}
 													wasOpen={wasOpen}
@@ -974,7 +1009,7 @@ export class WebchatUI extends React.PureComponent<
 										) : (
 											<FAB
 												data-cognigy-webchat-toggle
-												onClick={onToggle}
+												onClick={this.handleFabClick}
 												{...webchatToggleProps}
 												type="button"
 												className="webchat-toggle-button"
@@ -1025,6 +1060,7 @@ export class WebchatUI extends React.PureComponent<
 			requestRatingEventBannerText,
 			showRatingScreen,
 			onShowRatingScreen,
+			onShowChatScreen,
 			onSwitchSession,
 			onClose,
 			onEmitAnalytics,
@@ -1072,14 +1108,12 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const handleCloseAndReset = () => {
-			onSwitchSession();
 			onSetShowHomeScreen(true);
 			onClose();
 			// Restore focus to chat toggle button
 			this.chatToggleButtonRef?.current?.focus?.();
 		}
 
-		// TODO implement proper navigation solution
 		const handleOnGoBack = () => {
 			if (!showChatOptionsScreen && !showRatingScreen) {
 				onSetShowPrevConversations(false);
@@ -1100,13 +1134,13 @@ export class WebchatUI extends React.PureComponent<
 
 		const handleAcceptTerms = () => {
 			onAcceptTerms(this.props?.options?.userId || "");
+			onShowChatScreen();
 
 			const data = {
 				_cognigy: {
 					controlCommands: [{ type: "acceptPrivacyPolicy" }],
 				},
 			};
-
 			this.props.onSendMessage("", data);
 		};
 
@@ -1141,6 +1175,7 @@ export class WebchatUI extends React.PureComponent<
 						onSetShowPrevConversations={onSetShowPrevConversations}
 						onSwitchSession={onSwitchSession}
 						config={config}
+						currentSession={currentSession}
 					/>
 				);
 
@@ -1347,7 +1382,7 @@ export class WebchatUI extends React.PureComponent<
 
 		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log). 
 		// If we do not remove, it will cause the collatation of the first user message.
-		const messagesExcludingPrivacyMessage = getMessagesListWithoutPrivacyMessage(messages);
+		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
 
 		return (
 			<>				
@@ -1356,9 +1391,13 @@ export class WebchatUI extends React.PureComponent<
 				</TopStatusMessage>
 				{messagesExcludingPrivacyMessage.map((message, index) => {
 					// Lookahead if there is a user reply
-					const hasReply = messages
+					const hasReply = messagesExcludingPrivacyMessage
 						.slice(index + 1)
-						.some(message => message.source === "user");
+						.some(
+							message =>
+								message.source === "user" &&
+								!(message?.data?._cognigy as any)?.controlCommands,
+						);
 
 					return (
 						<Message
@@ -1373,7 +1412,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
 							plugins={messagePlugins}
-							prevMessage={messages?.[index - 1]}
+							prevMessage={messagesExcludingPrivacyMessage?.[index - 1]}
 							theme={this.state.theme}
 						/>
 					);

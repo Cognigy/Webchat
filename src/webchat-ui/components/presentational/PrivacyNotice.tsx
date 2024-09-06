@@ -15,6 +15,7 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	justifyContent: "space-between",
 	alignItems: "center",
 	padding: 20,
+	overflowY: "auto",
 }));
 
 const PrivacyMessage = styled.div(() => ({

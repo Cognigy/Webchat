@@ -75,7 +75,6 @@
 @media screen and (min-width: 576px) and (max-height: 870px) {
     [data-cognigy-webchat-root] [data-cognigy-webchat] {
 		height: calc(100% - 90px);
-		min-height: 558px;
     }
 }
 

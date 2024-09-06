@@ -3,24 +3,24 @@ import { StoreState } from "../store";
 import { autoInjectHandled, TAutoInjectAction, triggerAutoInject } from './autoinject-reducer';
 import { Webchat } from "../../components/Webchat";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
-import getMessagesListWithoutPrivacyMessage from "../../../webchat-ui/utils/filter-out-privacy-message";
+import getMessagesListWithoutControlCommands from "../../../webchat-ui/utils/filter-out-control-commands";
 
 export const createAutoInjectMiddleware = (webchat: Webchat): Middleware<unknown, StoreState> => api => next => (action: TAutoInjectAction) => {
     switch (action.type) {
         case 'SET_CONFIG':
         case 'SET_CONNECTED':
-        case 'SET_OPEN':
+        case 'SHOW_CHAT_SCREEN':
         case 'SET_OPTIONS': {
             const nextActionResult = next(action);
             
             (() => {
                 const state = api.getState();
-                const { isAutoInjectHandled: isAutoInjectTriggered, isConfiguredOnce, isConnectedOnce, isOpenedOnce, isSessionRestoredOnce } = state.autoInject;
+                const { isAutoInjectHandled: isAutoInjectTriggered, isConfiguredOnce, isConnectedOnce, isChatOpenedOnce, isSessionRestoredOnce } = state.autoInject;
                 
                 if (isAutoInjectTriggered)
                     return;
                 
-                if (!isConfiguredOnce || !isConnectedOnce || !isOpenedOnce || !isSessionRestoredOnce)
+                if (!isConfiguredOnce || !isConnectedOnce || !isChatOpenedOnce || !isSessionRestoredOnce)
                     return;
                 
                 api.dispatch(triggerAutoInject());
@@ -50,11 +50,11 @@ export const createAutoInjectMiddleware = (webchat: Webchat): Middleware<unknown
 			if (!config.settings.widgetSettings.enableInjectionWithoutEmptyHistory) {
                 // Exclude engagement messages from state.messages
                 const messagesExcludingEngagementMessages = state.messages?.filter(message => message.source !== 'engagement');
-                // Exclude privacy policy accepted message type from filtered message list 
-                const messagesExcludingEngagementAndPrivacyMessage = getMessagesListWithoutPrivacyMessage(messagesExcludingEngagementMessages);                
-                const isEmptyExceptEngagementAndPrivacyMessage = messagesExcludingEngagementAndPrivacyMessage.length === 0;
+                // Exclude controlCommands messages from filtered message list 
+                const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(messagesExcludingEngagementMessages);                
+                const isEmptyExceptEngagementAndControlCommands = messagesExcludingControlCommands.length === 0;
 
-                if (!isEmptyExceptEngagementAndPrivacyMessage) {
+                if (!isEmptyExceptEngagementAndControlCommands) {
                     break;
                 }
             }
