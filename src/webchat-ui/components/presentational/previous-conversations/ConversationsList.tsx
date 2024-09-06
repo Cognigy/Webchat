@@ -120,7 +120,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 			<ConversationsListActions className="webchat-prev-conversations-actions">
 				<StartButton
 					onClick={handleStartButtonClick}
-					className="webchat-prev-conversations-send-button"
+					className="webchat-prev-conversations-start-button"
 					data-testid="webchat-start-chat-button"
 				>
 					Start new conversation

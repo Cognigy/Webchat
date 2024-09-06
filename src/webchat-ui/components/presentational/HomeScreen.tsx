@@ -35,7 +35,6 @@ const HomeScreenRoot = styled.div(({ theme }) => ({
 			backgroundImage: "none",
 		},
 	},
-
 }));
 
 interface IHomeScreenContentProps {
@@ -108,7 +107,7 @@ const HomeScreenHeaderIconButton = styled(IconButton)(({ theme }) => ({
 	"&:focus-visible": {
 		outline: `2px solid ${theme.textLight}`,
 		outlineOffset: 2,
-	},	
+	},
 }));
 
 const HomeScreenTitle = styled(Typography)(({ theme }) => ({
@@ -178,7 +177,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 		onStartConversation,
 	} = props;
 
-	const homeScreenRef = useRef<HTMLDivElement>(null);	
+	const homeScreenRef = useRef<HTMLDivElement>(null);
 
 	const { homeScreen } = config.settings;
 
@@ -190,7 +189,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 	};
 
 	useEffect(() => {
-		if(homeScreenRef.current) {
+		if (homeScreenRef.current) {
 			const { firstFocusable } = getKeyboardFocusableElements(homeScreenRef.current);
 			firstFocusable.focus();
 		}
@@ -201,7 +200,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 		const tabIndex = showHomeScreen ? 0 : -1;
 
 		if (homeScreenRef.current) {
-			const {focusable } = getKeyboardFocusableElements(homeScreenRef.current);
+			const { focusable } = getKeyboardFocusableElements(homeScreenRef.current);
 
 			focusable.forEach((el: Element) => {
 				el.setAttribute("tabindex", tabIndex.toString());
@@ -266,13 +265,16 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 			<HomeScreenActions className="webchat-homescreen-actions">
 				<StartButton
 					onClick={onStartConversation}
-					className="webchat-homescreen-send-button"
+					className="webchat-homescreen-start-button"
 					data-test="webchat-start-chat-button"
 				>
 					{config.settings.homeScreen.startConversationButtonText || "Start conversation"}
 				</StartButton>
 				{config.settings.homeScreen.previousConversations.enabled && (
-					<PrevConversationsButton onClick={handleShowPrevConversations}>
+					<PrevConversationsButton
+						onClick={handleShowPrevConversations}
+						className="webchat-homescreen-previous-conversation-button"
+					>
 						{config.settings.homeScreen.previousConversations.buttonText ||
 							"Previous conversations"}
 					</PrevConversationsButton>

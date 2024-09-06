@@ -37,6 +37,31 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-toggle-button*
 * *webchat-unread-message-preview*
 * *webchat-unread-message-badge*
+* *webchat-unread-message-preview-text
+* *webchat-teaser-message-root
+* *webchat-teaser-message-header-logo
+* *webchat-teaser-message-button-container
+* *webchat-teaser-message-button
+* *webchat-homescreen-root
+* *webchat-homescreen-content
+* *webchat-homescreen-header
+* *webchat-homescreen-close-button
+* *webchat-homescreen-title
+* *webchat-homescreen-button-container
+* *webchat-homescreen-button
+* *webchat-homescreen-actions
+* *webchat-homescreen-start-button
+* *webchat-homescreen-previous-conversation-button
+* *webchat-prev-conversations-root
+* *webchat-prev-conversations-content
+* *webchat-prev-conversations-item
+* *webchat-prev-conversations-start-button
+* *webchat-chat-options-root
+* *webchat-chat-options-container
+* *webchat-chat-options-action-btns-root
+* *webchat-chat-options-action-btns-title
+* *webchat-chat-options-action-button-container
+* *webchat-chat-options-action-button
 * *webchat-rating-widget-root*
 * *webchat-rating-widget-title*
 * *webchat-rating-widget-content-container*
@@ -357,6 +382,14 @@ This is the button to open the Webchat, if you want to modify its color you have
     background-color: rgb(5, 5, 131);
 }
 ```
+
+* *webchat-toggle-button* 
+This is the button to open the Webchat, if you want to modify its color you have to set the "background-image" to none.
+```CSS
+[data-cognigy-webchat] .webchat-teaser-message-button {
+
+    background-color: red;
+}
 
 * *webchat-unread-message-preview*
 This is the message bubble which is diplayed next to the *webchat-toggle-button*, when the user retreived an unread message from Cognigy.

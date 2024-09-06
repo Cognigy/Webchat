@@ -39,7 +39,7 @@ export const PostbackButtons = (prop: IPostbackButtonsProps) => {
 	const buttons: IWebchatButton[] = chatOptions?.quickReplyOptions.quickReplies
 
 	return (
-		<PostbackButtonsRoot className="webchat-chat-options-root">
+		<PostbackButtonsRoot className="webchat-chat-options-action-btns-root">
 			<Typography variant="title1-semibold" margin={0} className="webchat-chat-options-action-btns-title">
 				{
 					chatOptions?.quickReplyOptions?.sectionTitle ||
@@ -49,8 +49,8 @@ export const PostbackButtons = (prop: IPostbackButtonsProps) => {
 			<ActionButtonsWrapper className="webchat-chat-options-action-btns-wrapper">
 				<ActionButtons
 					showUrlIcon
-					buttonClassName="webchat-chat-options-button"
-					containerClassName="webchat-chat-options-button-container"
+					buttonClassName="webchat-chat-options-action-button"
+					containerClassName="webchat-chat-options-action-button-container"
 					payload={buttons}
 					config={config}
 					action={onSendActionButtonMessage}
