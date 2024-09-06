@@ -383,14 +383,6 @@ This is the button to open the Webchat, if you want to modify its color you have
 }
 ```
 
-* *webchat-toggle-button* 
-This is the button to open the Webchat, if you want to modify its color you have to set the "background-image" to none.
-```CSS
-[data-cognigy-webchat] .webchat-teaser-message-button {
-
-    background-color: red;
-}
-
 * *webchat-unread-message-preview*
 This is the message bubble which is diplayed next to the *webchat-toggle-button*, when the user retreived an unread message from Cognigy.
 ```CSS
@@ -404,6 +396,14 @@ This is the unread message count which is diplayed next to the *webchat-toggle-b
 ```CSS
 [data-cognigy-webchat-root] .webchat-unread-message-badge {
     background-color: 'white';
+}
+```
+
+* *webchat-teaser-message-button* 
+This is the button button that is displayed inside *webchat-teaser-message-button-container*.
+```CSS
+[data-cognigy-webchat-root] .webchat-teaser-message-button {
+    background-color: rgb(5, 5, 131);
 }
 ```
 
