@@ -400,7 +400,7 @@ This is the unread message count which is diplayed next to the *webchat-toggle-b
 ```
 
 * *webchat-teaser-message-button* 
-This is the button button that is displayed inside *webchat-teaser-message-button-container*.
+This is the button that is displayed inside *webchat-teaser-message-button-container*.
 ```CSS
 [data-cognigy-webchat-root] .webchat-teaser-message-button {
     background-color: rgb(5, 5, 131);
