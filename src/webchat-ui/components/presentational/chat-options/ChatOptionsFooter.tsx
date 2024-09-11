@@ -41,8 +41,10 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 	const footerItem1Text = chatOptions?.footer?.items?.[0]?.title || "Imprint";
 	const footerItem2Text = chatOptions?.footer?.items?.[1]?.title || "Data Privacy";
 
-	const footerItem1URL = chatOptions?.footer?.items?.[0]?.url || "https://www.cognigy.com/legal-notice";
-	const footerItem2URL = chatOptions?.footer?.items?.[1]?.url || "https://www.cognigy.com/privacy-policy";
+	const footerItem1URL =
+		chatOptions?.footer?.items?.[0]?.url || "https://www.cognigy.com/legal-notice";
+	const footerItem2URL =
+		chatOptions?.footer?.items?.[1]?.url || "https://www.cognigy.com/privacy-policy";
 
 	return (
 		<Footer className="webchat-chat-options-footer">
@@ -51,13 +53,16 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 				target="_blank"
 				id="footer-text-1"
 				aria-label={`${footerItem1Text}. Opens in new tab`}
+				className="webchat-chat-options-footer-link"
 			>
-				<StyledFooterTypography variant="body-semibold">
+				<StyledFooterTypography
+					variant="body-semibold"
+					className="webchat-chat-options-footer-link-text"
+				>
 					{footerItem1Text}
 				</StyledFooterTypography>
 			</Link>
-			{
-				chatOptions?.footer?.items?.[1] &&
+			{chatOptions?.footer?.items?.[1] && (
 				<Link
 					href={footerItem2URL}
 					target="_blank"
@@ -68,7 +73,7 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 						{footerItem2Text}
 					</StyledFooterTypography>
 				</Link>
-			}
+			)}
 		</Footer>
 	);
 };

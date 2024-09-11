@@ -69,6 +69,8 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-rating-widget-thumbs-down-button*
 * *webchat-rating-widget-comment-input-field*
 * *webchat-rating-widget-send-button*
+* *webchat-chat-options-footer-link*
+* *webchat-chat-options-footer-link-text*
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 ```CSS
