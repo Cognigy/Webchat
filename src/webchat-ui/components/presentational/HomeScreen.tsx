@@ -265,7 +265,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 			<HomeScreenActions className="webchat-homescreen-actions">
 				<StartButton
 					onClick={onStartConversation}
-					className="webchat-homescreen-start-button"
+					className="webchat-homescreen-send-button"
 					data-test="webchat-start-chat-button"
 				>
 					{config.settings.homeScreen.startConversationButtonText || "Start conversation"}

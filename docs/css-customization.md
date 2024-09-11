@@ -50,12 +50,12 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-homescreen-button-container
 * *webchat-homescreen-button
 * *webchat-homescreen-actions
-* *webchat-homescreen-start-button
+* *webchat-homescreen-send-button
 * *webchat-homescreen-previous-conversation-button
 * *webchat-prev-conversations-root
 * *webchat-prev-conversations-content
 * *webchat-prev-conversations-item
-* *webchat-prev-conversations-start-button
+* *webchat-prev-conversations-send-button
 * *webchat-chat-options-root
 * *webchat-chat-options-container
 * *webchat-chat-options-action-btns-root
