@@ -39,6 +39,7 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-unread-message-badge*
 * *webchat-unread-message-preview-text*
 * *webchat-teaser-message-root*
+* *webchat-teaser-message-header-title*
 * *webchat-teaser-message-header-logo*
 * *webchat-teaser-message-button-container*
 * *webchat-teaser-message-button*
@@ -401,11 +402,312 @@ This is the unread message count which is diplayed next to the *webchat-toggle-b
 }
 ```
 
+* *webchat-unread-message-preview-text*
+This is the text in the teaser message and unread message preview bubble. You can change the font, text color, or any other text properties.
+```CSS
+[data-cognigy-webchat-root] .webchat-unread-message-preview-text {
+    color: white;
+    font-size: 14px;
+}
+```
+
+* *webchat-teaser-message-root*
+The root class for the teaser message, used for customizing the overall look of the teaser message box.
+```CSS
+[data-cognigy-webchat-root] .webchat-teaser-message-root {
+    background-color: rgb(240, 240, 240);
+    padding: 10px;
+}
+```
+
+* *webchat-teaser-message-header-title*
+The title of the teaser message displayed at the top of the teaser message bubble.
+```CSS
+[data-cognigy-webchat-root] .webchat-teaser-message-header-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgb(5, 5, 131);
+}
+```
+
+* *webchat-teaser-message-header-logo*
+The logo displayed in the header of the teaser message. You can replace the logo image URL.
+```CSS
+[data-cognigy-webchat-root] .webchat-teaser-message-header-logo {
+    border: 2px solid rgb(5, 5, 131);
+}
+```
+
+* *webchat-teaser-message-button-container*
+This container holds the button(s) displayed in the teaser message. You can adjust the layout and spacing.
+```CSS
+[data-cognigy-webchat-root] .webchat-teaser-message-button-container {
+    justify-content: space-between;
+    padding-top: 10px;
+}
+```
+
 * *webchat-teaser-message-button* 
-This is the button that is displayed inside *webchat-teaser-message-button-container*.
+This is the button that is displayed below the teaser message bubble and inside *webchat-teaser-message-button-container*.
 ```CSS
 [data-cognigy-webchat-root] .webchat-teaser-message-button {
     background-color: rgb(5, 5, 131);
+    color: white;
+}
+```
+
+* *webchat-homescreen-root*
+The root container for the homescreen of the webchat. 
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-root {
+    border-radius: 20px;
+    border: 2px solid rgb(5, 5, 131);
+    padding: 20px;
+}
+```
+
+* *webchat-homescreen-content*
+This is the main content area of the homescreen.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-content {
+    background-color: black;
+}
+```
+
+* *webchat-homescreen-header*
+The header section of the homescreen, containing the logo and close button.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-header {
+    margin: 10px;
+}
+```
+
+* *webchat-homescreen-close-button*
+The close button in the homescreen header.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-close-button {
+    border: 2px solid white !important;
+    padding: 10px !important;
+}
+```
+
+* *webchat-homescreen-title*
+The title displayed on the homescreen.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-title {
+    font-size: 24px;
+    color: red !important;
+}
+```
+
+* *webchat-homescreen-button-container*
+The container for the conversation starter buttons on the homescreen.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-button-container {
+    padding: 10px;
+}
+```
+
+* *webchat-homescreen-button*
+Individual buttons on the homescreen (like for starting a new conversation).
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-button {
+    background-color: rgb(5, 5, 131) !important;
+    color: black;
+    border-radius: 5px;
+}
+```
+
+To change the font-family of the homescreen starter button labels, you need to target the *span* tag inside *webchat-homescreen-button* like the following
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-button span {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+* *webchat-homescreen-actions*
+The container for any actions on the homescreen.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-actions {
+    margin-top: 15px;
+}
+```
+
+* *webchat-homescreen-send-button*
+The button to send a new message from the homescreen.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-send-button {
+    background-color: rgb(5, 5, 131) !important;
+    color: white;
+}
+```
+
+* *webchat-homescreen-previous-conversation-button*
+The button to view previous conversations from the homescreen.
+```CSS
+[data-cognigy-webchat-root] .webchat-homescreen-previous-conversation-button {
+    background-color: rgb(5, 5, 131) !important;
+}
+```
+
+* *webchat-prev-conversations-root*
+The root container for the previous conversations screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-prev-conversations-root {
+    padding: 20px;
+}
+```
+
+* *webchat-prev-conversations-content*
+The container for the list of previous conversations.
+```CSS
+[data-cognigy-webchat-root] .webchat-prev-conversations-content {
+    padding: 0px;
+}
+```
+
+* *webchat-prev-conversations-item*
+An individual item in the previous conversations list.
+```CSS
+[data-cognigy-webchat-root] .webchat-prev-conversations-item {
+    background-color: rgb(5, 5, 131);
+}
+```
+
+* *webchat-prev-conversations-send-button*
+The button to start a new conversation from the Previous conversations screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-prev-conversations-send-button {
+    background-color: rgb(5, 5, 131) !important;
+}
+```
+
+* *webchat-chat-options-root*
+The root container for the chat options.
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-root {
+    padding: 20px;
+}
+```
+
+* *webchat-chat-options-container*
+The container that holds all chat options.
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-container {
+    border: 2px solid rgb(5, 5, 131);
+}
+```
+
+* *webchat-chat-options-action-btns-root*
+The container for quick reply buttons  and its title inside the chat options screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-action-btns-root {
+    justify-content: space-between;
+    padding: 10px;
+}
+```
+
+* *webchat-chat-options-action-button-container*
+The container for the set of quick reply buttons in the chat options screen
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-action-button-container {
+    justify-content: space-around;
+    padding: 10px;
+}
+```
+
+* *webchat-chat-options-action-btns-title*
+The title for the quick reply buttons in the chat options screen
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-action-btns-title {
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(5, 5, 131);
+}
+```
+
+* *webchat-chat-options-action-button*
+An individual quick reply button in the chat options screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-action-button {
+    background-color: rgb(5, 5, 131) !important;
+    color: white;
+}
+```
+
+* *webchat-rating-widget-root*
+The root container for the rating widget that includes the rating title, thumbs up/down button, text area and submit button.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-root {
+    padding: 20px;
+}
+```
+
+* *webchat-rating-widget-title*
+The title of the rating widget.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-title {
+    font-size: 20px;
+    color: rgb(5, 5, 131);
+}
+```
+
+* *webchat-rating-widget-content-container*
+The container for the rating widget's thumbs up/down buttons.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-content-container {
+    justify-content: space-between;
+    padding: 10px;
+}
+```
+
+* *webchat-rating-widget-thumbs-up-button*
+The thumbs-up button for the rating widget.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-thumbs-up-button {
+    background-color: #00cc66 !important;
+}
+```
+
+* *webchat-rating-widget-thumbs-down-button*
+The thumbs-down button for the rating widget.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-thumbs-down-button {
+    background-color: #cc0000 !important;
+}
+```
+
+* *webchat-rating-widget-comment-input-field*
+The input field for comments in the rating widget.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field {
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+```
+
+* *webchat-rating-widget-send-button*
+The button to send the rating/comment.
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-send-button {
+    background-color: rgb(5, 5, 131) !important;
+}
+```
+
+* *webchat-chat-options-footer-link*
+The link displayed at the footer of the chat options screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-footer-link {
+    text-decoration: underline !important;
+    padding: 10px;
+}
+```
+
+* *webchat-chat-options-footer-link-text*
+The text for the footer link in chat options screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-chat-options-footer-link-text {
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif !important;
 }
 ```
 
