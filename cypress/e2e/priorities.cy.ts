@@ -23,7 +23,6 @@ const renderMessageWithParams = (params: IGenerateTestCaseParams) => {
         message: {
             text,
             quick_replies: [							{
-                "id": 0.44535334241574,
                 "contentType": "postback",
                 "payload": "foobar003pb01",
                 "title": "foobar003qr01"
@@ -115,8 +114,7 @@ const generateTestCase = (params: IGenerateTestCaseParams) => {
     });
 }
 
-// TODO Enable back when bug fixed #AI:65271
-xdescribe("Channel Rendering Priorities", {
+describe("Channel Rendering Priorities", {
     defaultCommandTimeout: 500
 }, () => {
     beforeEach(() => {
