@@ -1375,7 +1375,7 @@ export class WebchatUI extends React.PureComponent<
 		} = this.props;
 		const { messagePlugins = [] } = this.state;
 
-		const { enableTypingIndicator, messageDelay } = config.settings.behavior;
+		const { enableTypingIndicator, messageDelay, enableAIAgentNotice, AIAgentNoticeText } = config.settings.behavior;
 		const isTyping = typingIndicator !== "remove" && typingIndicator !== "hide";
 
 		const isEnded = isConversationEnded(messages);
@@ -1385,10 +1385,12 @@ export class WebchatUI extends React.PureComponent<
 		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
 
 		return (
-			<>				
-				<TopStatusMessage variant="body-regular" component="div">
-					You are now talking to an AI agent.
-				</TopStatusMessage>
+			<>
+				{enableAIAgentNotice !== false && (
+					<TopStatusMessage variant="body-regular" component="div">
+						{AIAgentNoticeText || "You're now chatting with an AI Agent."}
+					</TopStatusMessage>
+				)}
 				{messagesExcludingPrivacyMessage.map((message, index) => {
 					// Lookahead if there is a user reply
 					const hasReply = messagesExcludingPrivacyMessage

@@ -149,6 +149,8 @@ export interface IWebchatSettings {
 		textLinkColor: string;
 	};
 	behavior: {
+		enableAIAgentNotice: boolean;
+		AIAgentNoticeText: string;
 		enableTypingIndicator: boolean;
 		messageDelay: number;
 		inputPlaceholder: string;
