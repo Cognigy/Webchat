@@ -15,7 +15,6 @@ You need an installed version of `Node.js` to build your Webchat. Clone this rep
 ## Development
 
 For development purposes, you can utilize `npm run dev`. This command spawns an HTTP server on port 8080, showcasing the current form of the webchat directly from the source code. It automatically reloads upon updating source files, simplifying the development process.
-It automatically reloads when you make changes, streamlining the development process.
 
 ## Migration Guide
 
@@ -32,4 +31,4 @@ Effective immediately, there will be
 - No Further Feature Updates: We will no longer release feature updates for the deprecated Webchat versions.
 - No Bug Fixes: Issues reported in the deprecated versions will not be addressed.
 - Limited Support: Customer support for the deprecated versions will be significantly reduced and eventually unavailable after the end of support date.
-- Security Fixes: We will continue to provide security fixes until the end of the support date. 
+- Security Fixes: We will continue to provide security fixes until the end of the support date.
