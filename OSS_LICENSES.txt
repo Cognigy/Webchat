@@ -1,4 +1,4 @@
-Created on 09-09-2024 at 10:54:40
+Created on 21-10-2024 at 10:38:45
 
 {
   "@babel/code-frame@7.24.2": {
@@ -63,19 +63,19 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.33.1": {
+  "@cognigy/chat-components@0.35.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
   },
-  "@cognigy/socket-client@5.0.0-beta.20": {
+  "@cognigy/socket-client@5.0.0-beta.21": {
     "licenses": "MIT*",
     "publisher": "Robin Schuster",
     "email": "r.schuster@cognigy.com",
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.4.0": {
+  "@cognigy/webchat@3.7.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -116,7 +116,7 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@emotion/cache/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/cache@11.11.0": {
+  "@emotion/cache@11.13.1": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/cache",
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/cache/LICENSE",
@@ -134,35 +134,29 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@emotion/is-prop-valid/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/memoize@0.8.1": {
-    "licenses": "MIT",
-    "repository": "https://github.com/emotion-js/emotion/tree/main/packages/memoize",
-    "licenseFile": "node_modules/@emotion/memoize/LICENSE",
-    "copyright": "Copyright (c) Emotion team and other contributors"
-  },
   "@emotion/memoize@0.9.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/memoize",
     "licenseFile": "node_modules/@emotion/babel-plugin/node_modules/@emotion/memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/react@11.11.4": {
+  "@emotion/react@11.13.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/react",
     "publisher": "Emotion Contributors",
     "licenseFile": "node_modules/@emotion/react/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/serialize@1.1.3": {
+  "@emotion/serialize@1.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/serialize",
     "licenseFile": "node_modules/@emotion/serialize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/serialize@1.3.0": {
+  "@emotion/serialize@1.3.1": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/serialize",
-    "licenseFile": "node_modules/@emotion/babel-plugin/node_modules/@emotion/serialize/LICENSE",
+    "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/serialize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
   "@emotion/sheet@0.9.4": {
@@ -171,13 +165,13 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@emotion/sheet/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/sheet@1.2.2": {
+  "@emotion/sheet@1.4.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/sheet",
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/sheet/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/styled@11.12.0": {
+  "@emotion/styled@11.13.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/styled",
     "licenseFile": "node_modules/@emotion/styled/LICENSE",
@@ -189,19 +183,19 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@emotion/stylis/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/unitless@0.8.1": {
+  "@emotion/unitless@0.10.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/unitless",
-    "licenseFile": "node_modules/@emotion/unitless/LICENSE",
+    "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/unitless/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
   "@emotion/unitless@0.9.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/unitless",
-    "licenseFile": "node_modules/@emotion/babel-plugin/node_modules/@emotion/unitless/LICENSE",
+    "licenseFile": "node_modules/@emotion/unitless/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/use-insertion-effect-with-fallbacks@1.0.1": {
+  "@emotion/use-insertion-effect-with-fallbacks@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/use-insertion-effect-with-fallbacks",
     "licenseFile": "node_modules/@emotion/use-insertion-effect-with-fallbacks/LICENSE",
@@ -213,16 +207,10 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@emotion/utils/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/utils@1.2.1": {
-    "licenses": "MIT",
-    "repository": "https://github.com/emotion-js/emotion/tree/main/packages/utils",
-    "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/utils/LICENSE",
-    "copyright": "Copyright (c) Emotion team and other contributors"
-  },
   "@emotion/utils@1.4.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/utils",
-    "licenseFile": "node_modules/@emotion/babel-plugin/node_modules/@emotion/utils/LICENSE",
+    "licenseFile": "node_modules/@emotion/serialize/node_modules/@emotion/utils/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
   "@emotion/weak-memoize@0.2.5": {
@@ -231,7 +219,7 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@emotion/weak-memoize@0.3.1": {
+  "@emotion/weak-memoize@0.4.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/weak-memoize",
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
@@ -265,7 +253,7 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/@fontsource/figtree/LICENSE",
     "copyright": "Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)"
   },
-  "@reduxjs/toolkit@2.2.6": {
+  "@reduxjs/toolkit@2.2.7": {
     "licenses": "MIT",
     "repository": "https://github.com/reduxjs/redux-toolkit",
     "publisher": "Mark Erikson",
@@ -811,7 +799,7 @@ Created on 09-09-2024 at 10:54:40
     "licenseFile": "node_modules/csstype/LICENSE",
     "copyright": "Copyright (c) 2017-2018 Fredrik Nicol"
   },
-  "cypress-real-events@1.12.0": {
+  "cypress-real-events@1.13.0": {
     "licenses": "MIT",
     "repository": "https://github.com/dmtrKovalenko/cypress-real-events",
     "publisher": "Dmitriy Kovalenko",
