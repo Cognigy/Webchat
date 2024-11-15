@@ -6,7 +6,7 @@ import { ConnectedWebchatUI, FromProps } from './ConnectedWebchatUI';
 import { MessagePlugin } from '../../common/interfaces/message-plugin';
 import { sendMessage } from '../store/messages/message-middleware';
 import { MessageSender } from '../../webchat-ui/interfaces';
-import { setHasAcceptedTerms, setOpen, setShowHomeScreen, showChatScreen, toggleOpen } from '../store/ui/ui-reducer';
+import { setHasAcceptedTerms, setOpen, setShowHomeScreen, showChatScreen, toggleOpen, setShowChatOptionsScreen } from '../store/ui/ui-reducer';
 import { loadConfig } from '../store/config/config-middleware';
 import { connect } from '../store/connection/connection-middleware';
 import { EventEmitter } from 'events';
@@ -103,27 +103,51 @@ export class Webchat extends React.PureComponent<WebchatProps> {
         this.store.dispatch(sendMessage({ text, data }, options));
     }
 
-    open = async () => {
-		if (this.store.getState().config.settings.embeddingConfiguration.awaitEndpointConfig) {
-			const timeout = this.store.getState().config.settings.embeddingConfiguration?.connectivity?.enabled && this.store.getState().config.settings.embeddingConfiguration?.connectivity?.timeout || 1000;
-            let timeoutReached = false;
-            let timeoutCounter = 0;
-            while (!this.store.getState().config.isConfigLoaded && !timeoutReached) {
-                await new Promise(f => setTimeout(f, 50));
-                timeoutCounter += 50;
-                if(timeoutCounter >= timeout){
-                    timeoutReached = true;
-                }
-            }
-			if (this.store.getState().config.settings.embeddingConfiguration?.connectivity?.enabled && !isDisabledDueToMaintenance(this.store.getState().config.settings) && !isDisabledOutOfBusinessHours(this.store.getState().config.settings.businessHours) && !isDisabledDueToConnectivity(this.store.getState().config.settings, timeoutReached)) {
-                this.store.dispatch(setOpen(true));
-			} else if (!this.store.getState().config.settings.embeddingConfiguration?.connectivity?.enabled && !isDisabledDueToMaintenance(this.store.getState().config.settings) && !isDisabledOutOfBusinessHours(this.store.getState().config.settings.businessHours)) {
-                this.store.dispatch(setOpen(true));
-            }
-            
-        }else{
-            this.store.dispatch(setOpen(true));
+    // TODO: move the logic to middleware
+  _open = () => {
+      const { settings } = this.store.getState().config;
+      
+      const disableLocalStorage = settings?.embeddingConfiguration?.disableLocalStorage ?? false;
+      const useSessionStorage = settings?.embeddingConfiguration?.useSessionStorage ?? false;
+      const browserStorage = getStorage({ disableLocalStorage, useSessionStorage });
+      const userId = this.client.socketOptions.userId;
+      
+      const homeScreenEnabled = settings?.homeScreen?.enabled === true;
+      const privacyNoticeEnabled = settings?.privacyNotice?.enabled === true;
+      const skipPrivacyNotice = !privacyNoticeEnabled || hasAcceptedTermsInStorage(browserStorage, userId)
+      
+      if (!homeScreenEnabled && skipPrivacyNotice) {
+          this.store.dispatch(setShowHomeScreen(false));
+          this.store.dispatch(setShowChatOptionsScreen(false));
+          this.store.dispatch(showChatScreen());
         }
+        
+      this.store.dispatch(toggleOpen());
+    }
+
+
+    open = async () => {
+      /*
+      * Here was the logic for maintenance and business hours
+      *
+      * We got rid of it for two reasons:
+      * 1. It was broken, as the final else was making the chat open in any case.
+      * 2. If you programatically trigger the chat to open, we asusme you know what you are doing.
+      * 
+      * We always await config from the endpoint.
+      */
+
+        const timeout = this.store.getState().config.settings.embeddingConfiguration?.connectivity?.enabled && this.store.getState().config.settings.embeddingConfiguration?.connectivity?.timeout || 1000;
+        let timeoutReached = false;
+        let timeoutCounter = 0;
+        while (!this.store.getState().config.isConfigLoaded && !timeoutReached) {
+          await new Promise(f => setTimeout(f, 50));
+          timeoutCounter += 50;
+          if (timeoutCounter >= timeout) {
+            timeoutReached = true;
+          }
+        }
+      this._open();
     }
 
     close = () => {
