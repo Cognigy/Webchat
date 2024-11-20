@@ -977,7 +977,7 @@ export class WebchatUI extends React.PureComponent<
 									<div>
 										{
 											// Show the message teaser if there is a last bot message and the webchat is closed
-											lastUnseenMessageText && (
+											lastUnseenMessageText && !open && (
 												<TeaserMessage
 													messageText={lastUnseenMessageText}
 													onClick={this.openConversationFromTeaser}
