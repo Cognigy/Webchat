@@ -12,7 +12,7 @@ import { setOptions } from "../options/options-reducer";
 
 const SWITCH_SESSION = "SWITCH_SESSION";
 export const switchSession = (
-	sessionId?: string,
+	sessionId = (self.crypto as any)?.randomUUID?.(),
 	conversation?: PrevConversationsState[string],
 ) => ({
 	type: SWITCH_SESSION as "SWITCH_SESSION",
@@ -38,7 +38,7 @@ export const createPrevConversationsMiddleware =
 			case "SWITCH_SESSION": {
 				const { sessionId, conversation } = action;
 
-				const targetSession = sessionId || (self.crypto as any)?.randomUUID?.() || "";
+				const targetSession = sessionId || "";
 				const targetConversation = conversation ||
 					store.getState().prevConversations?.[targetSession] || {
 						messages: [],
