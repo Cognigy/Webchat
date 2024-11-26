@@ -9,35 +9,35 @@
 <body>
     <script src="./webchat.js"></script>
     <script>
-            initWebchat('https://endpoint-dev.cognigy.ai/50ea4877c2d4c0aadd1067fb6391bdda4207399f9d813dbf43cd9d3cf1e23e90', {
+            initWebchat('https://endpoint.test/c6ccad04ff39f19ca0e8d3cb4c76488b6b98283bf75a2bdce0977d19314999b7', {
             // userId: "user1",
-            // sessionId: "session1",
-            settings: {
-                layout: {
-                    watermark: "default",
-                    watermarkText: "Some Random Watermark"
-                },
-                unreadMessages: {
-                    enableIndicator: true,
-                    enableBadge: true,  
-                    enablePreview: true,
-                    enableSound: true
-                },
-                teaserMessage:{
-                    showInChat: true,
-                    teaserMessageDelay: 5000,
-                    text: "Hi there!"
-                    },
-                startBehavior: {
-                    getStartedText: ""
-                },
-                widgetSettings: {
-                    enableFocusTrap: true,
-                }
-            },
+            sessionId: "session1",
+            // settings: {
+            //     layout: {
+            //         watermark: "default",
+            //         watermarkText: "Some Random Watermark"
+            //     },
+            //     unreadMessages: {
+            //         enableIndicator: true,
+            //         enableBadge: true,
+            //         enablePreview: true,
+            //         enableSound: true
+            //     },
+            //     teaserMessage:{
+            //         showInChat: true,
+            //         teaserMessageDelay: 5000,
+            //         text: "Hi there!"
+            //         },
+            //     startBehavior: {
+            //         getStartedText: ""
+            //     },
+            //     widgetSettings: {
+            //         enableFocusTrap: true,
+            //     }
+            // },
         }).then(function (webchat) {
             window.cognigyWebchat = webchat;
-            // webchat.open();
+            webchat.open();
 			// webchat.startConversation();
         })
     </script>
