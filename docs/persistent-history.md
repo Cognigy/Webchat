@@ -9,6 +9,12 @@ By default, the Webchat will automatically re-use the `userId`. By manually tell
 // Initialize a sessionId, undefined by default.
 let sessionId;
 
+function storeSessionId(sessionId) {
+  if (window.localStorage) {
+    localStorage.setItem("SESSIONID", sessionId);
+  }
+}
+
 // in case LocalStorage is supported...
 if (window.localStorage) {  
   // try to load a previously stored sessionId from the LocalStorage
@@ -18,7 +24,7 @@ if (window.localStorage) {
   // generate one and store it into LocalStorage
   if (!sessionId) {
     sessionId = "session-" + Date.now() * Math.random();
-    localStorage.setItem("SESSIONID", sessionId);
+    storeSessionId(sessionId);
   }
 }
 
@@ -27,6 +33,13 @@ initWebchat("...", {
   sessionId
 }).then(webchat => {
   webchat.open();
+  // If the Previous Conversations feature is enabled, it is possible for the sessionsId to be changed.
+  // For this scenario, we should subscribe to the analytics event `switch-session` and update the LocalStorage
+  webchat.registerAnalyticsService(event => {
+    if (event.type === "webchat/switch-session") {
+      storeSessionId(event.payload);
+    }
+});
 });
 ```
 

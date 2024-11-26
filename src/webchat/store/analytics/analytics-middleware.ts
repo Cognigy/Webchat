@@ -5,8 +5,9 @@ import { SetOpenAction, ToggleOpenAction } from "../ui/ui-reducer";
 import { SendMessageAction } from "../messages/message-middleware";
 import { ReceiveMessageAction } from "../messages/message-handler";
 import { Webchat } from "../../components/Webchat";
+import { SwitchSessionAction } from "../previous-conversations/previous-conversations-middleware";
 
-type AnalyticsAction = SetOpenAction | ToggleOpenAction | SendMessageAction | ReceiveMessageAction;
+type AnalyticsAction = SetOpenAction | ToggleOpenAction | SendMessageAction | ReceiveMessageAction | SwitchSessionAction;
 
 // creates an analytics middleware that emits events on the client
 export const createAnalyticsMiddleware = (webchat: Webchat): Middleware<object, StoreState> => store => next => (action: AnalyticsAction) => {
@@ -26,6 +27,10 @@ export const createAnalyticsMiddleware = (webchat: Webchat): Middleware<object, 
                 webchat.emitAnalytics('webchat/incoming-message', action.message);
             }
             break;
+        }
+
+        case 'SWITCH_SESSION': {
+            webchat.emitAnalytics('webchat/switch-session', action.sessionId);
         }
     }
 

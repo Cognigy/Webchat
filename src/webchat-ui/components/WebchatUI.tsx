@@ -296,7 +296,7 @@ export class WebchatUI extends React.PureComponent<
 		const overrideUserMessageBorderColor = sourceColorMapping?.user === "bot" ? state.theme.black80 : null;
 		const overrideAgentMessageBorderColor = sourceColorMapping?.agent === "user" ? "transparent" : null;
 
-		const botMessageColor = overrideBotMessageColor || props?.config?.settings?.colors?.botMessageColor;		
+		const botMessageColor = overrideBotMessageColor || props?.config?.settings?.colors?.botMessageColor;
 		const userMessageColor = overrideUserMessageColor || props?.config?.settings?.colors?.userMessageColor;
 
 		const textLinkColor = props?.config?.settings?.colors?.textLinkColor;
@@ -435,13 +435,13 @@ export class WebchatUI extends React.PureComponent<
 		if (prevProps.ttsActive !== this.props.ttsActive ||
 			prevProps.inputPlugins !== this.props.inputPlugins ||
 			prevProps.messagePlugins !== this.props.messagePlugins) {
-			
+
 			const defaultMessagePlugins: MessagePlugin[] = [];
 			if (this.props.ttsActive) {
 				defaultMessagePlugins.push(speechOutput);
 			}
 
-			
+
 			this.setState({
 				inputPlugins: [...(this.props.inputPlugins || []), baseInputPlugin],
 				messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins]
@@ -767,6 +767,7 @@ export class WebchatUI extends React.PureComponent<
 		}
 	};
 
+	// TODO: move the logic to middleware
 	handleStartConversation = () => {
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
@@ -777,6 +778,7 @@ export class WebchatUI extends React.PureComponent<
 		}
 	};
 
+	// TODO: move the logic to middleware
 	handleFabClick = () => {
 		this.props.onToggle();
 
@@ -788,6 +790,7 @@ export class WebchatUI extends React.PureComponent<
 		}
 	}
 
+	// TODO: move the logic to middleware
 	openConversationFromTeaser = () => {
 		this.props.onToggle();
 		this.props.onSetShowHomeScreen(false);
@@ -974,7 +977,7 @@ export class WebchatUI extends React.PureComponent<
 									<div>
 										{
 											// Show the message teaser if there is a last bot message and the webchat is closed
-											lastUnseenMessageText && (
+											lastUnseenMessageText && !open && (
 												<TeaserMessage
 													messageText={lastUnseenMessageText}
 													onClick={this.openConversationFromTeaser}
@@ -1380,7 +1383,7 @@ export class WebchatUI extends React.PureComponent<
 
 		const isEnded = isConversationEnded(messages);
 
-		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log). 
+		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log).
 		// If we do not remove, it will cause the collatation of the first user message.
 		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
 
