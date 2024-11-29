@@ -30,10 +30,9 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-input-menu-form*
 * *webchat-input-button-menu*
 * *webchat-input-message-input*
+* *webchat-input-button-add-attachments*
+* *webchat-input-drag-and-drop-file-text*
 * *webchat-input-button-send*
-* *webchat-input-persistent-menu*
-* *webchat-input-persistent-menu-title*
-* *webchat-input-persistent-menu-item*
 * *webchat-toggle-button*
 * *webchat-unread-message-preview*
 * *webchat-unread-message-badge*
@@ -286,6 +285,7 @@ Careful to modify the height here since it will influence the input menu
    background: rgb(5, 5, 131);
 }
 ```
+
 * *webchat-input-menu-form*  
 The form that will take care of submit the message, you can modify the borders for example.
 ```CSS
@@ -294,6 +294,7 @@ The form that will take care of submit the message, you can modify the borders f
     border-bottom-color: rgb(5, 5, 131);
 }
 ```
+
 * *webchat-input-button-menu*  
 The sandwich menu to open the input menu, you can not change the icon but you can customize the position, size and background.
 ```CSS
@@ -303,6 +304,7 @@ The sandwich menu to open the input menu, you can not change the icon but you ca
     background-color: white;
 }
 ```
+
 * *webchat-input-message-input*  
 The text input where you can write your messages, you can change how the font looks like.
 ```CSS
@@ -311,6 +313,7 @@ The text input where you can write your messages, you can change how the font lo
    color: white;
 }
 ```
+
 * *webchat-input-button-send*  
 The button to send the message, you can not change the icon but you can customize the position, size and background.
 ```CSS
@@ -321,6 +324,7 @@ The button to send the message, you can not change the icon but you can customiz
     
 }
 ```
+
 * *webchat-input-button-add-attachments*  
 The button to open the file attachment section, you can not change the icon but you can customize the position, size and background.
 ```CSS
@@ -330,15 +334,7 @@ The button to open the file attachment section, you can not change the icon but 
     background-color: white;
 }
 ```
-* *webchat-input-button-browse-files*  
-The button to select a file attacment.
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-browse-files {
-   
-    border-radius: 20px;
-    background-color: white;
-}
-```
+
 * *webchat-input-drag-and-drop-file-text*  
 The text for drag and drop file upload, you can modify the font.
 ```CSS
@@ -348,34 +344,7 @@ The text for drag and drop file upload, you can modify the font.
      
 }
 ```
-* *webchat-input-persistent-menu*  
-This is the persistent input menu, you can change its color. It also contains the menu title and menu items components.
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-persistent-menu {
 
-    background: white;
-
-}
-```
-* *webchat-input-persistent-menu-title*  
-The text title from the persistent input menu, you can modify the font.
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-persistent-menu-title {
- 
-     color: white;
-     
-}
-```
-* *webchat-input-persistent-menu-item*  
-The persistent input menu items, where you can modify it borders, and fonts for example.
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-persistent-menu-item {
-   
-   border-color: white;
-   color:white;
-   
-}
-```
 * *webchat-toggle-button*  
 This is the button to open the Webchat, if you want to modify its color you have to set the "background-image" to none.
 ```CSS
@@ -870,6 +839,18 @@ The media element can be of three forms: Image, Video or Audio. You can modify i
 
 [data-cognigy-webchat-root] .webchat-media-template-audio {
 }
+
+[data-cognigy-webchat-root] .webchat-media-template-file {
+}
+
+/* Add styles for the container containing group of file attachments */
+[data-cognigy-webchat-root] .webchat-media-template-files-container {
+}
+
+/* Add styles for the container containing group of image attachments */
+[data-cognigy-webchat-root] .webchat-media-template-image-container {
+}
+
 ```
 
 ### List
