@@ -1,4 +1,4 @@
-Created on 29-11-2024 at 17:23:08
+Created on 03-12-2024 at 11:31:19
 
 {
   "@babel/code-frame@7.24.2": {
@@ -63,7 +63,7 @@ Created on 29-11-2024 at 17:23:08
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.36.0": {
+  "@cognigy/chat-components@0.36.1": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -75,7 +75,7 @@ Created on 29-11-2024 at 17:23:08
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.8.0": {
+  "@cognigy/webchat@3.8.1": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
