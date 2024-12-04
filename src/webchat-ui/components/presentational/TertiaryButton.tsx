@@ -3,9 +3,11 @@ import ArrowIcon from '../../assets/arrow-back-16px.svg';
 import styled from '@emotion/styled';
 import Button from './Button';
 import { Typography } from '@cognigy/chat-components';
+import classNames from 'classnames';
 
 interface TertiaryButtonProps {
 	onClick: () => void;
+	className?: string;
 }
 
 const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
@@ -58,9 +60,9 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 	},
 }));
 
-const TertiaryButton: React.FC<TertiaryButtonProps> = ({ children, onClick }) => {
+const TertiaryButton: React.FC<TertiaryButtonProps> = ({ children, className, onClick }) => {
 	return (
-		<TertiaryButtonWrapper className="tertiary-button" onClick={onClick}>
+		<TertiaryButtonWrapper className={classNames("tertiary-button", className)}  onClick={onClick}>
 			<Typography variant="cta-semibold" >{children}</Typography>
 			<ArrowIcon />
 		</TertiaryButtonWrapper>
