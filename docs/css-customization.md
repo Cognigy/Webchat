@@ -42,6 +42,11 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-teaser-message-header-logo*
 * *webchat-teaser-message-button-container*
 * *webchat-teaser-message-button*
+* *webchat-privacy-notice-root*
+* *webchat-privacy-notice-message*
+* *webchat-privacy-notice-actions*
+* *webchat-privacy-notice-accept-button*
+* *webchat-privacy-policy-link*
 * *webchat-homescreen-root*
 * *webchat-homescreen-content*
 * *webchat-homescreen-header*

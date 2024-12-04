@@ -21,12 +21,12 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 const PrivacyMessage = styled.div(() => ({
 }));
 
-const PrivacyActions = styled.div(() => ({
+const PrivacyActions = styled.div({
 	display: "flex",
 	alignItems: "center",
 	flexDirection: "column",
 	gap: 16,
-}));
+});
 
 const AcceptButton = styled(PrimaryButton)(() => ({
 	width: 303,
@@ -72,7 +72,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				>
 					{submitButtonText}
 				</AcceptButton>
-				<PolicyButton onClick={handleLinkClick}>
+				<PolicyButton onClick={handleLinkClick} className="webchat-privacy-policy-link">
 					{urlText || "Privacy policy"}
 				</PolicyButton>
 			</PrivacyActions>
