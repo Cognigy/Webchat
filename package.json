@@ -37,7 +37,7 @@
 		"@emotion/styled": "^11.13.0",
 		"@reduxjs/toolkit": "^2.2.7",
 		"@types/react-transition-group": "4.4.10",
-		"axios": "1.7.4",
+		"axios": "1.7.7",
 		"classnames": "2.5.1",
 		"cypress-real-events": "^1.13.0",
 		"dompurify": "2.5.6",
