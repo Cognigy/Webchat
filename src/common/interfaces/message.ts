@@ -5,7 +5,7 @@ export interface IBaseMessage {
 	hasReply?: boolean;
 	prevMessage?: IMessage;
 	source: string;
-	text?: string;
+	text?: string | string[];
 	timestamp?: number;
 }
 
@@ -25,6 +25,11 @@ export interface IAgentMessage extends IBaseMessage {
 
 export interface IEngagementMessage extends IBaseMessage {
 	source: "engagement";
+	traceId: string;
+}
+
+export interface IStreamingMessage extends IBaseMessage {
+	source: "bot";
 	traceId: string;
 }
 

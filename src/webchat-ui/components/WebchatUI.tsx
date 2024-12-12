@@ -1378,7 +1378,12 @@ export class WebchatUI extends React.PureComponent<
 		} = this.props;
 		const { messagePlugins = [] } = this.state;
 
-		const { enableTypingIndicator, messageDelay, enableAIAgentNotice, AIAgentNoticeText } = config.settings.behavior;
+		const {
+			enableTypingIndicator,
+			messageDelay,
+			enableAIAgentNotice,
+			AIAgentNoticeText
+		} = config.settings.behavior;
 		const isTyping = typingIndicator !== "remove" && typingIndicator !== "hide";
 
 		const isEnded = isConversationEnded(messages);

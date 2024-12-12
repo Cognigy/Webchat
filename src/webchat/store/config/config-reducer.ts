@@ -43,6 +43,7 @@ export const getInitialState = (): ConfigState => ({
 			textLinkColor: "",
 		},
 		behavior: {
+			streamingMode: false,
 			enableTypingIndicator: true,
 			messageDelay: 500,
 			inputPlaceholder: "Type something here…",

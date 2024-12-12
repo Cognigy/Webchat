@@ -1,4 +1,3 @@
-import { Reducer } from "redux";
 import { IMessage } from '../../../common/interfaces/message';
 import { IMessageEvent } from "../../../common/interfaces/event";
 
@@ -19,15 +18,84 @@ export const addMessageEvent = (event: IMessageEvent) => ({
 });
 export type AddMessageEventAction = ReturnType<typeof addMessageEvent>;
 
-export const messages: Reducer<MessageState, AddMessageAction | AddMessageEventAction> = (state = [], action) => {
-    switch (action.type) {
-        case 'ADD_MESSAGE_EVENT': {
-            return [...state, action.event];
-        }
-        case 'ADD_MESSAGE': {
-            return [...state, action.message];
-        }
-    }
-
-    return state;
+interface CognigyData {
+	_messageId?: string;
 }
+
+// Helper to check if message has a message ID
+const hasMessageId = (message: IMessage) => {
+	return (message.data?._cognigy as CognigyData)?._messageId;
+};
+
+// Helper to get message ID from message
+const getMessageId = (message: IMessage) => {
+	return (message.data?._cognigy as CognigyData)?._messageId;
+};
+
+// slice of the store state that contains the info about streaming mode, to avoid circular dependency
+type ConfigState = {
+	settings?: {
+		behavior?: {
+			streamingMode?: boolean;
+		};
+	};
+};
+
+export const createMessageReducer = (getState: () => { config: ConfigState }) => {
+	return (state: MessageState = [], action: AddMessageAction | AddMessageEventAction) => {
+		switch (action.type) {
+			case 'ADD_MESSAGE_EVENT': {
+				return [...state, action.event];
+			}
+			case 'ADD_MESSAGE': {
+				const newMessage = action.message;
+
+				const isStreamingEnabled = getState().config?.settings?.behavior?.streamingMode;
+
+				// If message has no input ID, add it normally
+				if (!isStreamingEnabled || !hasMessageId(newMessage)) {
+					return [...state, newMessage];
+				}
+
+				const newMessageId = getMessageId(newMessage);
+
+				// Find existing message with same ID
+				const lastMatchingIndex = state.findIndex(msg => {
+					if ('text' in msg) {
+						return hasMessageId(msg as IMessage) && getMessageId(msg as IMessage) === newMessageId;
+					}
+					return false;
+				});
+
+				// If no matching message, create new with array
+				if (lastMatchingIndex === -1) {
+					return [...state, {
+						...newMessage,
+						text: [newMessage.text as string]
+					}];
+				}
+
+				// Get existing message
+				const existingMessage = state[lastMatchingIndex] as IMessage;
+				const newState = [...state];
+
+				// Convert existing text to array if needed
+				const existingText = Array.isArray(existingMessage.text)
+					? existingMessage.text
+					: [existingMessage.text];
+
+				// Append new chunk
+				newState[lastMatchingIndex] = {
+					...existingMessage,
+					text: [...existingText, newMessage.text as string]
+				} as IMessage;
+
+				return newState;
+			}
+			default:
+				return state;
+		}
+
+
+	}
+};
