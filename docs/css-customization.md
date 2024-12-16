@@ -733,6 +733,14 @@ This is the style of the single Quick Reply element, all of them will be modifie
 }
 
 ```
+* *webchat-template-button-image*  
+This class modifies the style of the images inside the quick reply buttons. The default border-top-leftr-radius and border-bottom-left-radius of the images inside the button is 19px. You can override that with the help of this class.
+```CSS
+[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-template-button-image {
+    background-color: black;
+    border-radius: 10px;
+}
+```
 
 ### Buttons
 
