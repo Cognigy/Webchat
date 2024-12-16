@@ -82,7 +82,7 @@
   margin: 0;
 }
 
-[data-cognigy-webchat-root] button, [data-cognigy-webchat-root] input {
+[data-cognigy-webchat-root] input {
   overflow: visible;
 }
 
