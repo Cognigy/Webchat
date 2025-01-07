@@ -284,6 +284,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 					id="cognigyHomeScreenBranding"
 					watermark={config?.settings?.layout?.watermark}
 					watermarkText={config?.settings?.layout?.watermarkText}
+					watermarkUrl={config?.settings?.layout?.watermarkUrl}
 				/>
 			</HomeScreenActions>
 		</HomeScreenRoot>
