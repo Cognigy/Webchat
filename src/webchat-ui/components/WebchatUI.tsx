@@ -742,6 +742,26 @@ export class WebchatUI extends React.PureComponent<
 				options,
 			});
 		} else {
+			this.props.onSwitchSession();
+			this.props.onSendMessage(text, data, options);
+		}
+	};
+
+	handleSendActionButtonMessageExistingSession = (
+		text?: string,
+		data?: any,
+		options?: Partial<ISendMessageOptions>,
+	) => {
+		this.props.onSetShowHomeScreen(false);
+		this.props.onSetShowChatOptionsScreen(false);
+
+		if (this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms) {
+			this.props.onSetStoredMessage({
+				text,
+				data,
+				options,
+			});
+		} else {
 			this.props.onSendMessage(text, data, options);
 		}
 	};
@@ -1204,7 +1224,7 @@ export class WebchatUI extends React.PureComponent<
 						hasGivenRating={this.props.hasGivenRating}
 						onSendRating={this.handleSendRating}
 						onEmitAnalytics={onEmitAnalytics}
-						onSendActionButtonMessage={this.handleSendActionButtonMessage}
+						onSendActionButtonMessage={this.handleSendActionButtonMessageExistingSession}
 					/>
 				);
 
