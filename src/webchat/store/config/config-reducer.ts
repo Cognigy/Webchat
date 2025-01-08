@@ -33,6 +33,9 @@ export const getInitialState = (): ConfigState => ({
 			disableUrlButtonSanitization: false,
 			watermark: "default",
 			watermarkText: "Powered by Cognigy.AI",
+			disableBotOutputBorder: false,
+			botOutputMaxWidthPercentage: 73,
+			chatWindowWidth: 460,
 		},
 		colors: {
 			primaryColor: "",

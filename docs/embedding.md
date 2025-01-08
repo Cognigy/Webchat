@@ -108,7 +108,7 @@ See it in action:
 | watermark | string | `"default"` | Allowed values: `"default" \| "custom" \| "none"` |
 | watermarkText | string | `"Powered by Cognigy.AI"` | This will be used if watermark is set to custom |
 | disableBotOutputBorder | boolean | `false` | Enabling this will hide the chat bubble around AI Agent Messages |
-| botOutputMaxWidth | number | `73` | Use to set a number that will be used as a percentage value for the max-width of AI Agent Messages |
+| botOutputMaxWidthPercentage | number | `73` | Use to set a number that will be used as a percentage value for the max-width of AI Agent Messages |
 | chatWindowWidth | number | `460` | Configure the width of the Webchat in px |
 
 #### Colors

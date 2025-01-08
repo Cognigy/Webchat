@@ -140,7 +140,7 @@ export interface IWebchatSettings {
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
 		disableBotOutputBorder: boolean;
-		botOutputMaxWidth: number;
+		botOutputMaxWidthPercentage: number;
 		chatWindowWidth: number;
 	};
 	colors: {
