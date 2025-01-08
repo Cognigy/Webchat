@@ -960,7 +960,7 @@ export class WebchatUI extends React.PureComponent<
 											className="webchat"
 											id="webchatWindow"
 											ref={this.webchatWindowRef}
-										chatWindowWidth={this.props.config.settings.layout.chatWindowWidth}
+											chatWindowWidth={this.props.config.settings.layout.chatWindowWidth}
 										>
 											{!fullscreenMessage
 												? this.renderRegularLayout(isInforming)
