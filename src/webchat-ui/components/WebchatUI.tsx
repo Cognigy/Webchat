@@ -742,7 +742,6 @@ export class WebchatUI extends React.PureComponent<
 				options,
 			});
 		} else {
-			this.props.onSwitchSession();
 			this.props.onSendMessage(text, data, options);
 		}
 	};
