@@ -139,6 +139,7 @@ export interface IWebchatSettings {
 		disableUrlButtonSanitization: boolean;
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
+		watermarkUrl: string;
 	};
 	colors: {
 		primaryColor: string;

@@ -107,6 +107,7 @@ See it in action:
 | disableUrlButtonSanitization | boolean | `false` | By default, 'JavaScript URLs' starting with javascript: will get removed. |
 | watermark | string | `"default"` | Allowed values: `"default" \| "custom" \| "none"` |
 | watermarkText | string | `"Powered by Cognigy.AI"` | This will be used if watermark is set to custom |
+| watermarkUrl | string | `""` | URL to which the watermark links if a custom watermark is set. | 
 
 #### Colors
 | Name | Type | Default | Description |
@@ -374,6 +375,7 @@ interface IWebchatSettings {
 		disableUrlButtonSanitization: boolean;
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
+		watermarkUrl: string;
 	};
 	colors: {
 		primaryColor: string;

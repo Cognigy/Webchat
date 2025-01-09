@@ -119,6 +119,7 @@ const InputPluginRenderer = ({ messages, config, onSendMessage, plugins, inputMo
 			<Branding
 				watermark={config.settings.layout.watermark}
 				watermarkText={config.settings.layout.watermarkText}
+                watermarkUrl={config.settings.layout.watermarkUrl}
 			/>
         </InputRoot>
     )

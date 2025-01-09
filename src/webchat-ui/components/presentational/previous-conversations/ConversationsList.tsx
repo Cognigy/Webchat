@@ -129,6 +129,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 					id="cognigyConversationListBranding"
 					watermark={config?.settings?.layout?.watermark}
 					watermarkText={config?.settings?.layout?.watermarkText}
+					watermarkUrl={config?.settings?.layout?.watermarkUrl}
 				/>
 			</ConversationsListActions>
 		</ConversationsListRoot>
