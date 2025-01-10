@@ -42,6 +42,11 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-teaser-message-header-logo*
 * *webchat-teaser-message-button-container*
 * *webchat-teaser-message-button*
+* *webchat-privacy-notice-root*
+* *webchat-privacy-notice-message*
+* *webchat-privacy-notice-actions*
+* *webchat-privacy-notice-accept-button*
+* *webchat-privacy-policy-link*
 * *webchat-homescreen-root*
 * *webchat-homescreen-content*
 * *webchat-homescreen-header*
@@ -425,6 +430,63 @@ This is the button that is displayed below the teaser message bubble and inside 
 }
 ```
 
+* *webchat-privacy-notice-root*  
+The root container for the privacy screen of the webchat.
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-notice-root {
+    border-radius: 20px;
+    border: 2px solid rgb(5, 5, 131);
+    padding: 20px;
+}
+```
+
+* *webchat-privacy-notice-message*  
+The root container for the privacy screen of the webchat.
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-notice-message {
+    background-color: rgb(227, 227, 251);
+}
+```
+
+To change the font-family of the privacy notice text, you need to target the *p* tag inside *webchat-privacy-notice-message* like the following
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-notice-message p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+* *webchat-privacy-notice-actions*  
+The container for the action items of the privacy screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-notice-actions {
+    background-color: rgb(227, 227, 251);
+    padding: 20px;
+}
+```
+
+* *webchat-privacy-notice-accept-button*  
+The privacy submit button in the privacy screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-notice-accept-button {
+    background-color: rgb(5, 5, 131);
+}
+```
+
+* *webchat-privacy-policy-link*
+The privacy policy link in the privacy screen.
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-policy-link {
+   color: rgb(227, 227, 251);
+}
+```
+
+To change the font-family of the privacy policy link text, you need to target the *p* tag inside *webchat-privacy-policy-link* like the following
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-policy-link p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
 * *webchat-homescreen-root*  
 The root container for the homescreen of the webchat.
 ```CSS
@@ -732,6 +794,14 @@ This is the style of the single Quick Reply element, all of them will be modifie
     color: #2d334a;
 }
 
+```
+* *webchat-template-button-image*  
+This class modifies the style of the images inside the quick reply buttons. The default border-top-left-radius and border-bottom-left-radius of the images inside the button is 19px. You can override that with the help of this class.
+```CSS
+[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-template-button-image {
+    background-color: black;
+    border-radius: 10px;
+}
 ```
 
 ### Buttons
