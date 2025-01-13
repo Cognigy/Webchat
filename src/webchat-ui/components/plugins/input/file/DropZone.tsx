@@ -86,6 +86,7 @@ const DropZone: FC<IDropZoneProps> = props => {
 					id="cognigyDropZoneLogo"
 					watermark={layoutSettings?.watermark}
 					watermarkText={layoutSettings?.watermarkText}
+					watermarkUrl={layoutSettings?.watermarkUrl}
 				/>
 			</DropZoneRoot>
 			<DropZoneContainer
