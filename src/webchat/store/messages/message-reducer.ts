@@ -5,27 +5,22 @@ export type MessageState = (IMessage | IMessageEvent)[]
 
 const ADD_MESSAGE = 'ADD_MESSAGE'
 export const addMessage = (message: IMessage, unseen?: boolean) => ({
-    type: ADD_MESSAGE as 'ADD_MESSAGE',
-    message,
-    unseen
+	type: ADD_MESSAGE as 'ADD_MESSAGE',
+	message,
+	unseen
 });
 export type AddMessageAction = ReturnType<typeof addMessage>;
 
 const ADD_MESSAGE_EVENT = 'ADD_MESSAGE_EVENT'
 export const addMessageEvent = (event: IMessageEvent) => ({
-    type: ADD_MESSAGE_EVENT as 'ADD_MESSAGE_EVENT',
-    event
+	type: ADD_MESSAGE_EVENT as 'ADD_MESSAGE_EVENT',
+	event
 });
 export type AddMessageEventAction = ReturnType<typeof addMessageEvent>;
 
 interface CognigyData {
 	_messageId?: string;
 }
-
-// Helper to check if message has a message ID
-const hasMessageId = (message: IMessage) => {
-	return (message.data?._cognigy as CognigyData)?._messageId;
-};
 
 // Helper to get message ID from message
 const getMessageId = (message: IMessage) => {
@@ -53,7 +48,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				const isStreamingEnabled = getState().config?.settings?.behavior?.streamingMode;
 
 				// If message has no input ID, add it normally
-				if (!isStreamingEnabled || !hasMessageId(newMessage)) {
+				if (!isStreamingEnabled || !getMessageId(newMessage)) {
 					return [...state, newMessage];
 				}
 
@@ -62,7 +57,10 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				// Find existing message with same ID
 				const lastMatchingIndex = state.findIndex(msg => {
 					if ('text' in msg) {
-						return hasMessageId(msg as IMessage) && getMessageId(msg as IMessage) === newMessageId;
+						const msgId = getMessageId(msg as IMessage);
+						if (msgId) {
+							return msgId === newMessageId;
+						}
 					}
 					return false;
 				});
@@ -71,7 +69,9 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				if (lastMatchingIndex === -1) {
 					return [...state, {
 						...newMessage,
-						text: [newMessage.text as string]
+						text: [newMessage.text as string],
+						shouldAnimate: true,
+						id: newMessageId,
 					}];
 				}
 
@@ -95,7 +95,5 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 			default:
 				return state;
 		}
-
-
 	}
 };

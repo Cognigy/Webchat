@@ -1431,7 +1431,7 @@ export class WebchatUI extends React.PureComponent<
 
 					return (
 						<Message
-							key={JSON.stringify({ message, index })}
+							key={message.id || JSON.stringify({ message, index })}
 							message={message}
 							action={this.sendMessage}
 							config={config}

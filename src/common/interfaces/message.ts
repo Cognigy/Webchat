@@ -31,6 +31,8 @@ export interface IEngagementMessage extends IBaseMessage {
 export interface IStreamingMessage extends IBaseMessage {
 	source: "bot";
 	traceId: string;
+	shouldAnimate?: boolean;
+	id?: string;
 }
 
-export type IMessage = IUserMessage | IBotMessage | IAgentMessage | IEngagementMessage;
+export type IMessage = IUserMessage | IBotMessage | IAgentMessage | IEngagementMessage | IStreamingMessage;
