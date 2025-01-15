@@ -105,14 +105,16 @@ export class ChatScroller extends React.Component<InnerProps, IState> {
 
     // Add outline to the parent element when Chat log receives focus
     handleFocus = () => {
-        if(this.innerRef.current === document.activeElement) {
+		if (this.innerRef.current === document.activeElement && !this.state.isChatLogFocused) {
             this.setState({isChatLogFocused: true});
         }
     }
 
     // Remove outline from the parent element when Chat log loses focus 
     handleBlur = () => {
-        this.setState({isChatLogFocused: false})
+		if (this.state.isChatLogFocused) {
+			this.setState({ isChatLogFocused: false })
+		}
     }
 
     render() {
