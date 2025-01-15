@@ -1,5 +1,5 @@
 import React from "react";
-import { IMessage } from "../../common/interfaces/message";
+import { IMessage, IStreamingMessage } from "../../common/interfaces/message";
 import Header from "./presentational/Header";
 import { CacheProvider, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -144,6 +144,8 @@ export interface WebchatUIProps {
 	openXAppOverlay: (message: string | undefined) => void;
 	options?: Partial<Options>;
 	ttsActive: boolean;
+
+	onSetMessageAnimated?: (messageId: string, animationState: IStreamingMessage["animationState"]) => void;
 }
 
 interface WebchatUIState {
@@ -871,6 +873,7 @@ export class WebchatUI extends React.PureComponent<
 			onSetDropZoneVisible,
 			isXAppOverlayOpen,
 			openXAppOverlay,
+			onSetMessageAnimated,
 			...restProps
 		} = props;
 		const { theme, hadConnection, lastUnseenMessageText, wasOpen } = state;
@@ -1383,6 +1386,7 @@ export class WebchatUI extends React.PureComponent<
 				onEmitAnalytics={onEmitAnalytics}
 				action={this.sendMessage}
 				theme={this.state.theme}
+				onSetMessageAnimated={this.props.onSetMessageAnimated}
 			/>
 		);
 	}
@@ -1444,6 +1448,7 @@ export class WebchatUI extends React.PureComponent<
 							plugins={messagePlugins}
 							prevMessage={messagesExcludingPrivacyMessage?.[index - 1]}
 							theme={this.state.theme}
+							onSetMessageAnimated={this.props.onSetMessageAnimated}
 						/>
 					);
 				})}

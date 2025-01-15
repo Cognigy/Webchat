@@ -1,4 +1,4 @@
-import { IMessage } from '../../../common/interfaces/message';
+import { IMessage, IStreamingMessage } from '../../../common/interfaces/message';
 import { IMessageEvent } from "../../../common/interfaces/event";
 
 export type MessageState = (IMessage | IMessageEvent)[]
@@ -18,6 +18,14 @@ export const addMessageEvent = (event: IMessageEvent) => ({
 });
 export type AddMessageEventAction = ReturnType<typeof addMessageEvent>;
 
+const SET_MESSAGE_ANIMATED = 'SET_MESSAGE_ANIMATED'
+export const setMessageAnimated = (messageId: string, animationState: IStreamingMessage["animationState"]) => ({
+	type: SET_MESSAGE_ANIMATED as 'SET_MESSAGE_ANIMATED',
+	messageId,
+	animationState
+});
+export type SetMessageAnimatedAction = ReturnType<typeof setMessageAnimated>;
+
 interface CognigyData {
 	_messageId?: string;
 }
@@ -36,8 +44,12 @@ type ConfigState = {
 	};
 };
 
+function generateRandomId(): string {
+	return String(Math.random()).slice(2, 18);
+}
+
 export const createMessageReducer = (getState: () => { config: ConfigState }) => {
-	return (state: MessageState = [], action: AddMessageAction | AddMessageEventAction) => {
+	return (state: MessageState = [], action: AddMessageAction | AddMessageEventAction | SetMessageAnimatedAction) => {
 		switch (action.type) {
 			case 'ADD_MESSAGE_EVENT': {
 				return [...state, action.event];
@@ -47,15 +59,27 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				const isStreamingEnabled = getState().config?.settings?.behavior?.streamingMode;
 
-				// If message has no input ID, add it normally
-				if (!isStreamingEnabled || !getMessageId(newMessage)) {
+				if (!isStreamingEnabled || (newMessage.source !== "bot" && newMessage.source !== "engagement")) {
 					return [...state, newMessage];
 				}
 
-				const newMessageId = getMessageId(newMessage);
+				// If message doesn't have text, still add an ID and animationState for enabling the animation
+				if (!newMessage.text) {
+					return [...state, {
+						...newMessage,
+						id: generateRandomId(),
+						animationState: "start",
+					}];
+				}
+
+				let newMessageId = getMessageId(newMessage);
+
+				if (!newMessageId) {
+					newMessageId = generateRandomId();
+				}
 
 				// Find existing message with same ID
-				const lastMatchingIndex = state.findIndex(msg => {
+				const messageIndex = state.findIndex(msg => {
 					if ('text' in msg) {
 						const msgId = getMessageId(msg as IMessage);
 						if (msgId) {
@@ -66,17 +90,17 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				});
 
 				// If no matching message, create new with array
-				if (lastMatchingIndex === -1) {
+				if (messageIndex === -1) {
 					return [...state, {
 						...newMessage,
 						text: [newMessage.text as string],
-						shouldAnimate: true,
 						id: newMessageId,
+						animationState: "start",
 					}];
 				}
 
 				// Get existing message
-				const existingMessage = state[lastMatchingIndex] as IMessage;
+				const existingMessage = state[messageIndex] as IStreamingMessage;
 				const newState = [...state];
 
 				// Convert existing text to array if needed
@@ -84,13 +108,27 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					? existingMessage.text
 					: [existingMessage.text];
 
+				let nextAnimationState: IStreamingMessage["animationState"] = "start";
+				if (existingMessage.animationState === "exited") {
+					nextAnimationState = "exited";
+				}
+
 				// Append new chunk
-				newState[lastMatchingIndex] = {
+				newState[messageIndex] = {
 					...existingMessage,
-					text: [...existingText, newMessage.text as string]
+					text: [...existingText, newMessage.text as string],
+					animationState: nextAnimationState,
 				} as IMessage;
 
 				return newState;
+			}
+			case 'SET_MESSAGE_ANIMATED': {
+				return state.map(message => {
+					if ('id' in message && message.id === action.messageId) {
+						return { ...message, animationState: action.animationState };
+					}
+					return message;
+				});
 			}
 			default:
 				return state;

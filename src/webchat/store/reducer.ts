@@ -72,10 +72,16 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 
 		case "SET_PREV_STATE": {
 			const { showRatingScreen, ...rating } = action.state.rating;
+			const messages = action.state.messages.map((message) => {
+				if (message.animationState) {
+					message.animationState = "done";
+				}
+				return message;
+			})
 			return rootReducer(
 				{
 					...state,
-					messages: [...action.state.messages],
+					messages: [...messages],
 					rating: { showRatingScreen: false, ...rating },
 				},
 				{ type: "" },

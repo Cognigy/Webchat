@@ -10,9 +10,11 @@ import { switchSession } from "../store/previous-conversations/previous-conversa
 import { PrevConversationsState } from "../store/previous-conversations/previous-conversations-reducer";
 import { IFile, setDropZoneVisible, setFileList, setFileUploadError } from "../store/input/input-reducer";
 import { openOverlay } from "../store/xapp-overlay/slice";
+import { IStreamingMessage } from "../../common/interfaces/message";
+import { setMessageAnimated } from "../store/messages/message-reducer";
 
 type FromState = Pick<WebchatUIProps, 'messages' | 'unseenMessages' | 'prevConversations' | 'open' | 'typingIndicator' | 'inputMode' | 'fullscreenMessage' | 'config' | 'connected' | 'reconnectionLimit' | 'scrollToPosition'| 'lastScrolledPosition'>;
-type FromDispatch = Pick<WebchatUIProps, 'onSendMessage' | 'onSetInputMode' | 'onSetFullscreenMessage' | 'onDismissFullscreenMessage' | 'onClose' | 'onToggle' | 'onSetScrollToPosition' | 'onSetLastScrolledPosition' | 'onTriggerEngagementMessage'>;
+type FromDispatch = Pick<WebchatUIProps, 'onSendMessage' | 'onSetInputMode' | 'onSetFullscreenMessage' | 'onDismissFullscreenMessage' | 'onClose' | 'onToggle' | 'onSetScrollToPosition' | 'onSetLastScrolledPosition' | 'onTriggerEngagementMessage' | 'onSetMessageAnimated'>;
 export type FromProps = Pick<WebchatUIProps, 'messagePlugins' | 'inputPlugins' | 'webchatRootProps' | 'webchatToggleProps' | 'options'>;
 type Merge = FromState & FromDispatch & FromProps & Pick<WebchatUIProps, 'fullscreenMessage'>;
 
@@ -87,6 +89,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
         onSetFileList: (fileList: IFile[]) => dispatch(setFileList(fileList)),
         onSetFileUploadError: (error: boolean) => dispatch(setFileUploadError(error)),
         openXAppOverlay: (url: string) => dispatch(openOverlay(url)),
+		onSetMessageAnimated: (messageId: string, animationState: IStreamingMessage["animationState"]) => dispatch(setMessageAnimated(messageId, animationState)),
     }),
     ({ fullscreenMessage, ...state }, dispatch, props) => {
         if (!fullscreenMessage) {
