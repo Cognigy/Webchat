@@ -95,6 +95,7 @@ export interface WebchatUIProps {
 	onSetLastScrolledPosition: (position: number | null) => void;
 	scrollToPosition: number;
 	lastScrolledPosition: number | null;
+	lastInputId: string;
 
 	onEmitAnalytics: (event: string, payload?: any) => void;
 	onTriggerEngagementMessage: () => void;
@@ -874,6 +875,7 @@ export class WebchatUI extends React.PureComponent<
 			isXAppOverlayOpen,
 			openXAppOverlay,
 			onSetMessageAnimated,
+			lastInputId,
 			...restProps
 		} = props;
 		const { theme, hadConnection, lastUnseenMessageText, wasOpen } = state;
@@ -1096,6 +1098,7 @@ export class WebchatUI extends React.PureComponent<
 			onSetStoredMessage,
 			isDropZoneVisible,
 			isXAppOverlayOpen,
+			lastInputId,
 		} = this.props;
 
 		let informMessage = "";
@@ -1247,6 +1250,7 @@ export class WebchatUI extends React.PureComponent<
 						setScrollToPosition={onSetScrollToPosition}
 						lastScrolledPosition={lastScrolledPosition}
 						setLastScrolledPosition={onSetLastScrolledPosition}
+						lastInputId={lastInputId}
 						ref={this.history as any}
 						className="webchat-chat-history"
 						tabIndex={messages?.length === 0 ? -1 : 0} // When no messages, remove chat history from tab order

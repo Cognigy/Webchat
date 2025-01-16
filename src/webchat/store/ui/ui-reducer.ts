@@ -22,6 +22,7 @@ export interface UIState {
         text?: string, data?: any, options?: Partial<ISendMessageOptions>
     } | null,
 	ttsActive: boolean;
+	lastInputId: string;
 }
 
 export const SET_OPEN = 'SET_OPEN';
@@ -141,6 +142,13 @@ export const setTTSActive = (active: boolean) => ({
 });
 export type SetTTSActiveAction = ReturnType<typeof setTTSActive>;
 
+const SET_LAST_INPUT_ID = 'SET_LAST_INPUT_ID';
+export const setLastInputId = (id: string) => ({
+	type: SET_LAST_INPUT_ID as 'SET_LAST_INPUT_ID',
+	id
+});
+export type SetLastInputIdAction = ReturnType<typeof setLastInputId>;
+
 
 const getInitialState = (): UIState => ({
     open: false,
@@ -158,6 +166,7 @@ const getInitialState = (): UIState => ({
     hasAcceptedTerms: false,
     storedMessage: null,
 	ttsActive: false,
+	lastInputId: "",
 });
 
 type UIAction = SetOpenAction
@@ -174,7 +183,8 @@ type UIAction = SetOpenAction
     | SetShowChatOptionsScreenAction
     | SetHasAcceptedTermsAction
 	| SetStoredMessageAction
-	| SetTTSActiveAction;
+	| SetTTSActiveAction
+	| SetLastInputIdAction;
 
 export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action) => {
     switch (action.type) {
@@ -280,6 +290,13 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				ttsActive: action.active
+			}
+		}
+
+		case SET_LAST_INPUT_ID: {
+			return {
+				...state,
+				lastInputId: action.id
 			}
 		}
     }

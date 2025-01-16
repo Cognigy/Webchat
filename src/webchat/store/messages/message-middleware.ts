@@ -3,12 +3,13 @@ import { StoreState } from "../store";
 import { IMessage, IBotMessage } from "../../../common/interfaces/message";
 import { addMessage, addMessageEvent } from "./message-reducer";
 import { Omit } from "react-redux";
-import { setFullscreenMessage } from "../ui/ui-reducer";
+import { setFullscreenMessage, setLastInputId } from "../ui/ui-reducer";
 import { receiveMessage, ReceiveMessageAction } from "./message-handler";
 import { sanitizeHTML } from "../../helper/sanitize";
 import { SocketClient } from "@cognigy/socket-client";
 import { IMessageEvent } from "../../../common/interfaces/event";
 import bellSound from "../../../webchat-ui/utils/bell-sound";
+import { generateRandomId } from "./helper";
 
 
 // a "person" icon
@@ -94,7 +95,11 @@ export const createMessageMiddleware = (client: SocketClient): Middleware<object
 
             client.sendMessage(text || '', data);
 
-            const displayMessage = { ...message, text };
+			const messageId = generateRandomId();
+
+			next(setLastInputId(messageId));
+
+			const displayMessage = { ...message, text, id: messageId, };
 
             if (typeof options.label === 'string')
                 displayMessage.text = options.label;

@@ -1,5 +1,6 @@
 import { IMessage, IStreamingMessage } from '../../../common/interfaces/message';
 import { IMessageEvent } from "../../../common/interfaces/event";
+import { generateRandomId } from './helper';
 
 export type MessageState = (IMessage | IMessageEvent)[]
 
@@ -43,10 +44,6 @@ type ConfigState = {
 		};
 	};
 };
-
-function generateRandomId(): string {
-	return String(Math.random()).slice(2, 18);
-}
 
 export const createMessageReducer = (getState: () => { config: ConfigState }) => {
 	return (state: MessageState = [], action: AddMessageAction | AddMessageEventAction | SetMessageAnimatedAction) => {
