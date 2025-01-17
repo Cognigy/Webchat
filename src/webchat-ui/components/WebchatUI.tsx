@@ -91,10 +91,6 @@ export interface WebchatUIProps {
 	onClose: () => void;
 	onConnect: () => void;
 	onToggle: () => void;
-	onSetScrollToPosition: (position: number) => void;
-	onSetLastScrolledPosition: (position: number | null) => void;
-	scrollToPosition: number;
-	lastScrolledPosition: number | null;
 	lastInputId: string;
 
 	onEmitAnalytics: (event: string, payload?: any) => void;
@@ -271,7 +267,6 @@ export class WebchatUI extends React.PureComponent<
 
 	constructor(props) {
 		super(props);
-		this.history = React.createRef();
 		this.chatToggleButtonRef = React.createRef();
 		this.closeButtonInHeaderRef = React.createRef();
 		this.menuButtonInHeaderRef = React.createRef();
@@ -628,10 +623,6 @@ export class WebchatUI extends React.PureComponent<
 	};
 
 	sendMessage: MessageSender = (...args) => {
-		if (this.history.current) {
-			this.history.current.handleScrollTo(undefined, true);
-		}
-
 		this.props.onSendMessage(...args);
 
 		// we activate scrollToPosition functionality on first message
@@ -703,10 +694,6 @@ export class WebchatUI extends React.PureComponent<
 
 	handleSendRating = ({ rating, comment, showRatingStatus }) => {
 		this.props.onShowRatingScreen(false);
-
-		if (this.history.current) {
-			this.history.current.handleScrollTo();
-		}
 
 		this.props.onSendMessage(
 			undefined,
@@ -1246,12 +1233,7 @@ export class WebchatUI extends React.PureComponent<
 			return (
 				<>
 					<HistoryWrapper
-						scrollToPosition={scrollToPosition}
-						setScrollToPosition={onSetScrollToPosition}
-						lastScrolledPosition={lastScrolledPosition}
-						setLastScrolledPosition={onSetLastScrolledPosition}
 						lastInputId={lastInputId}
-						ref={this.history as any}
 						className="webchat-chat-history"
 						tabIndex={messages?.length === 0 ? -1 : 0} // When no messages, remove chat history from tab order
 						onDragEnter={handleDragEnter}
@@ -1262,7 +1244,7 @@ export class WebchatUI extends React.PureComponent<
 						</h2>
 						{this.renderHistory()}
 					</HistoryWrapper>
-					<QueueUpdates handleScroll={this.history.current?.handleScrollTo} />
+					<QueueUpdates />
 					{this.renderInput()}
 				</>
 			);
@@ -1401,7 +1383,6 @@ export class WebchatUI extends React.PureComponent<
 			typingIndicator,
 			config,
 			onEmitAnalytics,
-			onSetScrollToPosition,
 			openXAppOverlay,
 		} = this.props;
 		const { messagePlugins = [] } = this.state;
