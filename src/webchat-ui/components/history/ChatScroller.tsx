@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import styled from '@emotion/styled';
 import ScrollToBottom, { useScrollToBottom, useSticky } from 'react-scroll-to-bottom';
 
@@ -11,9 +11,17 @@ export interface OuterProps extends React.HTMLProps<HTMLDivElement> {
 
 type InnerProps = OuterProps;
 
-const ChatLogWrapper = styled(ScrollToBottom)<OuterProps>(({ theme }) => props => ({
+
+const ChatLogWrapper = styled.div(({ theme }) => ({
+	overflowY: "auto",
+	flexGrow: 1,
+	minHeight: 0,
+	height: theme.blockSize,
+}));
+
+const Scroller = styled(ScrollToBottom)<OuterProps>(({ theme }) => props => ({
 	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
-	height: '100%',
+	height: '100% !important',
 	width: '100%',
 
 	"& .hiddenAutoScrollButton": {
@@ -52,8 +60,19 @@ export function ChatScroller({
 	lastInputId,
 	...restProps
 }: InnerProps) {
-	const [isChatLogFocused, setIsChatLogFocused] = React.useState(false);
-	const innerRef = React.useRef<HTMLDivElement>(null);
+	const innerRef = useRef<HTMLDivElement>(null);
+	const outerRef = useRef<HTMLDivElement>(null);
+
+	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
+	const [shouldScrollToLastInput, setShouldScrollToLastInput] = useState(false);
+	const [scrolledToLastInput, setScrolledToLastInput] = useState(false);
+
+	useEffect(() => {
+		if (lastInputId) {
+			setShouldScrollToLastInput(true);
+			setScrolledToLastInput(false);
+		}
+	}, [lastInputId]);
 
 	const handleFocus = () => {
 		if (innerRef.current === document.activeElement) {
@@ -65,34 +84,71 @@ export function ChatScroller({
 		setIsChatLogFocused(false);
 	};
 
+	const scrollerFn = useCallback(
+		({ maxValue }) => {
+			if (!lastInputId) return maxValue;
+
+			const targetElement = document.getElementById(lastInputId);
+			if (!targetElement || !outerRef.current) return maxValue;
+
+			const containerRect = outerRef.current.getBoundingClientRect();
+			const elementRect = targetElement.getBoundingClientRect();
+			const elementTopPosition = elementRect.top - containerRect.top;
+
+			// If last input element is near the top (within threshold), stop scrolling
+			if (shouldScrollToLastInput && elementTopPosition <= 16) {
+				setScrolledToLastInput(true);
+				return 0;
+			}
+
+			return maxValue;
+		},
+		[lastInputId, shouldScrollToLastInput, outerRef.current]
+	);
+
 	return (
-		<ChatLogWrapper
-			showFocusOutline={isChatLogFocused}
-			followButtonClassName="hiddenAutoScrollButton"
-			{...restProps}
-		>
-			<ChatLog
-				ref={innerRef}
-				id="webchatChatHistoryWrapperLiveLogPanel"
-				tabIndex={tabIndex}
-				role="log"
-				aria-live="polite"
-				onFocus={handleFocus}
-				onBlur={handleBlur}
+		<ChatLogWrapper ref={outerRef}>
+			<Scroller
+				showFocusOutline={isChatLogFocused}
+				followButtonClassName="hiddenAutoScrollButton"
+				scroller={scrollerFn}
+				id="webchatChatHistory"
+				{...restProps}
 			>
-				<ScrollerContent>
-					{children}
-				</ScrollerContent>
-			</ChatLog>
+				<ChatLog
+					ref={innerRef}
+					id="webchatChatHistoryWrapperLiveLogPanel"
+					tabIndex={tabIndex}
+					role="log"
+					aria-live="polite"
+					onFocus={handleFocus}
+					onBlur={handleBlur}
+				>
+					<ScrollerContent
+						scrolledToLastInput={scrolledToLastInput}
+						setShouldScrollToLastInput={setShouldScrollToLastInput}
+					>
+						{children}
+					</ScrollerContent>
+				</ChatLog>
+			</Scroller>
 		</ChatLogWrapper>
 	);
 }
 
 const ScrollerContent = ({
-	children
+	children,
+	scrolledToLastInput,
+	setShouldScrollToLastInput
 }) => {
 	const scrollToBottom = useScrollToBottom();
 	const [sticky] = useSticky();
+
+	useEffect(() => {
+		if (sticky && scrolledToLastInput) {
+			setShouldScrollToLastInput(false);
+		}
+	}, [scrolledToLastInput, setShouldScrollToLastInput, sticky]);
 
 	return (
 		<ChatLog>
