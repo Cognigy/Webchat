@@ -1451,6 +1451,7 @@ export class WebchatUI extends React.PureComponent<
 							config?.settings?.widgetSettings?.sourceDirectionMapping?.bot ||
 							"incoming"
 						}
+						disableBorder={config?.settings?.layout?.disableBotOutputBorder}
 					/>
 				)}
 			</>
