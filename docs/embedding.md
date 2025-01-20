@@ -132,8 +132,10 @@ See it in action:
 | enableTTS | boolean | `false` | Enable text-to-speech. If `chatOptions.showTTSToggle set to `true`, TTS activation additionally depends on chatOptions.activateTTSToggle to be `true` (or the user expected to manually enable it.) |
 | focusInputAfterPostback | boolean | `false` | Input field will receive focus after a Postback button or quick reply button is clicked |
 | enableConnectionStatusIndicator | boolean | `true` | Shows a warning if the connection is lost during a conversation. The warning will disappear when the connection is re-established.  |
-| enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent.
-| AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice
+| enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent. |
+| AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice |
+| streamingMode | boolean | `false` | Animates bot messages. Combines bot messages from LLM streaming into one output. |
+| renderMarkdown | boolean | `false` | Render markdown in text messages. |
 
 #### Start Behavior
 | Name | Type | Default | Description |
