@@ -104,7 +104,7 @@ export function ChatScroller({
 			const elementTopPosition = elementRect.top - containerRect.top;
 
 			// If last input element is near the top (within threshold), stop scrolling
-			if (shouldScrollToLastInput && elementTopPosition <= 16) {
+			if (shouldScrollToLastInput && elementTopPosition <= 32) {
 				setScrolledToLastInput(true);
 				return 0;
 			}
