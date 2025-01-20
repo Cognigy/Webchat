@@ -331,7 +331,7 @@ export class WebchatUI extends React.PureComponent<
 			);
 			isThemeChanged = true;
 		}
-		if (!!botMessageColor && botMessageColor !== state.theme.backgroundBotMessage) {
+		if (!!botMessageColor && botMessageColor !== state.theme.backgroundBotMessage && !props?.config?.settings?.layout?.disableBotOutputBorder) {
 			document.documentElement.style.setProperty(
 				"--webchat-background-bot-message",
 				botMessageColor,
