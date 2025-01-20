@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import styled from '@emotion/styled';
 import ScrollToBottom, { useScrollToBottom, useSticky } from 'react-scroll-to-bottom';
 
-const CLIENT_HEIGHT_OFFSET = 16 + 70; // banner + typing indicator
-
 export interface OuterProps extends React.HTMLProps<HTMLDivElement> {
 	tabIndex: 0 | -1;
 	lastInputId: string;
@@ -54,6 +52,14 @@ const ScrollButton = styled('button')(({ theme }) => ({
 	}
 }));
 
+/**
+ * The ChatScroller component handles the scrolling logic for the chat log.
+ * - If scrolled to bottom, it will auto-scroll to bottom if new messages come in (sticky).
+ * - It will not scroll to the bottom when the user has scrolled up.
+ * - It will only auto-scroll to the bottom until the last user input is at the top.
+ * 	This stops once the user scrolled to the bottom again and resets when the next user input comes in.
+ * - It will show a scroll button when scrolled up from bottom.
+*/
 export function ChatScroller({
 	children,
 	tabIndex,
