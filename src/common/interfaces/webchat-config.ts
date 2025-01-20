@@ -154,6 +154,7 @@ export interface IWebchatSettings {
 	};
 	behavior: {
 		streamingMode: boolean;
+		renderMarkdown: boolean;
 		enableAIAgentNotice: boolean;
 		AIAgentNoticeText: string;
 		enableTypingIndicator: boolean;
