@@ -21,6 +21,7 @@ const Scroller = styled(ScrollToBottom)<OuterProps>(({ theme }) => props => ({
 	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
 	height: '100% !important',
 	width: '100%',
+	overflowY: "auto",
 
 	"& .hiddenAutoScrollButton": {
 		display: 'none',
@@ -36,6 +37,7 @@ const ChatLog = styled.div(({ theme }) => ({
 
 const ScrollButton = styled('button')(({ theme }) => ({
 	position: 'absolute',
+	zIndex: 10,
 	bottom: '20px',
 	left: '50%',
 	transform: 'translateX(-50%)',
@@ -113,12 +115,14 @@ export function ChatScroller({
 	);
 
 	return (
-		<ChatLogWrapper ref={outerRef} {...restProps}>
+		<ChatLogWrapper
+			ref={outerRef}
+			{...restProps}
+		>
 			<Scroller
 				showFocusOutline={isChatLogFocused}
 				followButtonClassName="hiddenAutoScrollButton"
 				scroller={scrollerFn}
-				id="webchatChatHistory"
 			>
 				<ChatLog
 					ref={innerRef}
