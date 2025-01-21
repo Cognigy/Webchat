@@ -2,31 +2,29 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import styled from '@emotion/styled';
 import ScrollToBottom, { useScrollToBottom, useSticky } from 'react-scroll-to-bottom';
 
-export interface OuterProps extends React.HTMLProps<HTMLDivElement> {
+interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
+	showFocusOutline?: boolean;
 	tabIndex: 0 | -1;
 	lastInputId: string;
 }
 
-type InnerProps = OuterProps;
-
-
-const ChatLogWrapper = styled.div(({ theme }) => ({
+const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => ({
 	overflowY: "auto",
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
+	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
 }));
 
-const Scroller = styled(ScrollToBottom)<OuterProps>(({ theme }) => props => ({
-	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
+const Scroller = styled(ScrollToBottom)({
 	height: '100% !important',
 	width: '100%',
-	overflowY: "auto",
+	overflowY: "auto" as const,
 
 	"& .hiddenAutoScrollButton": {
 		display: 'none',
 	},
-}));
+});
 
 const ChatLog = styled.div(({ theme }) => ({
 	paddingBottom: theme.unitSize * 2,
@@ -67,7 +65,7 @@ export function ChatScroller({
 	tabIndex,
 	lastInputId,
 	...restProps
-}: InnerProps) {
+}: IChatLogWrapperProps) {
 	const innerRef = useRef<HTMLDivElement>(null);
 	const outerRef = useRef<HTMLDivElement>(null);
 
@@ -118,9 +116,9 @@ export function ChatScroller({
 		<ChatLogWrapper
 			ref={outerRef}
 			{...restProps}
+			showFocusOutline={isChatLogFocused}
 		>
 			<Scroller
-				showFocusOutline={isChatLogFocused}
 				followButtonClassName="hiddenAutoScrollButton"
 				scroller={scrollerFn}
 			>
