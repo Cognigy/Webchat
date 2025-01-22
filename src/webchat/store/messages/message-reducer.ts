@@ -60,7 +60,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					return [...state, newMessage];
 				}
 
-				// If message doesn't have text, still add an ID and animationState for enabling the animation
+				// If message doesn't have text (e.g. Text with Quick Replies), still add an ID and animationState for enabling the animation.
 				if (!newMessage.text) {
 					return [...state, {
 						...newMessage,
@@ -88,9 +88,12 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				// If no matching message, create new with array
 				if (messageIndex === -1) {
+					// break string into chunks on new lines so that markdown is evaluated while a long text is animated
+					const textChunks = (newMessage.text as string).split(/(\n)/).filter(chunk => chunk.length > 0);
+
 					return [...state, {
 						...newMessage,
-						text: [newMessage.text as string],
+						text: textChunks,
 						id: newMessageId,
 						animationState: "start",
 					}];
