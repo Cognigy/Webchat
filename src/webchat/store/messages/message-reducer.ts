@@ -41,6 +41,7 @@ type ConfigState = {
 	settings?: {
 		behavior?: {
 			collateStreamedOutputs?: boolean;
+			progressiveStreaming?: boolean;
 		};
 	};
 };
@@ -54,9 +55,10 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 			case 'ADD_MESSAGE': {
 				const newMessage = action.message;
 
-				const isStreamingEnabled = getState().config?.settings?.behavior?.collateStreamedOutputs;
+				const isOutputCollationEnabled = getState().config?.settings?.behavior?.collateStreamedOutputs;
+				const isProgressiveStreamingEnabled = getState().config?.settings?.behavior?.progressiveStreaming;
 
-				if (!isStreamingEnabled || (newMessage.source !== "bot" && newMessage.source !== "engagement")) {
+				if ((!isOutputCollationEnabled && !isProgressiveStreamingEnabled) || (newMessage.source !== "bot" && newMessage.source !== "engagement")) {
 					return [...state, newMessage];
 				}
 
@@ -75,16 +77,19 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					newMessageId = generateRandomId();
 				}
 
-				// Find existing message with same ID
-				const messageIndex = state.findIndex(msg => {
-					if ('text' in msg) {
-						const msgId = getMessageId(msg as IMessage);
-						if (msgId) {
-							return msgId === newMessageId;
+				// Find existing message with same ID if we're collating outputs
+				let messageIndex = -1;
+				if (isOutputCollationEnabled) {
+					messageIndex = state.findIndex(msg => {
+						if ('text' in msg) {
+							const msgId = getMessageId(msg as IMessage);
+							if (msgId) {
+								return msgId === newMessageId;
+							}
 						}
-					}
-					return false;
-				});
+						return false;
+					});
+				}
 
 				// If no matching message, create new with array
 				if (messageIndex === -1) {

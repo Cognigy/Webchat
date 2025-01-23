@@ -135,6 +135,7 @@ See it in action:
 | enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent. |
 | AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice |
 | collateStreamedOutputs | boolean | `false` | This setting enables collation of streamed messages into one message bubble. |
+| progressiveStreaming | boolean | `false` | Enables streamed messages to appear by character instead of by chunk. |
 | renderMarkdown | boolean | `false` | Render markdown in text messages. |
 
 #### Start Behavior

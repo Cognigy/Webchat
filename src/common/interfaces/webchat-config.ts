@@ -154,6 +154,7 @@ export interface IWebchatSettings {
 	};
 	behavior: {
 		collateStreamedOutputs: boolean;
+		progressiveStreaming: boolean;
 		renderMarkdown: boolean;
 		enableAIAgentNotice: boolean;
 		AIAgentNoticeText: string;
