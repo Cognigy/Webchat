@@ -47,7 +47,7 @@ export const getInitialState = (): ConfigState => ({
 			textLinkColor: "",
 		},
 		behavior: {
-			streamingMode: false,
+			collateStreamedOutputs: false,
 			renderMarkdown: false,
 			enableTypingIndicator: true,
 			messageDelay: 500,

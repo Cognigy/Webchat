@@ -134,7 +134,7 @@ See it in action:
 | enableConnectionStatusIndicator | boolean | `true` | Shows a warning if the connection is lost during a conversation. The warning will disappear when the connection is re-established.  |
 | enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent. |
 | AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice |
-| streamingMode | boolean | `false` | Animates bot messages. Combines bot messages from LLM streaming into one output. |
+| collateStreamedOutputs | boolean | `false` | This setting enables collation of streamed messages into one message bubble. |
 | renderMarkdown | boolean | `false` | Render markdown in text messages. |
 
 #### Start Behavior

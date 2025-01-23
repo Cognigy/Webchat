@@ -153,7 +153,7 @@ export interface IWebchatSettings {
 		textLinkColor: string;
 	};
 	behavior: {
-		streamingMode: boolean;
+		collateStreamedOutputs: boolean;
 		renderMarkdown: boolean;
 		enableAIAgentNotice: boolean;
 		AIAgentNoticeText: string;

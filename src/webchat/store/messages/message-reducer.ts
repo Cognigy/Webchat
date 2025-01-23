@@ -40,7 +40,7 @@ const getMessageId = (message: IMessage) => {
 type ConfigState = {
 	settings?: {
 		behavior?: {
-			streamingMode?: boolean;
+			collateStreamedOutputs?: boolean;
 		};
 	};
 };
@@ -54,7 +54,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 			case 'ADD_MESSAGE': {
 				const newMessage = action.message;
 
-				const isStreamingEnabled = getState().config?.settings?.behavior?.streamingMode;
+				const isStreamingEnabled = getState().config?.settings?.behavior?.collateStreamedOutputs;
 
 				if (!isStreamingEnabled || (newMessage.source !== "bot" && newMessage.source !== "engagement")) {
 					return [...state, newMessage];
