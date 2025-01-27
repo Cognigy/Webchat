@@ -39,7 +39,7 @@ const InputRoot = styled.div(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    padding: "24px 20px 12px 20px",
+	padding: "12px 20px",
     borderBottom: '2px solid transparent',
     borderBottomLeftRadius: theme.unitSize * 2,
     borderBottomRightRadius: theme.unitSize * 2,

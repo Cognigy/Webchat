@@ -28,6 +28,7 @@ const TextArea = styled(TextareaAutosize)(({ theme }) => ({
 	display: "block",
 	flexGrow: 1,
 	alignSelf: "stretch",
+	padding: "8px 2px",
 
 	border: "none",
 	boxSizing: "border-box",
@@ -120,7 +121,14 @@ const HiddenFileInput = styled.input(() => ({
 	display: "none",
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => ({}));
+const SubmitButton = styled(Button)(({ theme }) => ({
+	padding: "8px",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	minWidth: "32px",
+	minHeight: "32px",
+}));
 
 export interface TextInputState {
 	text: string;
