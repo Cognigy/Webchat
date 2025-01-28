@@ -57,6 +57,7 @@ export const getInitialState = (): ConfigState => ({
 			enableTTS: false,
 			focusInputAfterPostback: false,
 			enableConnectionStatusIndicator: true,
+			scrollingBehavior: "alwaysScroll",
 		},
 		startBehavior: {
 			startBehavior: "none",

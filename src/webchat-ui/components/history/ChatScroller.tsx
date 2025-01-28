@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import styled from '@emotion/styled';
 import ScrollToBottom, { useScrollToBottom, useSticky } from 'react-scroll-to-bottom';
+import { IWebchatConfig } from '../../../common/interfaces/webchat-config';
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
 	tabIndex: 0 | -1;
 	lastInputId: string;
+	scrollBehavior: IWebchatConfig['settings']['behavior']['scrollingBehavior'];
 }
 
 const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => ({
@@ -64,6 +66,7 @@ export function ChatScroller({
 	children,
 	tabIndex,
 	lastInputId,
+	scrollBehavior,
 	...restProps
 }: IChatLogWrapperProps) {
 	const innerRef = useRef<HTMLDivElement>(null);
@@ -92,7 +95,7 @@ export function ChatScroller({
 
 	const scrollerFn = useCallback(
 		({ maxValue }) => {
-			if (!lastInputId) return maxValue;
+			if (!lastInputId || !scrollBehavior || scrollBehavior === "alwaysScroll") return maxValue;
 
 			const targetElement = document.getElementById(lastInputId);
 			if (!targetElement || !outerRef.current) return maxValue;

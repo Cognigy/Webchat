@@ -137,6 +137,7 @@ See it in action:
 | collateStreamedOutputs | boolean | `false` | This setting enables collation of streamed messages into one message bubble. |
 | progressiveStreaming | boolean | `false` | Enables streamed messages to appear by character instead of by chunk. |
 | renderMarkdown | boolean | `false` | Render markdown in text messages. |
+| scrollingBehavior | string |  `"alwaysScroll"` |  Allowed values: `"scrollUntilLastInputAtTop" \| "alwaysScroll"`. Decide how scrolling should behave if scrolled to bottom and a new message comes in. |
 
 #### Start Behavior
 | Name | Type | Default | Description |
@@ -382,6 +383,9 @@ interface IWebchatSettings {
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
 		watermarkUrl: string;
+		disableBotOutputBorder: boolean;
+		botOutputMaxWidthPercentage: number;
+		chatWindowWidth: number;
 	};
 	colors: {
 		primaryColor: string;
@@ -399,6 +403,10 @@ interface IWebchatSettings {
 		enableTTS: boolean;
 		focusInputAfterPostback: boolean;
 		enableConnectionStatusIndicator: boolean;
+		collateStreamedOutputs: boolean;
+		progressiveStreaming: boolean;
+		renderMarkdown: boolean;
+		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
 	};
 	startBehavior: {
 		startBehavior: "none" | "button" | "injection";

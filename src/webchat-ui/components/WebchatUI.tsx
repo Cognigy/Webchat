@@ -17,7 +17,6 @@ import stylisRTL from "stylis-rtl";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
-import { ChatScroller } from "./history/ChatScroller";
 import FAB from "./presentational/FAB";
 import WebchatWrapper from "./presentational/WebchatWrapper";
 import ChatIcon from "../assets/baseline-chat-24px.svg";
@@ -248,7 +247,6 @@ export class WebchatUI extends React.PureComponent<
 		timedOut: false,
 	};
 
-	history: React.RefObject<ChatScroller>;
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
 	closeButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	menuButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
@@ -1233,6 +1231,7 @@ export class WebchatUI extends React.PureComponent<
 			return (
 				<>
 					<HistoryWrapper
+						scrollBehavior={config.settings.behavior.scrollingBehavior}
 						lastInputId={lastInputId}
 						className="webchat-chat-history"
 						tabIndex={messages?.length === 0 ? -1 : 0} // When no messages, remove chat history from tab order

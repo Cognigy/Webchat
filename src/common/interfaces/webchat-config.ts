@@ -165,6 +165,7 @@ export interface IWebchatSettings {
 		enableTTS: boolean;
 		focusInputAfterPostback: boolean;
 		enableConnectionStatusIndicator: boolean;
+		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
 	};
 	startBehavior: {
 		startBehavior: "none" | "button" | "injection";
