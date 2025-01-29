@@ -135,7 +135,7 @@ See it in action:
 | enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent. |
 | AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice |
 | collateStreamedOutputs | boolean | `false` | This setting enables collation of streamed messages into one message bubble. |
-| progressiveStreaming | boolean | `false` | Enables streamed messages to appear by character instead of by chunk. |
+| progressiveMessageRendering | boolean | `false` | Enables output messages to progressively appear. |
 | renderMarkdown | boolean | `false` | Render markdown in text messages. |
 | scrollingBehavior | string |  `"alwaysScroll"` |  Allowed values: `"scrollUntilLastInputAtTop" \| "alwaysScroll"`. Decide how scrolling should behave if scrolled to bottom and a new message comes in. |
 
@@ -404,7 +404,7 @@ interface IWebchatSettings {
 		focusInputAfterPostback: boolean;
 		enableConnectionStatusIndicator: boolean;
 		collateStreamedOutputs: boolean;
-		progressiveStreaming: boolean;
+		progressiveMessageRendering: boolean;
 		renderMarkdown: boolean;
 		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
 	};

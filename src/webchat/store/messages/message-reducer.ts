@@ -41,7 +41,7 @@ type ConfigState = {
 	settings?: {
 		behavior?: {
 			collateStreamedOutputs?: boolean;
-			progressiveStreaming?: boolean;
+			progressiveMessageRendering?: boolean;
 		};
 	};
 };
@@ -56,9 +56,9 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				const newMessage = action.message;
 
 				const isOutputCollationEnabled = getState().config?.settings?.behavior?.collateStreamedOutputs;
-				const isProgressiveStreamingEnabled = getState().config?.settings?.behavior?.progressiveStreaming;
+				const isprogressiveMessageRenderingEnabled = getState().config?.settings?.behavior?.progressiveMessageRendering;
 
-				if ((!isOutputCollationEnabled && !isProgressiveStreamingEnabled) || (newMessage.source !== "bot" && newMessage.source !== "engagement")) {
+				if ((!isOutputCollationEnabled && !isprogressiveMessageRenderingEnabled) || (newMessage.source !== "bot" && newMessage.source !== "engagement")) {
 					return [...state, newMessage];
 				}
 

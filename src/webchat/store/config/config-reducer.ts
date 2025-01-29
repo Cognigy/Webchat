@@ -48,7 +48,7 @@ export const getInitialState = (): ConfigState => ({
 		},
 		behavior: {
 			collateStreamedOutputs: false,
-			progressiveStreaming: false,
+			progressiveMessageRendering: false,
 			renderMarkdown: false,
 			enableTypingIndicator: true,
 			messageDelay: 500,
