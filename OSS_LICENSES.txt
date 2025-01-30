@@ -1,4 +1,4 @@
-Created on 10-01-2025 at 17:02:17
+Created on 28-01-2025 at 13:14:28
 
 {
   "@babel/code-frame@7.24.2": {
@@ -63,19 +63,19 @@ Created on 10-01-2025 at 17:02:17
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.38.0": {
+  "@cognigy/chat-components@0.39.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
   },
-  "@cognigy/socket-client@5.0.0-beta.21": {
+  "@cognigy/socket-client@5.0.0-beta.22": {
     "licenses": "MIT*",
     "publisher": "Robin Schuster",
     "email": "r.schuster@cognigy.com",
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.10.0": {
+  "@cognigy/webchat@3.11.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
