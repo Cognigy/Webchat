@@ -1,6 +1,6 @@
 import { Middleware } from "redux";
 import { StoreState } from "../store";
-import { IMessage, IBotMessage } from "../../../common/interfaces/message";
+import { IMessage, IBotMessage, IStreamingMessage } from "../../../common/interfaces/message";
 import { addMessage, addMessageEvent } from "./message-reducer";
 import { Omit } from "react-redux";
 import { setFullscreenMessage, setLastInputId } from "../ui/ui-reducer";
@@ -124,7 +124,11 @@ export const createMessageMiddleware = (client: SocketClient): Middleware<object
 
             const isWebchatActive = state.ui.open && state.ui.isPageVisible;
             const isMessageEmpty = !(message.text || message.data?._cognigy?._webchat);
-            const isUnseen = !isWebchatActive && !isMessageEmpty;
+			const isStreamingMessage = state.config.settings.behavior.collateStreamedOutputs
+				&& !!message?.data?._cognigy?._messageId
+				&& state.messages.some(storeMsg => message?.data?._cognigy?._messageId === (storeMsg as IStreamingMessage).id);
+
+			const isUnseen = !isWebchatActive && !isMessageEmpty && !isStreamingMessage;
 
             // temporary solution: conditionally inject a event message type
             // we should get this kind of status updates from socket output event
