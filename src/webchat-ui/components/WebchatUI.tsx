@@ -67,6 +67,7 @@ import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
+import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -446,17 +447,17 @@ export class WebchatUI extends React.PureComponent<
 
 		if (
 			this?.props?.config?.settings?.colors?.primaryColor !==
-				prevProps?.config?.settings?.colors?.primaryColor ||
+			prevProps?.config?.settings?.colors?.primaryColor ||
 			this?.props?.config?.settings?.colors?.secondaryColor !==
-				prevProps?.config?.settings?.colors?.secondaryColor ||
+			prevProps?.config?.settings?.colors?.secondaryColor ||
 			this?.props?.config?.settings?.colors?.chatInterfaceColor !==
-				prevProps?.config?.settings?.colors?.chatInterfaceColor ||
+			prevProps?.config?.settings?.colors?.chatInterfaceColor ||
 			this?.props?.config?.settings?.colors?.botMessageColor !==
-				prevProps?.config?.settings?.colors?.botMessageColor ||
+			prevProps?.config?.settings?.colors?.botMessageColor ||
 			this?.props?.config?.settings?.colors?.userMessageColor !==
-				prevProps?.config?.settings?.colors?.userMessageColor ||
+			prevProps?.config?.settings?.colors?.userMessageColor ||
 			this?.props?.config?.settings?.colors?.textLinkColor !==
-				prevProps?.config?.settings?.colors?.textLinkColor
+			prevProps?.config?.settings?.colors?.textLinkColor
 		) {
 			this.setState({
 				theme: createWebchatTheme({
@@ -508,6 +509,10 @@ export class WebchatUI extends React.PureComponent<
 				if (lastReadableUnseenMessage) {
 					lastUnseenMessageText = getTextFromMessage(lastReadableUnseenMessage);
 				}
+
+				// TODO: Add markdown rendering if there is valid markdown and renderMarkdown is enabled
+				// this is dependent on updating React to v18
+				lastUnseenMessageText = removeMarkdownChars(lastUnseenMessageText);
 
 				this.setState({
 					lastUnseenMessageText,
@@ -610,11 +615,10 @@ export class WebchatUI extends React.PureComponent<
 			this.titleType = "original";
 		} else {
 			if (this.props.unseenMessages.length > 0) {
-				document.title = `(${this.props.unseenMessages.length}) ${
-					this.props.unseenMessages.length === 1
+				document.title = `(${this.props.unseenMessages.length}) ${this.props.unseenMessages.length === 1
 						? this.props.config.settings.unreadMessages.unreadMessageTitleText
 						: this.props.config.settings.unreadMessages.unreadMessageTitleTextPlural
-				}`;
+					}`;
 				this.titleType = "unread";
 			}
 		}
@@ -1364,7 +1368,7 @@ export class WebchatUI extends React.PureComponent<
 				onSendMessage={this.sendMessage}
 				config={config}
 				plugins={messagePlugins}
-				onSetFullscreen={() => {}}
+				onSetFullscreen={() => { }}
 				onDismissFullscreen={onDismissFullscreenMessage}
 				message={fullscreenMessage as IMessage}
 				webchatTheme={this.state.theme}
@@ -1425,7 +1429,7 @@ export class WebchatUI extends React.PureComponent<
 							config={config}
 							hasReply={hasReply}
 							isConversationEnded={isEnded}
-							onDismissFullscreen={() => {}}
+							onDismissFullscreen={() => { }}
 							onEmitAnalytics={onEmitAnalytics}
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
