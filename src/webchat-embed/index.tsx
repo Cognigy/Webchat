@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import styled from '@emotion/styled';
 import { v4 as uuidv4 } from "uuid"
 import './embedded-webchat-styles.css';
@@ -76,8 +76,9 @@ const initWebchat = async (webchatConfigUrl: string, options?: InitWebchatOption
 
     let cognigyWebchat: Webchat | null = null;
 
-    ReactDOM.render(
-        (
+	const root = createRoot(webchatRoot);
+
+	root.render(
             <Webchat
                 ref={ref => cognigyWebchat = ref}
                 url={webchatConfigUrl}
@@ -85,9 +86,7 @@ const initWebchat = async (webchatConfigUrl: string, options?: InitWebchatOption
                 settings={settings}
                 messagePlugins={messagePlugins}
                 inputPlugins={inputPlugins}
-            />
-        ),
-        webchatRoot
+		/>
     );
 
     // the ref call might not be executed synchronously
