@@ -189,6 +189,7 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			disableRenderURLsAsLinks: false,
 			disableTextInputSanitization: false,
 			disableToggleButton: false,
+			disableTeaserMarkdownRemoval: false,
 			enableAutoFocus: false,
 			enableInjectionWithoutEmptyHistory: false,
 			enableFocusTrap: false,

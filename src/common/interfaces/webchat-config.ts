@@ -315,6 +315,7 @@ export interface IWebchatSettings {
 		disableRenderURLsAsLinks: boolean;
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
+		disableTeaserMarkdownRemoval: boolean;
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

@@ -511,8 +511,10 @@ export class WebchatUI extends React.PureComponent<
 				}
 
 				// TODO: Add markdown rendering if there is valid markdown and renderMarkdown is enabled
-				// this is dependent on updating React to v18
-				lastUnseenMessageText = removeMarkdownChars(lastUnseenMessageText);
+				// adding react-markdown is blocked by updating React to v18
+				if (!this.props.config.settings.widgetSettings.disableTeaserMarkdownRemoval) {
+					lastUnseenMessageText = removeMarkdownChars(lastUnseenMessageText);
+				}
 
 				this.setState({
 					lastUnseenMessageText,
