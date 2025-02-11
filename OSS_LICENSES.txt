@@ -1,4 +1,4 @@
-Created on 28-01-2025 at 13:14:28
+Created on 11-02-2025 at 10:13:28
 
 {
   "@babel/code-frame@7.24.2": {
@@ -63,7 +63,7 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.39.0": {
+  "@cognigy/chat-components@0.41.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -75,7 +75,7 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.11.0": {
+  "@cognigy/webchat@3.12.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -267,10 +267,40 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/@socket.io/component-emitter/LICENSE",
     "copyright": "Copyright (c) 2014 Component contributors <dev@component.io>"
   },
+  "@types/debug@4.1.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/debug/LICENSE"
+  },
+  "@types/estree-jsx@1.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/estree-jsx/LICENSE"
+  },
+  "@types/estree@1.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/estree/LICENSE"
+  },
+  "@types/hast@3.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/hast/LICENSE"
+  },
   "@types/hoist-non-react-statics@3.3.5": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/hoist-non-react-statics/LICENSE"
+  },
+  "@types/mdast@4.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/mdast/LICENSE"
+  },
+  "@types/ms@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/ms/LICENSE"
   },
   "@types/node@14.18.63": {
     "licenses": "MIT",
@@ -302,6 +332,11 @@ Created on 28-01-2025 at 13:14:28
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react/LICENSE"
   },
+  "@types/react@19.0.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@types/react/LICENSE"
+  },
   "@types/scheduler@0.16.8": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
@@ -317,10 +352,27 @@ Created on 28-01-2025 at 13:14:28
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/sizzle/LICENSE"
   },
+  "@types/unist@2.0.11": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/parse-entities/node_modules/@types/unist/LICENSE"
+  },
+  "@types/unist@3.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/unist/LICENSE"
+  },
   "@types/yauzl@2.10.3": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/yauzl/LICENSE"
+  },
+  "@ungap/structured-clone@1.2.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/ungap/structured-clone",
+    "publisher": "Andrea Giammarchi",
+    "licenseFile": "node_modules/@ungap/structured-clone/LICENSE",
+    "copyright": "Copyright (c) 2021, Andrea Giammarchi, @WebReflection"
   },
   "abbrev@1.1.1": {
     "licenses": "ISC",
@@ -504,6 +556,15 @@ Created on 28-01-2025 at 13:14:28
     "url": "https://kentcdodds.com",
     "licenseFile": "node_modules/babel-plugin-macros/LICENSE"
   },
+  "bail@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/bail",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/bail/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
   "balanced-match@1.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/juliangruber/balanced-match",
@@ -601,6 +662,15 @@ Created on 28-01-2025 at 13:14:28
     "email": "mikeal.rogers@gmail.com",
     "licenseFile": "node_modules/caseless/LICENSE"
   },
+  "ccount@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/ccount",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/ccount/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
   "chalk@2.4.2": {
     "licenses": "MIT",
     "repository": "https://github.com/chalk/chalk",
@@ -612,6 +682,42 @@ Created on 28-01-2025 at 13:14:28
     "repository": "https://github.com/chalk/chalk",
     "licenseFile": "node_modules/log-symbols/node_modules/chalk/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+  },
+  "character-entities-html4@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/character-entities-html4",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/character-entities-html4/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "character-entities-legacy@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/character-entities-legacy",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/character-entities-legacy/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "character-entities@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/character-entities",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/character-entities/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "character-reference-invalid@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/character-reference-invalid",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/character-reference-invalid/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
   "check-more-types@2.24.0": {
     "licenses": "MIT",
@@ -716,6 +822,15 @@ Created on 28-01-2025 at 13:14:28
     "url": "http://debuggable.com/",
     "licenseFile": "node_modules/combined-stream/License",
     "copyright": "Copyright (c) 2011 Debuggable Limited <felix@debuggable.com>"
+  },
+  "comma-separated-tokens@2.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/comma-separated-tokens",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/comma-separated-tokens/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
   "commander@6.2.1": {
     "licenses": "MIT",
@@ -850,6 +965,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/debuglog/LICENSE",
     "copyright": "Copyright Joyent, Inc. and other Node contributors. All rights reserved."
   },
+  "decode-named-character-reference@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/decode-named-character-reference",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/decode-named-character-reference/license",
+    "copyright": "Copyright (c) 2021 Titus Wormer <tituswormer@gmail.com>"
+  },
   "deepmerge@4.3.1": {
     "licenses": "MIT",
     "repository": "https://github.com/TehShrike/deepmerge",
@@ -873,6 +997,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/delayed-stream/License",
     "copyright": "Copyright (c) 2011 Debuggable Limited <felix@debuggable.com>"
   },
+  "dequal@2.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/dequal",
+    "publisher": "Luke Edwards",
+    "email": "luke.edwards05@gmail.com",
+    "url": "https://lukeed.com",
+    "licenseFile": "node_modules/dequal/license",
+    "copyright": "Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)"
+  },
   "detect-browser@4.8.0": {
     "licenses": "MIT",
     "repository": "https://github.com/DamonOehlman/detect-browser",
@@ -880,6 +1013,15 @@ Created on 28-01-2025 at 13:14:28
     "email": "damon.oehlman@gmail.com",
     "licenseFile": "node_modules/detect-browser/LICENSE",
     "copyright": "Copyright (c) 2019 Damon Oehlman <damon.oehlman@gmail.com>"
+  },
+  "devlop@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/devlop",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/devlop/license",
+    "copyright": "Copyright (c) 2023 Titus Wormer <tituswormer@gmail.com>"
   },
   "dezalgo@1.0.4": {
     "licenses": "ISC",
@@ -959,6 +1101,14 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/enquirer/LICENSE",
     "copyright": "Copyright (c) 2016-present, Jon Schlinkert."
   },
+  "entities@4.5.0": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/fb55/entities",
+    "publisher": "Felix Boehm",
+    "email": "me@feedic.com",
+    "licenseFile": "node_modules/entities/LICENSE",
+    "copyright": "Copyright (c) Felix Böhm. All rights reserved."
+  },
   "error-ex@1.3.2": {
     "licenses": "MIT",
     "repository": "https://github.com/qix-/node-error-ex",
@@ -998,6 +1148,24 @@ Created on 28-01-2025 at 13:14:28
     "url": "https://sindresorhus.com",
     "licenseFile": "node_modules/escape-string-regexp/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+  },
+  "escape-string-regexp@5.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/escape-string-regexp",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "licenseFile": "node_modules/mdast-util-find-and-replace/node_modules/escape-string-regexp/license",
+    "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+  },
+  "estree-util-is-identifier-name@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/estree-util-is-identifier-name",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/estree-util-is-identifier-name/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
   },
   "eventemitter2@6.4.7": {
     "licenses": "MIT",
@@ -1262,6 +1430,69 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/hasown/LICENSE",
     "copyright": "Copyright (c) Jordan Harband and contributors"
   },
+  "hast-util-from-parse5@8.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-from-parse5",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-from-parse5/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hast-util-parse-selector@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-parse-selector",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-parse-selector/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hast-util-raw@9.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-raw",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-raw/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hast-util-to-jsx-runtime@2.3.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-to-jsx-runtime",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-to-jsx-runtime/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hast-util-to-parse5@8.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-to-parse5",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-to-parse5/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hast-util-whitespace@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-whitespace",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-whitespace/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hastscript@9.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hastscript",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hastscript/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
   "hoist-non-react-statics@3.3.2": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/mridgway/hoist-non-react-statics",
@@ -1278,6 +1509,24 @@ Created on 28-01-2025 at 13:14:28
     "url": "http://re-becca.org",
     "licenseFile": "node_modules/hosted-git-info/LICENSE",
     "copyright": "Copyright (c) 2015, Rebecca Turner"
+  },
+  "html-url-attributes@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rehypejs/rehype-minify/tree/main/packages/html-url-attributes",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/html-url-attributes/license",
+    "copyright": "Copyright (c) Titus Wormer"
+  },
+  "html-void-elements@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/html-void-elements",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/html-void-elements/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
   "http-signature@1.3.6": {
     "licenses": "MIT",
@@ -1361,6 +1610,30 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/ini/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
+  "inline-style-parser@0.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/inline-style-parser",
+    "licenseFile": "node_modules/inline-style-parser/LICENSE",
+    "copyright": "Copyright (c) 2012 TJ Holowaychuk <tj@vision-media.ca>"
+  },
+  "is-alphabetical@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/is-alphabetical",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/is-alphabetical/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "is-alphanumerical@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/is-alphanumerical",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/is-alphanumerical/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
   "is-arrayish@0.2.1": {
     "licenses": "MIT",
     "repository": "https://github.com/qix-/node-is-arrayish",
@@ -1386,6 +1659,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/is-core-module/LICENSE",
     "copyright": "Copyright (c) 2014 Dave Justice"
   },
+  "is-decimal@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/is-decimal",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/is-decimal/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
   "is-fullwidth-code-point@3.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/is-fullwidth-code-point",
@@ -1394,6 +1676,15 @@ Created on 28-01-2025 at 13:14:28
     "url": "sindresorhus.com",
     "licenseFile": "node_modules/is-fullwidth-code-point/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+  },
+  "is-hexadecimal@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/is-hexadecimal",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/is-hexadecimal/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
   "is-installed-globally@0.4.0": {
     "licenses": "MIT",
@@ -1412,6 +1703,15 @@ Created on 28-01-2025 at 13:14:28
     "url": "sindresorhus.com",
     "licenseFile": "node_modules/is-path-inside/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+  },
+  "is-plain-obj@4.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-plain-obj",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "licenseFile": "node_modules/unified/node_modules/is-plain-obj/license",
+    "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
   },
   "is-stream@2.0.1": {
     "licenses": "MIT",
@@ -1580,6 +1880,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/log-update/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
+  "longest-streak@3.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/longest-streak",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/longest-streak/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
+  },
   "loose-envify@1.4.0": {
     "licenses": "MIT",
     "repository": "https://github.com/zertosh/loose-envify",
@@ -1596,6 +1905,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/cypress/node_modules/lru-cache/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
+  "markdown-table@3.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/markdown-table",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/markdown-table/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
   "matchmediaquery@0.3.1": {
     "licenses": "MIT",
     "repository": "https://github.com/ncochard/matchmediaquery",
@@ -1604,6 +1922,141 @@ Created on 28-01-2025 at 13:14:28
     "url": "http://iceddev.com/",
     "licenseFile": "node_modules/matchmediaquery/LICENSE",
     "copyright": "Copyright (c) 2017 ncochard"
+  },
+  "mdast-util-find-and-replace@3.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-find-and-replace",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-find-and-replace/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-from-markdown@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-from-markdown",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-from-markdown/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-gfm-autolink-literal@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-gfm-autolink-literal/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-gfm-footnote@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-gfm-footnote",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-gfm-footnote/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-gfm-strikethrough@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-gfm-strikethrough/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-gfm-table@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-gfm-table",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-gfm-table/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-gfm-task-list-item@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-gfm-task-list-item/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-gfm@3.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-gfm",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-gfm/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-mdx-expression@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-mdx-expression",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-mdx-expression/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-mdx-jsx@3.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-mdx-jsx",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-mdx-jsx/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-mdxjs-esm@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-mdxjs-esm",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-mdxjs-esm/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-phrasing@4.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-phrasing",
+    "publisher": "Victor Felder",
+    "email": "victor@draft.li",
+    "url": "https://draft.li",
+    "licenseFile": "node_modules/mdast-util-phrasing/license",
+    "copyright": "Copyright (c) 2017 Titus Wormer <tituswormer@gmail.com>. Copyright (c) 2017 Victor Felder <victor@draft.li>"
+  },
+  "mdast-util-to-hast@13.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-to-hast",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-to-hast/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-to-markdown@2.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-to-markdown",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-to-markdown/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "mdast-util-to-string@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/mdast-util-to-string",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/mdast-util-to-string/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
   "memoize-one@5.2.1": {
     "licenses": "MIT",
@@ -1620,6 +2073,258 @@ Created on 28-01-2025 at 13:14:28
     "email": "me@stephensugden.com",
     "licenseFile": "node_modules/merge-stream/LICENSE",
     "copyright": "Copyright (c) Stephen Sugden <me@stephensugden.com> (stephensugden.com)"
+  },
+  "micromark-core-commonmark@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-core-commonmark/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm-autolink-literal@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm-autolink-literal",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm-autolink-literal/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm-footnote@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm-footnote",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm-footnote/license",
+    "copyright": "Copyright (c) 2021 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm-strikethrough@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm-strikethrough",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm-strikethrough/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm-table@2.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm-table",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm-table/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm-tagfilter@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm-tagfilter",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm-tagfilter/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm-task-list-item@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm-task-list-item",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm-task-list-item/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-extension-gfm@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark-extension-gfm",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-extension-gfm/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-factory-destination@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-destination",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-factory-destination/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-factory-label@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-label",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-factory-label/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-factory-space@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-space",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-factory-space/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-factory-title@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-title",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-factory-title/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-factory-whitespace@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-whitespace",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-factory-whitespace/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-character@2.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-character",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-character/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-chunked@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-chunked",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-chunked/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-classify-character@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-classify-character",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-classify-character/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-combine-extensions@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-combine-extensions",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-combine-extensions/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-decode-numeric-character-reference@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-numeric-character-reference",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-decode-numeric-character-reference/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-decode-string@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-string",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-decode-string/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-encode@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-encode",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-encode/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-html-tag-name@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-html-tag-name",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-html-tag-name/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-normalize-identifier@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-normalize-identifier",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-normalize-identifier/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-resolve-all@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-resolve-all",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-resolve-all/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-sanitize-uri@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-sanitize-uri/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-subtokenize@2.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-subtokenize/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-symbol@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-symbol",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-symbol/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark-util-types@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-types",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark-util-types/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "micromark@4.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/micromark/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "mime-db@1.52.0": {
     "licenses": "MIT",
@@ -1805,6 +2510,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/parent-module/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
+  "parse-entities@4.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/parse-entities",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/parse-entities/license",
+    "copyright": "Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>"
+  },
   "parse-json@5.2.0": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/parse-json",
@@ -1813,6 +2527,15 @@ Created on 28-01-2025 at 13:14:28
     "url": "https://sindresorhus.com",
     "licenseFile": "node_modules/parse-json/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+  },
+  "parse5@7.2.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inikulin/parse5",
+    "publisher": "Ivan Nikulin",
+    "email": "ifaaan@gmail.com",
+    "url": "https://github.com/inikulin",
+    "licenseFile": "node_modules/parse5/LICENSE",
+    "copyright": "Copyright (c) 2013-2019 Ivan Nikulin (ifaaan@gmail.com, https://github.com/inikulin)"
   },
   "path-is-absolute@1.0.1": {
     "licenses": "MIT",
@@ -1903,6 +2626,15 @@ Created on 28-01-2025 at 13:14:28
     "repository": "https://github.com/facebook/prop-types",
     "licenseFile": "node_modules/prop-types/LICENSE",
     "copyright": "Copyright (c) 2013-present, Facebook, Inc."
+  },
+  "property-information@6.5.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/property-information",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/property-information/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
   },
   "proxy-from-env@1.0.0": {
     "licenses": "MIT",
@@ -2012,6 +2744,14 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/react-redux/node_modules/react-is/LICENSE",
     "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
   },
+  "react-markdown@9.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkjs/react-markdown",
+    "publisher": "Espen Hovlandsdal",
+    "email": "espen@hovlandsdal.com",
+    "licenseFile": "node_modules/@cognigy/chat-components/node_modules/react-markdown/license",
+    "copyright": "Copyright (c) Espen Hovlandsdal"
+  },
   "react-player@2.16.0": {
     "licenses": "MIT",
     "repository": "https://github.com/cookpete/react-player",
@@ -2120,6 +2860,51 @@ Created on 28-01-2025 at 13:14:28
     "email": "bn@cs.stanford.edu",
     "licenseFile": "node_modules/regenerator-runtime/LICENSE",
     "copyright": "Copyright (c) 2014-present, Facebook, Inc."
+  },
+  "rehype-raw@7.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rehypejs/rehype-raw",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/rehype-raw/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "remark-gfm@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkjs/remark-gfm",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/remark-gfm/license",
+    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "remark-parse@11.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkjs/remark/tree/main/packages/remark-parse",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/remark-parse/license",
+    "copyright": "Copyright (c) 2014 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "remark-rehype@11.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkjs/remark-rehype",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/remark-rehype/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "remark-stringify@11.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkjs/remark/tree/main/packages/remark-stringify",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/remark-stringify/license",
+    "copyright": "Copyright (c) 2014 Titus Wormer <tituswormer@gmail.com>"
   },
   "remarkable@2.0.1": {
     "licenses": "MIT",
@@ -2319,6 +3104,15 @@ Created on 28-01-2025 at 13:14:28
     "email": "nfitzgerald@mozilla.com",
     "licenseFile": "node_modules/source-map/LICENSE"
   },
+  "space-separated-tokens@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/space-separated-tokens",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/space-separated-tokens/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
   "spdx-compare@1.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/kemitchell/spdx-compare.js",
@@ -2396,6 +3190,15 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/string-width/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
+  "stringify-entities@4.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/stringify-entities",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/stringify-entities/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
+  },
   "strip-ansi@6.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/chalk/strip-ansi",
@@ -2413,6 +3216,14 @@ Created on 28-01-2025 at 13:14:28
     "url": "sindresorhus.com",
     "licenseFile": "node_modules/strip-final-newline/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+  },
+  "style-to-object@1.0.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/style-to-object",
+    "publisher": "Mark",
+    "email": "mark@remarkablemark.org",
+    "licenseFile": "node_modules/style-to-object/LICENSE",
+    "copyright": "Copyright (c) 2017 Menglin \"Mark\" Xu <mark@remarkablemark.org>"
   },
   "stylis-rtl@1.0.1": {
     "licenses": "ISC",
@@ -2535,6 +3346,24 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/treeify/LICENSE",
     "copyright": "Copyright (c) 2012-2018 Luke Plaster <notatestuser@gmail.com>"
   },
+  "trim-lines@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/trim-lines",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/trim-lines/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
+  },
+  "trough@2.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/trough",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/trough/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
   "tslib@2.6.2": {
     "licenses": "0BSD",
     "repository": "https://github.com/Microsoft/tslib",
@@ -2572,6 +3401,60 @@ Created on 28-01-2025 at 13:14:28
     "email": "email@wle8300.com",
     "licenseFile": "node_modules/uifx/LICENSE",
     "copyright": "Copyright (c) 2019 William Le"
+  },
+  "unified@11.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/unifiedjs/unified",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/unified/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "unist-util-is@6.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/unist-util-is",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/unist-util-is/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "unist-util-position@5.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/unist-util-position",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/unist-util-position/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "unist-util-stringify-position@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/unist-util-stringify-position",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/unist-util-stringify-position/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "unist-util-visit-parents@6.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/unist-util-visit-parents",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/unist-util-visit-parents/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "unist-util-visit@5.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/unist-util-visit",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/unist-util-visit/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
   "universalify@0.2.0": {
     "licenses": "MIT",
@@ -2660,6 +3543,42 @@ Created on 28-01-2025 at 13:14:28
     "licenseFile": "node_modules/verror/LICENSE",
     "copyright": "Copyright (c) 2016, Joyent, Inc. All rights reserved."
   },
+  "vfile-location@5.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vfile/vfile-location",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/vfile-location/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "vfile-message@4.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vfile/vfile-message",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/vfile-message/license",
+    "copyright": "Copyright (c) 2017 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "vfile@6.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vfile/vfile",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/vfile/license",
+    "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "web-namespaces@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/web-namespaces",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/web-namespaces/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
   "which@2.0.2": {
     "licenses": "ISC",
     "repository": "https://github.com/isaacs/node-which",
@@ -2735,5 +3654,14 @@ Created on 28-01-2025 at 13:14:28
     "email": "thejoshwolfe@gmail.com",
     "licenseFile": "node_modules/yauzl/LICENSE",
     "copyright": "Copyright (c) 2014 Josh Wolfe"
+  },
+  "zwitch@2.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/zwitch",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/zwitch/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   }
 }
