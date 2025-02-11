@@ -17,8 +17,8 @@
 		"cypress:serve": "http-server -a localhost -p 8787 dist/",
 		"cypress:run": "cypress run --browser chrome",
 		"cypress:run:firefox": "cypress run --browser firefox",
-		"test:cypress": "concurrently  \"cypress:serve\" \"cypress:run\"",
-		"test:cypress:firefox": "concurrently  \"cypress:serve\" \"cypress:run:firefox\"",
+		"test:cypress": "concurrently --kill-others \"npm run cypress:serve\" \"npm run cypress:run\"",
+		"test:cypress:firefox": "concurrently --kill-others \"npm run cypress:serve\" \"npm run cypress:run:firefox\"",
 		"test": "npm run test:cypress",
 		"pretest": "npm run build",
 		"prettier:check": "prettier --check --config .prettierrc.json src/",
@@ -102,5 +102,9 @@
 	},
 	"engines": {
 		"node": ">=22.1.0"
+	},
+	"overrides": {
+		"cross-spawn": ">=7.0.5",
+		"loader-utils": "2.0.4"
 	}
 }
