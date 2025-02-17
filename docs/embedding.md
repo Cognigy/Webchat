@@ -132,8 +132,12 @@ See it in action:
 | enableTTS | boolean | `false` | Enable text-to-speech. If `chatOptions.showTTSToggle set to `true`, TTS activation additionally depends on chatOptions.activateTTSToggle to be `true` (or the user expected to manually enable it.) |
 | focusInputAfterPostback | boolean | `false` | Input field will receive focus after a Postback button or quick reply button is clicked |
 | enableConnectionStatusIndicator | boolean | `true` | Shows a warning if the connection is lost during a conversation. The warning will disappear when the connection is re-established.  |
-| enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent.
-| AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice
+| enableAIAgentNotice | boolean | `true` | Shows a notice at the beginning of the chat regarding talking to a non-human Agent. |
+| AIAgentNoticeText | string | `You are now talking to an AI agent.` | A string to show as an AI Agent Notice |
+| collateStreamedOutputs | boolean | `false` | This setting enables collation of streamed messages into one message bubble. |
+| progressiveMessageRendering | boolean | `false` | Enables output messages to appear progressively. |
+| renderMarkdown | boolean | `false` | Render markdown in text messages. |
+| scrollingBehavior | string |  `"alwaysScroll"` |  Allowed values: `"scrollUntilLastInputAtTop" \| "alwaysScroll"`. Decide how scrolling should behave if scrolled to bottom and a new message comes in. |
 
 #### Start Behavior
 | Name | Type | Default | Description |
@@ -330,6 +334,7 @@ Additional Settings to configure the webchat widget behavior <br>
 | disableRenderURLsAsLinks | boolean | `false` | If true, disables the automatic replacement of URLs in message elements with clickable HTML link elements. |
 | disableTextInputSanitization | boolean | `false` | By default, text inputs from the user will be sanitized for HTML with scripting. If you set this to true, users can send any kind of HTML text, including script-tags and onload-attributes etc. |
 | disableToggleButton | boolean | `false` | Disable the Webchat Toggle Button |
+| disableTeaserMarkdownRemoval | boolean | `false` | Disable the automatic removal of Markdown in the Teaser Message. |
 | enableAutoFocus | boolean | `false` |  If true, focus will be automatically moved to the first focusable element within the latest incoming message. Ths focus will only be moved when the focus is currently on an element within the chat log. |
 | enableInjectionWithoutEmptyHistory | boolean | `false` | If true, will not prevent the auto-inject start behavior from being triggered if the history is not empty |
 | enableFocusTrap | boolean | `false` | If true, elements outside the chat window will not be focusable during keyboard navigation when the chat window is open |
@@ -379,6 +384,9 @@ interface IWebchatSettings {
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
 		watermarkUrl: string;
+		disableBotOutputBorder: boolean;
+		botOutputMaxWidthPercentage: number;
+		chatWindowWidth: number;
 	};
 	colors: {
 		primaryColor: string;
@@ -396,6 +404,10 @@ interface IWebchatSettings {
 		enableTTS: boolean;
 		focusInputAfterPostback: boolean;
 		enableConnectionStatusIndicator: boolean;
+		collateStreamedOutputs: boolean;
+		progressiveMessageRendering: boolean;
+		renderMarkdown: boolean;
+		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
 	};
 	startBehavior: {
 		startBehavior: "none" | "button" | "injection";
@@ -544,6 +556,7 @@ interface IWebchatSettings {
 		disableRenderURLsAsLinks: boolean;
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
+		disableTeaserMarkdownRemoval: boolean;
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

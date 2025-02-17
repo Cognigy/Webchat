@@ -16,6 +16,7 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-header-close-button*
 * *webchat-header-rating-button*
 * *webchat-chat-history*
+* *webchat-scroll-to-bottom-button*
 * *webchat-message-row*
 * *regular-message*
 * *webchat-avatar*
@@ -140,6 +141,13 @@ This is the element where all the messages of the chat are are shown, you could 
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-chat-history {
 
     background-color: rgb(48, 48, 48);
+}
+* *webchat-scroll-to-bottom-button*  
+This is the button that appears in the chat area when scrolled up. It can be clicked to scroll to the bottom.
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-scroll-to-bottom-button {
+
+    background-color: rgb(88, 88, 88);
 }
 ```
 * *webchat-message-row*  
