@@ -11,9 +11,7 @@ export interface UIState {
     fullscreenMessage: IMessage | undefined;
     agentAvatarOverrideUrl?: string;
 	botAvatarOverrideUrl?: string;
-    isPageVisible: boolean;
-    scrollToPosition: number;
-    lastScrolledPosition: number | null;
+	isPageVisible: boolean;
     showHomeScreen: boolean;
     showPrevConversations: boolean;
     showChatOptionsScreen: boolean;
@@ -22,6 +20,7 @@ export interface UIState {
         text?: string, data?: any, options?: Partial<ISendMessageOptions>
     } | null,
 	ttsActive: boolean;
+	lastInputId: string;
 }
 
 export const SET_OPEN = 'SET_OPEN';
@@ -36,20 +35,6 @@ export const toggleOpen = () => ({
     type: TOGGLE_OPEN as 'TOGGLE_OPEN'
 });
 export type ToggleOpenAction = ReturnType<typeof toggleOpen>;
-
-const SET_SCROLL_TO_POSITION = 'SET_SCROLL_TO_POSITION';
-export const setScrollToPosition = (position: number) => ({
-    type: SET_SCROLL_TO_POSITION as 'SET_SCROLL_TO_POSITION',
-    position
-});
-export type SetScrollToPosition = ReturnType<typeof setScrollToPosition>;
-
-const SET_LAST_SCROLLED_POSITION = 'SET_LAST_SCROLLED_POSITION';
-export const setLastScrolledPosition = (position: number | null) => ({
-    type: SET_LAST_SCROLLED_POSITION as 'SET_LAST_SCROLLED_POSITION',
-    position
-});
-export type SetLastScrolledPosition = ReturnType<typeof setLastScrolledPosition>;
 
 export const SET_SHOW_HOME_SCREEN = 'SET_SHOW_HOME_SCREEN';
 export const setShowHomeScreen = (showHomeScreen: boolean) => ({
@@ -141,6 +126,13 @@ export const setTTSActive = (active: boolean) => ({
 });
 export type SetTTSActiveAction = ReturnType<typeof setTTSActive>;
 
+const SET_LAST_INPUT_ID = 'SET_LAST_INPUT_ID';
+export const setLastInputId = (id: string) => ({
+	type: SET_LAST_INPUT_ID as 'SET_LAST_INPUT_ID',
+	id
+});
+export type SetLastInputIdAction = ReturnType<typeof setLastInputId>;
+
 
 const getInitialState = (): UIState => ({
     open: false,
@@ -149,15 +141,14 @@ const getInitialState = (): UIState => ({
     fullscreenMessage: undefined,
     agentAvatarOverrideUrl: undefined,
 	botAvatarOverrideUrl: undefined,
-    isPageVisible: isPageVisible(),
-    scrollToPosition: 0,
-    lastScrolledPosition: null,
+	isPageVisible: isPageVisible(),
     showHomeScreen: true,
     showPrevConversations: false,
     showChatOptionsScreen: false,
     hasAcceptedTerms: false,
     storedMessage: null,
 	ttsActive: false,
+	lastInputId: "",
 });
 
 type UIAction = SetOpenAction
@@ -166,15 +157,14 @@ type UIAction = SetOpenAction
     | SetFullscreenMessageAction
     | SetAgentAvatarOverrideUrlAction
 	| SetBotAvatarOverrideUrlAction
-    | SetPageVisibleAction
-    | SetScrollToPosition
-    | SetLastScrolledPosition
+	| SetPageVisibleAction
     | SetShowHomeScreenAction
     | SetShowPrevConversationsAction
     | SetShowChatOptionsScreenAction
     | SetHasAcceptedTermsAction
 	| SetStoredMessageAction
-	| SetTTSActiveAction;
+	| SetTTSActiveAction
+	| SetLastInputIdAction;
 
 export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action) => {
     switch (action.type) {
@@ -189,20 +179,6 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
             return {
                 ...state,
                 typing: action.typing
-            }
-        }
-
-        case SET_SCROLL_TO_POSITION: {
-            return {
-                ...state,
-                scrollToPosition: action.position
-            }
-        }
-            
-        case SET_LAST_SCROLLED_POSITION: {
-            return {
-                ...state,
-                lastScrolledPosition: action.position
             }
         }
 
@@ -280,6 +256,13 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				ttsActive: action.active
+			}
+		}
+
+		case SET_LAST_INPUT_ID: {
+			return {
+				...state,
+				lastInputId: action.id
 			}
 		}
     }

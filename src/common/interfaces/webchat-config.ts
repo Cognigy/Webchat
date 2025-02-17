@@ -153,6 +153,9 @@ export interface IWebchatSettings {
 		textLinkColor: string;
 	};
 	behavior: {
+		collateStreamedOutputs: boolean;
+		progressiveMessageRendering: boolean;
+		renderMarkdown: boolean;
 		enableAIAgentNotice: boolean;
 		AIAgentNoticeText: string;
 		enableTypingIndicator: boolean;
@@ -162,6 +165,7 @@ export interface IWebchatSettings {
 		enableTTS: boolean;
 		focusInputAfterPostback: boolean;
 		enableConnectionStatusIndicator: boolean;
+		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
 	};
 	startBehavior: {
 		startBehavior: "none" | "button" | "injection";
@@ -311,6 +315,7 @@ export interface IWebchatSettings {
 		disableRenderURLsAsLinks: boolean;
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
+		disableTeaserMarkdownRemoval: boolean;
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;
