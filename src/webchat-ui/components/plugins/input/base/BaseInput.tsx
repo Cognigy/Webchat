@@ -4,12 +4,14 @@ import classnames from "classnames";
 import { InputComponentProps } from "../../../../../common/interfaces/input-plugin";
 import SendIcon from "./send-icon-16px.svg";
 import SpeechIconSVG from "./speech-icon-16px.svg";
+import MenuIcon from "./baseline-menu-24px.svg";
 import AttachFileIcon from "./attachment-icon-16px.svg";
 import TextareaAutosize from "react-textarea-autosize";
 import PreviewUploadedFiles from "../file/PreviewUploadedFiles";
 import { IUploadFileMetaData } from "../../../../../common/interfaces/file-upload";
 import { IFile } from "../../../../../webchat/store/input/input-reducer";
 import MediaQuery from "react-responsive";
+import PersistentMenu from "../menu/PersistentMenu";
 
 const InputWrapper = styled.div(() => ({
 	display: "flex",
@@ -69,6 +71,24 @@ const Button = styled.button(({ theme }) => ({
 
 	"&:focus": {
 		fill: theme.primaryColor,
+	},
+}));
+
+const MenuButton = styled(Button)(({ theme }) => ({
+	alignSelf: "flex-end",
+    padding: `4px ${theme.unitSize/2}px`,
+	borderRadius: "50%",
+	margin:0,
+	"&:hover": {
+		fill: theme.primaryColor,
+	},
+	"&:focus": {
+		fill: theme.greyContrastColor,
+		backgroundColor: theme.greyWeakColor,
+		outline: "none  ",
+	},
+	"&:active": {
+		fill: theme.primaryStrongColor,
 	},
 }));
 
@@ -139,7 +159,11 @@ interface ISpeechInputState {
 	isFinalResult: boolean;
 }
 
-interface IBaseInputState extends TextInputState, ISpeechInputState {}
+interface IPersistentMenuState {
+	isMenuOpen: boolean;
+}
+
+interface IBaseInputState extends TextInputState, ISpeechInputState, IPersistentMenuState {}
 
 interface IBaseInputProps extends InputComponentProps {
 	sttActive: boolean;
@@ -201,6 +225,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			speechRecognition,
 			speechResult: "",
 			isFinalResult: false,
+			isMenuOpen: false,
 		} as IBaseInputState;
 	}
 
@@ -415,11 +440,16 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 		const { sttActive, fileUploadError, fileList, textActive } = props;
 
-		const { text, speechResult: speechInterim } = state;
+		const { text, speechResult: speechInterim, isMenuOpen } = state;
 
 		const { layout, fileStorageSettings, widgetSettings } = props.config.settings;
 
-		const { disableInputAutocomplete, inputAutogrowMaxRows } = layout;
+		const {
+			disableInputAutocomplete,
+			inputAutogrowMaxRows,
+			enablePersistentMenu,
+			persistentMenu,
+		} = layout;
 
 		const { disableInputAutofocus } = widgetSettings;
 
@@ -434,90 +464,119 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 						onSubmit={this.handleSubmit}
 						className={classnames("webchat-input-menu-form")}
 					>
-						{isFileAttachmentEnabled && (
+						{enablePersistentMenu && (
 							<>
-								<HiddenFileInput
-									ref={this.fileInputRef}
-									type="file"
-									multiple
-									onChange={this.handleSelectFile}
-									aria-hidden="true"
-								/>
-								<AttachFileButton
-									className="webchat-input-button-add-attachments"
-									onClick={this.handleUploadFile}
-									aria-label="Add Attachments"
-									id="webchatInputMessageAttachFileButton"
+								<MenuButton
+									onClick={() => this.setState({ isMenuOpen: !isMenuOpen })}
+									aria-label="Toggle persistent menu"
+									aria-expanded={isMenuOpen}
+									className="webchat-input-button-menu"
+									id="webchatInputButtonMenu"
 								>
-									<AttachFileIcon />
-								</AttachFileButton>
+									<MenuIcon />
+								</MenuButton>
 							</>
 						)}
+						{isMenuOpen ? (
+							<PersistentMenu
+								title={persistentMenu.title}
+								menuItems={persistentMenu.menuItems}
+								onSelect={item => {
+									this.setState({ isMenuOpen: false });
+									this.props.onSendMessage(item.payload, null, {
+										label: item.title,
+									});
 
-						<MediaQuery maxWidth={575}>
-							{matches => (
-								<TextArea
-									ref={this.inputRef as React.Ref<HTMLTextAreaElement>}
-									autoFocus={!disableInputAutofocus}
-									value={combineStrings(text, speechInterim)}
-									onChange={this.handleChangeTextValue}
-									onFocus={this.handleFocus}
-									onBlur={this.handleBlur}
-									onKeyDown={this.handleInputKeyDown}
-									placeholder={props.config.settings.behavior.inputPlaceholder}
-									className="webchat-input-message-input"
-									aria-label="Message to send"
-									minRows={1}
-									maxRows={inputAutogrowMaxRows}
-									autoComplete={disableInputAutocomplete ? "off" : undefined}
-									spellCheck={false}
-									id="webchatInputMessageInputInTextMode"
-									style={matches ? { fontSize: "16px" } : undefined}
-								/>
-							)}
-						</MediaQuery>
-
-						{props.config.settings.behavior.enableSTT && (
-							<SpeechButton
-								className={classnames(
-									"webchat-input-button-speech",
-									sttActive && "webchat-input-button-speech-active",
-								)}
-								aria-label="Speech to text"
-								id="webchatInputMessageSpeechButton"
-								onClick={this.toggleSTT}
-								disabled={!this.isSTTSupported()}
-							>
-								{sttActive && (
+									if (this.inputRef.current) this.inputRef.current.focus();
+								}}
+							/>
+						) : (
+							<>
+								{isFileAttachmentEnabled && (
 									<>
-										<SpeechButtonAnimatedBackground
-											className={classnames(
-												"webchat-input-button-speech-background",
-											)}
+										<HiddenFileInput
+											ref={this.fileInputRef}
+											type="file"
+											multiple
+											onChange={this.handleSelectFile}
 											aria-hidden="true"
 										/>
-										<SpeechButtonBackground
-											className={classnames(
-												"webchat-input-button-speech-background",
-											)}
-											aria-hidden="true"
-										/>
+										<AttachFileButton
+											className="webchat-input-button-add-attachments"
+											onClick={this.handleUploadFile}
+											aria-label="Add Attachments"
+											id="webchatInputMessageAttachFileButton"
+										>
+											<AttachFileIcon />
+										</AttachFileButton>
 									</>
 								)}
-								<SpeechIcon />
-							</SpeechButton>
-						)}
+								<MediaQuery maxWidth={575}>
+									{matches => (
+										<TextArea
+											ref={this.inputRef as React.Ref<HTMLTextAreaElement>}
+											autoFocus={!disableInputAutofocus}
+											value={combineStrings(text, speechInterim)}
+											onChange={this.handleChangeTextValue}
+											onFocus={this.handleFocus}
+											onBlur={this.handleBlur}
+											onKeyDown={this.handleInputKeyDown}
+									placeholder={props.config.settings.behavior.inputPlaceholder}
+											className="webchat-input-message-input"
+											aria-label="Message to send"
+											minRows={1}
+											maxRows={inputAutogrowMaxRows}
+									autoComplete={disableInputAutocomplete ? "off" : undefined}
+											spellCheck={false}
+											id="webchatInputMessageInputInTextMode"
+											style={matches ? { fontSize: "16px" } : undefined}
+										/>
+									)}
+								</MediaQuery>
 
-						<SubmitButton
-							disabled={
+								{props.config.settings.behavior.enableSTT && (
+									<SpeechButton
+										className={classnames(
+											"webchat-input-button-speech",
+											sttActive && "webchat-input-button-speech-active",
+										)}
+										aria-label="Speech to text"
+										id="webchatInputMessageSpeechButton"
+										onClick={this.toggleSTT}
+										disabled={!this.isSTTSupported()}
+									>
+										{sttActive && (
+											<>
+												<SpeechButtonAnimatedBackground
+													className={classnames(
+														"webchat-input-button-speech-background",
+													)}
+													aria-hidden="true"
+												/>
+												<SpeechButtonBackground
+													className={classnames(
+														"webchat-input-button-speech-background",
+													)}
+													aria-hidden="true"
+												/>
+											</>
+										)}
+										<SpeechIcon />
+									</SpeechButton>
+								)}
+
+								<SubmitButton
+									disabled={
 								(this.state.text === "" && isFileListEmpty) || fileUploadError
-							}
-							className="webchat-input-button-send cc-rtl-flip"
-							aria-label="Send Message"
-							id="webchatInputMessageSendMessageButton"
-						>
-							<SendIcon />
-						</SubmitButton>
+									}
+									className="webchat-input-button-send cc-rtl-flip"
+									aria-label="Send Message"
+									id="webchatInputMessageSendMessageButton"
+								>
+									<SendIcon />
+								</SubmitButton>
+							</>
+						)}
 					</InputForm>
 					{!isFileListEmpty && <PreviewUploadedFiles />}
 				</InputWrapper>

@@ -119,6 +119,16 @@ export interface IWebchatV2Settings {
 	privacyUrl: string;
 }
 
+export interface IPersistentMenuItem {
+    title: string;
+    payload: string;
+}
+
+export interface IPersistentMenu {
+    title: string;
+    menuItems: IPersistentMenuItem[];
+}
+
 export interface IWebchatSettings {
 	// Settings that are also configurable via the Endpoint Editor in Cognigy.AI
 	layout: {
@@ -131,6 +141,8 @@ export interface IWebchatSettings {
 		agentLogoUrl: string;
 		inputAutogrowMaxRows: number;
 		enableInputCollation: boolean;
+		enablePersistentMenu:boolean;
+		persistentMenu: IPersistentMenu;
 		inputCollationTimeout: number;
 		dynamicImageAspectRatio: boolean;
 		disableInputAutocomplete: boolean;
