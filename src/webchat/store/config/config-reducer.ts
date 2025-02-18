@@ -47,6 +47,9 @@ export const getInitialState = (): ConfigState => ({
 			textLinkColor: "",
 		},
 		behavior: {
+			collateStreamedOutputs: false,
+			progressiveMessageRendering: false,
+			renderMarkdown: false,
 			enableTypingIndicator: true,
 			messageDelay: 500,
 			inputPlaceholder: "Type something here…",
@@ -54,6 +57,7 @@ export const getInitialState = (): ConfigState => ({
 			enableTTS: false,
 			focusInputAfterPostback: false,
 			enableConnectionStatusIndicator: true,
+			scrollingBehavior: "alwaysScroll",
 		},
 		startBehavior: {
 			startBehavior: "none",
@@ -185,6 +189,7 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			disableRenderURLsAsLinks: false,
 			disableTextInputSanitization: false,
 			disableToggleButton: false,
+			disableTeaserMarkdownRemoval: false,
 			enableAutoFocus: false,
 			enableInjectionWithoutEmptyHistory: false,
 			enableFocusTrap: false,

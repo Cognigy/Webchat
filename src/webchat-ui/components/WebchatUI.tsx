@@ -1,5 +1,5 @@
 import React from "react";
-import { IMessage } from "../../common/interfaces/message";
+import { IMessage, IStreamingMessage } from "../../common/interfaces/message";
 import Header from "./presentational/Header";
 import { CacheProvider, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -17,7 +17,6 @@ import stylisRTL from "stylis-rtl";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
-import { ChatScroller } from "./history/ChatScroller";
 import FAB from "./presentational/FAB";
 import WebchatWrapper from "./presentational/WebchatWrapper";
 import ChatIcon from "../assets/baseline-chat-24px.svg";
@@ -68,6 +67,7 @@ import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
+import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -91,10 +91,7 @@ export interface WebchatUIProps {
 	onClose: () => void;
 	onConnect: () => void;
 	onToggle: () => void;
-	onSetScrollToPosition: (position: number) => void;
-	onSetLastScrolledPosition: (position: number | null) => void;
-	scrollToPosition: number;
-	lastScrolledPosition: number | null;
+	lastInputId: string;
 
 	onEmitAnalytics: (event: string, payload?: any) => void;
 	onTriggerEngagementMessage: () => void;
@@ -144,6 +141,8 @@ export interface WebchatUIProps {
 	openXAppOverlay: (message: string | undefined) => void;
 	options?: Partial<Options>;
 	ttsActive: boolean;
+
+	onSetMessageAnimated?: (messageId: string, animationState: IStreamingMessage["animationState"]) => void;
 }
 
 interface WebchatUIState {
@@ -249,7 +248,6 @@ export class WebchatUI extends React.PureComponent<
 		timedOut: false,
 	};
 
-	history: React.RefObject<ChatScroller>;
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
 	closeButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	menuButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
@@ -268,7 +266,6 @@ export class WebchatUI extends React.PureComponent<
 
 	constructor(props) {
 		super(props);
-		this.history = React.createRef();
 		this.chatToggleButtonRef = React.createRef();
 		this.closeButtonInHeaderRef = React.createRef();
 		this.menuButtonInHeaderRef = React.createRef();
@@ -331,7 +328,7 @@ export class WebchatUI extends React.PureComponent<
 			);
 			isThemeChanged = true;
 		}
-		if (!!botMessageColor && botMessageColor !== state.theme.backgroundBotMessage) {
+		if (!!botMessageColor && botMessageColor !== state.theme.backgroundBotMessage && !props?.config?.settings?.layout?.disableBotOutputBorder) {
 			document.documentElement.style.setProperty(
 				"--webchat-background-bot-message",
 				botMessageColor,
@@ -450,17 +447,17 @@ export class WebchatUI extends React.PureComponent<
 
 		if (
 			this?.props?.config?.settings?.colors?.primaryColor !==
-				prevProps?.config?.settings?.colors?.primaryColor ||
+			prevProps?.config?.settings?.colors?.primaryColor ||
 			this?.props?.config?.settings?.colors?.secondaryColor !==
-				prevProps?.config?.settings?.colors?.secondaryColor ||
+			prevProps?.config?.settings?.colors?.secondaryColor ||
 			this?.props?.config?.settings?.colors?.chatInterfaceColor !==
-				prevProps?.config?.settings?.colors?.chatInterfaceColor ||
+			prevProps?.config?.settings?.colors?.chatInterfaceColor ||
 			this?.props?.config?.settings?.colors?.botMessageColor !==
-				prevProps?.config?.settings?.colors?.botMessageColor ||
+			prevProps?.config?.settings?.colors?.botMessageColor ||
 			this?.props?.config?.settings?.colors?.userMessageColor !==
-				prevProps?.config?.settings?.colors?.userMessageColor ||
+			prevProps?.config?.settings?.colors?.userMessageColor ||
 			this?.props?.config?.settings?.colors?.textLinkColor !==
-				prevProps?.config?.settings?.colors?.textLinkColor
+			prevProps?.config?.settings?.colors?.textLinkColor
 		) {
 			this.setState({
 				theme: createWebchatTheme({
@@ -511,6 +508,12 @@ export class WebchatUI extends React.PureComponent<
 				);
 				if (lastReadableUnseenMessage) {
 					lastUnseenMessageText = getTextFromMessage(lastReadableUnseenMessage);
+				}
+
+				// TODO: Add markdown rendering if there is valid markdown and renderMarkdown is enabled
+				// adding react-markdown is blocked by updating React to v18
+				if (!this.props.config.settings.widgetSettings.disableTeaserMarkdownRemoval) {
+					lastUnseenMessageText = removeMarkdownChars(lastUnseenMessageText);
 				}
 
 				this.setState({
@@ -614,21 +617,16 @@ export class WebchatUI extends React.PureComponent<
 			this.titleType = "original";
 		} else {
 			if (this.props.unseenMessages.length > 0) {
-				document.title = `(${this.props.unseenMessages.length}) ${
-					this.props.unseenMessages.length === 1
+				document.title = `(${this.props.unseenMessages.length}) ${this.props.unseenMessages.length === 1
 						? this.props.config.settings.unreadMessages.unreadMessageTitleText
 						: this.props.config.settings.unreadMessages.unreadMessageTitleTextPlural
-				}`;
+					}`;
 				this.titleType = "unread";
 			}
 		}
 	};
 
 	sendMessage: MessageSender = (...args) => {
-		if (this.history.current) {
-			this.history.current.handleScrollTo(undefined, true);
-		}
-
 		this.props.onSendMessage(...args);
 
 		// we activate scrollToPosition functionality on first message
@@ -700,10 +698,6 @@ export class WebchatUI extends React.PureComponent<
 
 	handleSendRating = ({ rating, comment, showRatingStatus }) => {
 		this.props.onShowRatingScreen(false);
-
-		if (this.history.current) {
-			this.history.current.handleScrollTo();
-		}
 
 		this.props.onSendMessage(
 			undefined,
@@ -871,6 +865,8 @@ export class WebchatUI extends React.PureComponent<
 			onSetDropZoneVisible,
 			isXAppOverlayOpen,
 			openXAppOverlay,
+			onSetMessageAnimated,
+			lastInputId,
 			...restProps
 		} = props;
 		const { theme, hadConnection, lastUnseenMessageText, wasOpen } = state;
@@ -1093,6 +1089,7 @@ export class WebchatUI extends React.PureComponent<
 			onSetStoredMessage,
 			isDropZoneVisible,
 			isXAppOverlayOpen,
+			lastInputId,
 		} = this.props;
 
 		let informMessage = "";
@@ -1240,11 +1237,8 @@ export class WebchatUI extends React.PureComponent<
 			return (
 				<>
 					<HistoryWrapper
-						scrollToPosition={scrollToPosition}
-						setScrollToPosition={onSetScrollToPosition}
-						lastScrolledPosition={lastScrolledPosition}
-						setLastScrolledPosition={onSetLastScrolledPosition}
-						ref={this.history as any}
+						scrollBehavior={config.settings.behavior.scrollingBehavior}
+						lastInputId={lastInputId}
 						className="webchat-chat-history"
 						tabIndex={messages?.length === 0 ? -1 : 0} // When no messages, remove chat history from tab order
 						onDragEnter={handleDragEnter}
@@ -1255,7 +1249,7 @@ export class WebchatUI extends React.PureComponent<
 						</h2>
 						{this.renderHistory()}
 					</HistoryWrapper>
-					<QueueUpdates handleScroll={this.history.current?.handleScrollTo} />
+					<QueueUpdates />
 					{this.renderInput()}
 				</>
 			);
@@ -1376,13 +1370,14 @@ export class WebchatUI extends React.PureComponent<
 				onSendMessage={this.sendMessage}
 				config={config}
 				plugins={messagePlugins}
-				onSetFullscreen={() => {}}
+				onSetFullscreen={() => { }}
 				onDismissFullscreen={onDismissFullscreenMessage}
 				message={fullscreenMessage as IMessage}
 				webchatTheme={this.state.theme}
 				onEmitAnalytics={onEmitAnalytics}
 				action={this.sendMessage}
 				theme={this.state.theme}
+				onSetMessageAnimated={this.props.onSetMessageAnimated}
 			/>
 		);
 	}
@@ -1393,12 +1388,16 @@ export class WebchatUI extends React.PureComponent<
 			typingIndicator,
 			config,
 			onEmitAnalytics,
-			onSetScrollToPosition,
 			openXAppOverlay,
 		} = this.props;
 		const { messagePlugins = [] } = this.state;
 
-		const { enableTypingIndicator, messageDelay, enableAIAgentNotice, AIAgentNoticeText } = config.settings.behavior;
+		const {
+			enableTypingIndicator,
+			messageDelay,
+			enableAIAgentNotice,
+			AIAgentNoticeText
+		} = config.settings.behavior;
 		const isTyping = typingIndicator !== "remove" && typingIndicator !== "hide";
 
 		const isEnded = isConversationEnded(messages);
@@ -1426,19 +1425,20 @@ export class WebchatUI extends React.PureComponent<
 
 					return (
 						<Message
-							key={JSON.stringify({ message, index })}
+							key={message.id || JSON.stringify({ message, index })}
 							message={message}
 							action={this.sendMessage}
 							config={config}
 							hasReply={hasReply}
 							isConversationEnded={isEnded}
-							onDismissFullscreen={() => {}}
+							onDismissFullscreen={() => { }}
 							onEmitAnalytics={onEmitAnalytics}
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
 							plugins={messagePlugins}
 							prevMessage={messagesExcludingPrivacyMessage?.[index - 1]}
 							theme={this.state.theme}
+							onSetMessageAnimated={this.props.onSetMessageAnimated}
 						/>
 					);
 				})}
@@ -1456,6 +1456,7 @@ export class WebchatUI extends React.PureComponent<
 							config?.settings?.widgetSettings?.sourceDirectionMapping?.bot ||
 							"incoming"
 						}
+						disableBorder={config?.settings?.layout?.disableBotOutputBorder}
 					/>
 				)}
 			</>

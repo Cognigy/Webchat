@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import { options } from "./options/options-reducer";
-import { messages } from "./messages/message-reducer";
+import { createMessageReducer } from "./messages/message-reducer";
 import { ui } from "./ui/ui-reducer";
 import { config } from "./config/config-reducer";
 import { connection } from "./connection/connection-reducer";
@@ -17,21 +17,24 @@ import { StoreState } from "./store";
 import xAppOverlay from "./xapp-overlay/slice";
 import queueUpdates from "./queue-updates/slice";
 
-const rootReducer = combineReducers({
-	messages,
-	unseenMessages,
-	options,
-	config,
-	autoInject,
-	rating,
-	ui,
-	connection,
-	inputCollation,
-	input,
-	prevConversations,
-	xAppOverlay,
-	queueUpdates
-});
+const rootReducer = (state, action) => {
+	const combinedReducer = combineReducers({
+		messages: createMessageReducer(() => state),
+		unseenMessages,
+		options,
+		config,
+		autoInject,
+		rating,
+		ui,
+		connection,
+		inputCollation,
+		input,
+		prevConversations,
+		xAppOverlay,
+		queueUpdates
+	});
+	return combinedReducer(state, action);
+};
 
 const RESET_STATE = "RESET_STATE";
 export const resetState = (state?: StoreState) => ({
@@ -69,10 +72,16 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 
 		case "SET_PREV_STATE": {
 			const { showRatingScreen, ...rating } = action.state.rating;
+			const messages = action.state.messages.map((message) => {
+				if (message.animationState) {
+					message.animationState = "done";
+				}
+				return message;
+			})
 			return rootReducer(
 				{
 					...state,
-					messages: [...action.state.messages],
+					messages: [...messages],
 					rating: { showRatingScreen: false, ...rating },
 				},
 				{ type: "" },

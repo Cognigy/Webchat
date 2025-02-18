@@ -9,6 +9,7 @@ interface ITypingIndicatorProps {
 	active: boolean;
 	delay?: number;
 	direction?: TSourceDirection;
+	disableBorder?: boolean;
 }
 
 const ChatTypingIndicator = styled(ComponentsTypingIndicator)({
@@ -20,7 +21,7 @@ const HiddenChatTypingIndicator = styled(ChatTypingIndicator)({
 });
 
 const TypingIndicator: FC<ITypingIndicatorProps> = props => {
-	const { active, delay, direction } = props;
+	const { active, delay, direction, disableBorder } = props;
 
 	const isMounted = useIsMounted();
 
@@ -54,7 +55,7 @@ const TypingIndicator: FC<ITypingIndicatorProps> = props => {
 
 	if (!isVisible) return <HiddenChatTypingIndicator />;
 
-	return <ChatTypingIndicator direction={direction} />;
+	return <ChatTypingIndicator direction={direction} disableBorder={disableBorder} />;
 };
 
 export default TypingIndicator;
