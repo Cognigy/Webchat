@@ -72,10 +72,23 @@ const Button = styled.button(({ theme }) => ({
 	},
 }));
 
-const AttachFileButton = styled(Button)(({ theme }) => ({}));
+const AttachFileButton = styled(Button)(({ theme }) => ({
+	padding: "8px",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	minWidth: "32px",
+	minHeight: "32px",
+}));
 
 const SpeechButton = styled(Button)(({ theme }) => ({
 	position: "relative",
+	padding: "8px",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	minWidth: "32px",
+	minHeight: "32px",
 
 	"&.webchat-input-button-speech-active": {
 		fill: theme.textLight,
