@@ -101,8 +101,6 @@ const SpeechIcon = styled(SpeechIconSVG)(() => ({
 
 const SpeechButtonBackground = styled.div(({ theme }) => ({
 	position: "absolute",
-	top: "-6px",
-	left: "-6px",
 	backgroundColor: theme.primaryColor,
 	height: 28,
 	width: 28,
@@ -111,8 +109,6 @@ const SpeechButtonBackground = styled.div(({ theme }) => ({
 
 const SpeechButtonAnimatedBackground = styled.div(({ theme }) => ({
 	position: "absolute",
-	top: "-6px",
-	left: "-6px",
 	backgroundColor: theme.primaryColor,
 	opacity: 0.2,
 	height: 28,
