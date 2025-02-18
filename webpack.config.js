@@ -39,11 +39,7 @@ module.exports = {
 				test: /\.svg$/,
 				exclude: /node_modules/,
 				use: {
-					loader: "@svgr/webpack",
-					options: {
-						icon: true,
-						titleProp: true,
-					}
+					loader: "svg-react-loader",
 				},
 			},
 		],
