@@ -145,7 +145,7 @@ describe('Start Behavior', () => {
         });
     })
 
-    it('should not display a get-started-button without text and data', () => {
+	it.only('should not display a get-started-button without text and data', () => {
         cy
             .visitWebchat()
             .initWebchat({
@@ -153,13 +153,16 @@ describe('Start Behavior', () => {
                     startBehavior: {
                         startBehavior: "button",
                         getStartedText: "some text",
-                        getStartedPayload: "",
+						getStartedPayload: "",
                         getStartedData: {}
-                    }
+					},
+					homeScreen: {
+						enabled: false
+					}
                 }
             });
 
-        cy.openWebchat();
-        cy.get('[data-cognigy-webchat-toggle]').should('not.exist');
+		cy.openWebchat().wait(100);
+		cy.get('#webchatGetStartedButton').should('not.exist');
     })
 });

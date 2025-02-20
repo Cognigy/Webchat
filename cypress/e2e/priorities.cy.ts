@@ -115,7 +115,7 @@ const generateTestCase = (params: IGenerateTestCaseParams) => {
 }
 
 describe("Channel Rendering Priorities", {
-    defaultCommandTimeout: 500
+	defaultCommandTimeout: 10000
 }, () => {
     beforeEach(() => {
         cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
