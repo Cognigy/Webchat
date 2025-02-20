@@ -21,14 +21,23 @@ describe("Message with Quick Replies", () => {
         })
     })
 
-    it("should click the quick reply and post as user message", () => {
+    it("should verify quick reply behavior in enabled and disabled states", () => {
+    // First run - check clickable state
         cy.withMessageFixture('quick-replies', () => {
-            cy.get("button:contains('foobar003qr01')").last().focus();
-            cy.get("button:contains('foobar003qr01')").last().click();
+            cy.get("button:contains('foobar003qr01')").last()
+                .should('not.be.disabled')
+                .focus()
+                .click();
             cy.get(".webchat-message-row.user")
                 .contains("foobar003qr01");
         });
-    })
+
+        // Second run - verify disabled state
+        cy.withMessageFixture('quick-replies', () => {
+            cy.get("button:contains('foobar003qr01')").last()
+                .should('be.disabled');
+        });
+    });
 
     // we have no button images on v3
     xit("should render image inside quick replies button", () => {
