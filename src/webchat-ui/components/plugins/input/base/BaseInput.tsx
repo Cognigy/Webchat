@@ -20,9 +20,9 @@ const InputWrapper = styled.div(() => ({
 	gap: 12,
 }));
 
-const InputForm = styled.form(() => ({
+const InputForm = styled.form<{persistentMenuOpen:boolean}>(({persistentMenuOpen}) => ({
 	display: "flex",
-	alignItems: "center",
+	alignItems: persistentMenuOpen ? "flex-end" : "center",
 	gap: 12,
 	marginBottom: 0,
 }));
@@ -85,7 +85,12 @@ const iconButtonStyles = {
 	minHeight: "32px",
 };
 
-const MenuButton = styled(Button)(({ theme }) => (iconButtonStyles));
+const MenuButton = styled(Button)<{open:boolean}>(({ theme,open }) => ({
+	...iconButtonStyles,
+	padding:"6px",
+	fill: open ? theme.primaryColor : "initial",
+}));
+
 const AttachFileButton = styled(Button)(({ theme }) => (iconButtonStyles));
 
 const SpeechButton = styled(Button)(({ theme }) => ({
@@ -448,6 +453,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 					<InputForm
 						onSubmit={this.handleSubmit}
 						className={classnames("webchat-input-menu-form")}
+						persistentMenuOpen={isMenuOpen}
 					>
 						{showPersistentMenu && (
 							<>
@@ -457,6 +463,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									aria-expanded={isMenuOpen}
 									className="webchat-input-persistent-menu-button"
 									id="webchatInputButtonMenu"
+									open={isMenuOpen}
 								>
 									<MenuIcon />
 								</MenuButton>
