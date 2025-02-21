@@ -1,7 +1,14 @@
-Created on 11-02-2025 at 10:13:28
+Created on 21-02-2025 at 16:48:15
 
 {
-  "@babel/code-frame@7.24.2": {
+  "@ampproject/remapping@2.3.0": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/ampproject/remapping",
+    "publisher": "Justin Ridgewell",
+    "email": "jridgewell@google.com",
+    "licenseFile": "node_modules/@ampproject/remapping/LICENSE"
+  },
+  "@babel/code-frame@7.26.2": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -9,7 +16,39 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@babel/code-frame/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-module-imports@7.24.3": {
+  "@babel/compat-data@7.26.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/compat-data/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/core@7.24.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/core/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/generator@7.26.9": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/generator/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/helper-compilation-targets@7.26.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/helper-compilation-targets/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/helper-module-imports@7.25.9": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -17,7 +56,15 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@babel/helper-module-imports/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-string-parser@7.24.1": {
+  "@babel/helper-module-transforms@7.26.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/helper-module-transforms/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/helper-string-parser@7.25.9": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -25,7 +72,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@babel/helper-string-parser/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-validator-identifier@7.22.20": {
+  "@babel/helper-validator-identifier@7.25.9": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -33,12 +80,36 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@babel/helper-validator-identifier/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/highlight@7.24.2": {
+  "@babel/helper-validator-option@7.25.9": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
     "url": "https://babel.dev/team",
-    "licenseFile": "node_modules/@babel/highlight/LICENSE",
+    "licenseFile": "node_modules/@babel/helper-validator-option/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/helpers@7.24.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/helpers/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/parser@7.26.9": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/parser/LICENSE",
+    "copyright": "Copyright (C) 2012-2014 by various contributors (see AUTHORS)"
+  },
+  "@babel/runtime-corejs3@7.26.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/runtime-corejs3/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
   "@babel/runtime@7.24.1": {
@@ -49,7 +120,23 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@babel/runtime/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/types@7.24.0": {
+  "@babel/template@7.26.9": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/template/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/traverse@7.26.9": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/traverse/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/types@7.26.9": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -63,7 +150,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.41.0": {
+  "@cognigy/chat-components@0.42.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -75,7 +162,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.12.0": {
+  "@cognigy/webchat@3.13.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -88,7 +175,7 @@ Created on 11-02-2025 at 10:13:28
     "publisher": "DABH",
     "licenseFile": "node_modules/@colors/colors/LICENSE"
   },
-  "@cypress/request@3.0.1": {
+  "@cypress/request@3.0.7": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/cypress-io/request",
     "publisher": "Mikeal Rogers",
@@ -122,6 +209,19 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/cache/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
+  "@emotion/cache@11.14.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/emotion-js/emotion/tree/main/packages/cache",
+    "licenseFile": "node_modules/@emotion/css/node_modules/@emotion/cache/LICENSE",
+    "copyright": "Copyright (c) Emotion team and other contributors"
+  },
+  "@emotion/css@11.1.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/emotion-js/emotion/tree/master/packages/css",
+    "publisher": "Kye Hohenberger",
+    "licenseFile": "node_modules/@emotion/css/LICENSE",
+    "copyright": "Copyright (c) Emotion team and other contributors"
+  },
   "@emotion/hash@0.9.2": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/hash",
@@ -137,7 +237,7 @@ Created on 11-02-2025 at 10:13:28
   "@emotion/memoize@0.9.0": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/main/packages/memoize",
-    "licenseFile": "node_modules/@emotion/babel-plugin/node_modules/@emotion/memoize/LICENSE",
+    "licenseFile": "node_modules/@emotion/memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
   "@emotion/react@11.13.0": {
@@ -213,6 +313,12 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@emotion/serialize/node_modules/@emotion/utils/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
+  "@emotion/utils@1.4.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/emotion-js/emotion/tree/main/packages/utils",
+    "licenseFile": "node_modules/@emotion/css/node_modules/@emotion/utils/LICENSE",
+    "copyright": "Copyright (c) Emotion team and other contributors"
+  },
   "@emotion/weak-memoize@0.2.5": {
     "licenses": "MIT",
     "repository": "https://github.com/emotion-js/emotion/tree/master/packages/weak-memoize",
@@ -225,21 +331,21 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@floating-ui/core@1.6.7": {
+  "@floating-ui/core@1.6.9": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/core/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@floating-ui/dom@1.6.10": {
+  "@floating-ui/dom@1.6.13": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/dom/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@floating-ui/utils@0.2.7": {
+  "@floating-ui/utils@0.2.9": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
@@ -252,6 +358,45 @@ Created on 11-02-2025 at 10:13:28
     "publisher": "Google Inc.",
     "licenseFile": "node_modules/@fontsource/figtree/LICENSE",
     "copyright": "Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)"
+  },
+  "@jridgewell/gen-mapping@0.3.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/gen-mapping",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "licenseFile": "node_modules/@jridgewell/gen-mapping/LICENSE",
+    "copyright": "Copyright 2022 Justin Ridgewell <jridgewell@google.com>"
+  },
+  "@jridgewell/resolve-uri@3.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/resolve-uri",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "licenseFile": "node_modules/@jridgewell/resolve-uri/LICENSE",
+    "copyright": "Copyright 2019 Justin Ridgewell <jridgewell@google.com>"
+  },
+  "@jridgewell/set-array@1.2.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/set-array",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "licenseFile": "node_modules/@jridgewell/set-array/LICENSE",
+    "copyright": "Copyright 2022 Justin Ridgewell <jridgewell@google.com>"
+  },
+  "@jridgewell/sourcemap-codec@1.4.15": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/sourcemap-codec",
+    "publisher": "Rich Harris",
+    "licenseFile": "node_modules/@jridgewell/sourcemap-codec/LICENSE",
+    "copyright": "Copyright (c) 2015 Rich Harris"
+  },
+  "@jridgewell/trace-mapping@0.3.25": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/trace-mapping",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "licenseFile": "node_modules/@jridgewell/trace-mapping/LICENSE",
+    "copyright": "Copyright 2022 Justin Ridgewell <justin@ridgewell.name>"
   },
   "@reduxjs/toolkit@2.2.7": {
     "licenses": "MIT",
@@ -327,7 +472,7 @@ Created on 11-02-2025 at 10:13:28
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react-transition-group/LICENSE"
   },
-  "@types/react@16.14.60": {
+  "@types/react@18.3.18": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react/LICENSE"
@@ -336,11 +481,6 @@ Created on 11-02-2025 at 10:13:28
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@types/react/LICENSE"
-  },
-  "@types/scheduler@0.16.8": {
-    "licenses": "MIT",
-    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-    "licenseFile": "node_modules/@types/scheduler/LICENSE"
   },
   "@types/sinonjs__fake-timers@8.1.1": {
     "licenses": "MIT",
@@ -351,6 +491,11 @@ Created on 11-02-2025 at 10:13:28
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/sizzle/LICENSE"
+  },
+  "@types/trusted-types@2.0.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseFile": "node_modules/@types/trusted-types/LICENSE"
   },
   "@types/unist@2.0.11": {
     "licenses": "MIT",
@@ -533,7 +678,7 @@ Created on 11-02-2025 at 10:13:28
     "url": "http://www.futurealoof.com",
     "licenseFile": "node_modules/aws-sign2/LICENSE"
   },
-  "aws4@1.12.0": {
+  "aws4@1.13.2": {
     "licenses": "MIT",
     "repository": "https://github.com/mhart/aws4",
     "publisher": "Michael Hart",
@@ -613,6 +758,14 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/brace-expansion/LICENSE",
     "copyright": "Copyright (c) 2013 Julian Gruber <julian@juliangruber.com>"
   },
+  "browserslist@4.24.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/browserslist/browserslist",
+    "publisher": "Andrey Sitnik",
+    "email": "andrey@sitnik.ru",
+    "licenseFile": "node_modules/browserslist/LICENSE",
+    "copyright": "Copyright 2014 Andrey Sitnik <andrey@sitnik.ru> and other contributors"
+  },
   "buffer-crc32@0.2.13": {
     "licenses": "MIT",
     "repository": "https://github.com/brianloveswords/buffer-crc32",
@@ -654,6 +807,14 @@ Created on 11-02-2025 at 10:13:28
     "url": "sindresorhus.com",
     "licenseFile": "node_modules/callsites/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+  },
+  "caniuse-lite@1.0.30001700": {
+    "licenses": "CC-BY-4.0",
+    "repository": "https://github.com/browserslist/caniuse-lite",
+    "publisher": "Ben Briggs",
+    "email": "beneb.info@gmail.com",
+    "url": "http://beneb.info",
+    "licenseFile": "node_modules/caniuse-lite/LICENSE"
   },
   "caseless@0.12.0": {
     "licenses": "Apache-2.0",
@@ -727,7 +888,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/check-more-types/LICENSE",
     "copyright": "Copyright (c) 2014 Kensho"
   },
-  "ci-info@3.9.0": {
+  "ci-info@4.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/watson/ci-info",
     "publisher": "Thomas Watson Steen",
@@ -735,6 +896,13 @@ Created on 11-02-2025 at 10:13:28
     "url": "https://twitter.com/wa7son",
     "licenseFile": "node_modules/ci-info/LICENSE",
     "copyright": "Copyright (c) 2016 Thomas Watson Steen"
+  },
+  "classnames@2.3.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/JedWatson/classnames",
+    "publisher": "Jed Watson",
+    "licenseFile": "node_modules/react-scroll-to-bottom/node_modules/classnames/LICENSE",
+    "copyright": "Copyright (c) 2018 Jed Watson"
   },
   "classnames@2.5.1": {
     "licenses": "MIT",
@@ -865,6 +1033,30 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/@emotion/babel-plugin/node_modules/convert-source-map/LICENSE",
     "copyright": "Copyright 2013 Thorsten Lorenz. . All rights reserved."
   },
+  "convert-source-map@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thlorenz/convert-source-map",
+    "publisher": "Thorsten Lorenz",
+    "email": "thlorenz@gmx.de",
+    "url": "http://thlorenz.com",
+    "licenseFile": "node_modules/convert-source-map/LICENSE",
+    "copyright": "Copyright 2013 Thorsten Lorenz. . All rights reserved."
+  },
+  "core-js-pure@3.40.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/zloirock/core-js",
+    "publisher": "Denis Pushkarev",
+    "email": "zloirock@zloirock.ru",
+    "url": "http://zloirock.ru",
+    "licenseFile": "node_modules/core-js-pure/LICENSE",
+    "copyright": "Copyright (c) 2014-2025 Denis Pushkarev"
+  },
+  "core-js@3.18.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/zloirock/core-js",
+    "licenseFile": "node_modules/react-scroll-to-bottom/node_modules/core-js/LICENSE",
+    "copyright": "Copyright (c) 2014-2021 Denis Pushkarev"
+  },
   "core-util-is@1.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/isaacs/core-util-is",
@@ -882,7 +1074,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/cosmiconfig/LICENSE",
     "copyright": "Copyright (c) 2015 David Clark"
   },
-  "cross-spawn@7.0.3": {
+  "cross-spawn@7.0.6": {
     "licenses": "MIT",
     "repository": "https://github.com/moxystudio/node-cross-spawn",
     "publisher": "André Cruz",
@@ -914,13 +1106,13 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/csstype/LICENSE",
     "copyright": "Copyright (c) 2017-2018 Fredrik Nicol"
   },
-  "cypress-real-events@1.13.0": {
+  "cypress-real-events@1.14.0": {
     "licenses": "MIT",
     "repository": "https://github.com/dmtrKovalenko/cypress-real-events",
     "publisher": "Dmitriy Kovalenko",
     "licenseFile": "node_modules/cypress-real-events/README.md"
   },
-  "cypress@13.13.1": {
+  "cypress@13.17.0": {
     "licenses": "MIT",
     "repository": "https://github.com/cypress-io/cypress",
     "licenseFile": "node_modules/cypress/README.md"
@@ -1040,21 +1232,13 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/dom-helpers/LICENSE",
     "copyright": "Copyright (c) 2015 Jason Quense"
   },
-  "dompurify@2.5.6": {
-    "licenses": "(MPL-2.0 OR Apache-2.0)",
-    "repository": "https://github.com/cure53/DOMPurify",
-    "publisher": "Mario Heiderich",
-    "email": "mario@cure53.de",
-    "url": "https://cure53.de/",
-    "licenseFile": "node_modules/dompurify/LICENSE"
-  },
-  "dompurify@3.1.6": {
+  "dompurify@3.2.4": {
     "licenses": "(MPL-2.0 OR Apache-2.0)",
     "repository": "https://github.com/cure53/DOMPurify",
     "publisher": "Dr.-Ing. Mario Heiderich, Cure53",
     "email": "mario@cure53.de",
     "url": "https://cure53.de/",
-    "licenseFile": "node_modules/@cognigy/chat-components/node_modules/dompurify/LICENSE"
+    "licenseFile": "node_modules/dompurify/LICENSE"
   },
   "ecc-jsbn@0.1.2": {
     "licenses": "MIT",
@@ -1064,6 +1248,13 @@ Created on 11-02-2025 at 10:13:28
     "url": "http://jeremie.com/",
     "licenseFile": "node_modules/ecc-jsbn/LICENSE",
     "copyright": "Copyright (c) 2014 Jeremie Miller"
+  },
+  "electron-to-chromium@1.5.101": {
+    "licenses": "ISC",
+    "repository": "https://github.com/kilian/electron-to-chromium",
+    "publisher": "Kilian Valkhof",
+    "licenseFile": "node_modules/electron-to-chromium/LICENSE",
+    "copyright": "Copyright 2018 Kilian Valkhof"
   },
   "emoji-regex@8.0.0": {
     "licenses": "MIT",
@@ -1130,6 +1321,15 @@ Created on 11-02-2025 at 10:13:28
     "email": "ljharb@gmail.com",
     "licenseFile": "node_modules/es-errors/LICENSE",
     "copyright": "Copyright (c) 2024 Jordan Harband"
+  },
+  "escalade@3.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/escalade",
+    "publisher": "Luke Edwards",
+    "email": "luke.edwards05@gmail.com",
+    "url": "https://lukeed.com",
+    "licenseFile": "node_modules/escalade/license",
+    "copyright": "Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)"
   },
   "escape-string-regexp@1.0.5": {
     "licenses": "MIT",
@@ -1264,15 +1464,6 @@ Created on 11-02-2025 at 10:13:28
     "url": "http://www.futurealoof.com",
     "licenseFile": "node_modules/forever-agent/LICENSE"
   },
-  "form-data@2.3.3": {
-    "licenses": "MIT",
-    "repository": "https://github.com/form-data/form-data",
-    "publisher": "Felix Geisendörfer",
-    "email": "felix@debuggable.com",
-    "url": "http://debuggable.com/",
-    "licenseFile": "node_modules/@cypress/request/node_modules/form-data/License",
-    "copyright": "Copyright (c) 2012 Felix Geisendörfer (felix@debuggable.com) and contributors"
-  },
   "form-data@4.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/form-data/form-data",
@@ -1306,6 +1497,14 @@ Created on 11-02-2025 at 10:13:28
     "email": "raynos2@gmail.com",
     "licenseFile": "node_modules/function-bind/LICENSE",
     "copyright": "Copyright (c) 2013 Raynos."
+  },
+  "gensync@1.0.0-beta.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/loganfsmyth/gensync",
+    "publisher": "Logan Smyth",
+    "email": "loganfsmyth@gmail.com",
+    "licenseFile": "node_modules/gensync/LICENSE",
+    "copyright": "Copyright 2018 Logan Smyth <loganfsmyth@gmail.com>"
   },
   "get-intrinsic@1.2.4": {
     "licenses": "MIT",
@@ -1356,6 +1555,15 @@ Created on 11-02-2025 at 10:13:28
     "url": "https://sindresorhus.com",
     "licenseFile": "node_modules/global-dirs/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+  },
+  "globals@11.12.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/globals",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "licenseFile": "node_modules/globals/license",
+    "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
   "goober@2.1.14": {
     "licenses": "MIT",
@@ -1528,10 +1736,11 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/html-void-elements/license",
     "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
-  "http-signature@1.3.6": {
+  "http-signature@1.4.0": {
     "licenses": "MIT",
-    "repository": "https://github.com/joyent/node-http-signature",
-    "publisher": "Joyent, Inc",
+    "repository": "https://github.com/TritonDataCenter/node-http-signature",
+    "publisher": "MNX Cloud",
+    "url": "mnx.io",
     "licenseFile": "node_modules/http-signature/LICENSE",
     "copyright": "Copyright Joyent, Inc. All rights reserved.. Permission is hereby granted, free of charge, to any person obtaining a copy. of this software and associated documentation files (the \"Software\"), to. deal in the Software without restriction, including without limitation the. rights to use, copy, modify, merge, publish, distribute, sublicense, and/or. sell copies of the Software, and to permit persons to whom the Software is. furnished to do so, subject to the following conditions:"
   },
@@ -1641,15 +1850,6 @@ Created on 11-02-2025 at 10:13:28
     "url": "http://github.com/qix-",
     "licenseFile": "node_modules/is-arrayish/LICENSE",
     "copyright": "Copyright (c) 2015 JD Ballard"
-  },
-  "is-ci@3.0.1": {
-    "licenses": "MIT",
-    "repository": "https://github.com/watson/is-ci",
-    "publisher": "Thomas Watson Steen",
-    "email": "w@tson.dk",
-    "url": "https://twitter.com/wa7son",
-    "licenseFile": "node_modules/is-ci/LICENSE",
-    "copyright": "Copyright (c) 2016-2021 Thomas Watson Steen"
   },
   "is-core-module@2.13.1": {
     "licenses": "MIT",
@@ -1769,6 +1969,14 @@ Created on 11-02-2025 at 10:13:28
     "publisher": "Tom Wu",
     "licenseFile": "node_modules/jsbn/LICENSE"
   },
+  "jsesc@3.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/jsesc",
+    "publisher": "Mathias Bynens",
+    "url": "https://mathiasbynens.be/",
+    "licenseFile": "node_modules/jsesc/LICENSE-MIT.txt",
+    "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>"
+  },
   "json-parse-even-better-errors@2.3.1": {
     "licenses": "MIT",
     "repository": "https://github.com/npm/json-parse-even-better-errors",
@@ -1792,6 +2000,14 @@ Created on 11-02-2025 at 10:13:28
     "url": "http://blog.izs.me",
     "licenseFile": "node_modules/json-stringify-safe/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+  },
+  "json5@2.2.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/json5/json5",
+    "publisher": "Aseem Kishore",
+    "email": "aseem.kishore@gmail.com",
+    "licenseFile": "node_modules/json5/LICENSE.md",
+    "copyright": "Copyright (c) 2012-2018 Aseem Kishore, and [others]."
   },
   "jsonfile@6.1.0": {
     "licenses": "MIT",
@@ -1897,6 +2113,14 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/loose-envify/LICENSE",
     "copyright": "Copyright (c) 2015 Andres Suarez <zertosh@gmail.com>"
   },
+  "lru-cache@5.1.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-lru-cache",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "licenseFile": "node_modules/lru-cache/LICENSE",
+    "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+  },
   "lru-cache@6.0.0": {
     "licenses": "ISC",
     "repository": "https://github.com/isaacs/node-lru-cache",
@@ -1922,6 +2146,12 @@ Created on 11-02-2025 at 10:13:28
     "url": "http://iceddev.com/",
     "licenseFile": "node_modules/matchmediaquery/LICENSE",
     "copyright": "Copyright (c) 2017 ncochard"
+  },
+  "math-random@2.0.1": {
+    "licenses": "CC0-1.0",
+    "repository": "https://github.com/michaelrhodes/math-random",
+    "publisher": "Michael Rhodes",
+    "licenseFile": "node_modules/math-random/readme.md"
   },
   "mdast-util-find-and-replace@3.0.2": {
     "licenses": "MIT",
@@ -2388,6 +2618,14 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/ms/license.md",
     "copyright": "Copyright (c) 2016 Zeit, Inc."
   },
+  "node-releases@2.0.19": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chicoxyzzy/node-releases",
+    "publisher": "Sergey Rubanov",
+    "email": "chi187@gmail.com",
+    "licenseFile": "node_modules/node-releases/LICENSE",
+    "copyright": "Copyright (c) 2017 Sergey Rubanov (https://github.com/chicoxyzzy)"
+  },
   "nopt@4.0.3": {
     "licenses": "ISC",
     "repository": "https://github.com/npm/nopt",
@@ -2588,12 +2826,12 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/performance-now/license.txt",
     "copyright": "Copyright (c) 2013 Braveg1rl"
   },
-  "picocolors@1.0.0": {
+  "picocolors@1.1.1": {
     "licenses": "ISC",
     "repository": "https://github.com/alexeyraspopov/picocolors",
     "publisher": "Alexey Raspopov",
     "licenseFile": "node_modules/picocolors/LICENSE",
-    "copyright": "Copyright (c) 2021 Alexey Raspopov, Kostiantyn Denysov, Anton Verinov"
+    "copyright": "Copyright (c) 2021-2024 Oleksii Raspopov, Kostiantyn Denysov, Anton Verinov"
   },
   "pify@2.3.0": {
     "licenses": "MIT",
@@ -2620,6 +2858,12 @@ Created on 11-02-2025 at 10:13:28
     "email": "shtylman@gmail.com",
     "licenseFile": "node_modules/process/LICENSE",
     "copyright": "Copyright (c) 2013 Roman Shtylman <shtylman@gmail.com>"
+  },
+  "prop-types@15.7.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/prop-types",
+    "licenseFile": "node_modules/react-scroll-to-bottom/node_modules/prop-types/LICENSE",
+    "copyright": "Copyright (c) 2013-present, Facebook, Inc."
   },
   "prop-types@15.8.1": {
     "licenses": "MIT",
@@ -2653,15 +2897,6 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/proxy-from-env/LICENSE",
     "copyright": "Copyright (C) 2016-2018 Rob Wu <rob@robwu.nl>"
   },
-  "psl@1.9.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/lupomontero/psl",
-    "publisher": "Lupo Montero",
-    "email": "lupomontero@gmail.com",
-    "url": "https://lupomontero.com/",
-    "licenseFile": "node_modules/psl/LICENSE",
-    "copyright": "Copyright (c) 2017 Lupo Montero lupomontero@gmail.com"
-  },
   "pump@3.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/mafintosh/pump",
@@ -2678,34 +2913,13 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/url/node_modules/punycode/LICENSE-MIT.txt",
     "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>"
   },
-  "punycode@2.3.1": {
-    "licenses": "MIT",
-    "repository": "https://github.com/mathiasbynens/punycode.js",
-    "publisher": "Mathias Bynens",
-    "url": "https://mathiasbynens.be/",
-    "licenseFile": "node_modules/punycode/LICENSE-MIT.txt",
-    "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>"
-  },
-  "qs@6.10.4": {
+  "qs@6.13.1": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/ljharb/qs",
     "licenseFile": "node_modules/qs/LICENSE.md",
     "copyright": "Copyright (c) 2014, Nathan LaFreniere and other [contributors](https://github.com/ljharb/qs/graphs/contributors). All rights reserved."
   },
-  "qs@6.13.0": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/ljharb/qs",
-    "licenseFile": "node_modules/url/node_modules/qs/LICENSE.md",
-    "copyright": "Copyright (c) 2014, Nathan LaFreniere and other [contributors](https://github.com/ljharb/qs/graphs/contributors). All rights reserved."
-  },
-  "querystringify@2.2.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/unshiftio/querystringify",
-    "publisher": "Arnout Kazemier",
-    "licenseFile": "node_modules/querystringify/LICENSE",
-    "copyright": "Copyright (c) 2015 Unshift.io, Arnout Kazemier,  the Contributors."
-  },
-  "react-dom@17.0.2": {
+  "react-dom@18.3.1": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/react",
     "licenseFile": "node_modules/react-dom/LICENSE",
@@ -2778,6 +2992,15 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/react-responsive/LICENSE",
     "copyright": "Copyright (c) 2020 Contra <yo@contra.io>"
   },
+  "react-scroll-to-bottom@4.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/compulim/react-scroll-to-bottom",
+    "publisher": "William Wong",
+    "email": "compulim@hotmail.com",
+    "url": "http://compulim.info/",
+    "licenseFile": "node_modules/react-scroll-to-bottom/LICENSE",
+    "copyright": "Copyright (c) 2020 William Wong"
+  },
   "react-textarea-autosize@8.5.3": {
     "licenses": "MIT",
     "repository": "https://github.com/Andarist/react-textarea-autosize",
@@ -2800,7 +3023,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/react-transition-group/LICENSE",
     "copyright": "Copyright (c) 2018, React Community. Forked from React (https://github.com/facebook/react) Copyright 2013-present, Facebook, Inc.. All rights reserved."
   },
-  "react@17.0.2": {
+  "react@18.3.1": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/react",
     "licenseFile": "node_modules/react/LICENSE",
@@ -2921,13 +3144,6 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/request-progress/LICENSE",
     "copyright": "Copyright (c) 2012 IndigoUnited"
   },
-  "requires-port@1.0.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/unshiftio/requires-port",
-    "publisher": "Arnout Kazemier",
-    "licenseFile": "node_modules/requires-port/LICENSE",
-    "copyright": "Copyright (c) 2015 Unshift.io, Arnout Kazemier,  the Contributors."
-  },
   "reselect@5.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/reduxjs/reselect",
@@ -2994,7 +3210,7 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/safer-buffer/LICENSE",
     "copyright": "Copyright (c) 2018 Nikita Skovoroda <chalkerx@gmail.com>"
   },
-  "scheduler@0.20.2": {
+  "scheduler@0.23.2": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/react",
     "licenseFile": "node_modules/scheduler/LICENSE",
@@ -3005,6 +3221,13 @@ Created on 11-02-2025 at 10:13:28
     "repository": "https://github.com/npm/node-semver",
     "publisher": "GitHub Inc.",
     "licenseFile": "node_modules/normalize-package-data/node_modules/semver/LICENSE",
+    "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+  },
+  "semver@6.3.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/node-semver",
+    "publisher": "GitHub Inc.",
+    "licenseFile": "node_modules/semver/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
   "semver@7.6.0": {
@@ -3063,6 +3286,15 @@ Created on 11-02-2025 at 10:13:28
     "email": "ben@npmjs.com",
     "licenseFile": "node_modules/signal-exit/LICENSE.txt",
     "copyright": "Copyright (c) 2015, Contributors"
+  },
+  "simple-update-in@2.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/compulim/simple-update-in",
+    "publisher": "William Wong",
+    "email": "compulim@hotmail.com",
+    "url": "http://compulim.info/",
+    "licenseFile": "node_modules/simple-update-in/LICENSE",
+    "copyright": "Copyright (c) 2018 William Wong"
   },
   "slice-ansi@3.0.0": {
     "licenses": "MIT",
@@ -3312,6 +3544,20 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/tinycolor2/LICENSE",
     "copyright": "Copyright (c), Brian Grinstead, http://briangrinstead.com"
   },
+  "tldts-core@6.1.77": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remusao/tldts",
+    "publisher": "Rémi Berson",
+    "licenseFile": "node_modules/tldts-core/LICENSE",
+    "copyright": "Copyright (c) 2017 Thomas Parisot, 2018 Rémi Berson"
+  },
+  "tldts@6.1.77": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remusao/tldts",
+    "publisher": "Rémi Berson",
+    "licenseFile": "node_modules/tldts/LICENSE",
+    "copyright": "Copyright (c) 2017 Thomas Parisot, 2018 Rémi Berson"
+  },
   "tmp@0.2.3": {
     "licenses": "MIT",
     "repository": "https://github.com/raszi/node-tmp",
@@ -3321,22 +3567,22 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/tmp/LICENSE",
     "copyright": "Copyright (c) 2014 KARASZI István"
   },
-  "to-fast-properties@2.0.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/sindresorhus/to-fast-properties",
-    "publisher": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com",
-    "licenseFile": "node_modules/to-fast-properties/license",
-    "copyright": "Copyright (c) 2014 Petka Antonov.               2015 Sindre Sorhus"
-  },
-  "tough-cookie@4.1.4": {
+  "tough-cookie@5.1.1": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/salesforce/tough-cookie",
     "publisher": "Jeremy Stashewsky",
     "email": "jstash@gmail.com",
     "licenseFile": "node_modules/tough-cookie/LICENSE",
     "copyright": "Copyright (c) 2015, Salesforce.com, Inc.. All rights reserved."
+  },
+  "tree-kill@1.2.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pkrumins/node-tree-kill",
+    "publisher": "Peteris Krumins",
+    "email": "peteris.krumins@gmail.com",
+    "url": "http://www.catonmat.net",
+    "licenseFile": "node_modules/tree-kill/LICENSE",
+    "copyright": "Copyright (c) 2018 Peter Krumins"
   },
   "treeify@1.1.0": {
     "licenses": "MIT",
@@ -3456,14 +3702,6 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/unist-util-visit/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
-  "universalify@0.2.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/RyanZim/universalify",
-    "publisher": "Ryan Zimmerman",
-    "email": "opensrc@ryanzim.com",
-    "licenseFile": "node_modules/tough-cookie/node_modules/universalify/LICENSE",
-    "copyright": "Copyright (c) 2017, Ryan Zimmerman <opensrc@ryanzim.com>"
-  },
   "universalify@2.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/RyanZim/universalify",
@@ -3481,12 +3719,13 @@ Created on 11-02-2025 at 10:13:28
     "licenseFile": "node_modules/untildify/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "url-parse@1.5.10": {
+  "update-browserslist-db@1.1.2": {
     "licenses": "MIT",
-    "repository": "https://github.com/unshiftio/url-parse",
-    "publisher": "Arnout Kazemier",
-    "licenseFile": "node_modules/url-parse/LICENSE",
-    "copyright": "Copyright (c) 2015 Unshift.io, Arnout Kazemier,  the Contributors."
+    "repository": "https://github.com/browserslist/update-db",
+    "publisher": "Andrey Sitnik",
+    "email": "andrey@sitnik.ru",
+    "licenseFile": "node_modules/update-browserslist-db/LICENSE",
+    "copyright": "Copyright 2022 Andrey Sitnik <andrey@sitnik.ru> and other contributors"
   },
   "url@0.11.3": {
     "licenses": "MIT",
@@ -3629,6 +3868,15 @@ Created on 11-02-2025 at 10:13:28
     "repository": "https://github.com/mjwwit/node-XMLHttpRequest",
     "publisher": "Michael de Wit",
     "licenseFile": "node_modules/xmlhttprequest-ssl/LICENSE"
+  },
+  "yallist@3.1.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/yallist",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "licenseFile": "node_modules/yallist/LICENSE",
+    "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
   "yallist@4.0.0": {
     "licenses": "ISC",
