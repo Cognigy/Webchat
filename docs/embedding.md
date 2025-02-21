@@ -99,6 +99,8 @@ See it in action:
 | agentLogoUrl | string | `""` | Human Agent avatar which will be displayed above each Human Agent message. Recommended img size: 28px x 28px. Please note that specified avatar will be used for the Human Agent, only if 'useOtherAgentLogo' is set to 'true'. |
 | inputAutogrowMaxRows | number | `4` | Maximum Number of Input Rows  |
 | enableInputCollation | boolean | `false` | If enabled, messages will be combined into a single message, dependent on the time set with `inputCollationTimeout` |
+| enablePersistentMenu | boolean | `false` | If enabled, persistent menu will be displayed left to the chat message input box |
+| persistentMenu | object | see [Persistent Menu](#persistent-menu) | The Persistent Menu ensures quick access to different conversation stages, guides users, offers features, shares information, and enhances the overall user experience. |
 | inputCollationTimeout | number | `1000` | timeout value for input collation |
 | dynamicImageAspectRatio | boolean | `false` | Use to disable forced aspect ratio for images in chat elements |
 | disableInputAutocomplete | boolean | `false` | Use to disable browser autocomplete for the input field |
@@ -111,6 +113,18 @@ See it in action:
 | disableBotOutputBorder | boolean | `false` | Enabling this will hide the chat bubble around AI Agent text Messages |
 | botOutputMaxWidthPercentage | number | `73` | Use to set a number that will be used as a percentage value for the max-width of AI Agent text Messages |
 | chatWindowWidth | number | `460` | Configure the width of the Webchat in px |
+
+#### Persistent Menu
+| Name | Type | Default | Descrption |
+| - | - | - | - |
+| title | string | `""` | The title for your Persistent Menu. This title will be displayed to the users. |  
+|menuItems|array of [Peristent Menu Items](#persistent-menu-items) | `[]`| Items to be displayed inside the menu |
+
+#### Persistent Menu Items
+| Name | Type | Default | Descrption |
+| - | - | - | - |
+| title | string | `""` | The text that you want users to see in the Persistent Menu. This text should be descriptive and clear, indicating the function or action associated with the menu item. |
+| payload | string | `""` | The payload text that will be sent to your AI Agent flow when the user selects this menu item. This payload can be a simple word or phrase, or it can be a more complex query depending on your AI Agent's functionality. |
 
 #### Colors
 | Name | Type | Default | Description |
@@ -359,6 +373,7 @@ Additional Settings to configure the webchat widget behavior <br>
 | bot | string | `"bot" \| "user"` |
 | user | string | `"bot" \| "user"` |
 
+
 #### Settings Interface
 The full interface for the Webchat Settings.
 _Note: All settings can be optionally loaded, a full object is not required._
@@ -379,6 +394,14 @@ interface IWebchatSettings {
 		dynamicImageAspectRatio: boolean;
 		disableInputAutocomplete: boolean;
 		enableGenericHTMLStyling: boolean;
+		enablePeristentMenu:boolean;
+		persistentMenu: {
+			title:string;
+			menuItems: {
+				title:string;
+				payload:string
+			}[]
+		};
 		disableHtmlContentSanitization: boolean;
 		disableUrlButtonSanitization: boolean;
 		watermark: "default" | "custom" | "none";

@@ -77,6 +77,10 @@ There are several classes that you need to take in consideration if you want to 
 * *webchat-rating-widget-send-button*
 * *webchat-chat-options-footer-link*
 * *webchat-chat-options-footer-link-text*
+* *webchat-input-persistent-menu-button*
+* *webchat-input-persistent-menu*
+* *webchat-input-persistent-menu-item*
+* *webchat-input-persistent-menu-item-container*
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 ```CSS
@@ -1070,5 +1074,48 @@ The look and feel of the selected date can be changed.
   color: hsla(0, 0%, 100%, 0.95);
   font-weight: bold;
   font-size: 22px;
+}
+```
+
+### Persistent Menu
+
+* *webchat-input-persistent-menu-button*  
+This class is used to style the persistent menu icon. You can customize the size, color, and background.
+```CSS
+[data-cognigy-webchat-root] .webchat-input-persistent-menu-button {
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 16px;
+}
+```
+
+* *webchat-input-persistent-menu*  
+This class is used to style the persistent menu container, which includes the title and menu items. You can adjust the layout, background color, and padding.
+```CSS
+[data-cognigy-webchat-root] .webchat-input-persistent-menu {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+}
+```
+
+* *webchat-input-persistent-menu-item*  
+This class is used to style individual items in the persistent menu. You can customize the background color, font, and padding.
+```CSS
+[data-cognigy-webchat-root] .webchat-input-persistent-menu-item {
+    background-color: #f0f0f0;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+* *webchat-input-persistent-menu-item-container*  
+This class is used to style the container that holds the persistent menu items. You can adjust the layout, spacing, and border.
+```CSS
+[data-cognigy-webchat-root] .webchat-input-persistent-menu-item-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    margin: 5px;
 }
 ```
