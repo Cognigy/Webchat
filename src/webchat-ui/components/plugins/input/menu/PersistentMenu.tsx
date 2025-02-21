@@ -21,26 +21,21 @@ const PersistentMenuContainer = styled.div(({ theme }) => ({
 
 const PersistentMenuTitle = styled.h5(({ theme }) => ({
 	color: "hsla(0, 0%, 0%, .3)",
-	padding: `${theme.unitSize * 2}px`,
+	padding: `0 ${theme.unitSize * 2}px ${theme.unitSize}px`,
 	margin: 0,
 }));
 
 const PersistentMenuItem = styled.button(({ theme }) => ({
 	display: "block",
 	position: "relative",
-	// width: '100%',
-	// border: 'none',
 	backgroundColor: "transparent",
 	outline: "none",
-	// margin: 0,
 	cursor: "pointer",
 	textAlign: "left",
 	color: "hsla(0, 0%, 0%, .87)",
 
 	padding: `${theme.unitSize}px ${theme.unitSize * 3}px`,
 	margin: theme.unitSize,
-	// borderTopLeftRadius: theme.unitSize * 2,
-	// borderBottomLeftRadius: theme.unitSize * 2,
 	borderRadius: theme.unitSize * 2,
 	borderStyle: "solid",
 	borderColor: "hsla(0, 0%, 0%, .12)",
