@@ -450,7 +450,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			enablePersistentMenu,
 			persistentMenu,
 		} = layout;
-
+		const showPersistentMenu = enablePersistentMenu && persistentMenu?.menuItems.length > 0;
 		const { disableInputAutofocus } = widgetSettings;
 
 		const isFileAttachmentEnabled = fileStorageSettings?.enabled;
@@ -464,7 +464,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 						onSubmit={this.handleSubmit}
 						className={classnames("webchat-input-menu-form")}
 					>
-						{enablePersistentMenu && (
+						{showPersistentMenu && (
 							<>
 								<MenuButton
 									onClick={() => this.setState({ isMenuOpen: !isMenuOpen })}
@@ -477,7 +477,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 								</MenuButton>
 							</>
 						)}
-						{isMenuOpen ? (
+						{isMenuOpen && showPersistentMenu ? (
 							<PersistentMenu
 								title={persistentMenu.title}
 								menuItems={persistentMenu.menuItems}
