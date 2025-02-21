@@ -75,9 +75,6 @@ const Button = styled.button(({ theme }) => ({
 	},
 }));
 
-const MenuButton = styled(Button)(({ theme }) => ({
-	
-}));
 
 const iconButtonStyles = {
 	padding: "8px",
@@ -88,6 +85,7 @@ const iconButtonStyles = {
 	minHeight: "32px",
 };
 
+const MenuButton = styled(Button)(({ theme }) => (iconButtonStyles));
 const AttachFileButton = styled(Button)(({ theme }) => (iconButtonStyles));
 
 const SpeechButton = styled(Button)(({ theme }) => ({
