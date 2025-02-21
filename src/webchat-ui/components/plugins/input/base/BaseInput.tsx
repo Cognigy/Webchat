@@ -72,23 +72,20 @@ const Button = styled.button(({ theme }) => ({
 	},
 }));
 
-const AttachFileButton = styled(Button)(({ theme }) => ({
+const iconButtonStyles = {
 	padding: "8px",
 	display: "flex",
 	alignItems: "center",
 	justifyContent: "center",
 	minWidth: "32px",
 	minHeight: "32px",
-}));
+};
+
+const AttachFileButton = styled(Button)(({ theme }) => (iconButtonStyles));
 
 const SpeechButton = styled(Button)(({ theme }) => ({
+	...iconButtonStyles,
 	position: "relative",
-	padding: "8px",
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	minWidth: "32px",
-	minHeight: "32px",
 
 	"&.webchat-input-button-speech-active": {
 		fill: theme.textLight,
@@ -130,14 +127,7 @@ const HiddenFileInput = styled.input(() => ({
 	display: "none",
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => ({
-	padding: "8px",
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	minWidth: "32px",
-	minHeight: "32px",
-}));
+const SubmitButton = styled(Button)(({ theme }) => (iconButtonStyles));
 
 export interface TextInputState {
 	text: string;
