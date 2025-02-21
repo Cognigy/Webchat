@@ -50,8 +50,7 @@ const PersistentMenuItem = styled.button(({ theme }) => ({
 	},
 
 	"&:focus": {
-		outline: "none",
-		boxShadow: `0 0 3px 1px ${theme.primaryWeakColor}`,
+		outline: `2px solid ${theme.primaryColor}`,
 	},
 }));
 

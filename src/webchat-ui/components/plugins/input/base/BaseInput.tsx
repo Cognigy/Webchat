@@ -12,6 +12,7 @@ import { IUploadFileMetaData } from "../../../../../common/interfaces/file-uploa
 import { IFile } from "../../../../../webchat/store/input/input-reducer";
 import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
+import IconButton from "../../../presentational/IconButton";
 
 const InputWrapper = styled.div(() => ({
 	display: "flex",
@@ -75,21 +76,7 @@ const Button = styled.button(({ theme }) => ({
 }));
 
 const MenuButton = styled(Button)(({ theme }) => ({
-	alignSelf: "flex-end",
-    padding: `4px ${theme.unitSize/2}px`,
-	borderRadius: "50%",
-	margin:0,
-	"&:hover": {
-		fill: theme.primaryColor,
-	},
-	"&:focus": {
-		fill: theme.greyContrastColor,
-		backgroundColor: theme.greyWeakColor,
-		outline: "none  ",
-	},
-	"&:active": {
-		fill: theme.primaryStrongColor,
-	},
+	
 }));
 
 const iconButtonStyles = {
@@ -470,7 +457,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									onClick={() => this.setState({ isMenuOpen: !isMenuOpen })}
 									aria-label="Toggle persistent menu"
 									aria-expanded={isMenuOpen}
-									className="webchat-input-button-menu"
+									className="webchat-input-persistent-menu-button"
 									id="webchatInputButtonMenu"
 								>
 									<MenuIcon />
@@ -521,12 +508,16 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 											onFocus={this.handleFocus}
 											onBlur={this.handleBlur}
 											onKeyDown={this.handleInputKeyDown}
-									placeholder={props.config.settings.behavior.inputPlaceholder}
+											placeholder={
+												props.config.settings.behavior.inputPlaceholder
+											}
 											className="webchat-input-message-input"
 											aria-label="Message to send"
 											minRows={1}
 											maxRows={inputAutogrowMaxRows}
-									autoComplete={disableInputAutocomplete ? "off" : undefined}
+											autoComplete={
+												disableInputAutocomplete ? "off" : undefined
+											}
 											spellCheck={false}
 											id="webchatInputMessageInputInTextMode"
 											style={matches ? { fontSize: "16px" } : undefined}
@@ -567,7 +558,8 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 								<SubmitButton
 									disabled={
-								(this.state.text === "" && isFileListEmpty) || fileUploadError
+										(this.state.text === "" && isFileListEmpty) ||
+										fileUploadError
 									}
 									className="webchat-input-button-send cc-rtl-flip"
 									aria-label="Send Message"
