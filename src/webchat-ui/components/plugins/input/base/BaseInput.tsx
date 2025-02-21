@@ -28,6 +28,7 @@ const TextArea = styled(TextareaAutosize)(({ theme }) => ({
 	display: "block",
 	flexGrow: 1,
 	alignSelf: "stretch",
+	padding: "8px 2px",
 
 	border: "none",
 	boxSizing: "border-box",
@@ -71,9 +72,19 @@ const Button = styled.button(({ theme }) => ({
 	},
 }));
 
-const AttachFileButton = styled(Button)(({ theme }) => ({}));
+const iconButtonStyles = {
+	padding: "8px",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	minWidth: "32px",
+	minHeight: "32px",
+};
+
+const AttachFileButton = styled(Button)(({ theme }) => (iconButtonStyles));
 
 const SpeechButton = styled(Button)(({ theme }) => ({
+	...iconButtonStyles,
 	position: "relative",
 
 	"&.webchat-input-button-speech-active": {
@@ -87,8 +98,6 @@ const SpeechIcon = styled(SpeechIconSVG)(() => ({
 
 const SpeechButtonBackground = styled.div(({ theme }) => ({
 	position: "absolute",
-	top: "-6px",
-	left: "-6px",
 	backgroundColor: theme.primaryColor,
 	height: 28,
 	width: 28,
@@ -97,8 +106,6 @@ const SpeechButtonBackground = styled.div(({ theme }) => ({
 
 const SpeechButtonAnimatedBackground = styled.div(({ theme }) => ({
 	position: "absolute",
-	top: "-6px",
-	left: "-6px",
 	backgroundColor: theme.primaryColor,
 	opacity: 0.2,
 	height: 28,
@@ -120,7 +127,7 @@ const HiddenFileInput = styled.input(() => ({
 	display: "none",
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => ({}));
+const SubmitButton = styled(Button)(({ theme }) => (iconButtonStyles));
 
 export interface TextInputState {
 	text: string;
