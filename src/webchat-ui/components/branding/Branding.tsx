@@ -25,8 +25,7 @@ const Link = styled.a(({ theme }) => ({
 	},
 }));
 
-const Placeholder = styled.div(() => ({
-}));
+const Placeholder = styled.div(() => ({}));
 
 const URL = `https://www.cognigy.com/?utm_campaign=CognigyWebchatEmbedded&utm_medium=webchat&utm_term=webchat&utm_content=webchat&utm_source=${window.location.hostname}`;
 
@@ -37,12 +36,10 @@ interface IBrandingProps {
 	watermarkUrl?: string;
 }
 
-const Branding: FC<IBrandingProps> = (props) => {
+const Branding: FC<IBrandingProps> = props => {
 	const { id, watermark, watermarkText, watermarkUrl } = props;
 
-	if (watermark === "none") return (
-		<Placeholder />
-	);
+	if (watermark === "none") return <Placeholder />;
 
 	return (
 		<Link
@@ -52,14 +49,10 @@ const Branding: FC<IBrandingProps> = (props) => {
 			id={id ?? "cognigyBrandingLink"}
 		>
 			<Typography variant="copy-medium" component="span" fontSize={10} lineHeight="120%">
-				{(watermark === "custom" && watermarkText) ?
-					watermarkText
-					:
-					"Powered by Cognigy.AI"
-				}
+				{watermark === "custom" && watermarkText ? watermarkText : "Powered by Cognigy.AI"}
 			</Typography>
 		</Link>
 	);
-}
+};
 
 export default memo(Branding, () => true);

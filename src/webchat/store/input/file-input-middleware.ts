@@ -16,8 +16,10 @@ export const createFileInputMiddleware =
 	(): Middleware<object, StoreState> => store => next => async (action: Actions) => {
 		switch (action.type) {
 			case "ADD_FILES_TO_LIST": {
-				const { fileAttachmentMaxSize, embeddingConfiguration: { _endpointTokenUrl } } =
-					store.getState().config.settings;
+				const {
+					fileAttachmentMaxSize,
+					embeddingConfiguration: { _endpointTokenUrl },
+				} = store.getState().config.settings;
 
 				const existingFileList = store.getState().input.fileList;
 				let newFileList: IFile[] = [];

@@ -177,7 +177,8 @@ const Header: FC<HeaderProps> = props => {
 					</Typography>
 				</div>
 				<HeaderIconsWrapper>
-					{// Menu Button
+					{
+						// Menu Button
 						isChatOptionsButtonVisible && (
 							<HeaderIconButton
 								data-header-menu-button
@@ -189,7 +190,8 @@ const Header: FC<HeaderProps> = props => {
 							</HeaderIconButton>
 						)
 					}
-					{// Minimize Button
+					{
+						// Minimize Button
 						onMinimize && (
 							<HeaderIconButton
 								data-header-minimize-button
@@ -201,7 +203,8 @@ const Header: FC<HeaderProps> = props => {
 							</HeaderIconButton>
 						)
 					}
-					{// Close Button
+					{
+						// Close Button
 						onClose && (
 							<HeaderIconButton
 								data-header-close-button

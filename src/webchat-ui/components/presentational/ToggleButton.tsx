@@ -9,26 +9,30 @@ interface IToggleButtonProps {
 	className?: string;
 }
 
-const StyledToggleButtonOuter = styled.button<IToggleButtonProps>(({ theme, isActive, disabled }) => ({
-	display: "flex",
-	alignItems: "center",
-	padding: 1,
-	width: 30,
-	height: 16,
-	borderRadius: 15,
-	border: `1px solid ${theme.black80}`,
-	backgroundColor: theme.white,
-	cursor: disabled ? "default" : "pointer",
-	transition: "background-color 0.2s ease-in-out",
+const StyledToggleButtonOuter = styled.button<IToggleButtonProps>(
+	({ theme, isActive, disabled }) => ({
+		display: "flex",
+		alignItems: "center",
+		padding: 1,
+		width: 30,
+		height: 16,
+		borderRadius: 15,
+		border: `1px solid ${theme.black80}`,
+		backgroundColor: theme.white,
+		cursor: disabled ? "default" : "pointer",
+		transition: "background-color 0.2s ease-in-out",
 
-	"&.active": {
-		backgroundColor: disabled ? theme.secondaryColorDisabled : theme.secondaryColor,
+		"&.active": {
+			backgroundColor: disabled ? theme.secondaryColorDisabled : theme.secondaryColor,
 
-		"&:hover": {
-			backgroundColor: disabled ? theme.secondaryColorDisabled : theme.secondaryColorHover,
+			"&:hover": {
+				backgroundColor: disabled
+					? theme.secondaryColorDisabled
+					: theme.secondaryColorHover,
+			},
 		},
-	},
-}));
+	}),
+);
 
 const StyledToggleButtonInner = styled.div<IToggleButtonProps>(({ theme, isActive, disabled }) => ({
 	width: 12,
@@ -49,7 +53,6 @@ const StyledToggleButtonInner = styled.div<IToggleButtonProps>(({ theme, isActiv
 	"&.active": {
 		backgroundColor: theme.white,
 	},
-
 }));
 
 export const ToggleButton = (props: IToggleButtonProps) => {
@@ -67,7 +70,11 @@ export const ToggleButton = (props: IToggleButtonProps) => {
 			onMouseLeave={() => setIsHovered(false)}
 		>
 			<StyledToggleButtonInner
-				className={classNames("webchat-toggle-button-inner-circle", isActive && "active", isHovered && "hovered")}
+				className={classNames(
+					"webchat-toggle-button-inner-circle",
+					isActive && "active",
+					isHovered && "hovered",
+				)}
 				onClick={onClick}
 				isActive={isActive}
 				disabled={disabled}

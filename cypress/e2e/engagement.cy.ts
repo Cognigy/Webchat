@@ -22,7 +22,7 @@ describe("Engagement Message", () => {
 			settings: {
 				teaserMessage: {
 					text: "engagement message text",
-					teaserMessageDelay: 1
+					teaserMessageDelay: 1,
 				},
 				unreadMessages: {
 					enablePreview: false,
@@ -40,8 +40,8 @@ describe("Engagement Message", () => {
 					enablePreview: false,
 				},
 				teaserMessage: {
-					teaserMessageDelay: 1
-				}
+					teaserMessageDelay: 1,
+				},
 			},
 		});
 
@@ -55,7 +55,7 @@ describe("Engagement Message", () => {
 				settings: {
 					teaserMessage: {
 						text: "engagement message text",
-						teaserMessageDelay: 1
+						teaserMessageDelay: 1,
 					},
 					unreadMessages: {
 						enablePreview: false,
@@ -74,14 +74,14 @@ describe("Engagement Message", () => {
 			settings: {
 				teaserMessage: {
 					text: "engagement message text",
-					teaserMessageDelay: 1
+					teaserMessageDelay: 1,
 				},
 				unreadMessages: {
 					enablePreview: false,
 				},
 				homeScreen: {
 					enabled: false,
-			}
+				},
 			},
 		});
 		cy.get("[data-cognigy-webchat-toggle]").click().click();
@@ -95,7 +95,7 @@ describe("Engagement Message", () => {
 				settings: {
 					teaserMessage: {
 						text: "engagement message text",
-						teaserMessageDelay: 1
+						teaserMessageDelay: 1,
 					},
 					unreadMessages: {
 						enablePreview: false,
@@ -117,7 +117,7 @@ describe("Engagement Message", () => {
 			settings: {
 				teaserMessage: {
 					text: "engagement message text",
-					teaserMessageDelay: 1
+					teaserMessageDelay: 1,
 				},
 				unreadMessages: {
 					enablePreview: false,
@@ -135,14 +135,14 @@ describe("Engagement Message", () => {
 			settings: {
 				teaserMessage: {
 					text: "engagement message text",
-					teaserMessageDelay: 1
+					teaserMessageDelay: 1,
 				},
 				unreadMessages: {
 					enablePreview: false,
 				},
 				homeScreen: {
 					enabled: false,
-			}
+				},
 			},
 		});
 		cy.wait(500);
@@ -162,7 +162,7 @@ describe("Engagement Message", () => {
 				teaserMessage: {
 					text: "engagement message text",
 					teaserMessageDelay: 100,
-					showInChat: true
+					showInChat: true,
 				},
 				unreadMessages: {
 					enablePreview: false,

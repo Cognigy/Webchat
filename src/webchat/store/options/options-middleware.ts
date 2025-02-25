@@ -10,77 +10,84 @@ import { ReceiveMessageAction } from "../messages/message-handler";
 import { RatingAction } from "../rating/rating-reducer";
 import { SetShowPrevConversationsAction } from "../ui/ui-reducer";
 
-type Actions = SetOptionsAction | SendMessageAction | ReceiveMessageAction | TriggerEngagementMessageAction | RatingAction | SetShowPrevConversationsAction;
+type Actions =
+	| SetOptionsAction
+	| SendMessageAction
+	| ReceiveMessageAction
+	| TriggerEngagementMessageAction
+	| RatingAction
+	| SetShowPrevConversationsAction;
 
-export const optionsMiddleware: Middleware<object, StoreState> = store => next => (action: Actions) => {
-	const key = getOptionsKey(store.getState().options, store.getState().config);
-	const { active } = store.getState().config; // Actual settings are loaded
-	const { disableLocalStorage, disablePersistentHistory, useSessionStorage } =
-		store.getState().config.settings.embeddingConfiguration;
-	const { userId, sessionId } = store.getState().options;
-	const browserStorage = getStorage({ useSessionStorage, disableLocalStorage });
+export const optionsMiddleware: Middleware<object, StoreState> =
+	store => next => (action: Actions) => {
+		const key = getOptionsKey(store.getState().options, store.getState().config);
+		const { active } = store.getState().config; // Actual settings are loaded
+		const { disableLocalStorage, disablePersistentHistory, useSessionStorage } =
+			store.getState().config.settings.embeddingConfiguration;
+		const { userId, sessionId } = store.getState().options;
+		const browserStorage = getStorage({ useSessionStorage, disableLocalStorage });
 
-	switch (action.type) {
-		case "SET_OPTIONS": {
-			// TODO decouple this into a separate action or middleware handler
-			if (browserStorage) {
-				const key = getOptionsKey(action.options, store.getState().config);
-				const persistedString = browserStorage.getItem(key);
+		switch (action.type) {
+			case "SET_OPTIONS": {
+				// TODO decouple this into a separate action or middleware handler
+				if (browserStorage) {
+					const key = getOptionsKey(action.options, store.getState().config);
+					const persistedString = browserStorage.getItem(key);
 
-				if (action.options?.userId) {
-					const prevConversations = getAllConversations(
-						browserStorage,
-						action.options?.userId,
-						action.options?.sessionId,
-						store.getState().config?.URLToken
-					);
-					store.dispatch(setConversations(prevConversations));
+					if (action.options?.userId) {
+						const prevConversations = getAllConversations(
+							browserStorage,
+							action.options?.userId,
+							action.options?.sessionId,
+							store.getState().config?.URLToken,
+						);
+						store.dispatch(setConversations(prevConversations));
+					}
+
+					if (persistedString) {
+						try {
+							const persisted = JSON.parse(persistedString);
+
+							store.dispatch(resetState(persisted));
+						} catch (e) {}
+					}
 				}
-
-				if (persistedString) {
-					try {
-						const persisted = JSON.parse(persistedString);
-
-						store.dispatch(resetState(persisted));
-					} catch (e) {}
-				}
+				break;
 			}
-			break;
-		}
-		case "SET_SHOW_PREV_CONVERSATIONS": {
-			// we set prevConversations here in case user visit the list without socket session
-			if (action.showPrevConversations && browserStorage && userId && !sessionId) {
+			case "SET_SHOW_PREV_CONVERSATIONS": {
+				// we set prevConversations here in case user visit the list without socket session
+				if (action.showPrevConversations && browserStorage && userId && !sessionId) {
 					const prevConversations = getAllConversations(
 						browserStorage,
 						userId,
 						undefined,
-						store.getState().config?.URLToken
+						store.getState().config?.URLToken,
 					);
 					store.dispatch(setConversations(prevConversations));
 				}
 
-			break;
-		}
-		case "SEND_MESSAGE":
-		case "RECEIVE_MESSAGE":
-		case "TRIGGER_ENGAGEMENT_MESSAGE":
-		case "SHOW_RATING_SCREEN":
-		case "SET_HAS_GIVEN_RATING":
-		case "SET_CUSTOM_RATING_TITLE":
-		case "SET_CUSTOM_RATING_COMMENT_TEXT": {
-			if (browserStorage && active && userId && sessionId && !disablePersistentHistory) {
-				const { messages, rating } = store.getState();
-				browserStorage.setItem(
-					key,
-					JSON.stringify({
-						messages,
-						rating,
-					}),
-				);
+				break;
 			}
-			break;
+			case "SEND_MESSAGE":
+			case "RECEIVE_MESSAGE":
+			case "TRIGGER_ENGAGEMENT_MESSAGE":
+			case "SHOW_RATING_SCREEN":
+			case "SET_HAS_GIVEN_RATING":
+			case "SET_CUSTOM_RATING_TITLE":
+			case "SET_CUSTOM_RATING_COMMENT_TEXT": {
+				if (browserStorage && active && userId && sessionId && !disablePersistentHistory) {
+					const { messages, rating } = store.getState();
+					browserStorage.setItem(
+						key,
+						JSON.stringify({
+							messages,
+							rating,
+						}),
+					);
+				}
+				break;
+			}
 		}
-	}
 
-	return next(action);
-};
+		return next(action);
+	};

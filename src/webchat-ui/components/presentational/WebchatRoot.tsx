@@ -1,4 +1,4 @@
-import styled from '@emotion/styled'
+import styled from "@emotion/styled";
 import ResetCSS from "./ResetCSS";
 
 interface Props {
@@ -10,24 +10,24 @@ export default styled(ResetCSS)<Props>(({ theme, chatWindowWidth }) => {
 	const finalWidth = chatWindowWidth ?? 460;
 
 	return {
-		display: 'flex',
-		flexDirection: 'column',
+		display: "flex",
+		flexDirection: "column",
 		backgroundColor: theme.backgroundWebchat,
-		overflow: 'hidden',
+		overflow: "hidden",
 		fontSize: 16,
 		fontFamily: theme.fontFamily,
 
-		'@media screen and (min-width: 576px)': {
+		"@media screen and (min-width: 576px)": {
 			width: finalWidth,
 		},
 
 		/**
-		 * If the user’s screen is between 576px and "finalWidth" (for example: a 650px screen 
+		 * If the user’s screen is between 576px and "finalWidth" (for example: a 650px screen
 		 *  with a 700px chatWindowWidth), we want to shrink. We add 40px to the finalWidth due to the padding.
 		 */
 		[`@media screen and (min-width: 576px) and (max-width: ${finalWidth + 40}px)`]: {
-			width: '90%',
-			right: '5%',
+			width: "90%",
+			right: "5%",
 		},
 	};
 });

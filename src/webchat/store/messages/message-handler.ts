@@ -1,11 +1,7 @@
 import { Store } from "redux";
 import { IMessage } from "../../../common/interfaces/message";
 import { ISendMessageOptions } from "./message-middleware";
-import {
-	setBotAvatarOverrideUrl,
-	setAgentAvatarOverrideUrl,
-	setTyping,
-} from "../ui/ui-reducer";
+import { setBotAvatarOverrideUrl, setAgentAvatarOverrideUrl, setTyping } from "../ui/ui-reducer";
 import {
 	setCustomRatingCommentText,
 	setCustomRatingTitle,
@@ -38,8 +34,7 @@ export type ReceiveEventAction = ReturnType<typeof receiveEvent>;
 export const createOutputHandler = (store: Store) => output => {
 	// handle custom webchat actions
 	if (output.data && output.data._webchat) {
-		const { agentAvatarOverrideUrl, botAvatarOverrideUrl } =
-			output.data._webchat;
+		const { agentAvatarOverrideUrl, botAvatarOverrideUrl } = output.data._webchat;
 
 		if (agentAvatarOverrideUrl !== undefined) {
 			store.dispatch(setAgentAvatarOverrideUrl(agentAvatarOverrideUrl));
@@ -92,8 +87,8 @@ export const createOutputHandler = (store: Store) => output => {
 			store.dispatch(updateQueueData(payload));
 		}
 		// else {
-			// TODO: implement events logic on middlewares when available from RT
-			// store.dispatch(receiveEvent(output));
+		// TODO: implement events logic on middlewares when available from RT
+		// store.dispatch(receiveEvent(output));
 		// }
 	} else {
 		store.dispatch(receiveMessage(output));

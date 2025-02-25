@@ -1,19 +1,9 @@
 {
-    "compilerOptions": {
-        "jsx": "react",
-        "target": "es5",
-        "lib": [
-            "es5",
-            "dom"
-        ],
-        "types": [
-            "cypress",
-            "cypress-wait-until",
-            "cypress-real-events"
-        ]
-    },
-    "include": [
-        "**/*.ts",
-        "../src/**/*.tsx"
-    ]
+	"compilerOptions": {
+		"jsx": "react",
+		"target": "es5",
+		"lib": ["es5", "dom"],
+		"types": ["cypress", "cypress-wait-until", "cypress-real-events"]
+	},
+	"include": ["**/*.ts", "../src/**/*.tsx"]
 }

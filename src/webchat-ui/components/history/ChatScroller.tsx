@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import styled from '@emotion/styled';
-import ScrollToBottom, { useScrollToBottom, useSticky } from 'react-scroll-to-bottom';
-import { IWebchatConfig } from '../../../common/interfaces/webchat-config';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import styled from "@emotion/styled";
+import ScrollToBottom, { useScrollToBottom, useSticky } from "react-scroll-to-bottom";
+import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
 	tabIndex: 0 | -1;
 	lastInputId: string;
-	scrollBehavior: IWebchatConfig['settings']['behavior']['scrollingBehavior'];
+	scrollBehavior: IWebchatConfig["settings"]["behavior"]["scrollingBehavior"];
 }
 
 const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => ({
@@ -19,12 +19,12 @@ const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => 
 }));
 
 const Scroller = styled(ScrollToBottom)({
-	height: '100% !important',
-	width: '100%',
+	height: "100% !important",
+	width: "100%",
 	overflowY: "auto" as const,
 
 	"& .hiddenAutoScrollButton": {
-		display: 'none',
+		display: "none",
 	},
 });
 
@@ -32,26 +32,26 @@ const ChatLog = styled.div(({ theme }) => ({
 	paddingBottom: theme.unitSize * 2,
 	"&:focus": {
 		outline: "none",
-	}
+	},
 }));
 
-const ScrollButton = styled('button')(({ theme }) => ({
-	position: 'absolute',
+const ScrollButton = styled("button")(({ theme }) => ({
+	position: "absolute",
 	zIndex: 10,
-	bottom: '20px',
-	left: '50%',
-	transform: 'translateX(-50%)',
+	bottom: "20px",
+	left: "50%",
+	transform: "translateX(-50%)",
 	backgroundColor: theme.primaryWeakColor,
 	color: theme.primaryContrastColor,
-	border: 'none',
-	borderRadius: '50%',
-	width: '30px',
-	height: '30px',
-	cursor: 'pointer',
-	boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-	'&:hover': {
+	border: "none",
+	borderRadius: "50%",
+	width: "30px",
+	height: "30px",
+	cursor: "pointer",
+	boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+	"&:hover": {
 		backgroundColor: theme.primaryStrongColor,
-	}
+	},
 }));
 
 /**
@@ -61,7 +61,7 @@ const ScrollButton = styled('button')(({ theme }) => ({
  * - It will only auto-scroll to the bottom until the last user input is at the top.
  * 	This stops once the user scrolled to the bottom again and resets when the next user input comes in.
  * - It will show a scroll button when scrolled up from bottom.
-*/
+ */
 export function ChatScroller({
 	children,
 	tabIndex,
@@ -95,7 +95,8 @@ export function ChatScroller({
 
 	const scrollerFn = useCallback(
 		({ maxValue }) => {
-			if (!lastInputId || !scrollBehavior || scrollBehavior === "alwaysScroll") return maxValue;
+			if (!lastInputId || !scrollBehavior || scrollBehavior === "alwaysScroll")
+				return maxValue;
 
 			const targetElement = document.getElementById(lastInputId);
 			if (!targetElement || !outerRef.current) return maxValue;
@@ -112,19 +113,12 @@ export function ChatScroller({
 
 			return maxValue;
 		},
-		[lastInputId, shouldScrollToLastInput, outerRef.current]
+		[lastInputId, shouldScrollToLastInput, outerRef.current],
 	);
 
 	return (
-		<ChatLogWrapper
-			ref={outerRef}
-			{...restProps}
-			showFocusOutline={isChatLogFocused}
-		>
-			<Scroller
-				followButtonClassName="hiddenAutoScrollButton"
-				scroller={scrollerFn}
-			>
+		<ChatLogWrapper ref={outerRef} {...restProps} showFocusOutline={isChatLogFocused}>
+			<Scroller followButtonClassName="hiddenAutoScrollButton" scroller={scrollerFn}>
 				<ChatLog
 					ref={innerRef}
 					id="webchatChatHistoryWrapperLiveLogPanel"
@@ -146,11 +140,7 @@ export function ChatScroller({
 	);
 }
 
-const ScrollerContent = ({
-	children,
-	scrolledToLastInput,
-	setShouldScrollToLastInput
-}) => {
+const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastInput }) => {
 	const scrollToBottom = useScrollToBottom();
 	const [sticky] = useSticky();
 
@@ -173,5 +163,5 @@ const ScrollerContent = ({
 				</ScrollButton>
 			)}
 		</div>
-	)
-}
+	);
+};

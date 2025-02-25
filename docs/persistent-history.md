@@ -5,41 +5,40 @@ When the Webchat is initialized via `initWebchat`, it will try to load a previou
 By default, the Webchat will automatically re-use the `userId`. By manually telling `initWebchat` to use the same `sessionId` as before, the Webchat can be instructed to load the previously persisted chat history.
 
 ```javascript
-
 // Initialize a sessionId, undefined by default.
 let sessionId;
 
 function storeSessionId(sessionId) {
-  if (window.localStorage) {
-    localStorage.setItem("SESSIONID", sessionId);
-  }
+	if (window.localStorage) {
+		localStorage.setItem("SESSIONID", sessionId);
+	}
 }
 
 // in case LocalStorage is supported...
-if (window.localStorage) {  
-  // try to load a previously stored sessionId from the LocalStorage
-  sessionId = window.localStorage.getItem("SESSIONID");
+if (window.localStorage) {
+	// try to load a previously stored sessionId from the LocalStorage
+	sessionId = window.localStorage.getItem("SESSIONID");
 
-  // in case there was no previously stored sessionId,
-  // generate one and store it into LocalStorage
-  if (!sessionId) {
-    sessionId = "session-" + Date.now() * Math.random();
-    storeSessionId(sessionId);
-  }
+	// in case there was no previously stored sessionId,
+	// generate one and store it into LocalStorage
+	if (!sessionId) {
+		sessionId = "session-" + Date.now() * Math.random();
+		storeSessionId(sessionId);
+	}
 }
 
 // use the sessionId for initializing the Webchat
 initWebchat("...", {
-  sessionId
+	sessionId,
 }).then(webchat => {
-  webchat.open();
-  // If the Previous Conversations feature is enabled, it is possible for the sessionsId to be changed.
-  // For this scenario, we should subscribe to the analytics event `switch-session` and update the LocalStorage
-  webchat.registerAnalyticsService(event => {
-    if (event.type === "webchat/switch-session") {
-      storeSessionId(event.payload);
-    }
-});
+	webchat.open();
+	// If the Previous Conversations feature is enabled, it is possible for the sessionsId to be changed.
+	// For this scenario, we should subscribe to the analytics event `switch-session` and update the LocalStorage
+	webchat.registerAnalyticsService(event => {
+		if (event.type === "webchat/switch-session") {
+			storeSessionId(event.payload);
+		}
+	});
 });
 ```
 

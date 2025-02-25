@@ -1,18 +1,16 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 import { IColorProps } from "../../style";
 import { interactionCss, createTransition } from "../../utils/css";
 
-
 export default styled.button<IColorProps>(({ color, theme }) => {
-
 	const colors = {
 		weak: theme.greyWeakColor,
 		main: theme.greyColor,
 		strong: theme.greyStrongColor,
-		contrast: theme.greyContrastColor
-	}
+		contrast: theme.greyContrastColor,
+	};
 
-	if (color === 'primary') {
+	if (color === "primary") {
 		colors.weak = theme.secondaryColorDisabled;
 		colors.main = theme.secondaryColor;
 		colors.strong = theme.secondaryColorHover;
@@ -34,36 +32,36 @@ export default styled.button<IColorProps>(({ color, theme }) => {
 		backgroundColor: colors.main,
 		color: colors.contrast,
 
-		textTransform: 'unset',
+		textTransform: "unset",
 		fontSize: 14,
 		fontStyle: "normal",
 		fontWeight: 600,
 		lineHeight: "160%",
 
-		border: 'none',
-		outline: 'none',
+		border: "none",
+		outline: "none",
 
-		cursor: 'pointer',
+		cursor: "pointer",
 
-		transition: createTransition('background-color'),
+		transition: createTransition("background-color"),
 
-		'&:disabled': {
-			opacity: .4,
-			cursor: 'default',
+		"&:disabled": {
+			opacity: 0.4,
+			cursor: "default",
 			backgroundColor: colors.weak,
 		},
 
-		'&:hover:not(:disabled)': {
+		"&:hover:not(:disabled)": {
 			backgroundColor: colors.strong,
 		},
 
-		'&:active:not(:disabled)': {
+		"&:active:not(:disabled)": {
 			backgroundColor: colors.weak,
 		},
 
-		'&:focus-visible': {
+		"&:focus-visible": {
 			outline: `2px solid ${theme.primaryColor}`,
 			outlineOffset: 2,
 		},
-	}
+	};
 });

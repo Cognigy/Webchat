@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 import MessageBubble from "./MessageBubble";
 import tinycolor from "tinycolor2";
 
@@ -10,32 +10,28 @@ import tinycolor from "tinycolor2";
  * Derive from:
  * https://github.com/markdowncss/modest
  */
-export const MarkdownMessageBubble = styled(MessageBubble)((props) => {
-  const dividerColor = tinycolor(
-    props.color === "primary"
-      ? props.theme.primaryContrastColor
-      : props.theme.greyContrastColor
-  ).setAlpha(0.25);
+export const MarkdownMessageBubble = styled(MessageBubble)(props => {
+	const dividerColor = tinycolor(
+		props.color === "primary"
+			? props.theme.primaryContrastColor
+			: props.theme.greyContrastColor,
+	).setAlpha(0.25);
 
-  const textColor =
-    props.color === "primary"
-      ? props.theme.primaryContrastColor
-      : props.theme.greyContrastColor;
+	const textColor =
+		props.color === "primary"
+			? props.theme.primaryContrastColor
+			: props.theme.greyContrastColor;
 
-  const interactionColor =
-    props.color === "primary"
-      ? props.theme.primaryWeakColor
-      : props.theme.greyWeakColor;
+	const interactionColor =
+		props.color === "primary" ? props.theme.primaryWeakColor : props.theme.greyWeakColor;
 
-  const codeBackgroundColor =
-    props.color === "primary"
-      ? props.theme.primaryWeakColor
-      : props.theme.greyWeakColor;
+	const codeBackgroundColor =
+		props.color === "primary" ? props.theme.primaryWeakColor : props.theme.greyWeakColor;
 
-  const monospaceFontFamily =
-    'ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace';
+	const monospaceFontFamily =
+		'ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace';
 
-  return `
+	return `
     white-space: pre-wrap;
     color: ${textColor};
   

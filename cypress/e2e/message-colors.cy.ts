@@ -1,148 +1,177 @@
-describe('Message Color Variants', () => {
-    describe('neutral color', () => {
-        beforeEach(() => {
-            cy.visitWebchat();
+describe("Message Color Variants", () => {
+	describe("neutral color", () => {
+		beforeEach(() => {
+			cy.visitWebchat();
 
-            cy.initMockWebchat({
-                settings: {
-                    sourceColorMapping: {
-                        agent: 'bot',
-                        user: 'bot',
-                        bot: 'bot'
-                    }
-                }
-            });
+			cy.initMockWebchat({
+				settings: {
+					sourceColorMapping: {
+						agent: "bot",
+						user: "bot",
+						bot: "bot",
+					},
+				},
+			});
 
-            cy.openWebchat().startConversation();
-        });
+			cy.openWebchat().startConversation();
+		});
 
-        it('renders a "text with buttons"', () => {
-            cy.receiveMessageFixture('buttons');
+		it('renders a "text with buttons"', () => {
+			cy.receiveMessageFixture("buttons");
 
-            cy.get('.webchat-buttons-template-root .chat-bubble').should('have.css', 'background-color', 'rgb(255, 255, 255)');
-            cy.get('.webchat-buttons-template-root .chat-bubble').should('have.css', 'color', 'rgb(28, 28, 28)');
-        });
+			cy.get(".webchat-buttons-template-root .chat-bubble").should(
+				"have.css",
+				"background-color",
+				"rgb(255, 255, 255)",
+			);
+			cy.get(".webchat-buttons-template-root .chat-bubble").should(
+				"have.css",
+				"color",
+				"rgb(28, 28, 28)",
+			);
+		});
 
-        it('renders a "gallery"', () => {
-            cy.receiveMessageFixture('gallery');
+		it('renders a "gallery"', () => {
+			cy.receiveMessageFixture("gallery");
 
-            cy.get('.webchat-carousel-template-content').should('have.css', 'color', 'rgb(28, 28, 28)');
-            cy.get('.webchat-carousel-template-button')
-                .should('have.css', 'color', 'rgb(255, 255, 255)')
-                .should('have.css', 'background-color', 'rgb(26, 26, 26)');
-        });
-        
-        it('renders a "list"', () => {
-            cy.receiveMessageFixture('list');
+			cy.get(".webchat-carousel-template-content").should(
+				"have.css",
+				"color",
+				"rgb(28, 28, 28)",
+			);
+			cy.get(".webchat-carousel-template-button")
+				.should("have.css", "color", "rgb(255, 255, 255)")
+				.should("have.css", "background-color", "rgb(26, 26, 26)");
+		});
 
-            cy.get('.webchat-list-template-header-button')
-                .should('have.css', 'background-color', 'rgb(26, 26, 26)')
-                .should('have.css', 'color', 'rgb(255, 255, 255)');
-        });
-        
-        it('renders an "audio message"', () => {
-            cy.receiveMessageFixture('audio');
+		it('renders a "list"', () => {
+			cy.receiveMessageFixture("list");
 
-            cy.get('.webchat-media-template-audio')
-                .should('have.css', 'background-color', 'rgba(0, 0, 0, 0)')
-                .should('have.css', 'color', 'rgb(28, 28, 28)');
-        });
+			cy.get(".webchat-list-template-header-button")
+				.should("have.css", "background-color", "rgb(26, 26, 26)")
+				.should("have.css", "color", "rgb(255, 255, 255)");
+		});
 
-        // not necessary, does not render any text/background
-        xit('renders a "video message"');
-        // not necessary, does not render any text/background
-        xit('renders an "image message"');
+		it('renders an "audio message"', () => {
+			cy.receiveMessageFixture("audio");
 
-        it('renders a "date picker"', () => {
-            cy.receiveMessageFixture('date-picker');
+			cy.get(".webchat-media-template-audio")
+				.should("have.css", "background-color", "rgba(0, 0, 0, 0)")
+				.should("have.css", "color", "rgb(28, 28, 28)");
+		});
 
-            cy.get('.webchat-message-row button')
-                .should('have.css', 'background-color', 'rgb(26, 26, 26)')
-                .should('have.css', 'color', 'rgb(255, 255, 255)');
-        });
+		// not necessary, does not render any text/background
+		xit('renders a "video message"');
+		// not necessary, does not render any text/background
+		xit('renders an "image message"');
 
-        it('renders a "quick reply"', () => {
-            cy.fixture('messages/quick-replies.json').then(quickReplyMessages => {
-                const { text, data, source } = quickReplyMessages[0];
+		it('renders a "date picker"', () => {
+			cy.receiveMessageFixture("date-picker");
 
-                cy.receiveMessage(text, data, source);
+			cy.get(".webchat-message-row button")
+				.should("have.css", "background-color", "rgb(26, 26, 26)")
+				.should("have.css", "color", "rgb(255, 255, 255)");
+		});
 
-                cy.get('.webchat-quick-reply-template-header')
-                    .should('have.css', 'color', 'rgb(28, 28, 28)');
-            });
-        });
-    });
+		it('renders a "quick reply"', () => {
+			cy.fixture("messages/quick-replies.json").then(quickReplyMessages => {
+				const { text, data, source } = quickReplyMessages[0];
 
-    describe('primary', () => {
-        beforeEach(() => {
-            cy.visitWebchat();
+				cy.receiveMessage(text, data, source);
 
-            cy.initMockWebchat({
-                settings: {
-                    widgetSettings: {
-                        sourceColorMapping: {
-                            agent: 'user',
-                            user: 'user',
-                            bot: 'user'
-                        }
-                    }
-                }
-            });
+				cy.get(".webchat-quick-reply-template-header").should(
+					"have.css",
+					"color",
+					"rgb(28, 28, 28)",
+				);
+			});
+		});
+	});
 
-            cy.openWebchat().startConversation();
-        });
+	describe("primary", () => {
+		beforeEach(() => {
+			cy.visitWebchat();
 
-        it('renders a "text with buttons"', () => {
-            cy.receiveMessageFixture('buttons');
+			cy.initMockWebchat({
+				settings: {
+					widgetSettings: {
+						sourceColorMapping: {
+							agent: "user",
+							user: "user",
+							bot: "user",
+						},
+					},
+				},
+			});
 
-            cy.get('.webchat-buttons-template-root .chat-bubble').should('have.css', 'background-color', 'rgb(232, 235, 255)');
-            cy.get('.webchat-buttons-template-root .chat-bubble').should('have.css', 'color', 'rgba(26, 26, 26, 0.95)');
-        });
+			cy.openWebchat().startConversation();
+		});
 
-        it('renders a "quick reply"', () => {
-            cy.fixture('messages/quick-replies.json').then(quickReplyMessages => {
-                const { text, data, source } = quickReplyMessages[0];
+		it('renders a "text with buttons"', () => {
+			cy.receiveMessageFixture("buttons");
 
-                cy.receiveMessage(text, data, source);
+			cy.get(".webchat-buttons-template-root .chat-bubble").should(
+				"have.css",
+				"background-color",
+				"rgb(232, 235, 255)",
+			);
+			cy.get(".webchat-buttons-template-root .chat-bubble").should(
+				"have.css",
+				"color",
+				"rgba(26, 26, 26, 0.95)",
+			);
+		});
 
-                cy.get('.webchat-quick-reply-template-root .chat-bubble')
-                    .should('have.css', 'background-color', 'rgb(232, 235, 255)');
-            });
-        });
+		it('renders a "quick reply"', () => {
+			cy.fixture("messages/quick-replies.json").then(quickReplyMessages => {
+				const { text, data, source } = quickReplyMessages[0];
 
+				cy.receiveMessage(text, data, source);
 
-        it('renders a "gallery"', () => {
-            cy.receiveMessageFixture('gallery');
+				cy.get(".webchat-quick-reply-template-root .chat-bubble").should(
+					"have.css",
+					"background-color",
+					"rgb(232, 235, 255)",
+				);
+			});
+		});
 
-            cy.get('.webchat-carousel-template-content').should('have.css', 'color', 'rgb(28, 28, 28)');
-            cy.get('.webchat-carousel-template-button')
-                .should('have.css', 'color', 'rgb(255, 255, 255)')
-                .should('have.css', 'background-color', 'rgb(26, 26, 26)');
-        });
+		it('renders a "gallery"', () => {
+			cy.receiveMessageFixture("gallery");
 
-        it('renders a "list"', () => {
-            cy.receiveMessageFixture('list');
+			cy.get(".webchat-carousel-template-content").should(
+				"have.css",
+				"color",
+				"rgb(28, 28, 28)",
+			);
+			cy.get(".webchat-carousel-template-button")
+				.should("have.css", "color", "rgb(255, 255, 255)")
+				.should("have.css", "background-color", "rgb(26, 26, 26)");
+		});
 
-            cy.get('.webchat-list-template-header-button')
-                .should('have.css', 'background-color', 'rgb(26, 26, 26)')
-                .should('have.css', 'color', 'rgb(255, 255, 255)');
-        });
+		it('renders a "list"', () => {
+			cy.receiveMessageFixture("list");
 
-        // is always neutral
-        it('renders an "audio message"');
-        
-        // doesn't have themed content
-        it('renders a "video message"');
+			cy.get(".webchat-list-template-header-button")
+				.should("have.css", "background-color", "rgb(26, 26, 26)")
+				.should("have.css", "color", "rgb(255, 255, 255)");
+		});
 
-        // doen't have themed content
-        it('renders an "image message"');
-        
-        it('renders a "date picker"', () => {
-            cy.receiveMessageFixture('date-picker');
+		// is always neutral
+		it('renders an "audio message"');
 
-            cy.get('.webchat-message-row button')
-                .should('have.css', 'background-color', 'rgb(26, 26, 26)')
-                .should('have.css', 'color', 'rgb(255, 255, 255)');
-        });
-    });
-})
+		// doesn't have themed content
+		it('renders a "video message"');
+
+		// doen't have themed content
+		it('renders an "image message"');
+
+		it('renders a "date picker"', () => {
+			cy.receiveMessageFixture("date-picker");
+
+			cy.get(".webchat-message-row button")
+				.should("have.css", "background-color", "rgb(26, 26, 26)")
+				.should("have.css", "color", "rgb(255, 255, 255)");
+		});
+	});
+});

@@ -62,7 +62,8 @@ interface IPrevConversationsListProps {
 }
 
 export const PrevConversationsList = (props: IPrevConversationsListProps) => {
-	const { conversations, config, onSetShowPrevConversations, onSwitchSession, currentSession } = props;
+	const { conversations, config, onSetShowPrevConversations, onSwitchSession, currentSession } =
+		props;
 
 	// we sort the conversation based on last message timestamp
 	// result: the last updated conversation goes on top
@@ -73,16 +74,14 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 	const conversationsRootRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if(!conversationsRootRef.current) return;
+		if (!conversationsRootRef.current) return;
 
 		const { firstFocusable } = getKeyboardFocusableElements(conversationsRootRef.current);
 		// Set timeout to ensure that the focus is set after the animation
 		setTimeout(() => {
 			firstFocusable?.focus();
 		}, 450);
-
 	}, []);
-
 
 	const handleStartButtonClick = () => {
 		// we initialize a new session
@@ -101,7 +100,10 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 	);
 
 	return (
-		<ConversationsListRoot className="webchat-prev-conversations-root" ref={conversationsRootRef}>
+		<ConversationsListRoot
+			className="webchat-prev-conversations-root"
+			ref={conversationsRootRef}
+		>
 			<ConversationsList className="webchat-prev-conversations-content">
 				{sessions.length > 0 &&
 					sessions.map((session, i) => {

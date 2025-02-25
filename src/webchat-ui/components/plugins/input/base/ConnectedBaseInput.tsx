@@ -3,9 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { BaseInput } from "./BaseInput";
 import { StoreState } from "../../../../../webchat/store/store";
 import { InputComponentProps } from "../../../../../common/interfaces/input-plugin";
-import { IFile, setFileList, setSTTActive, setTextActive } from "../../../../../webchat/store/input/input-reducer";
+import {
+	IFile,
+	setFileList,
+	setSTTActive,
+	setTextActive,
+} from "../../../../../webchat/store/input/input-reducer";
 import { addFilesToList } from "../../../../../webchat/store/input/file-input-middleware";
-
 
 export const ConnectedBaseInput = (props: InputComponentProps) => {
 	const sttActive = useSelector((state: StoreState) => state.input.sttActive);

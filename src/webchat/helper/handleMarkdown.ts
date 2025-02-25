@@ -9,11 +9,11 @@ const markdownElements = {
 	links: /\[(.+?)\]\((.+?)\)/,
 	code: /`(.+?)`/,
 	tables: /\|(.+?)\|/,
-	blockquote: /^>\s.+$/m
+	blockquote: /^>\s.+$/m,
 };
 
 export function removeMarkdownChars(textChunk: string): string {
-	return textChunk.replace(markdownCharsRegex, '');
+	return textChunk.replace(markdownCharsRegex, "");
 }
 
 export function isValidMarkdown(text: string): boolean {
