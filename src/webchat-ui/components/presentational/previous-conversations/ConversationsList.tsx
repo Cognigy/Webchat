@@ -125,7 +125,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 					className="webchat-prev-conversations-send-button"
 					data-testid="webchat-start-chat-button"
 				>
-					Start new conversation
+					{config.settings.homeScreen.startNewConversationButtonText ?? "Start new conversation"}
 				</StartButton>
 				<Branding
 					id="cognigyConversationListBranding"
