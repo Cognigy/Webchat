@@ -210,15 +210,15 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 | unreadMessageTitleTextPlural | string  | `"New Messages"` | The website title that is displayed when the user retrieved more than one new message          |
 
 #### Home Screen
-
-| Name                        | Type    | Default                                           | Description                                                 |
-| --------------------------- | ------- | ------------------------------------------------- | ----------------------------------------------------------- |
-| enabled                     | boolean | `true`                                            | Enables the Home Screen feature                             |
-| welcomeText                 | string  | `"Welcome! How can we help you?"`                 | Welcome text on the home screen                             |
-| background                  | object  | [Home Screen Background](#home-screen-background) | Configure the Home Screen background                        |
-| startConversationButtonText | string  | `"Start conversation"`                            | Configure the text shown on the "Start Conversation" button |
-| previousConversations       | object  | [Previous Conversations](#previous-conversations) | Configure the Previous Conversations feature                |
-| conversationStarters        | object  | [Conversation Starters](#conversation-starters)   | Configure Conversation Starters on the Home Screen          |
+| Name | Type | Default | Description |
+| - | - | - | - |
+| enabled | boolean | `true` | Enables the Home Screen feature  |
+| welcomeText | string | `"Welcome! How can we help you?"` | Welcome text on the home screen |
+| background | object | [Home Screen Background](#home-screen-background) | Configure the Home Screen background |
+| startConversationButtonText | string | `"Start conversation"` | Configure the text shown on the "Start Conversation" button |
+| startNewConversationButtonText | string | `"Start new conversation"` | Configure the text shown on the "Start new conversation" button |
+| previousConversations | object | [Previous Conversations](#previous-conversations) | Configure the Previous Conversations feature |
+| conversationStarters | object | [Conversation Starters](#conversation-starters) | Configure Conversation Starters on the Home Screen |
 
 ##### Home Screen Background
 
