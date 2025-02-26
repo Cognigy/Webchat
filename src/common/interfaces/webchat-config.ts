@@ -294,6 +294,14 @@ export interface IWebchatSettings {
 		text: string;
 		title: string;
 	};
+	customTranslations?:{
+		home_screen: string;
+		network_error: string;
+		new_message_preview: string;
+		no_network: string;
+		reconnect: string;
+		reconnecting: string;
+	},
 	demoWebchat: {
 		enabled: boolean;
 		backgroundImageUrl: string;

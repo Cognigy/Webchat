@@ -1037,6 +1037,7 @@ export class WebchatUI extends React.PureComponent<
 													onConnect={onConnect}
 													isPermanent={!!reconnectionLimit}
 													onClose={onClose}
+													config={config}
 												/>
 											)}
 										</WebchatRoot>

@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import IconButton from "./IconButton";
 import CloseIcon from "../../assets/baseline-close-24px.svg";
 import Button from "./Button";
+import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 
 const Wrapper = styled.div(({ theme }) => ({
 	"@keyframes appearAnimation": {
@@ -60,27 +61,34 @@ const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 	borderRadius: "50%",
 }));
 
-const DisconnectOverlay = ({ isPermanent, onClose, onConnect }) => {
+interface DisconnectOverlayProps {
+	isPermanent: boolean;
+	onClose: () => void;
+	onConnect: () => void;
+	config: IWebchatConfig;
+}
+
+const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: DisconnectOverlayProps) => {
 	return (
 		<Wrapper>
 			<Dialog>
 				{isPermanent ? (
 					<>
-						<DialogHeader>Connection lost</DialogHeader>
+						<DialogHeader>{config.settings.customTranslations?.network_error ?? "Connection lost"}</DialogHeader>
 						{navigator.onLine ? (
 							<Button onClick={onConnect} color="primary" style={{ margin: "auto" }}>
-								Reconnect
+								{config.settings.customTranslations?.reconnect ?? "Reconnect"}
 							</Button>
 						) : (
-							<div>No network connection</div>
-						)}
+								<div>{config.settings.customTranslations?.no_network ?? "No network connection"}</div>
+							)}
 					</>
 				) : (
-					<div>
-						<DialogHeader>Connection lost</DialogHeader>
-						<div>Reconnecting...</div>
-					</div>
-				)}
+						<div>
+							<DialogHeader>{config.settings.customTranslations?.network_error ?? "Connection lost"}</DialogHeader>
+							<div>{config.settings.customTranslations?.reconnecting ?? "Reconnecting..."}</div>
+						</div>
+					)}
 			</Dialog>
 			<HeaderIconButton
 				data-disconnect-overlay-close-button

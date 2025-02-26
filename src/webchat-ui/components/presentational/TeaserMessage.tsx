@@ -148,7 +148,7 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 						</CloseIconWrapper>
 					</TeaserMessageHeaderContent>
 				</TeaserMessageHeader>
-				<span className="sr-only">New message preview</span>
+				<span className="sr-only">{config.settings.customTranslations?.new_message_preview ?? "New message preview"}</span>
 				<Typography
 					variant="body-regular"
 					className="webchat-unread-message-preview-text"
