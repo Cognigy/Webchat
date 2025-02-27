@@ -216,7 +216,6 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 | welcomeText | string | `"Welcome! How can we help you?"` | Welcome text on the home screen |
 | background | object | [Home Screen Background](#home-screen-background) | Configure the Home Screen background |
 | startConversationButtonText | string | `"Start conversation"` | Configure the text shown on the "Start Conversation" button |
-| startNewConversationButtonText | string | `"Start new conversation"` | Configure the text shown on the "Start new conversation" button |
 | previousConversations | object | [Previous Conversations](#previous-conversations) | Configure the Previous Conversations feature |
 | conversationStarters | object | [Conversation Starters](#conversation-starters) | Configure Conversation Starters on the Home Screen |
 
@@ -228,12 +227,12 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 | color    | string | `""`    | CSS color code or gradient                                                                                  |
 
 ##### Previous Conversations
-
-| Name       | Type    | Default                    | Description                                                                 |
-| ---------- | ------- | -------------------------- | --------------------------------------------------------------------------- |
-| enabled    | boolean | `true`                     | If enabled, the "Previous Conversations" button is shown on the Home Screen |
-| buttonText | string  | `"Previous conversations"` | Configure the "Previous Conversations" button                               |
-| title      | string  | `""`                       | Configure the Header of the "Previous Conversations" page                   |
+| Name | Type | Default | Description |
+| - | - | - | - |
+| enabled | boolean | `true` | If enabled, the "Previous Conversations" button is shown on the Home Screen  |
+| startNewConversationButtonText | string | `"Start new conversation"` | Configure the text shown on the "Start new conversation" button |
+| buttonText | string | `"Previous conversations"` | Configure the "Previous Conversations" button |
+| title | string | `""` | Configure the Header of the "Previous Conversations" page |
 
 ##### Conversation Starters
 
