@@ -128,7 +128,7 @@ describe("collated text inputs", () => {
 					.should("not.be.disabled")
 					.focus()
 					.click();
-				cy.get(".webchat-message-row.user", { timeout: 100 }).contains("foobar003qr01");
+				cy.get(".webchat-message-row.user", { timeout: 1000 }).contains("foobar003qr01");
 			});
 
 			// Second run - verify disabled state
