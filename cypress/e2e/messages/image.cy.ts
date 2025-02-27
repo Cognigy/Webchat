@@ -20,8 +20,11 @@ describe("Message with Image", { retries: 3 }, () => {
 
 	it("should have alt attibute", () => {
 		cy.withMessageFixture("image", () => {
-			cy.get(".webchat-media-template-image img")
-				.should("have.attr", "alt", "Attachment Image")
+			cy.get(".webchat-media-template-image img").should(
+				"have.attr",
+				"alt",
+				"Attachment Image",
+			);
 		});
 	});
 

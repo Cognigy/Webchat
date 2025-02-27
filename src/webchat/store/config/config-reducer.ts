@@ -1,9 +1,6 @@
 import { Reducer } from "redux";
-import {
-	IWebchatConfig,
-	IWebchatSettings,
-} from "../../../common/interfaces/webchat-config";
-import merge from 'lodash/merge';
+import { IWebchatConfig, IWebchatSettings } from "../../../common/interfaces/webchat-config";
+import merge from "lodash/merge";
 
 export type ConfigState = IWebchatConfig;
 
@@ -152,14 +149,13 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			enabled: false,
 			mode: "inform",
 			text: "",
-			title: ""
+			title: "",
 		},
 		demoWebchat: {
 			enabled: true,
 			backgroundImageUrl: "",
 			position: "centered",
 		},
-
 
 		// Settings related to the webchat browser embedding
 		// These settings are NOT configurable via the Endpoint Editor in Cognigy.AI
@@ -175,7 +171,7 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 				text: "",
 				timeout: 2000,
 				title: "",
-			}
+			},
 		},
 
 		// Additional Settings to configure the webchat widget behavior
@@ -198,14 +194,14 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			STTLanguage: "",
 
 			sourceDirectionMapping: {
-				agent: 'incoming',
-				bot: 'incoming',
-				user: 'outgoing',
+				agent: "incoming",
+				bot: "incoming",
+				user: "outgoing",
 			},
 			sourceColorMapping: {
-				agent: 'bot',
-				bot: 'bot',
-				user: 'user',
+				agent: "bot",
+				bot: "bot",
+				user: "user",
 			},
 		},
 	},
@@ -219,7 +215,9 @@ export const applyWebchatSettingsOverrides = (payload: Partial<IWebchatSettings>
 export type ApplyWebchatSettingsOverridesAction = ReturnType<typeof applyWebchatSettingsOverrides>;
 
 export const SET_CONFIG = "SET_CONFIG";
-export const setConfig = (config: Partial<Omit<ConfigState, "settings"> & { settings: Partial<IWebchatSettings> }>) => ({
+export const setConfig = (
+	config: Partial<Omit<ConfigState, "settings"> & { settings: Partial<IWebchatSettings> }>,
+) => ({
 	type: SET_CONFIG as "SET_CONFIG",
 	config,
 });
@@ -232,21 +230,24 @@ export const updateSettings = (payload: Partial<IWebchatSettings>) => ({
 });
 export type UpdateSettingsAction = ReturnType<typeof updateSettings>;
 
-const SET_INITIAL_SESSION_ID = 'SET_INITIAL_SESSION_ID';
+const SET_INITIAL_SESSION_ID = "SET_INITIAL_SESSION_ID";
 export const setInitialSessionId = (sessionId: string) => ({
-	type: SET_INITIAL_SESSION_ID as 'SET_INITIAL_SESSION_ID',
-	sessionId
+	type: SET_INITIAL_SESSION_ID as "SET_INITIAL_SESSION_ID",
+	sessionId,
 });
 export type SetInitialSessionAction = ReturnType<typeof setInitialSessionId>;
 
 export const config: Reducer<
 	ConfigState,
-	SetConfigAction | UpdateSettingsAction | ApplyWebchatSettingsOverridesAction | SetInitialSessionAction
+	| SetConfigAction
+	| UpdateSettingsAction
+	| ApplyWebchatSettingsOverridesAction
+	| SetInitialSessionAction
 > = (state = getInitialState(), action) => {
 	switch (action.type) {
 		case "SET_CONFIG": {
 			// deepMerge the settings since we have nested settings since v3
-			const mergedSettings = merge({}, state.settings, action.config.settings)
+			const mergedSettings = merge({}, state.settings, action.config.settings);
 
 			return {
 				...state,
@@ -258,7 +259,7 @@ export const config: Reducer<
 		case "APPLY_WEBCHAT_SETTINGS_OVERRIDES":
 		case "UPDATE_SETTINGS": {
 			// deepMerge the settings since we have nested settings since v3
-			const mergedSettings = merge({}, state.settings, action.payload)
+			const mergedSettings = merge({}, state.settings, action.payload);
 
 			return {
 				...state,

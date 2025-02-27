@@ -20,37 +20,37 @@ interface IQueueUpdatesProps {
 }
 
 const QueueUpdates: FC<IQueueUpdatesProps> = props => {
-  const queueUpdates = useSelector(state => state.queueUpdates ?? {});
-  const { handleScroll } = props;
-  
-  useEffect(() => {
-    if (queueUpdates?.isQueueActive) {
-      handleScroll?.(undefined, true);
-    }
-  }, [queueUpdates?.isQueueActive]);
+	const queueUpdates = useSelector(state => state.queueUpdates ?? {});
+	const { handleScroll } = props;
 
-  if (!queueUpdates?.isQueueActive) return null;
+	useEffect(() => {
+		if (queueUpdates?.isQueueActive) {
+			handleScroll?.(undefined, true);
+		}
+	}, [queueUpdates?.isQueueActive]);
+
+	if (!queueUpdates?.isQueueActive) return null;
 
 	return (
 		<QueueUpdatesWrapper
-				variant="body-regular"
-				id="webchatQueueUpdates"
-				className="webchat-queue-updates"
-				component="div"
-			>
-				{queueUpdates?.alternativeText ? (
-					<span>{queueUpdates.alternativeText}</span>
-				) : (
-					<>
-						<span>
-							Current queue position: <strong>{queueUpdates?.position || ""}</strong>
-						</span>
-						<span>
-							Estimated waiting time:{" "}
-							<strong>{formatWaitTime(queueUpdates?.estimatedWaitTime)}</strong>
-						</span>
-					</>
-				)}
+			variant="body-regular"
+			id="webchatQueueUpdates"
+			className="webchat-queue-updates"
+			component="div"
+		>
+			{queueUpdates?.alternativeText ? (
+				<span>{queueUpdates.alternativeText}</span>
+			) : (
+				<>
+					<span>
+						Current queue position: <strong>{queueUpdates?.position || ""}</strong>
+					</span>
+					<span>
+						Estimated waiting time:{" "}
+						<strong>{formatWaitTime(queueUpdates?.estimatedWaitTime)}</strong>
+					</span>
+				</>
+			)}
 		</QueueUpdatesWrapper>
 	);
 };

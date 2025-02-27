@@ -142,7 +142,10 @@ export interface WebchatUIProps {
 	options?: Partial<Options>;
 	ttsActive: boolean;
 
-	onSetMessageAnimated?: (messageId: string, animationState: IStreamingMessage["animationState"]) => void;
+	onSetMessageAnimated?: (
+		messageId: string,
+		animationState: IStreamingMessage["animationState"],
+	) => void;
 }
 
 interface WebchatUIState {
@@ -178,7 +181,7 @@ const TopStatusMessage = styled(Typography)(({ theme }) => ({
 	display: "block",
 	textAlign: "center",
 	padding: "12px",
-	color: theme.black40
+	color: theme.black40,
 }));
 
 const HistoryWrapper = styled(History)(({ theme }) => ({
@@ -285,16 +288,30 @@ export class WebchatUI extends React.PureComponent<
 		const chatInterfaceColor = props?.config?.settings?.colors?.chatInterfaceColor;
 		const sourceColorMapping = props?.config?.settings?.widgetSettings?.sourceColorMapping;
 
-		const overrideBotMessageColor = getSourceBackgroundColor(sourceColorMapping?.bot, props?.config?.settings?.colors);
-		const overrideUserMessageColor = getSourceBackgroundColor(sourceColorMapping?.user, props?.config?.settings?.colors);
-		const overrideAgentMessageColor = getSourceBackgroundColor(sourceColorMapping?.agent, props?.config?.settings?.colors);
+		const overrideBotMessageColor = getSourceBackgroundColor(
+			sourceColorMapping?.bot,
+			props?.config?.settings?.colors,
+		);
+		const overrideUserMessageColor = getSourceBackgroundColor(
+			sourceColorMapping?.user,
+			props?.config?.settings?.colors,
+		);
+		const overrideAgentMessageColor = getSourceBackgroundColor(
+			sourceColorMapping?.agent,
+			props?.config?.settings?.colors,
+		);
 
-		const overrideBotMessageBorderColor = sourceColorMapping?.bot === "user" ? "transparent" : null;
-		const overrideUserMessageBorderColor = sourceColorMapping?.user === "bot" ? state.theme.black80 : null;
-		const overrideAgentMessageBorderColor = sourceColorMapping?.agent === "user" ? "transparent" : null;
+		const overrideBotMessageBorderColor =
+			sourceColorMapping?.bot === "user" ? "transparent" : null;
+		const overrideUserMessageBorderColor =
+			sourceColorMapping?.user === "bot" ? state.theme.black80 : null;
+		const overrideAgentMessageBorderColor =
+			sourceColorMapping?.agent === "user" ? "transparent" : null;
 
-		const botMessageColor = overrideBotMessageColor || props?.config?.settings?.colors?.botMessageColor;
-		const userMessageColor = overrideUserMessageColor || props?.config?.settings?.colors?.userMessageColor;
+		const botMessageColor =
+			overrideBotMessageColor || props?.config?.settings?.colors?.botMessageColor;
+		const userMessageColor =
+			overrideUserMessageColor || props?.config?.settings?.colors?.userMessageColor;
 
 		const textLinkColor = props?.config?.settings?.colors?.textLinkColor;
 
@@ -308,7 +325,10 @@ export class WebchatUI extends React.PureComponent<
 			// document.documentElement.style.setProperty('--webchat-background-bot-message', color);
 
 			const primaryContrastColor = getContrastColor(primaryColor);
-			document.documentElement.style.setProperty("--webchat-primary-contrast-color", primaryContrastColor);
+			document.documentElement.style.setProperty(
+				"--webchat-primary-contrast-color",
+				primaryContrastColor,
+			);
 
 			isThemeChanged = true;
 		}
@@ -317,7 +337,10 @@ export class WebchatUI extends React.PureComponent<
 			document.documentElement.style.setProperty("--webchat-secondary-color", secondaryColor);
 
 			const secondaryContrastColor = getContrastColor(secondaryColor);
-			document.documentElement.style.setProperty("--webchat-secondary-contrast-color", secondaryContrastColor);
+			document.documentElement.style.setProperty(
+				"--webchat-secondary-contrast-color",
+				secondaryContrastColor,
+			);
 
 			isThemeChanged = true;
 		}
@@ -328,13 +351,20 @@ export class WebchatUI extends React.PureComponent<
 			);
 			isThemeChanged = true;
 		}
-		if (!!botMessageColor && botMessageColor !== state.theme.backgroundBotMessage && !props?.config?.settings?.layout?.disableBotOutputBorder) {
+		if (
+			!!botMessageColor &&
+			botMessageColor !== state.theme.backgroundBotMessage &&
+			!props?.config?.settings?.layout?.disableBotOutputBorder
+		) {
 			document.documentElement.style.setProperty(
 				"--webchat-background-bot-message",
 				botMessageColor,
 			);
 			const botMessageContrastColor = getContrastColor(botMessageColor);
-			document.documentElement.style.setProperty("--webchat-bot-message-contrast-color", botMessageContrastColor);
+			document.documentElement.style.setProperty(
+				"--webchat-bot-message-contrast-color",
+				botMessageContrastColor,
+			);
 			isThemeChanged = true;
 		}
 		if (!!userMessageColor && userMessageColor !== state.theme.backgroundUserMessage) {
@@ -343,22 +373,40 @@ export class WebchatUI extends React.PureComponent<
 				userMessageColor,
 			);
 			const userMessageContrastColor = getContrastColor(userMessageColor);
-			document.documentElement.style.setProperty("--webchat-user-message-contrast-color", userMessageContrastColor);
+			document.documentElement.style.setProperty(
+				"--webchat-user-message-contrast-color",
+				userMessageContrastColor,
+			);
 			isThemeChanged = true;
 		}
 		if (overrideAgentMessageColor) {
-			document.documentElement.style.setProperty("--webchat-background-agent-message", overrideAgentMessageColor);
+			document.documentElement.style.setProperty(
+				"--webchat-background-agent-message",
+				overrideAgentMessageColor,
+			);
 			const agentMessageContrastColor = getContrastColor(overrideAgentMessageColor);
-			document.documentElement.style.setProperty("--webchat-agent-message-contrast-color", agentMessageContrastColor);
+			document.documentElement.style.setProperty(
+				"--webchat-agent-message-contrast-color",
+				agentMessageContrastColor,
+			);
 		}
 		if (overrideBotMessageBorderColor) {
-			document.documentElement.style.setProperty("--webchat-border-bot-message", overrideBotMessageBorderColor);
+			document.documentElement.style.setProperty(
+				"--webchat-border-bot-message",
+				overrideBotMessageBorderColor,
+			);
 		}
 		if (overrideUserMessageBorderColor) {
-			document.documentElement.style.setProperty("--webchat-border-user-message", overrideUserMessageBorderColor);
+			document.documentElement.style.setProperty(
+				"--webchat-border-user-message",
+				overrideUserMessageBorderColor,
+			);
 		}
 		if (overrideAgentMessageBorderColor) {
-			document.documentElement.style.setProperty("--webchat-border-agent-message", overrideAgentMessageBorderColor);
+			document.documentElement.style.setProperty(
+				"--webchat-border-agent-message",
+				overrideAgentMessageBorderColor,
+			);
 		}
 		if (!!textLinkColor && textLinkColor !== state.theme.textLink) {
 			document.documentElement.style.setProperty("--webchat-text-link", textLinkColor);
@@ -423,41 +471,40 @@ export class WebchatUI extends React.PureComponent<
 		}
 		this.setState({
 			inputPlugins: [...(this.props.inputPlugins || []), baseInputPlugin],
-			messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins]
+			messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins],
 		});
 	}
 
 	async componentDidUpdate(prevProps: WebchatUIProps, prevState: WebchatUIState) {
-
-		if (prevProps.ttsActive !== this.props.ttsActive ||
+		if (
+			prevProps.ttsActive !== this.props.ttsActive ||
 			prevProps.inputPlugins !== this.props.inputPlugins ||
-			prevProps.messagePlugins !== this.props.messagePlugins) {
-
+			prevProps.messagePlugins !== this.props.messagePlugins
+		) {
 			const defaultMessagePlugins: MessagePlugin[] = [];
 			if (this.props.ttsActive) {
 				defaultMessagePlugins.push(speechOutput);
 			}
 
-
 			this.setState({
 				inputPlugins: [...(this.props.inputPlugins || []), baseInputPlugin],
-				messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins]
+				messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins],
 			});
 		}
 
 		if (
 			this?.props?.config?.settings?.colors?.primaryColor !==
-			prevProps?.config?.settings?.colors?.primaryColor ||
+				prevProps?.config?.settings?.colors?.primaryColor ||
 			this?.props?.config?.settings?.colors?.secondaryColor !==
-			prevProps?.config?.settings?.colors?.secondaryColor ||
+				prevProps?.config?.settings?.colors?.secondaryColor ||
 			this?.props?.config?.settings?.colors?.chatInterfaceColor !==
-			prevProps?.config?.settings?.colors?.chatInterfaceColor ||
+				prevProps?.config?.settings?.colors?.chatInterfaceColor ||
 			this?.props?.config?.settings?.colors?.botMessageColor !==
-			prevProps?.config?.settings?.colors?.botMessageColor ||
+				prevProps?.config?.settings?.colors?.botMessageColor ||
 			this?.props?.config?.settings?.colors?.userMessageColor !==
-			prevProps?.config?.settings?.colors?.userMessageColor ||
+				prevProps?.config?.settings?.colors?.userMessageColor ||
 			this?.props?.config?.settings?.colors?.textLinkColor !==
-			prevProps?.config?.settings?.colors?.textLinkColor
+				prevProps?.config?.settings?.colors?.textLinkColor
 		) {
 			this.setState({
 				theme: createWebchatTheme({
@@ -617,10 +664,11 @@ export class WebchatUI extends React.PureComponent<
 			this.titleType = "original";
 		} else {
 			if (this.props.unseenMessages.length > 0) {
-				document.title = `(${this.props.unseenMessages.length}) ${this.props.unseenMessages.length === 1
+				document.title = `(${this.props.unseenMessages.length}) ${
+					this.props.unseenMessages.length === 1
 						? this.props.config.settings.unreadMessages.unreadMessageTitleText
 						: this.props.config.settings.unreadMessages.unreadMessageTitleTextPlural
-					}`;
+				}`;
 				this.titleType = "unread";
 			}
 		}
@@ -785,7 +833,8 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		const showPrivacyScreen = this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
+		const showPrivacyScreen =
+			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
 		if (!showPrivacyScreen) {
 			this.props.onShowChatScreen();
 		}
@@ -801,7 +850,7 @@ export class WebchatUI extends React.PureComponent<
 		} else {
 			this.handleStartConversation();
 		}
-	}
+	};
 
 	// TODO: move the logic to middleware
 	openConversationFromTeaser = () => {
@@ -809,7 +858,8 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		const showPrivacyScreen = this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
+		const showPrivacyScreen =
+			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
 		if (showPrivacyScreen) {
 			this.setState({ lastUnseenMessageText: "" });
 		} else {
@@ -975,7 +1025,9 @@ export class WebchatUI extends React.PureComponent<
 											className="webchat"
 											id="webchatWindow"
 											ref={this.webchatWindowRef}
-											chatWindowWidth={this.props.config.settings.layout.chatWindowWidth}
+											chatWindowWidth={
+												this.props.config.settings.layout.chatWindowWidth
+											}
 										>
 											{!fullscreenMessage
 												? this.renderRegularLayout(isInforming)
@@ -1132,7 +1184,7 @@ export class WebchatUI extends React.PureComponent<
 			onClose();
 			// Restore focus to chat toggle button
 			this.chatToggleButtonRef?.current?.focus?.();
-		}
+		};
 
 		const handleOnGoBack = () => {
 			if (!showChatOptionsScreen && !showRatingScreen) {
@@ -1222,7 +1274,9 @@ export class WebchatUI extends React.PureComponent<
 						hasGivenRating={this.props.hasGivenRating}
 						onSendRating={this.handleSendRating}
 						onEmitAnalytics={onEmitAnalytics}
-						onSendActionButtonMessage={this.handleSendActionButtonMessageExistingSession}
+						onSendActionButtonMessage={
+							this.handleSendActionButtonMessageExistingSession
+						}
 					/>
 				);
 
@@ -1370,7 +1424,7 @@ export class WebchatUI extends React.PureComponent<
 				onSendMessage={this.sendMessage}
 				config={config}
 				plugins={messagePlugins}
-				onSetFullscreen={() => { }}
+				onSetFullscreen={() => {}}
 				onDismissFullscreen={onDismissFullscreenMessage}
 				message={fullscreenMessage as IMessage}
 				webchatTheme={this.state.theme}
@@ -1383,28 +1437,20 @@ export class WebchatUI extends React.PureComponent<
 	}
 
 	renderHistory() {
-		const {
-			messages,
-			typingIndicator,
-			config,
-			onEmitAnalytics,
-			openXAppOverlay,
-		} = this.props;
+		const { messages, typingIndicator, config, onEmitAnalytics, openXAppOverlay } = this.props;
 		const { messagePlugins = [] } = this.state;
 
-		const {
-			enableTypingIndicator,
-			messageDelay,
-			enableAIAgentNotice,
-			AIAgentNoticeText
-		} = config.settings.behavior;
+		const { enableTypingIndicator, messageDelay, enableAIAgentNotice, AIAgentNoticeText } =
+			config.settings.behavior;
 		const isTyping = typingIndicator !== "remove" && typingIndicator !== "hide";
 
 		const isEnded = isConversationEnded(messages);
 
 		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log).
 		// If we do not remove, it will cause the collatation of the first user message.
-		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
+		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, [
+			"acceptPrivacyPolicy",
+		]);
 
 		return (
 			<>
@@ -1431,7 +1477,7 @@ export class WebchatUI extends React.PureComponent<
 							config={config}
 							hasReply={hasReply}
 							isConversationEnded={isEnded}
-							onDismissFullscreen={() => { }}
+							onDismissFullscreen={() => {}}
 							onEmitAnalytics={onEmitAnalytics}
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}

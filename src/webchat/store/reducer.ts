@@ -31,7 +31,7 @@ const rootReducer = (state, action) => {
 		input,
 		prevConversations,
 		xAppOverlay,
-		queueUpdates
+		queueUpdates,
 	});
 	return combinedReducer(state, action);
 };
@@ -58,8 +58,8 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 					...state,
 					messages: [
 						// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
-						...state.messages.length === 0 ? action.state.messages : [],
-						...state.messages
+						...(state.messages.length === 0 ? action.state.messages : []),
+						...state.messages,
 					],
 					rating: {
 						...state.rating,
@@ -72,12 +72,12 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 
 		case "SET_PREV_STATE": {
 			const { showRatingScreen, ...rating } = action.state.rating;
-			const messages = action.state.messages.map((message) => {
+			const messages = action.state.messages.map(message => {
 				if (message.animationState) {
 					message.animationState = "done";
 				}
 				return message;
-			})
+			});
 			return rootReducer(
 				{
 					...state,

@@ -102,7 +102,7 @@ interface IConversationsListItemProps {
 export const ConversationsListItem = (props: IConversationsListItemProps) => {
 	const { sessionId, conversation, config, index, switchSession } = props;
 
-	const messages = conversation.messages as IMessage[]
+	const messages = conversation.messages as IMessage[];
 
 	const avatars = getAvatars(messages);
 
@@ -110,12 +110,12 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 		switchSession(sessionId, conversation);
 	};
 
-	const handleKeyDown = (e) => {
+	const handleKeyDown = e => {
 		e.stopPropagation();
 		if (e.key === "Enter") {
 			handleClick();
-		}		
-	}
+		}
+	};
 
 	return (
 		<ListItem
@@ -129,7 +129,10 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 			<Left>
 				{avatars.length > 0 ? (
 					avatars.map((avatar, i) => {
-						if (!avatar) return <FallBackAvatar key={i} className="webchat-header-cognigy-logo" />;
+						if (!avatar)
+							return (
+								<FallBackAvatar key={i} className="webchat-header-cognigy-logo" />
+							);
 
 						return <Avatar key={i} src={avatar} alt="Image avatar" />;
 					})

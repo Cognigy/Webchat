@@ -19,7 +19,8 @@ const PersistentMenuContainer = styled.div(({ theme }) => ({
 	"&:focus": {
 		outline: "none",
 	},
-	marginRight: "-20px" /* to compensate for src/webchat-ui/components/plugins/InputPluginRenderer.tsx:42 */
+	marginRight:
+		"-20px" /* to compensate for src/webchat-ui/components/plugins/InputPluginRenderer.tsx:42 */,
 }));
 
 const ActionButtonsWrapper = styled.div(({ theme }) => ({
@@ -29,7 +30,6 @@ const ActionButtonsWrapper = styled.div(({ theme }) => ({
 	paddingLeft: theme.unitSize,
 }));
 
-
 const PersistentMenuTitle = styled.h5(({ theme }) => ({
 	color: "hsla(0, 0%, 0%, .3)",
 	padding: `0 ${theme.unitSize}px ${theme.unitSize}px`,
@@ -37,7 +37,6 @@ const PersistentMenuTitle = styled.h5(({ theme }) => ({
 }));
 
 const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSelect }) => {
-
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -94,7 +93,7 @@ const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSel
 					payload={buttons}
 					config={{}}
 					onEmitAnalytics={() => {}}
-					action={(text) => {
+					action={text => {
 						const item = menuItems.find(i => i.payload === text);
 						if (item) {
 							onSelect(item);

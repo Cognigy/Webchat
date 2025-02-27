@@ -1,4 +1,3 @@
-
 import { TWebchat3Event } from "@cognigy/socket-client";
 import { IMessageEvent } from "../../common/interfaces/event";
 import { IMessage } from "../../common/interfaces/message";
@@ -36,7 +35,7 @@ export const isEventMessage = (message: IMessageEvent): boolean => {
 	return !!message?.data?._cognigy?._webchat3?.type;
 };
 
-export const getEventPayload = (message: IMessageEvent): TWebchat3Event['payload'] => {
+export const getEventPayload = (message: IMessageEvent): TWebchat3Event["payload"] => {
 	return message?.data?._cognigy?._webchat3?.payload;
 };
 

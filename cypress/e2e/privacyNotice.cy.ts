@@ -27,7 +27,7 @@ describe("Privacy Notice", () => {
 			},
 		});
 
-        cy.openWebchat();
+		cy.openWebchat();
 		cy.startConversation();
 		cy.get(".webchat-header-title").should("have.text", "Privacy notice 321");
 	});
@@ -42,7 +42,7 @@ describe("Privacy Notice", () => {
 			},
 		});
 
-        cy.openWebchat();
+		cy.openWebchat();
 		cy.startConversation();
 		cy.get(".webchat-privacy-notice-message").should("have.text", "Custom text here 123");
 	});
@@ -57,7 +57,7 @@ describe("Privacy Notice", () => {
 			},
 		});
 
-        cy.openWebchat();
+		cy.openWebchat();
 		cy.startConversation();
 		cy.get(".tertiary-button").should("have.text", "URL text here 123");
 	});
@@ -70,10 +70,10 @@ describe("Privacy Notice", () => {
 					url: "https://cognigy.com",
 				},
 			},
-        });
-        
-        cy.openWebchat();
-        cy.startConversation();
+		});
+
+		cy.openWebchat();
+		cy.startConversation();
 
 		cy.window().then(win => {
 			cy.stub(win, "open")
@@ -86,6 +86,5 @@ describe("Privacy Notice", () => {
 		cy.get(".tertiary-button").click();
 		cy.get("@windowOpen").should("be.calledOnce");
 		cy.get("@windowOpen").should("be.calledWith", "https://cognigy.com");
-
 	});
 });

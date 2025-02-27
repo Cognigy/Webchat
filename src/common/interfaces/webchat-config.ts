@@ -120,13 +120,13 @@ export interface IWebchatV2Settings {
 }
 
 export interface IPersistentMenuItem {
-    title: string;
-    payload: string;
+	title: string;
+	payload: string;
 }
 
 export interface IPersistentMenu {
-    title: string;
-    menuItems: IPersistentMenuItem[];
+	title: string;
+	menuItems: IPersistentMenuItem[];
 }
 
 export interface IWebchatSettings {
@@ -141,7 +141,7 @@ export interface IWebchatSettings {
 		agentLogoUrl: string;
 		inputAutogrowMaxRows: number;
 		enableInputCollation: boolean;
-		enablePersistentMenu:boolean;
+		enablePersistentMenu: boolean;
 		persistentMenu: IPersistentMenu;
 		inputCollationTimeout: number;
 		dynamicImageAspectRatio: boolean;

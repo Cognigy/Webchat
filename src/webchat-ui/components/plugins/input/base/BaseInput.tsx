@@ -20,7 +20,7 @@ const InputWrapper = styled.div(() => ({
 	gap: 12,
 }));
 
-const InputForm = styled.form<{persistentMenuOpen:boolean}>(({persistentMenuOpen}) => ({
+const InputForm = styled.form<{ persistentMenuOpen: boolean }>(({ persistentMenuOpen }) => ({
 	display: "flex",
 	alignItems: persistentMenuOpen ? "flex-end" : "center",
 	gap: 12,
@@ -75,7 +75,6 @@ const Button = styled.button(({ theme }) => ({
 	},
 }));
 
-
 const iconButtonStyles = {
 	padding: "8px",
 	display: "flex",
@@ -85,13 +84,13 @@ const iconButtonStyles = {
 	minHeight: "32px",
 };
 
-const MenuButton = styled(Button)<{open:boolean}>(({ theme,open }) => ({
+const MenuButton = styled(Button)<{ open: boolean }>(({ theme, open }) => ({
 	...iconButtonStyles,
-	padding:"6px",
+	padding: "6px",
 	fill: open ? theme.primaryColor : "initial",
 }));
 
-const AttachFileButton = styled(Button)(({ theme }) => (iconButtonStyles));
+const AttachFileButton = styled(Button)(({ theme }) => iconButtonStyles);
 
 const SpeechButton = styled(Button)(({ theme }) => ({
 	...iconButtonStyles,
@@ -137,7 +136,7 @@ const HiddenFileInput = styled.input(() => ({
 	display: "none",
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => (iconButtonStyles));
+const SubmitButton = styled(Button)(({ theme }) => iconButtonStyles);
 
 export interface TextInputState {
 	text: string;

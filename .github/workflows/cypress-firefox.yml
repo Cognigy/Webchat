@@ -1,21 +1,21 @@
 name: E2E Firefox
 on: [pull_request]
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
 
-    steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-              node-version: 22.x
-              cache: "npm"
-        - run: npm ci
-        - run: npm run build
-        - run: npm run test:cypress:firefox
-        - name: Upload screenshots
-          uses: actions/upload-artifact@v4
-          if: failure()
-          with:
-            name: cypress-screenshots
-            path: cypress/screenshots
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run build
+            - run: npm run test:cypress:firefox
+            - name: Upload screenshots
+              uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: cypress-screenshots
+                  path: cypress/screenshots

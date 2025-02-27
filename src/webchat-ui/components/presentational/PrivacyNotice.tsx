@@ -18,8 +18,7 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	overflowY: "auto",
 }));
 
-const PrivacyMessage = styled.div(() => ({
-}));
+const PrivacyMessage = styled.div(() => ({}));
 
 const PrivacyActions = styled.div({
 	display: "flex",
@@ -32,9 +31,7 @@ const AcceptButton = styled(PrimaryButton)(() => ({
 	width: 303,
 }));
 
-const PolicyButton = styled(TertiaryButton)(() => ({
-
-}));
+const PolicyButton = styled(TertiaryButton)(() => ({}));
 
 interface IPrivacyNoticeProps {
 	privacyNotice: IWebchatSettings["privacyNotice"];
@@ -43,12 +40,7 @@ interface IPrivacyNoticeProps {
 
 export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 	const { privacyNotice, onAcceptTerms } = props;
-	const {
-		text,
-		submitButtonText,
-		urlText,
-		url,
-	} = privacyNotice;
+	const { text, submitButtonText, urlText, url } = privacyNotice;
 
 	const handleLinkClick = () => {
 		window.open(url || "https://www.cognigy.com/", "_blank");
@@ -57,10 +49,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
 			<PrivacyMessage className="webchat-privacy-notice-message">
-				<Typography
-					variant="body-regular"
-					style={{ whiteSpace: "pre-wrap" }}
-				>
+				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
 					{text}
 				</Typography>
 			</PrivacyMessage>

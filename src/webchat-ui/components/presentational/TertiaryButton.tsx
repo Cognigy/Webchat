@@ -1,9 +1,9 @@
-import React from 'react';
-import ArrowIcon from '../../assets/arrow-back-16px.svg';
-import styled from '@emotion/styled';
-import Button from './Button';
-import { Typography } from '@cognigy/chat-components';
-import classNames from 'classnames';
+import React from "react";
+import ArrowIcon from "../../assets/arrow-back-16px.svg";
+import styled from "@emotion/styled";
+import Button from "./Button";
+import { Typography } from "@cognigy/chat-components";
+import classNames from "classnames";
 
 interface TertiaryButtonProps {
 	onClick: () => void;
@@ -21,13 +21,13 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 		transform: "rotate(180deg)",
 		fill: theme.black10,
 	},
-	
-	'& svg:dir(rtl)': {
-		transform: 'rotate(0deg)',
+
+	"& svg:dir(rtl)": {
+		transform: "rotate(0deg)",
 	},
 
-	'&:disabled': {
-		cursor: 'default',
+	"&:disabled": {
+		cursor: "default",
 		color: theme.black60,
 		backgroundColor: theme.white,
 		svg: {
@@ -35,7 +35,7 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 		},
 	},
 
-	'&:hover:not(:disabled)': {
+	"&:hover:not(:disabled)": {
 		color: theme.black40,
 		backgroundColor: theme.white,
 		svg: {
@@ -43,7 +43,7 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 		},
 	},
 
-	'&:focus:not(:disabled)': {
+	"&:focus:not(:disabled)": {
 		color: theme.black40,
 		backgroundColor: theme.white,
 		svg: {
@@ -51,7 +51,7 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 		},
 	},
 
-	'&:active:not(:disabled)': {
+	"&:active:not(:disabled)": {
 		color: theme.black40,
 		backgroundColor: theme.white,
 		svg: {
@@ -62,8 +62,11 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 
 const TertiaryButton: React.FC<TertiaryButtonProps> = ({ children, className, onClick }) => {
 	return (
-		<TertiaryButtonWrapper className={classNames("tertiary-button", className)}  onClick={onClick}>
-			<Typography variant="cta-semibold" >{children}</Typography>
+		<TertiaryButtonWrapper
+			className={classNames("tertiary-button", className)}
+			onClick={onClick}
+		>
+			<Typography variant="cta-semibold">{children}</Typography>
 			<ArrowIcon />
 		</TertiaryButtonWrapper>
 	);

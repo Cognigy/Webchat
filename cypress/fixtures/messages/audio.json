@@ -12,7 +12,9 @@
 				"message": {
 					"attachment": {
 						"type": "audio",
-						"payload": { "url": "https://www.winhistory.de/more/winstart/mp3/winxp.mp3" }
+						"payload": {
+							"url": "https://www.winhistory.de/more/winstart/mp3/winxp.mp3"
+						}
 					}
 				}
 			}

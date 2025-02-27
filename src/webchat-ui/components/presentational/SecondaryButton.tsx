@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 import Button from "./Button";
 
 export default styled(Button)(({ theme }) => ({
@@ -6,27 +6,27 @@ export default styled(Button)(({ theme }) => ({
 	backgroundColor: theme.white,
 	border: `1px solid ${theme.secondaryColor}`,
 
-	'&:disabled': {
-		opacity: .4,
-		cursor: 'default',
+	"&:disabled": {
+		opacity: 0.4,
+		cursor: "default",
 		color: theme.secondaryColorDisabled,
 		borderColor: theme.secondaryColorDisabled,
 		backgroundColor: theme.white,
 	},
 
-	'&:hover:not(:disabled)': {
+	"&:hover:not(:disabled)": {
 		color: theme.secondaryColorHover,
 		borderColor: theme.secondaryColorHover,
 		backgroundColor: theme.white,
 	},
 
-	'&:focus:not(:disabled)': {
+	"&:focus:not(:disabled)": {
 		color: theme.secondaryColorHover,
 		borderColor: theme.secondaryColorHover,
 		backgroundColor: theme.white,
 	},
 
-	'&:active:not(:disabled)': {
+	"&:active:not(:disabled)": {
 		color: theme.secondaryColorDisabled,
 		borderColor: theme.secondaryColorDisabled,
 		backgroundColor: theme.white,

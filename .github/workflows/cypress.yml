@@ -1,20 +1,20 @@
 name: E2E Chrome
 on: [pull_request]
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
 
-    steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-              node-version: 22.x
-              cache: "npm"
-        - run: npm ci
-        - run: npm test
-        - name: Upload screenshots
-          uses: actions/upload-artifact@v4
-          if: failure()
-          with:
-            name: cypress-screenshots
-            path: cypress/screenshots
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm test
+            - name: Upload screenshots
+              uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: cypress-screenshots
+                  path: cypress/screenshots

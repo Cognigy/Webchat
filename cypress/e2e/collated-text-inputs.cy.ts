@@ -121,20 +121,19 @@ describe("collated text inputs", () => {
 
 		// TODO: make "collate" an opt-in on the "send message" api as an option and only use it on regular text inputs
 		it("should verify quick reply behavior in enabled and disabled states", () => {
-		// First run - check clickable state
+			// First run - check clickable state
 			cy.withMessageFixture("quick-replies", () => {
-				cy.get("button:contains('foobar003qr01')").last()
-					.should('not.be.disabled')
+				cy.get("button:contains('foobar003qr01')")
+					.last()
+					.should("not.be.disabled")
 					.focus()
 					.click();
-				cy.get(".webchat-message-row.user", { timeout: 100 })
-					.contains("foobar003qr01");
+				cy.get(".webchat-message-row.user", { timeout: 100 }).contains("foobar003qr01");
 			});
 
 			// Second run - verify disabled state
 			cy.withMessageFixture("quick-replies", () => {
-				cy.get("button:contains('foobar003qr01')").last()
-					.should('be.disabled');
+				cy.get("button:contains('foobar003qr01')").last().should("be.disabled");
 			});
 		});
 		it("immediately sends a message triggered by a button template button", () => {

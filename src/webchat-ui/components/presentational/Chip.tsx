@@ -32,7 +32,9 @@ const Chip = (props: IChipProps) => {
 
 	return (
 		<ChipWrapper>
-			<ChipBase variant="title2-semibold" component="span" {...chipProps}>{label}</ChipBase>
+			<ChipBase variant="title2-semibold" component="span" {...chipProps}>
+				{label}
+			</ChipBase>
 		</ChipWrapper>
 	);
 };

@@ -15,7 +15,11 @@ export const uiMiddleware: Middleware<object, StoreState> =
 	store =>
 	next =>
 	(
-		action: ToggleOpenAction | ShowChatScreenAction | SetPageVisibleAction | SetHasAcceptedTermsAction,
+		action:
+			| ToggleOpenAction
+			| ShowChatScreenAction
+			| SetPageVisibleAction
+			| SetHasAcceptedTermsAction,
 	) => {
 		const { disableLocalStorage, useSessionStorage } =
 			store.getState().config.settings.embeddingConfiguration;

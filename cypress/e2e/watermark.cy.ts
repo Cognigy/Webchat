@@ -41,8 +41,8 @@ describe("Watermark", () => {
 		cy.initMockWebchat({
 			settings: {
 				layout: {
-					watermark: "none"
-				}
+					watermark: "none",
+				},
 			},
 		});
 		cy.openWebchat();
@@ -58,13 +58,13 @@ describe("Watermark", () => {
 				layout: {
 					watermark: "custom",
 					watermarkText: "I LOVE NY",
-				}
+				},
 			},
 		});
 		cy.openWebchat();
 		cy.startConversation();
 
-		cy.get('#cognigyHomeScreenBranding').should("have.text", "I LOVE NY");
+		cy.get("#cognigyHomeScreenBranding").should("have.text", "I LOVE NY");
 	});
 
 	it("should have a static id", () => {

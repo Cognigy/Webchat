@@ -34,8 +34,8 @@ const UploadedFilesContainer = styled.div(({ theme }) => ({
 }));
 
 const FilePreviewWrapper = styled.div(({ theme }) => ({
-	position: 'relative',
-	overflow: 'hidden',
+	position: "relative",
+	overflow: "hidden",
 	borderRadius: 15,
 	height: 33,
 	backgroundColor: theme.black95,
@@ -123,7 +123,9 @@ const PreviewUploadedFiles: FC = () => {
 							hasUploadError={item.hasUploadError}
 						>
 							{!item.hasUploadError
-								? `${getFileName(item.file.name)}${getFileExtension(item.file.name)}`
+								? `${getFileName(item.file.name)}${getFileExtension(
+										item.file.name,
+								  )}`
 								: item.uploadErrorReason}
 						</FileName>
 						<FileSize component="span" variant="title2-regular">

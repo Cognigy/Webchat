@@ -88,7 +88,14 @@ interface IRatingWidgetProps {
 }
 
 export const RatingWidget = (props: IRatingWidgetProps) => {
-	const { ratingTitleText, ratingCommentText, showRatingStatus, buttonText, ratingEventBannerText, onSendRating } = props;
+	const {
+		ratingTitleText,
+		ratingCommentText,
+		showRatingStatus,
+		buttonText,
+		ratingEventBannerText,
+		onSendRating,
+	} = props;
 	const [ratingValue, setRatingValue] = useState<TRatingValue>(null);
 	const [ratingText, setRatingText] = useState("");
 
@@ -98,7 +105,10 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 
 	const handleSubmitFeedback = () => {
 		onSendRating({ rating: ratingValue, comment: ratingText, showRatingStatus });
-		setTimeout(() => createNotification(ratingEventBannerText || "Your feedback was submitted"), 500);
+		setTimeout(
+			() => createNotification(ratingEventBannerText || "Your feedback was submitted"),
+			500,
+		);
 		setRatingValue(null);
 		setRatingText("");
 	};

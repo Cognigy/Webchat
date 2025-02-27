@@ -22,12 +22,15 @@ const TTSOption = (props: ITTSOption) => {
 	const { config, onToggle } = props;
 
 	const isActive = useSelector(state => state.ui.ttsActive);
-	
 
 	return (
 		<TTSOptionRoot className="webchat-tts-option-root">
-			<Typography variant="title1-semibold" margin={0} className="webchat-chat-options-tts-option-label">
-				{ config.settings.chatOptions.labelTTSToggle || "Enable Text-to-Speech" }
+			<Typography
+				variant="title1-semibold"
+				margin={0}
+				className="webchat-chat-options-tts-option-label"
+			>
+				{config.settings.chatOptions.labelTTSToggle || "Enable Text-to-Speech"}
 			</Typography>
 			<ToggleButton
 				onClick={onToggle}
@@ -35,7 +38,7 @@ const TTSOption = (props: ITTSOption) => {
 				isActive={isActive}
 			/>
 		</TTSOptionRoot>
-	)
-}
+	);
+};
 
 export default TTSOption;

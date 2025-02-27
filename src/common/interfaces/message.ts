@@ -35,4 +35,9 @@ export interface IStreamingMessage extends IBaseMessage {
 	animationState?: "start" | "animating" | "done" | "exited";
 }
 
-export type IMessage = IUserMessage | IBotMessage | IAgentMessage | IEngagementMessage | IStreamingMessage;
+export type IMessage =
+	| IUserMessage
+	| IBotMessage
+	| IAgentMessage
+	| IEngagementMessage
+	| IStreamingMessage;

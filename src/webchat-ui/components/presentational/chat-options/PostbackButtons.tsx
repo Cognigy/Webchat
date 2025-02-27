@@ -11,7 +11,7 @@ const PostbackButtonsRoot = styled.div(() => ({
 	alignItems: "flex-start",
 	gap: 24,
 	alignSelf: "stretch",
-	padding: "20px 0"
+	padding: "20px 0",
 }));
 
 const ActionButtonsWrapper = styled.div(() => ({
@@ -30,21 +30,21 @@ interface IPostbackButtonsProps {
 	onSendActionButtonMessage: WebchatUIProps["onSendMessage"];
 }
 
-
 export const PostbackButtons = (prop: IPostbackButtonsProps) => {
 	const { config, onSendActionButtonMessage, onEmitAnalytics } = prop;
 	const { settings } = config;
 	const { chatOptions } = settings;
 
-	const buttons: IWebchatButton[] = chatOptions?.quickReplyOptions.quickReplies
+	const buttons: IWebchatButton[] = chatOptions?.quickReplyOptions.quickReplies;
 
 	return (
 		<PostbackButtonsRoot className="webchat-chat-options-action-btns-root">
-			<Typography variant="title1-semibold" margin={0} className="webchat-chat-options-action-btns-title">
-				{
-					chatOptions?.quickReplyOptions?.sectionTitle ||
-					"People are also interested in"
-				}
+			<Typography
+				variant="title1-semibold"
+				margin={0}
+				className="webchat-chat-options-action-btns-title"
+			>
+				{chatOptions?.quickReplyOptions?.sectionTitle || "People are also interested in"}
 			</Typography>
 			<ActionButtonsWrapper className="webchat-chat-options-action-btns-wrapper">
 				<ActionButtons
@@ -57,7 +57,6 @@ export const PostbackButtons = (prop: IPostbackButtonsProps) => {
 					onEmitAnalytics={onEmitAnalytics}
 				/>
 			</ActionButtonsWrapper>
-
 		</PostbackButtonsRoot>
 	);
 };
