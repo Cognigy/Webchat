@@ -2,9 +2,9 @@
 
 Please describe what should be possible after this change. List all individual items on a separate line.
 
--   A
--   B
--   C
+- A
+- B
+- C
 
 # How to test
 
@@ -16,17 +16,17 @@ Please describe the individual steps on how a peer can test your change.
 
 # Security
 
--   [ ] Possible injection vector
--   [ ] Authentication/Access controls touched
--   [ ] Sensitive Data could be exposed
--   [ ] XSS
--   [ ] Logging/Monitoring touched
--   [ ] Exchanges data with external systems
--   [ ] No security implications
+- [ ] Possible injection vector
+- [ ] Authentication/Access controls touched
+- [ ] Sensitive Data could be exposed
+- [ ] XSS
+- [ ] Logging/Monitoring touched
+- [ ] Exchanges data with external systems
+- [ ] No security implications
 
 # Additional considerations
 
--   [ ] This PR might have performance implications
+- [ ] This PR might have performance implications
 
 # Documentation Considerations
 

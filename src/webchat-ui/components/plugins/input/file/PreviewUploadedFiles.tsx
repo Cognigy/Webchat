@@ -125,7 +125,7 @@ const PreviewUploadedFiles: FC = () => {
 							{!item.hasUploadError
 								? `${getFileName(item.file.name)}${getFileExtension(
 										item.file.name,
-								  )}`
+									)}`
 								: item.uploadErrorReason}
 						</FileName>
 						<FileSize component="span" variant="title2-regular">

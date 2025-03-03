@@ -63,7 +63,7 @@ export const prepareMessagePlugins = (
 						...plugin,
 						match: ({ data }) =>
 							data && data._plugin && data._plugin.type === plugin.match,
-				  }
+					}
 				: plugin,
 		);
 
