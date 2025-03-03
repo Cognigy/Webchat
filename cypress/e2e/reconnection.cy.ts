@@ -54,6 +54,7 @@ const assertOffline = () => {
     return cy.wrap(window).its('navigator.onLine').should('be.false')
 }
 
+// Offline behavior is not supported in Firefox
 describe('Reconnection', { browser: "!firefox" }, () => {
 
     beforeEach(() => {
