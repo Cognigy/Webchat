@@ -455,18 +455,17 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 						persistentMenuOpen={isMenuOpen}
 					>
 						{showPersistentMenu && (
-							<>
-								<MenuButton
-									onClick={() => this.setState({ isMenuOpen: !isMenuOpen })}
-									aria-label="Toggle persistent menu"
-									aria-expanded={isMenuOpen}
-									className="webchat-input-persistent-menu-button"
-									id="webchatInputButtonMenu"
-									open={isMenuOpen}
-								>
-									<MenuIcon />
-								</MenuButton>
-							</>
+							<MenuButton
+								onClick={() => this.setState({ isMenuOpen: !isMenuOpen })}
+								aria-label="Toggle persistent menu"
+								aria-expanded={isMenuOpen}
+								className="webchat-input-persistent-menu-button"
+								id="webchatInputButtonMenu"
+								open={isMenuOpen}
+								type="button"
+							>
+								<MenuIcon />
+							</MenuButton>
 						)}
 						{isMenuOpen && showPersistentMenu ? (
 							<PersistentMenu
