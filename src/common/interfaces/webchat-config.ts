@@ -219,6 +219,7 @@ export interface IWebchatSettings {
 		};
 		startConversationButtonText: string;
 		previousConversations: {
+			startNewConversationButtonText: string;
 			enabled: boolean;
 			buttonText: string;
 			title: string;

@@ -229,11 +229,12 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 
 ##### Previous Conversations
 
-| Name       | Type    | Default                    | Description                                                                 |
-| ---------- | ------- | -------------------------- | --------------------------------------------------------------------------- |
-| enabled    | boolean | `true`                     | If enabled, the "Previous Conversations" button is shown on the Home Screen |
-| buttonText | string  | `"Previous conversations"` | Configure the "Previous Conversations" button                               |
-| title      | string  | `""`                       | Configure the Header of the "Previous Conversations" page                   |
+| Name                           | Type    | Default                    | Description                                                                 |
+| ------------------------------ | ------- | -------------------------- | --------------------------------------------------------------------------- |
+| enabled                        | boolean | `true`                     | If enabled, the "Previous Conversations" button is shown on the Home Screen |
+| startNewConversationButtonText | string  | `"Start new conversation"` | Configure the text shown on the "Start new conversation" button             |
+| buttonText                     | string  | `"Previous conversations"` | Configure the "Previous Conversations" button                               |
+| title                          | string  | `""`                       | Configure the Header of the "Previous Conversations" page                   |
 
 ##### Conversation Starters
 
