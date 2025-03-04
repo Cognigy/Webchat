@@ -22,6 +22,7 @@ const Scroller = styled(ScrollToBottom)({
 	height: "100% !important",
 	width: "100%",
 	overflowY: "auto" as const,
+	position: "initial",
 
 	"& .hiddenAutoScrollButton": {
 		display: "none",
@@ -38,7 +39,7 @@ const ChatLog = styled.div(({ theme }) => ({
 const ScrollButton = styled("button")(({ theme }) => ({
 	position: "absolute",
 	zIndex: 10,
-	bottom: "20px",
+	bottom: "110px",
 	left: "50%",
 	transform: "translateX(-50%)",
 	backgroundColor: theme.primaryWeakColor,
