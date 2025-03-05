@@ -299,7 +299,7 @@ export interface IWebchatSettings {
 		no_network: string;
 		reconnect: string;
 		reconnecting: string;
-	},
+	};
 	demoWebchat: {
 		enabled: boolean;
 		backgroundImageUrl: string;

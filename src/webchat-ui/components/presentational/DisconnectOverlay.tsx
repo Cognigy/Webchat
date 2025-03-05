@@ -74,21 +74,30 @@ const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: Disconne
 			<Dialog>
 				{isPermanent ? (
 					<>
-						<DialogHeader>{config.settings.customTranslations?.network_error ?? "Connection lost"}</DialogHeader>
+						<DialogHeader>
+							{config.settings.customTranslations?.network_error ?? "Connection lost"}
+						</DialogHeader>
 						{navigator.onLine ? (
 							<Button onClick={onConnect} color="primary" style={{ margin: "auto" }}>
 								{config.settings.customTranslations?.reconnect ?? "Reconnect"}
 							</Button>
 						) : (
-								<div>{config.settings.customTranslations?.no_network ?? "No network connection"}</div>
-							)}
+							<div>
+								{config.settings.customTranslations?.no_network ??
+									"No network connection"}
+							</div>
+						)}
 					</>
 				) : (
+					<div>
+						<DialogHeader>
+							{config.settings.customTranslations?.network_error ?? "Connection lost"}
+						</DialogHeader>
 						<div>
-							<DialogHeader>{config.settings.customTranslations?.network_error ?? "Connection lost"}</DialogHeader>
-							<div>{config.settings.customTranslations?.reconnecting ?? "Reconnecting..."}</div>
+							{config.settings.customTranslations?.reconnecting ?? "Reconnecting..."}
 						</div>
-					)}
+					</div>
+				)}
 			</Dialog>
 			<HeaderIconButton
 				data-disconnect-overlay-close-button
