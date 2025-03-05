@@ -214,7 +214,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 			aria-hidden={!showHomeScreen}
 			ref={homeScreenRef}
 		>
-			<h2 className="sr-only">{config.settings.customTranslations?.home_screen ?? "Home Screen"}</h2>
+			<h2 className="sr-only">Home Screen</h2>
 			<HomeScreenContent className="webchat-homescreen-content" settings={config?.settings}>
 				<HomeScreenHeader className="webchat-homescreen-header">
 					{config?.settings?.layout?.logoUrl ? (
@@ -224,8 +224,8 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 							alt="Chat logo"
 						/>
 					) : (
-						<CognigyAIAvatar className={"webchat-homescreen-header-cognigy-logo"} />
-					)}
+							<CognigyAIAvatar className={"webchat-homescreen-header-cognigy-logo"} />
+						)}
 					<HomeScreenHeaderIconButton
 						ref={closeButtonRef}
 						onClick={onClose}
