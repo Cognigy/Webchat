@@ -32,11 +32,18 @@ export type SetMessageAnimatedAction = ReturnType<typeof setMessageAnimated>;
 
 interface CognigyData {
 	_messageId?: string;
+	_finishReason?: string;
 }
 
 // Helper to get message ID from message
 const getMessageId = (message: IMessage) => {
 	return (message.data?._cognigy as CognigyData)?._messageId;
+};
+
+// Helper to get finishReason from message
+// If there is no messageId, we are not streaming, so the message is always finished and finishReason is "stop"
+const getFinishReason = (message: IMessage, messageId?: string) => {
+	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
 // slice of the store state that contains the info about streaming mode, to avoid circular dependency
@@ -73,27 +80,25 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					return [...state, newMessage];
 				}
 
+				let newMessageId = getMessageId(newMessage);
+
 				// If message doesn't have text (e.g. Text with Quick Replies), still add an ID and animationState for enabling the animation.
-				if (!newMessage.text) {
+				// if there is a messageId, it means the message was a streaming message that was finished and will be handled further below
+				if (!newMessage.text && !newMessageId) {
 					return [
 						...state,
 						{
 							...newMessage,
 							id: generateRandomId(),
 							animationState: "start",
+							finishReason: "stop"
 						},
 					];
 				}
 
-				let newMessageId = getMessageId(newMessage);
-
-				if (!newMessageId) {
-					newMessageId = generateRandomId();
-				}
-
 				// Find existing message with same ID if we're collating outputs
 				let messageIndex = -1;
-				if (isOutputCollationEnabled) {
+				if (isOutputCollationEnabled && newMessageId) {
 					messageIndex = state.findIndex(msg => {
 						if ("text" in msg) {
 							const msgId = getMessageId(msg as IMessage);
@@ -103,6 +108,12 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 						}
 						return false;
 					});
+				}
+
+				const finishReason = getFinishReason(newMessage, newMessageId);
+
+				if (!newMessageId) {
+					newMessageId = generateRandomId();
 				}
 
 				// If no matching message, create new with array
@@ -119,6 +130,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 							text: textChunks,
 							id: newMessageId,
 							animationState: "start",
+							finishReason,
 						},
 					];
 				}
@@ -127,12 +139,24 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				const existingMessage = state[messageIndex] as IStreamingMessage;
 				const newState = [...state];
 
+				// if there is a finishReason, only add the finishReason to the streaming message
+				if (finishReason) {
+					newState[messageIndex] = {
+						...existingMessage,
+						finishReason,
+					};
+					return newState;
+				}
+
 				// Convert existing text to array if needed
 				const existingText = Array.isArray(existingMessage.text)
 					? existingMessage.text
 					: [existingMessage.text];
 
+				// reset animation state
 				let nextAnimationState: IStreamingMessage["animationState"] = "start";
+
+				// if the message was exited, keep it exited
 				if (existingMessage.animationState === "exited") {
 					nextAnimationState = "exited";
 				}
@@ -142,6 +166,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					...existingMessage,
 					text: [...existingText, newMessage.text as string],
 					animationState: nextAnimationState,
+					finishReason,
 				} as IMessage;
 
 				return newState;
