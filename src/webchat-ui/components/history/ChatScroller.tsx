@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import ScrollToBottom, { useScrollToBottom, useSticky } from "react-scroll-to-bottom";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
@@ -145,6 +146,9 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 	const scrollToBottom = useScrollToBottom();
 	const [sticky] = useSticky();
 
+	const scrollButtonDisabled =
+		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
+
 	useEffect(() => {
 		if (sticky && scrolledToLastInput) {
 			setShouldScrollToLastInput(false);
@@ -154,13 +158,14 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 	return (
 		<div>
 			{children}
-			{!sticky && (
+			{!sticky && !scrollButtonDisabled && (
 				<ScrollButton
 					className="webchat-scroll-to-bottom-button"
 					onClick={scrollToBottom}
 					aria-label="Scroll to bottom"
 				>
-					↓
+					{/* // Keep arrow symbol in parentheses!*/}
+					{"↓"}
 				</ScrollButton>
 			)}
 		</div>
