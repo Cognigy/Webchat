@@ -158,6 +158,7 @@ See it in action:
 | progressiveMessageRendering     | boolean | `false`                               | Enables output messages to appear progressively.                                                                                                                                                    |
 | renderMarkdown                  | boolean | `false`                               | Render markdown in text messages.                                                                                                                                                                   |
 | scrollingBehavior               | string  | `"alwaysScroll"`                      | Allowed values: `"scrollUntilLastInputAtTop" \| "alwaysScroll"`. Decide how scrolling should behave if scrolled to bottom and a new message comes in.                                               |
+| enableScrollButton              | string  | `true`                                | If false, hides the scroll-to-bottom button.                                                                                                                                                        |
 
 #### Start Behavior
 
