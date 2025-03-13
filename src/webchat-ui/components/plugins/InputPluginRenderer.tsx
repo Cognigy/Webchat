@@ -49,6 +49,7 @@ const InputRoot = styled.div(({ theme }) => ({
 	borderBottomLeftRadius: theme.unitSize * 2,
 	borderBottomRightRadius: theme.unitSize * 2,
 	transition: "border-bottom .2s ease-out",
+	zIndex: 11,
 
 	"&.webchat-input-stt-active": {
 		backgroundColor: theme.backgroundUserMessage,
