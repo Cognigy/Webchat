@@ -7,7 +7,7 @@ To integrate the Webchat into a Website, you need to
 1. load the `webchat.js` bundle via a `<script>` tag
 2. initialize the Webchat towards a Cognigy Endpoint using `initWebchat()`
 
-See it in action:  
+See it in action:
 [![Edit Basic Implementation](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/basic-cognigy-webchat-embedding-ict1u?fontsize=14&hidenavigation=1&theme=dark)
 
 ## Using File Compression
@@ -36,7 +36,7 @@ to execute. Note: Webchat plugins can have their own CSP requirements.
 
 To make use of Webchat Plugins, you have to load them via `<script>` tags AFTER loading the `webchat.js` / `webchat.legacy.js` and BEFORE calling `initWebchat()`
 
-See it in action:  
+See it in action:
 [![Edit Using Webchat Plugins](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/embedding-the-cognigy-webchat-1p6ky?fontsize=14&hidenavigation=1&theme=dark)
 
 ## Client-Side Configuration
@@ -60,7 +60,7 @@ You can pass [Webchat Options](#webchat-options) as an additional argument to th
 
 <sup id="persistent-user-id">1</sup> The `userId` will be randomly generated on first page load and then persisted user via `LocalStorage`. When that user reloads the page, the Webchat will re-use the `userId` from `LocalStorage`.
 
-See it in action:  
+See it in action:
 [![Edit Custom Webchat Options](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/embedding-the-cognigy-webchat-4xkv8?fontsize=14&hidenavigation=1&theme=dark)
 
 ### Endpoint Settings
@@ -85,7 +85,7 @@ See the [Settings Interface](#settings-interface) for full reference.
 | embeddingConfiguration | object | see [Embedding Configuration](#embedding-configuration) | Settings related to the Webchat browser embedding. **Not configurable via Endpoint Editor** |
 | widgetSettings | object | see [Widget Settings](#widget-settings) | Additional Settings to configure the webchat widget behavior. **Not configurable via Endpoint Editor** |
 
-See it in action:  
+See it in action:
 [![Edit Override Endpoint Settings](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/override-endpoint-settings-5gqm6g?file=%2Findex.html)
 
 #### Layout
