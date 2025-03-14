@@ -16,6 +16,7 @@ import {
 import { StoreState } from "./store";
 import xAppOverlay from "./xapp-overlay/slice";
 import queueUpdates from "./queue-updates/slice";
+import { IStreamingMessage } from "../../common/interfaces/message";
 
 const rootReducer = (state, action) => {
 	const combinedReducer = combineReducers({
@@ -75,9 +76,13 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 
 		case "SET_PREV_STATE": {
 			const { showRatingScreen, ...rating } = action.state.rating;
+			const visibleOutputMessages = [];
 			const messages = action.state.messages.map(message => {
 				if (message.animationState) {
 					message.animationState = "done";
+				}
+				if ((message.source === "bot" || message.source === "engagement") && message.id) {
+					visibleOutputMessages.push(message.id as string);
 				}
 				return message;
 			});
@@ -86,7 +91,7 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 					...state,
 					messages: {
 						messageHistory: [...messages],
-						visibleOutputMessages: []
+						visibleOutputMessages,
 					},
 					rating: { showRatingScreen: false, ...rating },
 				},
