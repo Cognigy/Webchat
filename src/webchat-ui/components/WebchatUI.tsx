@@ -1,5 +1,6 @@
 import React from "react";
 import { IMessage, IStreamingMessage } from "../../common/interfaces/message";
+import { IMessageEvent } from "../../common/interfaces/event";
 import Header from "./presentational/Header";
 import { CacheProvider, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -71,7 +72,8 @@ import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handl
 
 export interface WebchatUIProps {
 	currentSession: string;
-	messages: IMessage[];
+	messages: (IMessage | IMessageEvent)[];
+	visibleOutputMessages: string[];
 	unseenMessages: IMessage[];
 	fullscreenMessage?: IMessage;
 	onSetFullscreenMessage: (message: IMessage) => void;

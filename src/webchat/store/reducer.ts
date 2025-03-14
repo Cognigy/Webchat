@@ -56,11 +56,14 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 			return rootReducer(
 				{
 					...state,
-					messages: [
-						// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
-						...(state.messages.length === 0 ? action.state.messages : []),
-						...state.messages,
-					],
+					messages: {
+						messageHistory: [
+					// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
+							...(state.messages.messageHistory.length === 0 ? action.state.messages : []),
+							...state.messages.messageHistory,
+						],
+						visibleOutputMessages: state.messages.visibleOutputMessages
+					},
 					rating: {
 						...state.rating,
 						hasGivenRating: action.state.rating.hasGivenRating,
@@ -81,7 +84,10 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 			return rootReducer(
 				{
 					...state,
-					messages: [...messages],
+					messages: {
+						messageHistory: [...messages],
+						visibleOutputMessages: []
+					},
 					rating: { showRatingScreen: false, ...rating },
 				},
 				{ type: "" },

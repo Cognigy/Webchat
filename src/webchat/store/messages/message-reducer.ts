@@ -2,7 +2,15 @@ import { IMessage, IStreamingMessage } from "../../../common/interfaces/message"
 import { IMessageEvent } from "../../../common/interfaces/event";
 import { generateRandomId } from "./helper";
 
-export type MessageState = (IMessage | IMessageEvent)[];
+export interface MessageState {
+	messageHistory: (IMessage | IMessageEvent)[];
+	visibleOutputMessages: string[];
+}
+
+const initialState: MessageState = {
+	messageHistory: [],
+	visibleOutputMessages: []
+};
 
 const ADD_MESSAGE = "ADD_MESSAGE";
 export const addMessage = (message: IMessage, unseen?: boolean) => ({
@@ -58,12 +66,15 @@ type ConfigState = {
 
 export const createMessageReducer = (getState: () => { config: ConfigState }) => {
 	return (
-		state: MessageState = [],
+		state: MessageState = initialState,
 		action: AddMessageAction | AddMessageEventAction | SetMessageAnimatedAction,
 	) => {
 		switch (action.type) {
 			case "ADD_MESSAGE_EVENT": {
-				return [...state, action.event];
+				return {
+					...state,
+					messageHistory: [...state.messageHistory, action.event]
+				};
 			}
 			case "ADD_MESSAGE": {
 				const newMessage = action.message;
@@ -77,7 +88,10 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					(!isOutputCollationEnabled && !isprogressiveMessageRenderingEnabled) ||
 					(newMessage.source !== "bot" && newMessage.source !== "engagement")
 				) {
-					return [...state, newMessage];
+					return {
+						...state,
+						messageHistory: [...state.messageHistory, newMessage]
+					};
 				}
 
 				let newMessageId = getMessageId(newMessage);
@@ -85,21 +99,24 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				// If message doesn't have text (e.g. Text with Quick Replies), still add an ID and animationState for enabling the animation.
 				// if there is a messageId, it means the message was a streaming message that was finished and will be handled further below
 				if (!newMessage.text && !newMessageId) {
-					return [
+					return {
 						...state,
-						{
-							...newMessage,
-							id: generateRandomId(),
-							animationState: "start",
-							finishReason: "stop"
-						},
-					];
+						messageHistory: [
+							...state.messageHistory,
+							{
+								...newMessage,
+								id: generateRandomId(),
+								animationState: "start",
+								finishReason: "stop"
+							},
+						]
+					};
 				}
 
 				// Find existing message with same ID if we're collating outputs
 				let messageIndex = -1;
 				if (isOutputCollationEnabled && newMessageId) {
-					messageIndex = state.findIndex(msg => {
+					messageIndex = state.messageHistory.findIndex(msg => {
 						if ("text" in msg) {
 							const msgId = getMessageId(msg as IMessage);
 							if (msgId) {
@@ -123,29 +140,35 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
 
-					return [
+					return {
 						...state,
-						{
-							...newMessage,
-							text: textChunks,
-							id: newMessageId,
-							animationState: "start",
-							finishReason,
-						},
-					];
+						messageHistory: [
+							...state.messageHistory,
+							{
+								...newMessage,
+								text: textChunks,
+								id: newMessageId,
+								animationState: "start",
+								finishReason,
+							},
+						]
+					};
 				}
 
 				// Get existing message
-				const existingMessage = state[messageIndex] as IStreamingMessage;
-				const newState = [...state];
+				const existingMessage = state.messageHistory[messageIndex] as IStreamingMessage;
+				const newMessageHistory = [...state.messageHistory];
 
 				// if there is a finishReason, only add the finishReason to the streaming message
 				if (finishReason) {
-					newState[messageIndex] = {
+					newMessageHistory[messageIndex] = {
 						...existingMessage,
 						finishReason,
 					};
-					return newState;
+					return {
+						...state,
+						messageHistory: newMessageHistory
+					};
 				}
 
 				// Convert existing text to array if needed
@@ -162,22 +185,28 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				}
 
 				// Append new chunk
-				newState[messageIndex] = {
+				newMessageHistory[messageIndex] = {
 					...existingMessage,
 					text: [...existingText, newMessage.text as string],
 					animationState: nextAnimationState,
 					finishReason,
 				} as IMessage;
 
-				return newState;
+				return {
+					...state,
+					messageHistory: newMessageHistory
+				};
 			}
 			case "SET_MESSAGE_ANIMATED": {
-				return state.map(message => {
-					if ("id" in message && message.id === action.messageId) {
-						return { ...message, animationState: action.animationState };
-					}
-					return message;
-				});
+				return {
+					...state,
+					messageHistory: state.messageHistory.map(message => {
+						if ("id" in message && message.id === action.messageId) {
+							return { ...message, animationState: action.animationState };
+						}
+						return message;
+					})
+				};
 			}
 			default:
 				return state;

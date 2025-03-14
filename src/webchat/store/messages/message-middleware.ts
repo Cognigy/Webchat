@@ -158,7 +158,7 @@ export const createMessageMiddleware =
 				const isStreamingMessage =
 					state.config.settings.behavior.collateStreamedOutputs &&
 					!!message?.data?._cognigy?._messageId &&
-					state.messages.some(
+					state.messages.messageHistory.some(
 						storeMsg =>
 							message?.data?._cognigy?._messageId ===
 							(storeMsg as IStreamingMessage).id,
