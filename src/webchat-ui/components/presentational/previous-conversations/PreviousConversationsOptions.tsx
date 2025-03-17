@@ -72,16 +72,6 @@ const DeleteAnywaysButton = styled(Button)(({ theme }) => ({
 	},
 }));
 
-const DividerWrapper = styled.div(() => ({
-	padding: "12px 0px",
-}));
-
-const Divider = styled.div(({ theme }) => ({
-	height: 1,
-	width: "100%",
-	backgroundColor: theme.black80,
-}));
-
 export interface PreviousConversationsOptionsProps {
 	onShowPreviousConversationsOptionsScreen: (show: boolean) => void;
 	onSetShowPrevConversations: (show: boolean) => void;
@@ -124,9 +114,6 @@ export const PreviousConversationsOptions = (props: PreviousConversationsOptions
 						</DeleteButton>
 					</DeleteButtonContainer>
 				</OptionsContainer>
-				<DividerWrapper>
-					<Divider />
-				</DividerWrapper>
 			</Container>
 			<Modal
 				footer={
