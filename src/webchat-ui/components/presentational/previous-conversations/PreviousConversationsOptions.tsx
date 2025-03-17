@@ -5,6 +5,20 @@ import { Typography } from "@cognigy/chat-components";
 import IconButton from "../IconButton";
 import Modal from "../../Modal/Modal";
 import Button from "../Button";
+import { connect, ConnectedProps } from "react-redux";
+import {
+	setConversations,
+	SetConversationsAction,
+} from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
+import { getStorage } from "../../../../webchat/helper/storage";
+import { OptionsState, options } from "../../../../webchat/store/options/options-reducer";
+import { Reducer } from "@reduxjs/toolkit";
+import { CombinedState } from "redux";
+import {
+	SetShowPreviousConversationsOptionsScreen,
+	setShowPreviousConversationsOptionsScreen,
+} from "../../../../webchat/store/ui/ui-reducer";
+import { StoreState } from "../../../../webchat/store/store";
 
 const Container = styled.div`
 	width: 100%;
@@ -72,14 +86,12 @@ const DeleteAnywaysButton = styled(Button)(({ theme }) => ({
 	},
 }));
 
-export interface PreviousConversationsOptionsProps {
-	onShowPreviousConversationsOptionsScreen: (show: boolean) => void;
-	onSetShowPrevConversations: (show: boolean) => void;
+type PreviousConversationsOptionsProps = PropsFromRedux & {
 	config: IWebchatConfig;
-}
+};
 
-export const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) => {
-	const { onShowPreviousConversationsOptionsScreen, onSetShowPrevConversations, config } = props;
+const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) => {
+	const { closeOptionsScreen, config, options } = props;
 
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 
@@ -92,19 +104,29 @@ export const PreviousConversationsOptions = (props: PreviousConversationsOptions
 	};
 
 	const handleConfirmDelete = () => {
-		// Implement the logic to delete all conversations
+		props.handleDeleteAllConversations();
+		const storage = getStorage({
+			disableLocalStorage:
+				props.config.settings.embeddingConfiguration?.disableLocalStorage ?? false,
+			useSessionStorage:
+				props.config.settings.embeddingConfiguration?.useSessionStorage ?? false,
+		});
+		if (storage) {
+			Object.keys(storage).forEach(key => {
+				if (key.includes(options.userId)) {
+					storage.removeItem(key);
+				}
+			});
+		}
 		setIsModalOpen(false);
+		closeOptionsScreen();
 	};
 
 	return (
 		<>
 			<Container>
 				<OptionsContainer>
-					<Typography
-						variant="title1-semibold"
-						component="p"
-						className="webchat-rating-widget-title"
-					>
+					<Typography variant="title1-semibold" className="webchat-rating-widget-title">
 						{config.settings.customTranslations?.delete_all_conversations ??
 							"Delete all conversations"}
 					</Typography>
@@ -138,3 +160,17 @@ export const PreviousConversationsOptions = (props: PreviousConversationsOptions
 		</>
 	);
 };
+
+const mapState = (state: StoreState) => ({
+	options: state.options,
+});
+const mapDispatch = dispatch => ({
+	handleDeleteAllConversations: () => dispatch(setConversations({})),
+	closeOptionsScreen: () => dispatch(setShowPreviousConversationsOptionsScreen(false)),
+});
+
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(PreviousConversationsOptions);

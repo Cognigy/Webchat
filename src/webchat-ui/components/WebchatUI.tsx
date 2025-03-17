@@ -68,7 +68,7 @@ import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
-import { PreviousConversationsOptions } from "./presentational/previous-conversations/PreviousConversationsOptions";
+import PreviousConversationsOptions from "./presentational/previous-conversations/PreviousConversationsOptions";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -1249,15 +1249,7 @@ export class WebchatUI extends React.PureComponent<
 
 			if (isXAppOverlayOpen) return <XAppOverlay />;
 			if (showPreviousConversationsOptionsScreen) {
-				return (
-					<PreviousConversationsOptions
-						onShowPreviousConversationsOptionsScreen={
-							onShowPreviousConversationsOptionsScreen
-						}
-						onSetShowPrevConversations={onSetShowPrevConversations}
-						config={config}
-					/>
-				);
+				return <PreviousConversationsOptions config={config} />;
 			}
 			if (showPrevConversations)
 				return (
