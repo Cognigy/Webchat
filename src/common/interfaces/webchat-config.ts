@@ -299,6 +299,8 @@ export interface IWebchatSettings {
 		no_network: string;
 		reconnect: string;
 		reconnecting: string;
+		delete_all_conversations: string;
+		delete: string;
 	};
 	demoWebchat: {
 		enabled: boolean;

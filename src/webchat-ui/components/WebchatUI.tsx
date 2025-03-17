@@ -68,6 +68,7 @@ import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
+import { PreviousConversationsOptions } from "./presentational/previous-conversations/PreviousConversationsOptions";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -133,6 +134,9 @@ export interface WebchatUIProps {
 
 	showChatOptionsScreen: boolean;
 	onSetShowChatOptionsScreen: (show: boolean) => void;
+
+	showPreviousConversationsOptionsScreen: boolean;
+	onShowPreviousConversationsOptionsScreen: (show: boolean) => void;
 
 	hasAcceptedTerms: boolean;
 	onAcceptTerms: (userId: string) => void;
@@ -240,7 +244,7 @@ const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 export class WebchatUI extends React.PureComponent<
 	React.HTMLProps<HTMLDivElement> & WebchatUIProps,
 	WebchatUIState
-> {
+	> {
 	state = {
 		theme: createWebchatTheme(),
 		messagePlugins: [],
@@ -494,17 +498,17 @@ export class WebchatUI extends React.PureComponent<
 
 		if (
 			this?.props?.config?.settings?.colors?.primaryColor !==
-				prevProps?.config?.settings?.colors?.primaryColor ||
+			prevProps?.config?.settings?.colors?.primaryColor ||
 			this?.props?.config?.settings?.colors?.secondaryColor !==
-				prevProps?.config?.settings?.colors?.secondaryColor ||
+			prevProps?.config?.settings?.colors?.secondaryColor ||
 			this?.props?.config?.settings?.colors?.chatInterfaceColor !==
-				prevProps?.config?.settings?.colors?.chatInterfaceColor ||
+			prevProps?.config?.settings?.colors?.chatInterfaceColor ||
 			this?.props?.config?.settings?.colors?.botMessageColor !==
-				prevProps?.config?.settings?.colors?.botMessageColor ||
+			prevProps?.config?.settings?.colors?.botMessageColor ||
 			this?.props?.config?.settings?.colors?.userMessageColor !==
-				prevProps?.config?.settings?.colors?.userMessageColor ||
+			prevProps?.config?.settings?.colors?.userMessageColor ||
 			this?.props?.config?.settings?.colors?.textLinkColor !==
-				prevProps?.config?.settings?.colors?.textLinkColor
+			prevProps?.config?.settings?.colors?.textLinkColor
 		) {
 			this.setState({
 				theme: createWebchatTheme({
@@ -668,7 +672,7 @@ export class WebchatUI extends React.PureComponent<
 					this.props.unseenMessages.length === 1
 						? this.props.config.settings.unreadMessages.unreadMessageTitleText
 						: this.props.config.settings.unreadMessages.unreadMessageTitleTextPlural
-				}`;
+					}`;
 				this.titleType = "unread";
 			}
 		}
@@ -1079,27 +1083,27 @@ export class WebchatUI extends React.PureComponent<
 												</FABDisabled>
 											</div>
 										) : (
-											<FAB
-												data-cognigy-webchat-toggle
-												onClick={this.handleFabClick}
-												{...webchatToggleProps}
-												type="button"
-												className="webchat-toggle-button"
-												aria-label={
-													open ? "Close chat" : openChatAriaLabel()
-												}
-												ref={this.chatToggleButtonRef}
-											>
-												{open ? <CollapseIcon /> : <ChatIcon />}
-												{config.settings.unreadMessages.enableBadge ? (
-													<Badge
-														_content={unseenMessages.length}
-														className="webchat-unread-message-badge"
-														aria-label={`${unseenMessages.length} unread messages`}
-													/>
-												) : null}
-											</FAB>
-										)}
+												<FAB
+													data-cognigy-webchat-toggle
+													onClick={this.handleFabClick}
+													{...webchatToggleProps}
+													type="button"
+													className="webchat-toggle-button"
+													aria-label={
+														open ? "Close chat" : openChatAriaLabel()
+													}
+													ref={this.chatToggleButtonRef}
+												>
+													{open ? <CollapseIcon /> : <ChatIcon />}
+													{config.settings.unreadMessages.enableBadge ? (
+														<Badge
+															_content={unseenMessages.length}
+															className="webchat-unread-message-badge"
+															aria-label={`${unseenMessages.length} unread messages`}
+														/>
+													) : null}
+												</FAB>
+											)}
 									</div>
 								)}
 							</CacheProvider>
@@ -1125,6 +1129,8 @@ export class WebchatUI extends React.PureComponent<
 			onSetShowPrevConversations,
 			showChatOptionsScreen,
 			onSetShowChatOptionsScreen,
+			showPreviousConversationsOptionsScreen,
+			onShowPreviousConversationsOptionsScreen,
 			requestRatingScreenTitle,
 			customRatingTitle,
 			customRatingCommentText,
@@ -1188,7 +1194,9 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const handleOnGoBack = () => {
-			if (!showChatOptionsScreen && !showRatingScreen) {
+			if (showPreviousConversationsOptionsScreen) {
+				onShowPreviousConversationsOptionsScreen(false);
+			} else if (!showChatOptionsScreen && !showRatingScreen) {
 				onSetShowPrevConversations(false);
 				onSetShowHomeScreen(true);
 				// Set timeout to focus on close button in header of home screen after animation
@@ -1240,7 +1248,15 @@ export class WebchatUI extends React.PureComponent<
 				);
 
 			if (isXAppOverlayOpen) return <XAppOverlay />;
-
+			if (showPreviousConversationsOptionsScreen) {
+				return (
+					<PreviousConversationsOptions
+						onShowPreviousConversationsOptionsScreen={onShowPreviousConversationsOptionsScreen}
+						onSetShowPrevConversations={onSetShowPrevConversations}
+						config={config}
+					/>
+				);
+			}
 			if (showPrevConversations)
 				return (
 					<PrevConversationsList
@@ -1317,6 +1333,9 @@ export class WebchatUI extends React.PureComponent<
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled) {
 				return config.settings.privacyNotice.title || "Privacy notice";
 			}
+			if (showPreviousConversationsOptionsScreen) {
+				return "Conversations Options";
+			}
 			if (showPrevConversations) {
 				return (
 					config.settings.homeScreen.previousConversations.title ||
@@ -1365,8 +1384,14 @@ export class WebchatUI extends React.PureComponent<
 								onClose={handleCloseAndReset}
 								onMinimize={handleOnClose}
 								onGoBack={showInformationMessage ? undefined : handleOnGoBack}
-								onSetShowChatOptionsScreen={onSetShowChatOptionsScreen}
-								isChatOptionsButtonVisible={isChatOptionsButtonVisible}
+								onSetShowChatOptionsScreen={() => {
+									if (showPrevConversations) {
+										onShowPreviousConversationsOptionsScreen(true);
+									} else {
+										onSetShowChatOptionsScreen(true);
+									}
+								}}
+								isChatOptionsButtonVisible={isChatOptionsButtonVisible || !!showPrevConversations}
 								logoUrl={
 									!showChatOptionsScreen && !showRatingScreen
 										? config.settings.layout.logoUrl
@@ -1425,7 +1450,7 @@ export class WebchatUI extends React.PureComponent<
 				onSendMessage={this.sendMessage}
 				config={config}
 				plugins={messagePlugins}
-				onSetFullscreen={() => {}}
+				onSetFullscreen={() => { }}
 				onDismissFullscreen={onDismissFullscreenMessage}
 				message={fullscreenMessage as IMessage}
 				webchatTheme={this.state.theme}
@@ -1478,7 +1503,7 @@ export class WebchatUI extends React.PureComponent<
 							config={config}
 							hasReply={hasReply}
 							isConversationEnded={isEnded}
-							onDismissFullscreen={() => {}}
+							onDismissFullscreen={() => { }}
 							onEmitAnalytics={onEmitAnalytics}
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
