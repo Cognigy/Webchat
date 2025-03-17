@@ -144,10 +144,8 @@ export const PreviousConversationsOptions = (props: PreviousConversationsOptions
 				title="Delete all conversations"
 			>
 				<Typography variant="body-semibold">
-					{
-						config.settings.customTranslations?.delete_all_conversations_confirmation ??
-						"You are about to delete all the conversation. This action cannot be undone. Are you sure?"
-					}
+					{config.settings.customTranslations?.delete_all_conversations_confirmation ??
+						"You are about to delete all the conversation. This action cannot be undone. Are you sure?"}
 				</Typography>
 			</Modal>
 		</>

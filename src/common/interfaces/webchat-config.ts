@@ -303,7 +303,7 @@ export interface IWebchatSettings {
 		delete: string;
 		delete_anyways: string;
 		cancel: string;
-		delete_all_conversations_confirmation: string
+		delete_all_conversations_confirmation: string;
 	};
 	demoWebchat: {
 		enabled: boolean;
