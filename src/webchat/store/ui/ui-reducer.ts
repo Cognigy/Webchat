@@ -66,14 +66,16 @@ export const setShowChatOptionsScreen = (showChatOptionsScreen: boolean) => ({
 });
 export type SetShowChatOptionsScreenAction = ReturnType<typeof setShowChatOptionsScreen>;
 
-
-export const SET_SHOW_PREVIOUS_CONVERSATIONS_OPTIONS_SCREEN = "SET_SHOW_PREVIOUS_CONVERSATIONS_OPTIONS_SCREEN" as const;
+export const SET_SHOW_PREVIOUS_CONVERSATIONS_OPTIONS_SCREEN =
+	"SET_SHOW_PREVIOUS_CONVERSATIONS_OPTIONS_SCREEN" as const;
 export const setShowPreviousConversationsOptionsScreen = (showChatOptionsScreen: boolean) => ({
 	type: SET_SHOW_PREVIOUS_CONVERSATIONS_OPTIONS_SCREEN,
 	showChatOptionsScreen,
 });
 
-export type SetShowPreviousConversationsOptionsScreen = ReturnType<typeof setShowPreviousConversationsOptionsScreen>;
+export type SetShowPreviousConversationsOptionsScreen = ReturnType<
+	typeof setShowPreviousConversationsOptionsScreen
+>;
 
 const SET_TYPING = "SET_TYPING";
 export const setTyping = (typing: TTyping) => ({

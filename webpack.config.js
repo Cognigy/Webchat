@@ -11,7 +11,7 @@ module.exports = {
 		extensions: [".ts", ".tsx", ".js", ".json"],
 	},
 	node: {},
-	devtool: 'eval-source-map',
+	// devtool: 'source-map',
 	module: {
 		rules: [
 			{
@@ -22,14 +22,11 @@ module.exports = {
 			{
 				// Include ts, tsx, js, and jsx files.
 				test: /\.(ts|js)x?$/,
-				exclude: /node_modules/,
-				use: [{
-					loader: "babel-loader", options: {
-						presets: ["@babel/typescript", "@babel/preset-react"],
-						compact: false,
-					}
-				}],
-
+				loader: "babel-loader",
+				options: {
+					presets: ["@babel/typescript", "@babel/preset-react"],
+					compact: false,
+				},
 			},
 			{
 				test: /\.css$/,
