@@ -18,9 +18,8 @@ const Container = styled.div`
 
 const OptionsContainer = styled.div`
 	display: flex;
-	padding: 0px 20px;
+	padding: 10px 20px;
 	flex-direction: column;
-	overflow-y: auto;
 `;
 
 const DeleteButtonContainer = styled.div(() => ({
@@ -69,6 +68,7 @@ const DeleteAnywaysButton = styled(Button)(({ theme }) => ({
 	},
 	"&:hover:not(:disabled)": {
 		backgroundColor: theme.red10,
+		color: theme.black10,
 	},
 }));
 

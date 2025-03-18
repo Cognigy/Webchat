@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import IconButton from "../presentational/IconButton";
 import CloseIcon from "../../assets/close-16px.svg";
@@ -50,6 +50,12 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 	color: theme.black10,
 	borderRadius: 4,
 	marginLeft: "auto",
+
+	"&:focus": {
+		outline: `2px solid ${theme.primaryColor}`,
+		outlineOffset: 2,
+	},
+
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
 		outlineOffset: 2,
@@ -69,6 +75,11 @@ const ModalBody = styled.div`
 const ModalFooter = styled.div`
 	display: flex;
 	justify-content: space-between;
+	
+	@media screen and (max-width: 576px) {
+		flex-direction: column;
+		gap: 12px;
+	},
 `;
 
 const DividerWrapper = styled.div(() => ({
@@ -91,6 +102,24 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				onClose();
+			}
+		};
+
+		if (isOpen) {
+			document.addEventListener("keydown", handleKeyDown);
+		} else {
+			document.removeEventListener("keydown", handleKeyDown);
+		}
+
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [isOpen, onClose]);
+
 	return (
 		<>
 			{isOpen && <Overlay onClick={onClose} />}
@@ -98,7 +127,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 				<StyledDialog open={isOpen}>
 					<ModalHeader>
 						<ModalTitle>{title}</ModalTitle>
-						<CloseButton aria-label="Close" onClick={onClose}>
+						<CloseButton autoFocus aria-label="Close" onClick={onClose}>
 							<CloseIcon aria-hidden />
 						</CloseButton>
 					</ModalHeader>
