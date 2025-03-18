@@ -1,4 +1,4 @@
-import { IMessage, IStreamingMessage } from "../../../common/interfaces/message";
+import { IMessage, IStreamingMessage, IUserMessage } from "../../../common/interfaces/message";
 import { IMessageEvent } from "../../../common/interfaces/event";
 import { generateRandomId } from "./helper";
 
@@ -30,6 +30,12 @@ export const setMessageAnimated = (
 });
 export type SetMessageAnimatedAction = ReturnType<typeof setMessageAnimated>;
 
+const CLEAR_MESSAGES = "CLEAR_MESSAGES" as const;
+export const clearMessages = () => ({
+	type: CLEAR_MESSAGES,
+});
+export type ClearMessagesAction = ReturnType<typeof clearMessages>;
+
 interface CognigyData {
 	_messageId?: string;
 }
@@ -52,7 +58,11 @@ type ConfigState = {
 export const createMessageReducer = (getState: () => { config: ConfigState }) => {
 	return (
 		state: MessageState = [],
-		action: AddMessageAction | AddMessageEventAction | SetMessageAnimatedAction,
+		action:
+			| AddMessageAction
+			| AddMessageEventAction
+			| SetMessageAnimatedAction
+			| ClearMessagesAction,
 	) => {
 		switch (action.type) {
 			case "ADD_MESSAGE_EVENT": {
@@ -153,6 +163,9 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					}
 					return message;
 				});
+			}
+			case CLEAR_MESSAGES: {
+				return [];
 			}
 			default:
 				return state;

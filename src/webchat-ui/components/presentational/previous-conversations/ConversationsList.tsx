@@ -107,15 +107,18 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 			<ConversationsList className="webchat-prev-conversations-content">
 				{sessions.length > 0 &&
 					sessions.map((session, i) => {
+						const conversation = sortedConversations[session];
 						return (
-							<ConversationsListItem
-								key={i}
-								index={i}
-								sessionId={session}
-								switchSession={switchSession}
-								conversation={sortedConversations[session]}
-								config={config}
-							/>
+							conversation && (
+								<ConversationsListItem
+									key={i}
+									index={i}
+									sessionId={session}
+									switchSession={switchSession}
+									conversation={conversation}
+									config={config}
+								/>
+							)
 						);
 					})}
 			</ConversationsList>

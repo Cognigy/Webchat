@@ -10,6 +10,7 @@ import { WebchatUIProps } from "../../WebchatUI";
 import { ChatOptionsFooter } from "./ChatOptionsFooter";
 import getKeyboardFocusableElements from "../../../utils/find-focusable";
 import TTSOption from "./TTSOption";
+import DeleteConversation from "./DeleteConversation";
 
 const ChatOptionsRoot = styled.div(() => ({
 	width: "100%",
@@ -120,15 +121,21 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 					</>
 				)}
 				{showRating && (
-					<RatingWidget
-						ratingTitleText={ratingTitleText}
-						ratingCommentText={ratingCommentText}
-						onSendRating={onSendRating}
-						showRatingStatus={showOnlyRating}
-						ratingEventBannerText={ratingEventBannerText}
-						buttonText={ratingSubmitButtonText}
-					/>
+					<>
+						<RatingWidget
+							ratingTitleText={ratingTitleText}
+							ratingCommentText={ratingCommentText}
+							onSendRating={onSendRating}
+							showRatingStatus={showOnlyRating}
+							ratingEventBannerText={ratingEventBannerText}
+							buttonText={ratingSubmitButtonText}
+						/>
+						<DividerWrapper>
+							<Divider />
+						</DividerWrapper>
+					</>
 				)}
+				<DeleteConversation config={config} />
 			</ChatOptionsContainer>
 			{chatOptions.footer.enabled && chatOptions.footer.items[0] && (
 				<ChatOptionsFooter settings={config.settings} />
