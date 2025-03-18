@@ -1328,7 +1328,10 @@ export class WebchatUI extends React.PureComponent<
 				return config.settings.privacyNotice.title || "Privacy notice";
 			}
 			if (showPreviousConversationsOptionsScreen) {
-				return "Conversations Options";
+				return (
+					config.settings.customTranslations?.conversations_options_title ??
+					"Conversations Options"
+				);
 			}
 			if (showPrevConversations) {
 				return (

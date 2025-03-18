@@ -402,12 +402,18 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 #### Custom Translations
 
-| Name          | Type   | Default                 |
-| ------------- | ------ | ----------------------- |
-| Network error | string | "Connection Lost"       |
-| No network    | string | "No network connection" |
-| Reconnecting  | string | "Reconnecting..."       |
-| Reconnect     | string | "Reconnect"             |
+| Name                                  | Type   | Default                                                                                     |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
+| Network error                         | string | "Connection Lost"                                                                           |
+| No network                            | string | "No network connection"                                                                     |
+| Reconnecting                          | string | "Reconnecting..."                                                                           |
+| Reconnect                             | string | "Reconnect"                                                                                 |
+| delete_all_conversations              | string | "delete_all_conversations"                                                                  |
+| delete                                | string | "Delete"                                                                                    |
+| delete_anyways                        | string | "Delete anyways"                                                                            |
+| cancel                                | string | "Cancel"                                                                                    |
+| delete_all_conversations_confirmation | string | "You are about to delete all the conversation. This action cannot be undone. Are you sure?" |
+| conversations_options_title           | string | "Conversations Options"                                                                     |
 
 #### Settings Interface
 
@@ -611,6 +617,12 @@ interface IWebchatSettings {
 		no_network: string;
 		reconnecting: string;
 		reconnect: string;
+		delete_all_conversations: string;
+		delete: string;
+		delete_anyways: string;
+		cancel: string;
+		delete_all_conversations_confirmation: string;
+		conversations_options_title: string;
 	};
 
 	// Additional Settings to configure the webchat widget behavior
