@@ -88,13 +88,14 @@ export const getAvatars = (messages: IMessage[]) => {
 };
 
 export const sortConversationsByFreshness = (conversations: PrevConversationsState) => {
-	const sortedConversations: PrevConversationsState = Object.entries(conversations)
+	const sortedConversations = Object.entries(conversations)
+		.filter(([, session]) => !!session)
 		.sort(
 			([, a], [, b]) =>
-				(b.messages[b.messages.length - 1]?.timestamp || 0) -
-				(a.messages[a.messages.length - 1]?.timestamp || 0),
+				(b!.messages[b.messages.length - 1]?.timestamp || 0) -
+				(a!.messages[a.messages.length - 1]?.timestamp || 0),
 		)
-		.reduce(
+		.reduce<PrevConversationsState>(
 			(r, [k, v]) => ({
 				...r,
 				[k]: v,

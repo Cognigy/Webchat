@@ -302,6 +302,8 @@ export interface IWebchatSettings {
 		conversations_options: string;
 		delete_all_conversations: string;
 		delete_all_conversations_confirmation: string;
+		delete_conversation: string;
+		delete_conversation_confirmation: string;
 		delete: string;
 		delete_anyway: string;
 		cancel: string;

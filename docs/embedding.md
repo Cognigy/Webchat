@@ -411,6 +411,8 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | coversations_options                  | string | "Conversations Options"                                                                     |
 | delete_all_conversations              | string | "Delete all conversations"                                                                  |
 | delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." |
+| delete_conversation                   | string | "Delete Conversation"                                                                       |
+| delete_conversation_confirmation      | string | "You are about to delete the conversation. This action cannot be undone."                   |
 | delete                                | string | "Delete"                                                                                    |
 | delete_anyway                         | string | "Delete anyway"                                                                             |
 | cancel                                | string | "Cancel"                                                                                    |
@@ -620,6 +622,8 @@ interface IWebchatSettings {
 		conversations_options: string;
 		delete_all_conversations: string;
 		delete_all_conversations_confirmation: string;
+		delete_conversation: string;
+		delete_conversation_confirmation: string;
 		delete: string;
 		delete_anyway: string;
 		cancel: string;

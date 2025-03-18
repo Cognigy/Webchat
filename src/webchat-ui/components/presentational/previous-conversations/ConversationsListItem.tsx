@@ -94,7 +94,7 @@ const FallBackAvatar = styled(CognigyAIAvatar)(({ theme }) => ({
 interface IConversationsListItemProps {
 	index: number;
 	config: IWebchatConfig;
-	conversation: PrevConversationsState[string];
+	conversation: Exclude<PrevConversationsState[string], undefined>;
 	sessionId: string;
 	switchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 }
