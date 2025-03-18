@@ -408,7 +408,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | No network                            | string | "No network connection"                                                                     |
 | Reconnecting                          | string | "Reconnecting..."                                                                           |
 | Reconnect                             | string | "Reconnect"                                                                                 |
-| delete_all_conversations              | string | "delete_all_conversations"                                                                  |
+| delete_all_conversations              | string | "Delete all conversations"                                                                  |
 | delete                                | string | "Delete"                                                                                    |
 | delete_anyway                         | string | "Delete anyway"                                                                             |
 | cancel                                | string | "Cancel"                                                                                    |
