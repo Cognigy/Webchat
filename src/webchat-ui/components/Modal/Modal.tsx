@@ -98,8 +98,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 				<StyledDialog open={isOpen}>
 					<ModalHeader>
 						<ModalTitle>{title}</ModalTitle>
-						<CloseButton onClick={onClose}>
-							<CloseIcon />
+						<CloseButton aria-label="Close" onClick={onClose}>
+							<CloseIcon aria-hidden />
 						</CloseButton>
 					</ModalHeader>
 					<DividerWrapper>
