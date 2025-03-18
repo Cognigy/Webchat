@@ -1,15 +1,17 @@
 import { IMessage, IStreamingMessage } from "../../../common/interfaces/message";
 import { IMessageEvent } from "../../../common/interfaces/event";
-import { generateRandomId } from "./helper";
+import { generateRandomId, isAnimatedRichBotMessage } from "./helper";
 
 export interface MessageState {
 	messageHistory: (IMessage | IMessageEvent)[];
 	visibleOutputMessages: string[];
+	currentlyAnimatingId: string | null;
 }
 
 const initialState: MessageState = {
 	messageHistory: [],
-	visibleOutputMessages: []
+	visibleOutputMessages: [],
+	currentlyAnimatingId: null,
 };
 
 const ADD_MESSAGE = "ADD_MESSAGE";
@@ -94,22 +96,38 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					};
 				}
 
+				const visibleOutputMessages = state.visibleOutputMessages;
 				let newMessageId = getMessageId(newMessage);
+				let nextAnimatingId = state.currentlyAnimatingId;
 
-				// If message doesn't have text (e.g. Text with Quick Replies), still add an ID and animationState for enabling the animation.
+				// If message doesn't have text, still add an ID.
+				// Check if the message is an animated bot message (e.g. Text with Quick Replies) and set the animationState accordingly
 				// if there is a messageId, it means the message was a streaming message that was finished and will be handled further below
 				if (!newMessage.text && !newMessageId) {
+					const isAnimated = isAnimatedRichBotMessage(newMessage as IStreamingMessage);
+
+					const newMessageId = generateRandomId();
+
+					if (!state.currentlyAnimatingId) {
+						visibleOutputMessages.push(newMessageId as string);
+					}
+					if (!nextAnimatingId) {
+						nextAnimatingId = newMessageId;
+					}
+
 					return {
 						...state,
 						messageHistory: [
 							...state.messageHistory,
 							{
 								...newMessage,
-								id: generateRandomId(),
-								animationState: "start",
+								id: newMessageId,
+								animationState: isAnimated ? "start" : "done",
 								finishReason: "stop"
 							},
-						]
+						],
+						visibleOutputMessages,
+						currentlyAnimatingId: nextAnimatingId
 					};
 				}
 
@@ -133,8 +151,16 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					newMessageId = generateRandomId();
 				}
 
+				if (!nextAnimatingId) {
+					nextAnimatingId = newMessageId;
+				}
+
 				// If no matching message, create new with array
 				if (messageIndex === -1) {
+					if (!state.currentlyAnimatingId) {
+						visibleOutputMessages.push(newMessageId as string);
+					}
+
 					// break string into chunks on new lines so that markdown is evaluated while a long text is animated
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
@@ -151,9 +177,15 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 								animationState: "start",
 								finishReason,
 							},
-						]
+						],
+						visibleOutputMessages,
+						currentlyAnimatingId: nextAnimatingId
 					};
 				}
+
+				/*
+				** From here on, we are only handling a streaming message that has already been added to the messageHistory
+				*/
 
 				// Get existing message
 				const existingMessage = state.messageHistory[messageIndex] as IStreamingMessage;
@@ -184,6 +216,14 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					nextAnimationState = "exited";
 				}
 
+				// if the streaming message is empty, keep the animation state of the existing message, since the empty message just streams the finishReason
+				if (!newMessage.text) {
+					nextAnimationState = existingMessage.animationState;
+				}
+
+				console.log("nextAnimationState", nextAnimationState);
+				console.log(newMessage);
+
 				// Append new chunk
 				newMessageHistory[messageIndex] = {
 					...existingMessage,
@@ -197,7 +237,50 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					messageHistory: newMessageHistory
 				};
 			}
+
 			case "SET_MESSAGE_ANIMATED": {
+				const messageIndex = state.messageHistory.findIndex(message => "id" in message && message.id === action.messageId);
+				if (messageIndex === -1) return state;
+
+				// Create a new Set to deduplicate messages while maintaining order
+				const visibleMessagesSet = new Set(state.visibleOutputMessages);
+
+				// Add current message if it's done or exited
+				if (action.animationState === "done" || action.animationState === "exited") {
+					visibleMessagesSet.add(action.messageId);
+				}
+
+				let currentlyAnimatingId = state.currentlyAnimatingId;
+
+				// Find the next message that should be animated
+				if (action.animationState === "done" || action.animationState === "exited") {
+					let nextAnimatingMessageFound = false;
+
+					for (let i = messageIndex + 1; i < state.messageHistory.length; i++) {
+						const message = state.messageHistory[i];
+						if ((message.source === "bot" || message.source === "engagement") && "id" in message) {
+							visibleMessagesSet.add(message.id as string);
+
+							// If we find a message that should be animated (state is "start")
+							if (message.animationState === "start" && !nextAnimatingMessageFound) {
+								currentlyAnimatingId = message.id as string;
+								nextAnimatingMessageFound = true;
+								break;
+							}
+						}
+					}
+
+					// If we didn't find a next message to animate, clear the animating ID
+					if (!nextAnimatingMessageFound) {
+						currentlyAnimatingId = null;
+					}
+				}
+
+				// Convert Set back to array while maintaining order from messageHistory
+				const newVisibleOutputMessages = state.messageHistory
+					.filter(message => "id" in message && visibleMessagesSet.has(message.id))
+					.map(message => ("id" in message ? message.id : "")) as string[];
+
 				return {
 					...state,
 					messageHistory: state.messageHistory.map(message => {
@@ -205,7 +288,9 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 							return { ...message, animationState: action.animationState };
 						}
 						return message;
-					})
+					}),
+					visibleOutputMessages: newVisibleOutputMessages,
+					currentlyAnimatingId
 				};
 			}
 			default:
