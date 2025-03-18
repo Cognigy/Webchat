@@ -1439,26 +1439,43 @@ export class WebchatUI extends React.PureComponent<
 	}
 
 	renderHistory() {
-		const { messages, typingIndicator, config, onEmitAnalytics, openXAppOverlay, visibleOutputMessages } = this.props;
+		const {
+			messages,
+			typingIndicator,
+			config,
+			onEmitAnalytics,
+			openXAppOverlay,
+			visibleOutputMessages,
+		} = this.props;
 		const { messagePlugins = [] } = this.state;
 
-		const { enableTypingIndicator, messageDelay, enableAIAgentNotice, AIAgentNoticeText, progressiveMessageRendering } = config.settings.behavior;
+		const {
+			enableTypingIndicator,
+			messageDelay,
+			enableAIAgentNotice,
+			AIAgentNoticeText,
+			progressiveMessageRendering,
+		} = config.settings.behavior;
 		const isTyping = typingIndicator !== "remove" && typingIndicator !== "hide";
 
 		const isEnded = isConversationEnded(messages);
 
 		// Find privacy message and remove it from the messages list (these message types are not displayed in the chat log).
 		// If we do not remove, it will cause the collatation of the first user message.
-		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, ["acceptPrivacyPolicy"]);
+		const messagesExcludingPrivacyMessage = getMessagesListWithoutControlCommands(messages, [
+			"acceptPrivacyPolicy",
+		]);
 
 		// Filter messages based on progressive rendering settings
 		const visibleMessages = progressiveMessageRendering
 			? messagesExcludingPrivacyMessage.filter(message => {
-				if (message.source !== "bot" && message.source !== "engagement") {
-					return true;
-				}
-				return visibleOutputMessages.includes((message as IStreamingMessage).id as string);
-			})
+					if (message.source !== "bot" && message.source !== "engagement") {
+						return true;
+					}
+					return visibleOutputMessages.includes(
+						(message as IStreamingMessage).id as string,
+					);
+				})
 			: messagesExcludingPrivacyMessage;
 
 		return (
