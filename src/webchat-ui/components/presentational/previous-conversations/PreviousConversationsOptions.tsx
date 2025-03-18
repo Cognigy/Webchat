@@ -9,7 +9,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { setConversations } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getStorage } from "../../../../webchat/helper/storage";
 import { setShowPreviousConversationsOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
-import { StoreState, AppDispatch } from "../../../../webchat/store/store";
+import { StoreState } from "../../../../webchat/store/store";
 import { Dispatch } from "redux";
 
 const Container = styled.div`
