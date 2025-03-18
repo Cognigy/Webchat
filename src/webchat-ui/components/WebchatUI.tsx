@@ -1329,7 +1329,7 @@ export class WebchatUI extends React.PureComponent<
 			}
 			if (showPreviousConversationsOptionsScreen) {
 				return (
-					config.settings.customTranslations?.conversations_options_title ??
+					config.settings.customTranslations?.conversations_options ??
 					"Conversations Options"
 				);
 			}

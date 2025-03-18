@@ -410,7 +410,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | Reconnect                             | string | "Reconnect"                                                                                 |
 | delete_all_conversations              | string | "delete_all_conversations"                                                                  |
 | delete                                | string | "Delete"                                                                                    |
-| delete_anyways                        | string | "Delete anyways"                                                                            |
+| delete_anyway                         | string | "Delete anyway"                                                                             |
 | cancel                                | string | "Cancel"                                                                                    |
 | delete_all_conversations_confirmation | string | "You are about to delete all the conversation. This action cannot be undone. Are you sure?" |
 | conversations_options_title           | string | "Conversations Options"                                                                     |
@@ -619,7 +619,7 @@ interface IWebchatSettings {
 		reconnect: string;
 		delete_all_conversations: string;
 		delete: string;
-		delete_anyways: string;
+		delete_anyway: string;
 		cancel: string;
 		delete_all_conversations_confirmation: string;
 		conversations_options_title: string;

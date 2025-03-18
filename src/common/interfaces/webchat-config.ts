@@ -301,7 +301,7 @@ export interface IWebchatSettings {
 		reconnecting: string;
 		delete_all_conversations: string;
 		delete: string;
-		delete_anyways: string;
+		delete_anyway: string;
 		cancel: string;
 		delete_all_conversations_confirmation: string;
 		conversations_options_title: string;

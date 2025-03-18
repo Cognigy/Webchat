@@ -137,7 +137,7 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 							onClick={handleConfirmDelete}
 							aria-label="Confirm deletion"
 						>
-							{config.settings.customTranslations?.delete_anyways ?? "Delete anyways"}
+							{config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
 						</DeleteAnywaysButton>
 					</>
 				}
