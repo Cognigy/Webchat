@@ -5,12 +5,11 @@ import { Typography } from "@cognigy/chat-components";
 import IconButton from "../IconButton";
 import Modal from "../../Modal/Modal";
 import Button from "../Button";
-import { connect, ConnectedProps } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setConversations } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getStorage } from "../../../../webchat/helper/storage";
 import { setShowPreviousConversationsOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
 import { StoreState } from "../../../../webchat/store/store";
-import { Dispatch } from "redux";
 
 const Container = styled.div`
 	width: 100%;
@@ -78,13 +77,14 @@ const DeleteAnywaysButton = styled(Button)(({ theme }) => ({
 	},
 }));
 
-type PreviousConversationsOptionsProps = PropsFromRedux & {
+interface PreviousConversationsOptionsProps {
 	config: IWebchatConfig;
-};
+}
 
 const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) => {
-	const { closeOptionsScreen, config, options } = props;
-
+	const { config } = props;
+	const { userId } = useSelector((state: StoreState) => state.options);
+	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 
 	const handleDeleteAllConversations = () => {
@@ -96,7 +96,7 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 	};
 
 	const handleConfirmDelete = () => {
-		props.handleDeleteAllConversations();
+		dispatch(setConversations({}));
 		const storage = getStorage({
 			disableLocalStorage:
 				props.config.settings.embeddingConfiguration?.disableLocalStorage ?? false,
@@ -105,13 +105,13 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 		});
 		if (storage) {
 			Object.keys(storage).forEach(key => {
-				if (key.includes(options.userId)) {
+				if (key.includes(userId)) {
 					storage.removeItem(key);
 				}
 			});
 		}
 		setIsModalOpen(false);
-		closeOptionsScreen();
+		dispatch(setShowPreviousConversationsOptionsScreen(false));
 	};
 
 	return (
@@ -159,22 +159,4 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 	);
 };
 
-const mapState = (state: StoreState) => ({
-	options: state.options,
-});
-
-const mapDispatch = (
-	dispatch: Dispatch<
-		| ReturnType<typeof setConversations>
-		| ReturnType<typeof setShowPreviousConversationsOptionsScreen>
-	>,
-) => ({
-	handleDeleteAllConversations: () => dispatch(setConversations({})),
-	closeOptionsScreen: () => dispatch(setShowPreviousConversationsOptionsScreen(false)),
-});
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(PreviousConversationsOptions);
+export default PreviousConversationsOptions;
