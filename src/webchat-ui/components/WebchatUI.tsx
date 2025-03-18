@@ -49,7 +49,10 @@ import {
 } from "../../webchat/helper/connectivity";
 import { HomeScreen } from "./presentational/HomeScreen";
 import { PrevConversationsList } from "./presentational/previous-conversations/ConversationsList";
-import { PrevConversationsState } from "../../webchat/store/previous-conversations/previous-conversations-reducer";
+import {
+	PrevConversationsState,
+	prevConversations,
+} from "../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { ChatEvent, Message, Typography } from "@cognigy/chat-components";
 import { isConversationEnded } from "./presentational/previous-conversations/helpers";
 import { ISendMessageOptions } from "../../webchat/store/messages/message-middleware";
@@ -1365,7 +1368,6 @@ export class WebchatUI extends React.PureComponent<
 		const isChatOptionsButtonVisible = config.settings.chatOptions.enabled && showChatScreen;
 
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
-
 		return (
 			<RegularLayoutRoot>
 				{!isXAppOverlayOpen && (
@@ -1389,7 +1391,11 @@ export class WebchatUI extends React.PureComponent<
 									}
 								}}
 								isChatOptionsButtonVisible={
-									isChatOptionsButtonVisible || !!showPrevConversations
+									isChatOptionsButtonVisible ||
+									!!(
+										showPrevConversations &&
+										Object.keys(this.props.prevConversations).length
+									)
 								}
 								logoUrl={
 									!showChatOptionsScreen && !showRatingScreen
