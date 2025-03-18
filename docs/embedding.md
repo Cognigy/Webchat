@@ -400,6 +400,15 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | bot   | string | `"bot" \| "user"` |
 | user  | string | `"bot" \| "user"` |
 
+#### Custom Translations
+
+| Name          | Type   | Default                 |
+| ------------- | ------ | ----------------------- |
+| Network error | string | "Connection Lost"       |
+| No network    | string | "No network connection" |
+| Reconnecting  | string | "Reconnecting..."       |
+| Reconnect     | string | "Reconnect"             |
+
 #### Settings Interface
 
 The full interface for the Webchat Settings.
@@ -595,6 +604,13 @@ interface IWebchatSettings {
 			timeout: number;
 			title: string;
 		};
+	};
+	// Custom translations for texts that are not possible to configure in endpoint editor
+	customTranslations: {
+		network_error: string;
+		no_network: string;
+		reconnecting: string;
+		reconnect: string;
 	};
 
 	// Additional Settings to configure the webchat widget behavior
