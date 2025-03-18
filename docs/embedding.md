@@ -413,7 +413,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | delete_anyway                         | string | "Delete anyway"                                                                             |
 | cancel                                | string | "Cancel"                                                                                    |
 | delete_all_conversations_confirmation | string | "You are about to delete all the conversation. This action cannot be undone. Are you sure?" |
-| conversations_options_title           | string | "Conversations Options"                                                                     |
+| coversations_options           | string | "Conversations Options"                                                                     |
 
 #### Settings Interface
 
@@ -622,7 +622,7 @@ interface IWebchatSettings {
 		delete_anyway: string;
 		cancel: string;
 		delete_all_conversations_confirmation: string;
-		conversations_options_title: string;
+		conversations_options: string;
 	};
 
 	// Additional Settings to configure the webchat widget behavior
