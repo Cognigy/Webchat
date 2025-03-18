@@ -122,7 +122,10 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 							"Delete all conversations"}
 					</Typography>
 					<DeleteButtonContainer>
-						<DeleteButton onClick={handleDeleteAllConversations}>
+						<DeleteButton
+							onClick={handleDeleteAllConversations}
+							aria-label="Delete all conversations"
+						>
 							{config.settings.customTranslations?.delete ?? "Delete"}
 						</DeleteButton>
 					</DeleteButtonContainer>
@@ -131,10 +134,13 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 			<Modal
 				footer={
 					<>
-						<CancelButton onClick={handleCloseModal}>
+						<CancelButton onClick={handleCloseModal} aria-label="Cancel deletion">
 							{config.settings.customTranslations?.cancel ?? "Cancel"}
 						</CancelButton>
-						<DeleteAnywaysButton onClick={handleConfirmDelete}>
+						<DeleteAnywaysButton
+							onClick={handleConfirmDelete}
+							aria-label="Confirm deletion"
+						>
 							{config.settings.customTranslations?.delete_anyways ?? "Delete anyways"}
 						</DeleteAnywaysButton>
 					</>
