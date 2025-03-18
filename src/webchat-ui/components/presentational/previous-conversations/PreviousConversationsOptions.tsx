@@ -6,18 +6,9 @@ import IconButton from "../IconButton";
 import Modal from "../../Modal/Modal";
 import Button from "../Button";
 import { connect, ConnectedProps } from "react-redux";
-import {
-	setConversations,
-	SetConversationsAction,
-} from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
+import { setConversations } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getStorage } from "../../../../webchat/helper/storage";
-import { OptionsState, options } from "../../../../webchat/store/options/options-reducer";
-import { Reducer } from "@reduxjs/toolkit";
-import { CombinedState } from "redux";
-import {
-	SetShowPreviousConversationsOptionsScreen,
-	setShowPreviousConversationsOptionsScreen,
-} from "../../../../webchat/store/ui/ui-reducer";
+import { setShowPreviousConversationsOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
 import { StoreState } from "../../../../webchat/store/store";
 
 const Container = styled.div`
@@ -43,7 +34,7 @@ const DeleteButtonContainer = styled.div(() => ({
 	gap: 8,
 }));
 
-const DeleteButton = styled(IconButton)(({ theme, selected }) => ({
+const DeleteButton = styled(IconButton)(({ theme }) => ({
 	background: theme.red,
 	display: "flex",
 	padding: "12px 16px",
@@ -164,6 +155,7 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 const mapState = (state: StoreState) => ({
 	options: state.options,
 });
+
 const mapDispatch = dispatch => ({
 	handleDeleteAllConversations: () => dispatch(setConversations({})),
 	closeOptionsScreen: () => dispatch(setShowPreviousConversationsOptionsScreen(false)),
