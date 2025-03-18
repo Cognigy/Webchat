@@ -12,15 +12,11 @@ import { setShowPreviousConversationsOptionsScreen } from "../../../../webchat/s
 import { StoreState } from "../../../../webchat/store/store";
 
 const Container = styled.div`
-	width: 100%;
-	height: 100%;
 	display: flex;
 	flex-direction: column;
 `;
 
 const OptionsContainer = styled.div`
-	width: 100%;
-	height: 100%;
 	display: flex;
 	padding: 0px 20px;
 	flex-direction: column;
@@ -28,7 +24,6 @@ const OptionsContainer = styled.div`
 `;
 
 const DeleteButtonContainer = styled.div(() => ({
-	width: "100%",
 	display: "flex",
 	alignItems: "flex-start",
 	gap: 8,
@@ -148,7 +143,10 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 				}
 				isOpen={isModalOpen}
 				onClose={handleCloseModal}
-				title="Delete all conversations"
+				title={
+					config.settings.customTranslations?.delete_all_conversations ??
+					"Delete all conversations"
+				}
 			>
 				<Typography variant="body-semibold">
 					{config.settings.customTranslations?.delete_all_conversations_confirmation ??
