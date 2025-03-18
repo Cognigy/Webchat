@@ -112,7 +112,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 						visibleOutputMessages.push(newMessageId as string);
 					}
 					if (!nextAnimatingId) {
-						nextAnimatingId = newMessageId;
+						nextAnimatingId = isAnimated ? newMessageId : null;
 					}
 
 					return {
@@ -153,6 +153,11 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				if (!nextAnimatingId) {
 					nextAnimatingId = newMessageId;
+				}
+
+				// If no matching message and the message has no text, we discard the message
+				if (messageIndex === -1 && !newMessage.text) {
+					return state;
 				}
 
 				// If no matching message, create new with array
@@ -221,9 +226,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					nextAnimationState = existingMessage.animationState;
 				}
 
-				console.log("nextAnimationState", nextAnimationState);
-				console.log(newMessage);
-
 				// Append new chunk
 				newMessageHistory[messageIndex] = {
 					...existingMessage,
@@ -244,11 +246,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				// Create a new Set to deduplicate messages while maintaining order
 				const visibleMessagesSet = new Set(state.visibleOutputMessages);
-
-				// Add current message if it's done or exited
-				if (action.animationState === "done" || action.animationState === "exited") {
-					visibleMessagesSet.add(action.messageId);
-				}
 
 				let currentlyAnimatingId = state.currentlyAnimatingId;
 
@@ -278,7 +275,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				// Convert Set back to array while maintaining order from messageHistory
 				const newVisibleOutputMessages = state.messageHistory
-					.filter(message => "id" in message && visibleMessagesSet.has(message.id))
+					.filter(message => "id" in message && visibleMessagesSet.has(message.id as string))
 					.map(message => ("id" in message ? message.id : "")) as string[];
 
 				return {

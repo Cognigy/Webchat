@@ -16,5 +16,7 @@ export function isAnimatedRichBotMessage(message: IStreamingMessage): boolean {
 
 	const hasMessengerText = !!payload?.message?.text;
 
-	return isQuickReplies || isTextWithButtons || hasMessengerText;
+	const isAnimatedMsg = isQuickReplies || isTextWithButtons || hasMessengerText;
+
+	return isAnimatedMsg;
 }
