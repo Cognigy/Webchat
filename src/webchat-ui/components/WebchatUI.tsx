@@ -51,7 +51,7 @@ import { HomeScreen } from "./presentational/HomeScreen";
 import { PrevConversationsList } from "./presentational/previous-conversations/ConversationsList";
 import {
 	PrevConversationsState,
-	prevConversations,
+	
 } from "../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { ChatEvent, Message, Typography } from "@cognigy/chat-components";
 import { isConversationEnded } from "./presentational/previous-conversations/helpers";
