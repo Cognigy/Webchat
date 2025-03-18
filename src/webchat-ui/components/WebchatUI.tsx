@@ -49,10 +49,7 @@ import {
 } from "../../webchat/helper/connectivity";
 import { HomeScreen } from "./presentational/HomeScreen";
 import { PrevConversationsList } from "./presentational/previous-conversations/ConversationsList";
-import {
-	PrevConversationsState,
-	
-} from "../../webchat/store/previous-conversations/previous-conversations-reducer";
+import { PrevConversationsState } from "../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { ChatEvent, Message, Typography } from "@cognigy/chat-components";
 import { isConversationEnded } from "./presentational/previous-conversations/helpers";
 import { ISendMessageOptions } from "../../webchat/store/messages/message-middleware";
