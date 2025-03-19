@@ -408,12 +408,12 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | No network                            | string | "No network connection"                                                                     |
 | Reconnecting                          | string | "Reconnecting..."                                                                           |
 | Reconnect                             | string | "Reconnect"                                                                                 |
+| coversations_options                  | string | "Conversations Options"                                                                     |
 | delete_all_conversations              | string | "Delete all conversations"                                                                  |
+| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." |
 | delete                                | string | "Delete"                                                                                    |
 | delete_anyway                         | string | "Delete anyway"                                                                             |
 | cancel                                | string | "Cancel"                                                                                    |
-| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." |
-| coversations_options                  | string | "Conversations Options"                                                                     |
 
 #### Settings Interface
 
@@ -617,12 +617,12 @@ interface IWebchatSettings {
 		no_network: string;
 		reconnecting: string;
 		reconnect: string;
+		conversations_options: string;
 		delete_all_conversations: string;
+		delete_all_conversations_confirmation: string;
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
-		delete_all_conversations_confirmation: string;
-		conversations_options: string;
 	};
 
 	// Additional Settings to configure the webchat widget behavior

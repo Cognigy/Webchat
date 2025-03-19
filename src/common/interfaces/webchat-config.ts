@@ -299,12 +299,12 @@ export interface IWebchatSettings {
 		no_network: string;
 		reconnect: string;
 		reconnecting: string;
+		conversations_options: string;
 		delete_all_conversations: string;
+		delete_all_conversations_confirmation: string;
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
-		delete_all_conversations_confirmation: string;
-		conversations_options: string;
 	};
 	demoWebchat: {
 		enabled: boolean;
