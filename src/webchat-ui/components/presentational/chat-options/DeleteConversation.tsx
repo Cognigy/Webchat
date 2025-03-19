@@ -135,7 +135,7 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 			>
 				<Typography variant="body-semibold">
 					{config.settings.customTranslations?.delete_conversation_confirmation ??
-						"You are about to delete the conversation. This action cannot be undone."}
+						"Are you sure you want to delete this conversation? This action cannot be undone"}
 				</Typography>
 			</Modal>
 		</>
