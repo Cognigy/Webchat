@@ -412,7 +412,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | delete_all_conversations              | string | "Delete all conversations"                                                                  |
 | delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." |
 | delete_conversation                   | string | "Delete Conversation"                                                                       |
-| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"                   |
+| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"           |
 | delete                                | string | "Delete"                                                                                    |
 | delete_anyway                         | string | "Delete anyway"                                                                             |
 | cancel                                | string | "Cancel"                                                                                    |
