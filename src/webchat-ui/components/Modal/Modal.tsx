@@ -119,7 +119,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 		<>
 			{isOpen && <Overlay onClick={onClose} />}
 			<CSSTransition in={isOpen} timeout={150} mountOnEnter unmountOnExit classNames="fade">
-				<StyledDialog className="webchat-dialog-root" open={isOpen}>
+				<StyledDialog className="webchat-modal-root" open={isOpen}>
 					<ModalHeader>
 						<Typography
 							component="h3"
