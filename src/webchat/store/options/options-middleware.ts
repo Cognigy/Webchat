@@ -9,6 +9,7 @@ import { SendMessageAction, TriggerEngagementMessageAction } from "../messages/m
 import { ReceiveMessageAction } from "../messages/message-handler";
 import { RatingAction } from "../rating/rating-reducer";
 import { SetShowPrevConversationsAction } from "../ui/ui-reducer";
+import { IMessage } from "@cognigy/socket-client";
 
 type Actions =
 	| SetOptionsAction
@@ -77,10 +78,17 @@ export const optionsMiddleware: Middleware<object, StoreState> =
 			case "SET_CUSTOM_RATING_COMMENT_TEXT": {
 				if (browserStorage && active && userId && sessionId && !disablePersistentHistory) {
 					const { messages, rating } = store.getState();
+					// maintain backward compatibility with old messages format
+					let messageHistory: IMessage[] = [];
+					if (Array.isArray(messages)) {
+						messageHistory = messages as IMessage[];
+					} else if (messages?.messageHistory && Array.isArray(messages.messageHistory)) {
+						messageHistory = messages.messageHistory as IMessage[];
+					}
 					browserStorage.setItem(
 						key,
 						JSON.stringify({
-							messages,
+							messages: messageHistory,
 							rating,
 						}),
 					);
