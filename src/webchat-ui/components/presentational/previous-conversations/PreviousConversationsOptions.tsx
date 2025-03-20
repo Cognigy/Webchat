@@ -102,7 +102,14 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 							"Delete all conversations"}
 					</Typography>
 					<DeleteButtonContainer>
-						<DeleteButton onClick={handleDeleteAllConversations}>
+						<DeleteButton
+							onClick={handleDeleteAllConversations}
+							ref={button => {
+								if (button && !isModalOpen) {
+									button.focus();
+								}
+							}}
+						>
 							{config.settings.customTranslations?.delete ?? "Delete"}
 						</DeleteButton>
 					</DeleteButtonContainer>
