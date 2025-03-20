@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import React from "react";
 import { Typography } from "@cognigy/chat-components";
-import IconButton from "../IconButton";
 import Modal from "../../Modal/Modal";
 import Button from "../Button";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,6 +9,7 @@ import { setConversations } from "../../../../webchat/store/previous-conversatio
 import { getStorage } from "../../../../webchat/helper/storage";
 import { setShowPreviousConversationsOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
 import { StoreState } from "../../../../webchat/store/store";
+import SecondaryButton from "../SecondaryButton";
 
 const Container = styled.div`
 	display: flex;
@@ -28,46 +28,27 @@ const DeleteButtonContainer = styled.div(() => ({
 	gap: 8,
 }));
 
-const DeleteButton = styled(IconButton)(({ theme }) => ({
+const DeleteButton = styled(Button)(({ theme }) => ({
 	background: theme.red,
-	display: "flex",
-	padding: "12px 16px",
-	justifyContent: "center",
-	alignItems: "center",
-	gap: 16,
-	borderRadius: 15,
 	color: theme.white,
-	"&: focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
-		outlineOffset: 2,
+	width: "30%",
+	"&:hover:not(:disabled)": {
+		background: theme.red10,
 	},
 }));
 
-const CancelButton = styled(Button)(({ theme }) => ({
-	color: theme.black10,
-	width: "auto",
-	display: "flex",
-	padding: "12px",
-	borderRadius: 12,
-	border: `1px solid ${theme.greyColor}`,
-	"&: focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
-		outlineOffset: 2,
-	},
+const CancelButton = styled(SecondaryButton)(({ theme }) => ({
+	marginRight: "auto",
+	width: "30%",
 }));
 
 const DeleteAnywaysButton = styled(Button)(({ theme }) => ({
 	color: theme.white,
 	background: theme.red,
-	width: "auto",
-	padding: "12px",
-	borderRadius: 12,
-	"&: focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
-		outlineOffset: 2,
-	},
+	marginLeft: "auto",
+	width: "30%",
 	"&:hover:not(:disabled)": {
-		backgroundColor: theme.red10,
+		background: theme.red10,
 		color: theme.black10,
 	},
 }));
@@ -113,7 +94,10 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 		<>
 			<Container>
 				<OptionsContainer>
-					<Typography variant="title1-semibold" className="webchat-rating-widget-title">
+					<Typography
+						variant="title1-semibold"
+						className="webchat-delete-all-conversation-title"
+					>
 						{config.settings.customTranslations?.delete_all_conversations ??
 							"Delete all conversations"}
 					</Typography>
@@ -142,7 +126,7 @@ const PreviousConversationsOptions = (props: PreviousConversationsOptionsProps) 
 					"Delete all conversations"
 				}
 			>
-				<Typography variant="body-semibold">
+				<Typography variant="body-regular">
 					{config.settings.customTranslations?.delete_all_conversations_confirmation ??
 						"Are you sure you want to delete all previous conversations? This action cannot be undone."}
 				</Typography>

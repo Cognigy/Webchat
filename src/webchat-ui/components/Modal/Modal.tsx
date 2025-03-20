@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import IconButton from "../presentational/IconButton";
 import CloseIcon from "../../assets/close-16px.svg";
 import { CSSTransition } from "react-transition-group";
+import { Typography } from "@cognigy/chat-components";
 
 const Overlay = styled.div`
 	position: fixed;
@@ -20,7 +21,7 @@ const Overlay = styled.div`
 const StyledDialog = styled.dialog`
 	padding: 20px;
 	border: none;
-	border-radius: 8px;
+	border-radius: 16px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	background-color: #fff;
 	margin: 20px auto;
@@ -38,12 +39,11 @@ const StyledDialog = styled.dialog`
 const ModalHeader = styled.div`
 	display: flex;
 	align-items: center;
-`;
 
-const ModalTitle = styled.h2`
-	margin: 0;
-	font-size: 1.5em;
-	margin-left: auto;
+	> h3 {
+		margin: 0;
+		margin-left: auto;
+	}
 `;
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
@@ -51,19 +51,14 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 	borderRadius: 4,
 	marginLeft: "auto",
 
-	"&:focus": {
-		outline: `2px solid ${theme.primaryColor}`,
-		outlineOffset: 2,
-	},
-
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
 		outlineOffset: 2,
 	},
 	"& svg": {
 		fill: theme.black10,
-		width: 16,
-		height: 16,
+		width: 14,
+		height: 14,
 	},
 	padding: 0,
 }));
@@ -124,9 +119,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 		<>
 			{isOpen && <Overlay onClick={onClose} />}
 			<CSSTransition in={isOpen} timeout={150} mountOnEnter unmountOnExit classNames="fade">
-				<StyledDialog open={isOpen}>
+				<StyledDialog className="webchat-dialog-root" open={isOpen}>
 					<ModalHeader>
-						<ModalTitle>{title}</ModalTitle>
+						<Typography
+							component="h3"
+							variant="title1-semibold"
+							className="webchat-modal-title"
+						>
+							{title}
+						</Typography>
 						<CloseButton autoFocus aria-label="Close" onClick={onClose}>
 							<CloseIcon aria-hidden />
 						</CloseButton>
