@@ -294,6 +294,10 @@ export interface IWebchatSettings {
 		text: string;
 		title: string;
 	};
+	customColors: {
+		deleteButtonColor: string; // #E55050
+		cancelButtonColor: string; // #CCCCCC
+	};
 	customTranslations?: {
 		network_error: string;
 		no_network: string;

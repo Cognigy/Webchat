@@ -11,6 +11,7 @@ import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { clearMessages } from "../../../../webchat/store/messages/message-reducer";
 import Button from "../Button";
 import SecondaryButton from "../SecondaryButton";
+import { getTextContrastColor, deriveHoverColor } from "../../../style";
 
 const Container = styled.div`
 	display: flex;
@@ -18,13 +19,12 @@ const Container = styled.div`
 	align-items: flex-start;
 `;
 
-const DeleteButton = styled(Button)(({ theme }) => ({
-	background: theme.red,
-	color: theme.white,
+const DeleteButton = styled(Button)<{ background?: string }>(({ theme, background }) => ({
+	background: background ? background : theme.red20,
+	color: getTextContrastColor(background ? background : theme.red20, theme),
 	width: "30%",
 	"&:hover:not(:disabled)": {
-		background: theme.red10,
-		color: theme.black10,
+		background: deriveHoverColor(background ? background : theme.red20),
 	},
 }));
 
@@ -33,15 +33,8 @@ const CancelButton = styled(SecondaryButton)(() => ({
 	width: "30%",
 }));
 
-const DeleteAnywaysButton = styled(Button)(({ theme }) => ({
-	color: theme.white,
-	background: theme.red,
+const DeleteConfirmation = styled(DeleteButton)(({ theme }) => ({
 	marginLeft: "auto",
-	width: "30%",
-	"&:hover:not(:disabled)": {
-		background: theme.red10,
-		color: theme.black10,
-	},
 }));
 
 interface DeleteConversationProps {
@@ -84,7 +77,7 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 
 	return (
 		<>
-			<Container>
+			<Container className="webchat-delete-conversation-container">
 				<Typography variant="title1-semibold" className="webchat-delete-conversation-title">
 					{config.settings.customTranslations?.delete_conversation ??
 						"Delete conversation"}
@@ -95,6 +88,8 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 							button.focus();
 						}
 					}}
+					className="webchat-delete-conversation-button"
+					background={config.settings.customColors?.deleteButtonColor}
 					onClick={handleDeleteAllConversations}
 				>
 					{config.settings.customTranslations?.delete ?? "Delete"}
@@ -106,9 +101,9 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 						<CancelButton onClick={handleCloseModal}>
 							{config.settings.customTranslations?.cancel ?? "Cancel"}
 						</CancelButton>
-						<DeleteAnywaysButton onClick={handleConfirmDelete}>
+						<DeleteConfirmation onClick={handleConfirmDelete}>
 							{config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
-						</DeleteAnywaysButton>
+						</DeleteConfirmation>
 					</>
 				}
 				isOpen={isModalOpen}
