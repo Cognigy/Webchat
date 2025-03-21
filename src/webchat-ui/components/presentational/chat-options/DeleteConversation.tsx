@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Typography } from "@cognigy/chat-components";
-import Modal from "../../Modal/Modal";
 import { deletePrevConversation } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getStorage } from "../../../../webchat/helper/storage";
 import { setShowChatOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
@@ -9,9 +8,9 @@ import { StoreState } from "../../../../webchat/store/store";
 import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { clearMessages } from "../../../../webchat/store/messages/message-reducer";
-import Button from "../Button";
-import SecondaryButton from "../SecondaryButton";
-import { getTextContrastColor, deriveHoverColor } from "../../../style";
+import DeleteConfirmModal, {
+	DeleteButton as ConfirmDeleteButton,
+} from "../../Modal/DeleteConfirmModal";
 
 const Container = styled.div`
 	display: flex;
@@ -22,23 +21,7 @@ const Container = styled.div`
 	}
 `;
 
-const DeleteButton = styled(Button)<{ background?: string }>(({ theme, background }) => ({
-	background: background ? background : theme.red20,
-	color: getTextContrastColor(background ? background : theme.red20, theme),
-	"&:hover:not(:disabled)": {
-		background: deriveHoverColor(background ? background : theme.red20),
-	},
-}));
-
-const CancelButton = styled(SecondaryButton)<{ background?: string }>(({ theme, background }) => ({
-	background: background ? background : theme.white,
-	color: getTextContrastColor(background ? background : theme.white, theme),
-	marginRight: "auto",
-}));
-
-const DeleteConfirmation = styled(DeleteButton)(({ theme }) => ({
-	marginLeft: "auto",
-}));
+const DeleteButton = styled(ConfirmDeleteButton)``;
 
 interface DeleteConversationProps {
 	config: IWebchatConfig;
@@ -52,10 +35,6 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 
 	const handleDeleteAllConversations = () => {
 		setIsModalOpen(true);
-	};
-
-	const handleCloseModal = () => {
-		setIsModalOpen(false);
 	};
 
 	const handleConfirmDelete = () => {
@@ -98,34 +77,21 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 					{config.settings.customTranslations?.delete ?? "Delete"}
 				</DeleteButton>
 			</Container>
-			<Modal
-				footer={
-					<>
-						<CancelButton
-							className="webchat-delete-conversation-cancel-button"
-							onClick={handleCloseModal}
-						>
-							{config.settings.customTranslations?.cancel ?? "Cancel"}
-						</CancelButton>
-						<DeleteConfirmation
-							className="webchat-delete-conversation-confirm-button"
-							onClick={handleConfirmDelete}
-						>
-							{config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
-						</DeleteConfirmation>
-					</>
-				}
+			<DeleteConfirmModal
 				isOpen={isModalOpen}
-				onClose={handleCloseModal}
+				onClose={setIsModalOpen}
+				onConfirmDelete={handleConfirmDelete}
 				title={
 					config.settings.customTranslations?.delete_conversation ?? "Delete conversation"
 				}
+				cancelText={config.settings.customTranslations?.cancel ?? "Cancel"}
+				confirmText={config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
 			>
 				<Typography variant="body-regular" className="webchat-delete-conversation-text">
 					{config.settings.customTranslations?.delete_conversation_confirmation ??
 						"Are you sure you want to delete this conversation? This action cannot be undone"}
 				</Typography>
-			</Modal>
+			</DeleteConfirmModal>
 		</>
 	);
 };

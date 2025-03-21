@@ -97,6 +97,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 		dispatch(setTTSActive(!ttsEnabled));
 	};
 
+	const showDeleteConversation = !!chatOptions.enableDeleteConversation;
 	return (
 		<ChatOptionsRoot className="webchat-chat-options-root" ref={chatOptionsRef}>
 			<ChatOptionsContainer className="webchat-chat-options-container">
@@ -135,7 +136,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 						</DividerWrapper>
 					</>
 				)}
-				<DeleteConversation config={config} />
+				{showDeleteConversation && <DeleteConversation config={config} />}
 			</ChatOptionsContainer>
 			{chatOptions.footer.enabled && chatOptions.footer.items[0] && (
 				<ChatOptionsFooter settings={config.settings} />

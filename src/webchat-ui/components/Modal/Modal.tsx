@@ -6,7 +6,7 @@ import { CSSTransition } from "react-transition-group";
 import { Typography } from "@cognigy/chat-components";
 
 const Overlay = styled.div`
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	bottom: 0;
@@ -97,17 +97,21 @@ const Divider = styled.div(({ theme }) => ({
 
 interface ModalProps {
 	isOpen: boolean;
-	onClose: () => void;
+	onClose: (state: boolean) => void;
 	title: string;
 	children: React.ReactNode;
 	footer: React.ReactNode;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
+	const handleOnClose = () => {
+		onClose(false);
+	};
+
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
-				onClose();
+				handleOnClose();
 			}
 		};
 
@@ -124,7 +128,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 
 	return (
 		<>
-			{isOpen && <Overlay onClick={onClose} />}
+			{isOpen && <Overlay onClick={handleOnClose} />}
 			<CSSTransition in={isOpen} timeout={150} mountOnEnter unmountOnExit classNames="fade">
 				<StyledDialog
 					className="webchat-modal-root"
@@ -143,7 +147,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 						<CloseButton
 							autoFocus
 							aria-label="Close"
-							onClick={onClose}
+							onClick={handleOnClose}
 							className="webchat-modal-close-button"
 						>
 							<CloseIcon aria-hidden className="webchat-modal-close-icon" />

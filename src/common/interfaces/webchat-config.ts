@@ -220,6 +220,7 @@ export interface IWebchatSettings {
 		startConversationButtonText: string;
 		previousConversations: {
 			startNewConversationButtonText: string;
+			enabledDeleteAllConversations?: boolean;
 			enabled: boolean;
 			buttonText: string;
 			title: string;
@@ -271,6 +272,7 @@ export interface IWebchatSettings {
 			submitButtonText: string;
 			eventBannerText: string;
 		};
+		enableDeleteConversation?: boolean;
 		footer: {
 			enabled: boolean;
 			items: {
@@ -297,13 +299,13 @@ export interface IWebchatSettings {
 	customColors: {
 		deleteButtonColor: string; // #E55050
 		cancelButtonColor: string; // #CCCCCC
+		deleteAllConversationIconColor: string; //#1A1A1A
 	};
 	customTranslations?: {
 		network_error: string;
 		no_network: string;
 		reconnect: string;
 		reconnecting: string;
-		conversations_options: string;
 		delete_all_conversations: string;
 		delete_all_conversations_confirmation: string;
 		delete_conversation: string;

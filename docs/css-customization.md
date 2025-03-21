@@ -96,6 +96,8 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-delete-conversation-cancel-button_
 - _webchat-delete-conversation-confirm-button_
 - _webchat-delete-conversation-text_
+- _webchat-delete-all-conversation-text_
+- _webchat-header-delete-all-conversations-button_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 

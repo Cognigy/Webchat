@@ -10,6 +10,7 @@ import classnames from "classnames";
 import { Typography } from "@cognigy/chat-components";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
 import { getContrastColor } from "../../style";
+import DeleteIcon from "../../assets/bin-16px.svg";
 
 const HeaderBar = styled.div(({ theme }) => ({
 	alignItems: "center",
@@ -100,6 +101,8 @@ interface HeaderProps {
 	title: string;
 	logoUrl?: string;
 	isChatOptionsButtonVisible?: boolean;
+	isDeleteAllConversationsButtonVisible?: boolean;
+	onDeleteAllConversations?: () => void;
 	onClose?: () => void;
 	onMinimize?: () => void;
 	onGoBack?: () => void;
@@ -125,6 +128,7 @@ const Header: FC<HeaderProps> = props => {
 		isChatOptionsButtonVisible,
 		hideBackButton,
 		showChatScreen,
+		onDeleteAllConversations,
 		...rest
 	} = props;
 
@@ -177,6 +181,16 @@ const Header: FC<HeaderProps> = props => {
 					</Typography>
 				</div>
 				<HeaderIconsWrapper>
+					{rest.isDeleteAllConversationsButtonVisible && (
+						<HeaderIconButton
+							data-header-delete-all-conversations-button
+							onClick={onDeleteAllConversations}
+							aria-label="Delete All Conversations"
+							className="webchat-header-delete-all-conversations-button"
+						>
+							<DeleteIcon></DeleteIcon>
+						</HeaderIconButton>
+					)}
 					{
 						// Menu Button
 						isChatOptionsButtonVisible && (

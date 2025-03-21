@@ -68,7 +68,7 @@ import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
-import PreviousConversationsOptions from "./presentational/previous-conversations/PreviousConversationsOptions";
+import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -161,6 +161,7 @@ interface WebchatUIState {
 	lastUnseenMessageText: string;
 	wasOpen: boolean;
 	timedOut: boolean;
+	showDeleteAllConversationsModal: boolean;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -253,6 +254,7 @@ export class WebchatUI extends React.PureComponent<
 		lastUnseenMessageText: "",
 		wasOpen: false,
 		timedOut: false,
+		showDeleteAllConversationsModal: false,
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -1237,6 +1239,16 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const getRegularLayoutContent = () => {
+			if (this.state.showDeleteAllConversationsModal)
+				return (
+					<DeleteAllConversationsModal
+						config={config}
+						isOpen
+						onOpenChange={open => {
+							this.setState({ showDeleteAllConversationsModal: open });
+						}}
+					></DeleteAllConversationsModal>
+				);
 			if (showInformationMessage) return <InformationMessage message={informMessage} />;
 
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled)
@@ -1248,9 +1260,6 @@ export class WebchatUI extends React.PureComponent<
 				);
 
 			if (isXAppOverlayOpen) return <XAppOverlay />;
-			if (showPreviousConversationsOptionsScreen) {
-				return <PreviousConversationsOptions config={config} />;
-			}
 			if (showPrevConversations)
 				return (
 					<PrevConversationsList
@@ -1327,12 +1336,6 @@ export class WebchatUI extends React.PureComponent<
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled) {
 				return config.settings.privacyNotice.title || "Privacy notice";
 			}
-			if (showPreviousConversationsOptionsScreen) {
-				return (
-					config.settings.customTranslations?.conversations_options ??
-					"Conversations Options"
-				);
-			}
 			if (showPrevConversations) {
 				return (
 					config.settings.homeScreen.previousConversations.title ||
@@ -1365,6 +1368,13 @@ export class WebchatUI extends React.PureComponent<
 		const isChatOptionsButtonVisible = config.settings.chatOptions.enabled && showChatScreen;
 
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
+
+		const showDeleteAllConversationButton = !!(
+			config.settings.homeScreen.previousConversations.enabledDeleteAllConversations &&
+			showPrevConversations &&
+			Object.keys(this.props.prevConversations).length
+		);
+
 		return (
 			<RegularLayoutRoot>
 				{!isXAppOverlayOpen && (
@@ -1381,19 +1391,17 @@ export class WebchatUI extends React.PureComponent<
 								onMinimize={handleOnClose}
 								onGoBack={showInformationMessage ? undefined : handleOnGoBack}
 								onSetShowChatOptionsScreen={() => {
-									if (showPrevConversations) {
-										onShowPreviousConversationsOptionsScreen(true);
-									} else {
-										onSetShowChatOptionsScreen(true);
-									}
+									onSetShowChatOptionsScreen(true);
 								}}
-								isChatOptionsButtonVisible={
-									isChatOptionsButtonVisible ||
-									!!(
-										showPrevConversations &&
-										Object.keys(this.props.prevConversations).length
-									)
+								isChatOptionsButtonVisible={isChatOptionsButtonVisible}
+								isDeleteAllConversationsButtonVisible={
+									showDeleteAllConversationButton
 								}
+								onDeleteAllConversations={() => {
+									this.setState({
+										showDeleteAllConversationsModal: true,
+									});
+								}}
 								logoUrl={
 									!showChatOptionsScreen && !showRatingScreen
 										? config.settings.layout.logoUrl
