@@ -82,9 +82,20 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-input-persistent-menu-item_
 - _webchat-input-persistent-menu-item-container_
 - _webchat-modal-root_
+- _webchat-modal-header_
 - _webchat-modal-title_
-- _webchat-delete-all-conversation-title_
+- _webchat-modal-close-button_
+- _webchat-modal-close-icon_
+- _webchat-modal-divider-wrapper_
+- _webchat-modal-divider_
+- _webchat-modal-body_
+- _webchat-modal-footer_
+- _webchat-delete-conversation-container_
 - _webchat-delete-conversation-title_
+- _webchat-delete-conversation-button_
+- _webchat-delete-conversation-cancel-button_
+- _webchat-delete-conversation-confirm-button_
+- _webchat-delete-conversation-text_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 

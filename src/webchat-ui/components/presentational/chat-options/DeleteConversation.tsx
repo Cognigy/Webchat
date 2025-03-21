@@ -17,20 +17,23 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
+	> button {
+		width: 30%;
+	}
 `;
 
 const DeleteButton = styled(Button)<{ background?: string }>(({ theme, background }) => ({
 	background: background ? background : theme.red20,
 	color: getTextContrastColor(background ? background : theme.red20, theme),
-	width: "30%",
 	"&:hover:not(:disabled)": {
 		background: deriveHoverColor(background ? background : theme.red20),
 	},
 }));
 
-const CancelButton = styled(SecondaryButton)(() => ({
+const CancelButton = styled(SecondaryButton)<{ background?: string }>(({ theme, background }) => ({
+	background: background ? background : theme.white,
+	color: getTextContrastColor(background ? background : theme.white, theme),
 	marginRight: "auto",
-	width: "30%",
 }));
 
 const DeleteConfirmation = styled(DeleteButton)(({ theme }) => ({
@@ -98,10 +101,16 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 			<Modal
 				footer={
 					<>
-						<CancelButton onClick={handleCloseModal}>
+						<CancelButton
+							className="webchat-delete-conversation-cancel-button"
+							onClick={handleCloseModal}
+						>
 							{config.settings.customTranslations?.cancel ?? "Cancel"}
 						</CancelButton>
-						<DeleteConfirmation onClick={handleConfirmDelete}>
+						<DeleteConfirmation
+							className="webchat-delete-conversation-confirm-button"
+							onClick={handleConfirmDelete}
+						>
 							{config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
 						</DeleteConfirmation>
 					</>

@@ -70,10 +70,17 @@ const ModalBody = styled.div`
 const ModalFooter = styled.div`
 	display: flex;
 	justify-content: space-between;
+
+	> button {
+	 	width:30%;
+	 }
 	
 	@media screen and (max-width: 576px) {
 		flex-direction: column;
 		gap: 12px;
+		> button {
+	 		width:100%;
+	 	}
 	},
 `;
 
@@ -119,24 +126,36 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 		<>
 			{isOpen && <Overlay onClick={onClose} />}
 			<CSSTransition in={isOpen} timeout={150} mountOnEnter unmountOnExit classNames="fade">
-				<StyledDialog className="webchat-modal-root" open={isOpen}>
-					<ModalHeader>
+				<StyledDialog
+					className="webchat-modal-root"
+					open={isOpen}
+					aria-labelledby="modal-title"
+					aria-describedby="modal-body"
+				>
+					<ModalHeader className="webchat-modal-header">
 						<Typography
-							component="h3"
+							id="modal-title"
 							variant="title1-semibold"
 							className="webchat-modal-title"
 						>
 							{title}
 						</Typography>
-						<CloseButton autoFocus aria-label="Close" onClick={onClose}>
-							<CloseIcon aria-hidden />
+						<CloseButton
+							autoFocus
+							aria-label="Close"
+							onClick={onClose}
+							className="webchat-modal-close-button"
+						>
+							<CloseIcon aria-hidden className="webchat-modal-close-icon" />
 						</CloseButton>
 					</ModalHeader>
-					<DividerWrapper>
-						<Divider />
+					<DividerWrapper className="webchat-modal-divider-wrapper">
+						<Divider className="webchat-modal-divider" />
 					</DividerWrapper>
-					<ModalBody>{children}</ModalBody>
-					<ModalFooter>{footer}</ModalFooter>
+					<ModalBody id="modal-body" className="webchat-modal-body">
+						{children}
+					</ModalBody>
+					<ModalFooter className="webchat-modal-footer">{footer}</ModalFooter>
 				</StyledDialog>
 			</CSSTransition>
 		</>
