@@ -34,6 +34,7 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-input-button-add-attachments_
 - _webchat-input-drag-and-drop-file-text_
 - _webchat-input-button-send_
+- _webchat-input-get-started-button_
 - _webchat-toggle-button_
 - _webchat-unread-message-preview_
 - _webchat-unread-message-badge_
@@ -384,6 +385,17 @@ The avatars can be repositioned to appear at the top edge of a message rather th
     border-radius: 20px;
     background-color: white;
 
+}
+```
+
+- _webchat-input-get-started-button_  
+  The button to initiate the first interaction in the Webchat. You can customize its appearance, size, and background.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-get-started-button {
+
+    border-radius: 10px;
+    background-color: rgb(0, 123, 255);
 }
 ```
 
