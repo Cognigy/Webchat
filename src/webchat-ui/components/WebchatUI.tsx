@@ -162,6 +162,7 @@ interface WebchatUIState {
 	wasOpen: boolean;
 	timedOut: boolean;
 	showDeleteAllConversationsModal: boolean;
+	deleteConversationsModalState: boolean;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -255,6 +256,7 @@ export class WebchatUI extends React.PureComponent<
 		wasOpen: false,
 		timedOut: false,
 		showDeleteAllConversationsModal: false,
+		deleteConversationsModalState: false,
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -714,12 +716,19 @@ export class WebchatUI extends React.PureComponent<
 	// Key down handler
 	handleKeydown = event => {
 		const { enableFocusTrap } = this.props.config.settings.widgetSettings;
+		const { showDeleteAllConversationsModal, deleteConversationsModalState } = this.state;
 		const { open } = this.props;
 		const { target, key, shiftKey } = event;
 		const shiftTabKeyPress = shiftKey && key === "Tab";
 		const tabKeyPress = !shiftKey && key === "Tab";
 
-		if (enableFocusTrap && open) {
+		if (
+			enableFocusTrap &&
+			open &&
+			// Do not trap focus when the delete conversations related modal is open
+			!showDeleteAllConversationsModal &&
+			!deleteConversationsModalState
+		) {
 			// Get the first and last focusable elements within the webchat window and add focus
 			const webchatWindowEl = this.webchatWindowRef?.current as HTMLElement;
 			const { firstFocusable, lastFocusable } = getKeyboardFocusableElements(webchatWindowEl);
@@ -1297,6 +1306,9 @@ export class WebchatUI extends React.PureComponent<
 						onSendActionButtonMessage={
 							this.handleSendActionButtonMessageExistingSession
 						}
+						onDeleteModalStateChange={open => {
+							this.setState({ deleteConversationsModalState: open });
+						}}
 					/>
 				);
 
@@ -1370,7 +1382,7 @@ export class WebchatUI extends React.PureComponent<
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
 
 		const showDeleteAllConversationButton = !!(
-			config.settings.homeScreen.previousConversations.enabledDeleteAllConversations &&
+			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&
 			showPrevConversations &&
 			Object.keys(this.props.prevConversations).length
 		);

@@ -220,7 +220,7 @@ export interface IWebchatSettings {
 		startConversationButtonText: string;
 		previousConversations: {
 			startNewConversationButtonText: string;
-			enabledDeleteAllConversations?: boolean;
+			enableDeleteAllConversations?: boolean;
 			enabled: boolean;
 			buttonText: string;
 			title: string;

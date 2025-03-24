@@ -25,16 +25,18 @@ const DeleteButton = styled(ConfirmDeleteButton)``;
 
 interface DeleteConversationProps {
 	config: IWebchatConfig;
+	onDeleteModalStateChange: (open: boolean) => void;
 }
 
 const DeleteConversation = (props: DeleteConversationProps) => {
-	const { config } = props;
+	const { config, onDeleteModalStateChange } = props;
 	const { userId, sessionId } = useSelector((state: StoreState) => state.options);
 	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
-
-	const handleDeleteAllConversations = () => {
+	const deleteButtonRef = React.useRef<HTMLButtonElement>(null);
+	const handleDeleteConversation = () => {
 		setIsModalOpen(true);
+		onDeleteModalStateChange(true);
 	};
 
 	const handleConfirmDelete = () => {
@@ -54,6 +56,8 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 			});
 		}
 		setIsModalOpen(false);
+		onDeleteModalStateChange(false);
+		deleteButtonRef.current?.focus();
 		dispatch(setShowChatOptionsScreen(false));
 	};
 
@@ -65,21 +69,20 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 						"Delete conversation"}
 				</Typography>
 				<DeleteButton
-					ref={button => {
-						if (button && !isModalOpen) {
-							button.focus();
-						}
-					}}
+					ref={deleteButtonRef}
 					className="webchat-delete-conversation-button"
 					background={config.settings.customColors?.deleteButtonColor}
-					onClick={handleDeleteAllConversations}
+					onClick={handleDeleteConversation}
 				>
 					{config.settings.customTranslations?.delete ?? "Delete"}
 				</DeleteButton>
 			</Container>
 			<DeleteConfirmModal
 				isOpen={isModalOpen}
-				onClose={setIsModalOpen}
+				onClose={() => {
+					setIsModalOpen(false);
+					deleteButtonRef.current?.focus();
+				}}
 				onConfirmDelete={handleConfirmDelete}
 				title={
 					config.settings.customTranslations?.delete_conversation ?? "Delete conversation"

@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useImperativeHandle, useRef } from "react";
 import styled from "@emotion/styled";
 import IconButton from "../presentational/IconButton";
 import CloseIcon from "../../assets/close-16px.svg";
 import { CSSTransition } from "react-transition-group";
 import { Typography } from "@cognigy/chat-components";
+import getKeyboardFocusableElements from "../../utils/find-focusable";
 
 const Overlay = styled.div`
 	position: absolute;
@@ -22,8 +23,7 @@ const StyledDialog = styled.dialog`
 	padding: 20px;
 	border: none;
 	border-radius: 16px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	background-color: #fff;
+	background-color: ${({ theme }) => theme.white};
 	margin: 20px auto;
 	z-index: 99999;
 
@@ -104,6 +104,7 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
+	const dialogRef = useRef<HTMLDialogElement>(null);
 	const handleOnClose = () => {
 		onClose(false);
 	};
@@ -112,6 +113,24 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") {
 				handleOnClose();
+			}
+			const isTabKey =
+				event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey;
+			const focusedElement = document.activeElement as HTMLElement | null;
+			if (focusedElement && isTabKey) {
+				const { firstFocusable, lastFocusable } = getKeyboardFocusableElements(
+					dialogRef.current as HTMLElement,
+				);
+				const first = firstFocusable === focusedElement;
+				const last = lastFocusable === focusedElement;
+				if (first && event.shiftKey) {
+					event.preventDefault();
+					lastFocusable.focus();
+				}
+				if (last && !event.shiftKey) {
+					event.preventDefault();
+					firstFocusable.focus();
+				}
 			}
 		};
 
@@ -135,6 +154,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 					open={isOpen}
 					aria-labelledby="modal-title"
 					aria-describedby="modal-body"
+					ref={dialogRef}
 				>
 					<ModalHeader className="webchat-modal-header">
 						<Typography
@@ -145,7 +165,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 							{title}
 						</Typography>
 						<CloseButton
-							autoFocus
 							aria-label="Close"
 							onClick={handleOnClose}
 							className="webchat-modal-close-button"

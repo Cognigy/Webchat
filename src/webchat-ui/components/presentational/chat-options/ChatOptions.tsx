@@ -55,6 +55,7 @@ interface IChatOptionsProps {
 	onSendRating: (props: IOnSendRatingProps) => void;
 	onEmitAnalytics: WebchatUIProps["onEmitAnalytics"];
 	onSendActionButtonMessage: WebchatUIProps["onSendMessage"];
+	onDeleteModalStateChange: (open: boolean) => void;
 }
 
 export const ChatOptions = (props: IChatOptionsProps) => {
@@ -69,6 +70,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 		onSendRating,
 		onEmitAnalytics,
 		onSendActionButtonMessage,
+		onDeleteModalStateChange,
 	} = props;
 	const { settings } = config;
 	const { chatOptions } = settings;
@@ -136,7 +138,12 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 						</DividerWrapper>
 					</>
 				)}
-				{showDeleteConversation && <DeleteConversation config={config} />}
+				{showDeleteConversation && (
+					<DeleteConversation
+						onDeleteModalStateChange={onDeleteModalStateChange}
+						config={config}
+					/>
+				)}
 			</ChatOptionsContainer>
 			{chatOptions.footer.enabled && chatOptions.footer.items[0] && (
 				<ChatOptionsFooter settings={config.settings} />
