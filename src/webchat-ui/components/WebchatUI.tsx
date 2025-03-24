@@ -69,6 +69,7 @@ import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
+import { forceFocus } from "../utils/force-focus";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -259,6 +260,7 @@ export class WebchatUI extends React.PureComponent<
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
 	closeButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	menuButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
+	deleteButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	ratingButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
@@ -277,6 +279,7 @@ export class WebchatUI extends React.PureComponent<
 		this.chatToggleButtonRef = React.createRef();
 		this.closeButtonInHeaderRef = React.createRef();
 		this.menuButtonInHeaderRef = React.createRef();
+		this.deleteButtonInHeaderRef = React.createRef();
 		this.ratingButtonInHeaderRef = React.createRef();
 		this.webchatWindowRef = React.createRef();
 		this.homeScreenCloseButtonRef = React.createRef();
@@ -1248,6 +1251,9 @@ export class WebchatUI extends React.PureComponent<
 						isOpen
 						onOpenChange={open => {
 							this.setState({ showDeleteAllConversationsModal: open });
+							if (!open && this.deleteButtonInHeaderRef.current) {
+								forceFocus(this.deleteButtonInHeaderRef.current);
+							}
 						}}
 					/>
 				);
@@ -1415,6 +1421,7 @@ export class WebchatUI extends React.PureComponent<
 								title={getTitles()}
 								closeButtonRef={this.closeButtonInHeaderRef}
 								menuButtonRef={this.menuButtonInHeaderRef}
+								deleteButtonRef={this.deleteButtonInHeaderRef}
 								chatToggleButtonRef={this.chatToggleButtonRef}
 								hideBackButton={hideBackButton}
 								showChatScreen={showChatScreen}

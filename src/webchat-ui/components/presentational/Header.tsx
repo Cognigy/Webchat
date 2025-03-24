@@ -109,6 +109,7 @@ interface HeaderProps {
 	onSetShowChatOptionsScreen?: (show: boolean) => void;
 	closeButtonRef?: React.RefObject<HTMLButtonElement>;
 	menuButtonRef?: React.RefObject<HTMLButtonElement>;
+	deleteButtonRef?: React.RefObject<HTMLButtonElement>;
 	chatToggleButtonRef?: React.RefObject<HTMLButtonElement>;
 	hideBackButton?: boolean;
 	deleteIconColor?: string;
@@ -189,6 +190,8 @@ const Header: FC<HeaderProps> = props => {
 							aria-label="Delete All Conversations"
 							className="webchat-header-delete-all-conversations-button"
 							iconColor={rest.deleteIconColor}
+							tabIndex={0}
+							ref={rest.deleteButtonRef}
 						>
 							<DeleteIcon></DeleteIcon>
 						</HeaderIconButton>
