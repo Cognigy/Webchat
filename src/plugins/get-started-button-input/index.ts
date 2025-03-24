@@ -17,16 +17,16 @@ const rule: InputRule = ({
 	},
 	messages,
 }) =>
-	messages.length === 0 ||
-	(messages.length === 1 && messages[0].source === "engagement") ||
-	(getMessagesListWithoutControlCommands(messages)?.length === 0 &&
-		startBehavior === "button" &&
-		!!getStartedPayload &&
-		(!!getStartedButtonText ||
-			!!getStartedText ||
-			(!!getStartedData &&
-				typeof getStartedData === "object" &&
-				Object.keys(getStartedData).length > 0)));
+	(messages.length === 0 ||
+		(messages.length === 1 && messages[0].source === "engagement") ||
+		getMessagesListWithoutControlCommands(messages)?.length === 0) &&
+	startBehavior === "button" &&
+	!!getStartedPayload &&
+	(!!getStartedButtonText ||
+		!!getStartedText ||
+		(!!getStartedData &&
+			typeof getStartedData === "object" &&
+			Object.keys(getStartedData).length > 0));
 
 const getStartedInputPlugin: InputPlugin = {
 	type: "rule",
