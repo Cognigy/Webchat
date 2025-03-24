@@ -1,9 +1,8 @@
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
-import React, { PropsWithChildren } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setConversations } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getStorage } from "../../../../webchat/helper/storage";
-import { setShowPreviousConversationsOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
 import { StoreState } from "../../../../webchat/store/store";
 import DeleteConfirmModal from "../../Modal/DeleteConfirmModal";
 import { Typography } from "@cognigy/chat-components";
@@ -38,7 +37,6 @@ const DeleteAllConversationsModal = (
 			});
 		}
 		onOpenChange(false);
-		dispatch(setShowPreviousConversationsOptionsScreen(false));
 	};
 
 	return (
@@ -53,6 +51,8 @@ const DeleteAllConversationsModal = (
 				}
 				cancelText={config.settings.customTranslations?.cancel ?? "Cancel"}
 				confirmText={config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
+				cancelButtonBackground={config.settings.customColors?.cancelButtonColor}
+				confirmButtonBackground={config.settings.customColors?.deleteButtonColor}
 			>
 				<Typography variant="body-regular" className="webchat-delete-all-conversation-text">
 					{config.settings.customTranslations?.delete_all_conversations_confirmation ??

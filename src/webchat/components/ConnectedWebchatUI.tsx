@@ -14,7 +14,6 @@ import {
 	setHasAcceptedTerms,
 	UIState,
 	setStoredMessage,
-	setShowPreviousConversationsOptionsScreen,
 } from "../store/ui/ui-reducer";
 import { getPluginsForMessage, isFullscreenPlugin } from "../../plugins/helper";
 import { connect as doConnect } from "../store/connection/connection-middleware";
@@ -75,7 +74,6 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			showHomeScreen,
 			showPrevConversations,
 			showChatOptionsScreen,
-			showPreviousConversationsOptionsScreen,
 			hasAcceptedTerms,
 			ttsActive,
 			lastInputId,
@@ -122,7 +120,6 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 		fileUploadError,
 		showPrevConversations,
 		showChatOptionsScreen,
-		showPreviousConversationsOptionsScreen,
 		hasAcceptedTerms,
 		isXAppOverlayOpen,
 		userId,
@@ -143,8 +140,6 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 		onSetShowHomeScreen: (show: boolean) => dispatch(setShowHomeScreen(show)),
 		onSetShowPrevConversations: (show: boolean) => dispatch(setShowPrevConversations(show)),
 		onSetShowChatOptionsScreen: (show: boolean) => dispatch(setShowChatOptionsScreen(show)),
-		onShowPreviousConversationsOptionsScreen: (show: boolean) =>
-			dispatch(setShowPreviousConversationsOptionsScreen(show)),
 		onShowChatScreen: () => dispatch(showChatScreen()),
 		onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) =>
 			dispatch(switchSession(sessionId, conversation)),

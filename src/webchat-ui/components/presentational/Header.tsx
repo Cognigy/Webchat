@@ -74,7 +74,7 @@ const HeaderIconsWrapper = styled.div(() => ({
 	gap: 24,
 }));
 
-const HeaderIconButton = styled(IconButton)(({ theme }) => ({
+const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, iconColor }) => ({
 	color: theme.black10,
 	borderRadius: 4,
 	"&:focus-visible": {
@@ -82,7 +82,7 @@ const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 		outlineOffset: 2,
 	},
 	"& svg": {
-		fill: theme.black10,
+		fill: iconColor ? iconColor : theme.black10,
 		width: 16,
 		height: 16,
 	},
@@ -111,6 +111,7 @@ interface HeaderProps {
 	menuButtonRef?: React.RefObject<HTMLButtonElement>;
 	chatToggleButtonRef?: React.RefObject<HTMLButtonElement>;
 	hideBackButton?: boolean;
+	deleteIconColor?: string;
 	showChatScreen?: boolean;
 }
 
@@ -187,6 +188,7 @@ const Header: FC<HeaderProps> = props => {
 							onClick={onDeleteAllConversations}
 							aria-label="Delete All Conversations"
 							className="webchat-header-delete-all-conversations-button"
+							iconColor={rest.deleteIconColor}
 						>
 							<DeleteIcon></DeleteIcon>
 						</HeaderIconButton>

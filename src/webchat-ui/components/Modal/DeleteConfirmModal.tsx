@@ -23,18 +23,30 @@ const DeleteConfirmation = styled(DeleteButton)(({ theme }) => ({
 	marginLeft: "auto",
 }));
 
-interface DeleteConfirmModal {
+interface DeleteConfirmModalProps {
 	isOpen: boolean;
 	onClose: (state: boolean) => void;
 	onConfirmDelete: () => void;
 	title: string;
 	children: React.ReactNode;
 	cancelText: string;
+	cancelButtonBackground?: string;
+	confirmButtonBackground?: string;
 	confirmText: string;
 }
 
-const DeleteConfirmModal = (props: DeleteConfirmModal) => {
-	const { isOpen, onClose, onConfirmDelete, title, children, cancelText, confirmText } = props;
+const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
+	const {
+		isOpen,
+		onClose,
+		onConfirmDelete,
+		title,
+		children,
+		cancelText,
+		confirmText,
+		cancelButtonBackground,
+		confirmButtonBackground,
+	} = props;
 
 	return (
 		<Modal
@@ -43,6 +55,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModal) => {
 					<CancelButton
 						className="webchat-delete-conversation-cancel-button"
 						onClick={() => onClose(!isOpen)}
+						background={cancelButtonBackground}
 						autoFocus
 					>
 						{cancelText}
@@ -50,6 +63,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModal) => {
 					<DeleteConfirmation
 						className="webchat-delete-conversation-confirm-button"
 						onClick={onConfirmDelete}
+						background={confirmButtonBackground}
 					>
 						{confirmText}
 					</DeleteConfirmation>

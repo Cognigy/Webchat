@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import IconButton from "../presentational/IconButton";
 import CloseIcon from "../../assets/close-16px.svg";

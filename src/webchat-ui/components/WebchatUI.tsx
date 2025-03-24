@@ -135,9 +135,6 @@ export interface WebchatUIProps {
 	showChatOptionsScreen: boolean;
 	onSetShowChatOptionsScreen: (show: boolean) => void;
 
-	showPreviousConversationsOptionsScreen: boolean;
-	onShowPreviousConversationsOptionsScreen: (show: boolean) => void;
-
 	hasAcceptedTerms: boolean;
 	onAcceptTerms: (userId: string) => void;
 	onSetStoredMessage: (message: UIState["storedMessage"]) => void;
@@ -1140,8 +1137,6 @@ export class WebchatUI extends React.PureComponent<
 			onSetShowPrevConversations,
 			showChatOptionsScreen,
 			onSetShowChatOptionsScreen,
-			showPreviousConversationsOptionsScreen,
-			onShowPreviousConversationsOptionsScreen,
 			requestRatingScreenTitle,
 			customRatingTitle,
 			customRatingCommentText,
@@ -1205,9 +1200,7 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const handleOnGoBack = () => {
-			if (showPreviousConversationsOptionsScreen) {
-				onShowPreviousConversationsOptionsScreen(false);
-			} else if (!showChatOptionsScreen && !showRatingScreen) {
+			if (!showChatOptionsScreen && !showRatingScreen) {
 				onSetShowPrevConversations(false);
 				onSetShowHomeScreen(true);
 				// Set timeout to focus on close button in header of home screen after animation
@@ -1256,7 +1249,7 @@ export class WebchatUI extends React.PureComponent<
 						onOpenChange={open => {
 							this.setState({ showDeleteAllConversationsModal: open });
 						}}
-					></DeleteAllConversationsModal>
+					/>
 				);
 			if (showInformationMessage) return <InformationMessage message={informMessage} />;
 
@@ -1425,6 +1418,9 @@ export class WebchatUI extends React.PureComponent<
 								chatToggleButtonRef={this.chatToggleButtonRef}
 								hideBackButton={hideBackButton}
 								showChatScreen={showChatScreen}
+								deleteIconColor={
+									config.settings.customColors?.deleteAllConversationIconColor
+								}
 							/>
 						)}
 					</CSSTransition>
