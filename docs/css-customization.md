@@ -1289,3 +1289,181 @@ The frame that adds the "card styles" such as background-color or box-shadow.
     margin: 5px;
 }
 ```
+
+### Modal and Delete Conversation
+
+- _webchat-modal-root_  
+  The root container for modals. You can customize the overall appearance of modal windows.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-root {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+}
+```
+
+- _webchat-modal-header_  
+  The header section of modal windows.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+```
+
+- _webchat-modal-title_  
+  The title text in modal headers.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-title {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+}
+```
+
+- _webchat-modal-close-button_  
+  The close button in modal headers.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-close-button {
+    background-color: transparent;
+    border: none;
+    color: #666;
+}
+```
+
+- _webchat-modal-close-icon_  
+  The icon within the modal close button.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-close-icon {
+    font-size: 20px;
+    color: #666;
+}
+```
+
+- _webchat-modal-divider-wrapper_  
+  The wrapper for modal dividers.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-divider-wrapper {
+    padding: 10px 0;
+}
+```
+
+- _webchat-modal-divider_  
+  The divider line in modals.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-divider {
+    border-top: 1px solid #ddd;
+}
+```
+
+- _webchat-modal-body_  
+  The main content area of modals.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-body {
+    padding: 15px;
+    background-color: white;
+}
+```
+
+- _webchat-modal-footer_  
+  The footer section of modals.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-modal-footer {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+}
+```
+
+- _webchat-delete-conversation-container_  
+  The container for delete conversation confirmation dialog.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-container {
+    padding: 20px;
+    text-align: center;
+}
+```
+
+- _webchat-delete-conversation-title_  
+  The title in delete conversation dialog.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+```
+
+- _webchat-delete-conversation-button_  
+  The general delete button style.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-button {
+    padding: 8px 16px;
+    margin: 5px;
+    border-radius: 4px;
+}
+```
+
+- _webchat-delete-conversation-cancel-button_  
+  The cancel button in delete dialog.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-cancel-button {
+    background-color: #f5f5f5;
+    color: #333;
+}
+```
+
+- _webchat-delete-conversation-confirm-button_  
+  The confirm button in delete dialog.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-confirm-button {
+    background-color: #dc3545;
+    color: white;
+}
+```
+
+- _webchat-delete-conversation-text_  
+  The warning text in delete conversation dialog.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-text {
+    color: #666;
+    margin: 10px 0;
+}
+```
+
+- _webchat-delete-all-conversation-text_  
+  The warning text for deleting all conversations.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-all-conversation-text {
+    color: #dc3545;
+    font-weight: bold;
+}
+```
+
+- _webchat-header-delete-all-conversations-button_  
+  The button to delete all conversations in the header.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-header-delete-all-conversations-button {
+    background-color: transparent;
+    color: #666;
+    border: none;
+}
+```
