@@ -61,7 +61,7 @@ export const createAutoInjectMiddleware =
 				// except if explicitly set via enableInjectionWithoutEmptyHistory
 				if (!config.settings.widgetSettings.enableInjectionWithoutEmptyHistory) {
 					// If there are stored messages waiting to be sent, don't send the auto-inject message
-					if(state.ui.storedMessage) {
+					if (state.ui.storedMessage) {
 						break;
 					}
 

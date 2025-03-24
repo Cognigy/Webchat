@@ -67,7 +67,6 @@ export const createConnectionMiddleware =
 								store.dispatch(setStoredMessage(null));
 							}
 							store.dispatch(setOptions(client.socketOptions));
-
 						})
 						.catch(() => {
 							store.dispatch(setConnecting(false));
