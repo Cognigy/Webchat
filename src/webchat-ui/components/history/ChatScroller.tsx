@@ -155,6 +155,25 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 		}
 	}, [scrolledToLastInput, setShouldScrollToLastInput, sticky]);
 
+	const [inputHeight, setInputHeight] = useState(0);
+
+	useEffect(() => {
+		const resizeObserver = new ResizeObserver(entries => {
+			for (const entry of entries) {
+				setInputHeight(entry.contentRect.height);
+			}
+		});
+
+		const inputElement = document.querySelector(".webchat-input");
+		if (inputElement) {
+			resizeObserver.observe(inputElement);
+		}
+
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, []);
+
 	return (
 		<div>
 			{children}
@@ -163,9 +182,9 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 					className="webchat-scroll-to-bottom-button"
 					onClick={scrollToBottom}
 					aria-label="Scroll to bottom"
+					style={{ bottom: `${inputHeight + 50}px` }}
 				>
-					{/* // Keep arrow symbol in parentheses!*/}
-					{"↓"}
+					↓
 				</ScrollButton>
 			)}
 		</div>
