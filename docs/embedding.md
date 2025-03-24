@@ -159,6 +159,7 @@ See it in action:
 | renderMarkdown                  | boolean | `false`                               | Render markdown in text messages.                                                                                                                                                                   |
 | scrollingBehavior               | string  | `"alwaysScroll"`                      | Allowed values: `"scrollUntilLastInputAtTop" \| "alwaysScroll"`. Decide how scrolling should behave if scrolled to bottom and a new message comes in.                                               |
 | enableScrollButton              | boolean | `true`                                | If false, hides the scroll-to-bottom button.                                                                                                                                                        |
+
 #### Start Behavior
 
 | Name                 | Type   | Default  | Description                                                                                               |
