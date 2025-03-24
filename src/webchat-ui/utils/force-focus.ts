@@ -4,9 +4,6 @@
  * @param targetElement - The HTML element that should maintain focus
  */
 export function forceFocus(targetElement: HTMLElement) {
-	// Initially focus the element
-
-	// Function to handle any focus event in the document
 	setTimeout(() => {
 		targetElement.focus();
 
