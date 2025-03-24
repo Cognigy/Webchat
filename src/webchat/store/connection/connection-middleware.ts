@@ -56,7 +56,6 @@ export const createConnectionMiddleware =
 							// set options
 							store.dispatch(setConnecting(false));
 							store.dispatch(setReconnectionLimit(false));
-							store.dispatch(setOptions(client.socketOptions));
 
 							if (storedMessage) {
 								store.dispatch(
@@ -67,6 +66,8 @@ export const createConnectionMiddleware =
 								);
 								store.dispatch(setStoredMessage(null));
 							}
+							store.dispatch(setOptions(client.socketOptions));
+
 						})
 						.catch(() => {
 							store.dispatch(setConnecting(false));
