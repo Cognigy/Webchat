@@ -158,20 +158,28 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 	const [inputHeight, setInputHeight] = useState(0);
 
 	useEffect(() => {
-		const resizeObserver = new ResizeObserver(entries => {
-			for (const entry of entries) {
-				setInputHeight(entry.contentRect.height);
+		const observeElement = element => {
+			const resizeObserver = new ResizeObserver(entries => {
+				for (const entry of entries) {
+					setInputHeight(entry.contentRect.height);
+				}
+			});
+			resizeObserver.observe(element);
+
+			return () => resizeObserver.disconnect();
+		};
+
+		const mutationObserver = new MutationObserver(() => {
+			const inputElement = document.querySelector(".webchat-input");
+			if (inputElement) {
+				observeElement(inputElement);
+				mutationObserver.disconnect();
 			}
 		});
 
-		const inputElement = document.querySelector(".webchat-input");
-		if (inputElement) {
-			resizeObserver.observe(inputElement);
-		}
+		mutationObserver.observe(document.body, { childList: true, subtree: true });
 
-		return () => {
-			resizeObserver.disconnect();
-		};
+		return () => mutationObserver.disconnect();
 	}, []);
 
 	return (
