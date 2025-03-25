@@ -33,6 +33,7 @@ export interface IStreamingMessage extends IBaseMessage {
 	traceId: string;
 	id?: string;
 	animationState?: "start" | "animating" | "done" | "exited";
+	finishReason?: string;
 }
 
 export type IMessage =

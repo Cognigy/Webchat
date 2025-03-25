@@ -61,9 +61,10 @@ export const createAutoInjectMiddleware =
 				// except if explicitly set via enableAutoInjectWithHistory
 				if (!config.settings.widgetSettings.enableInjectionWithoutEmptyHistory) {
 					// Exclude engagement messages from state.messages
-					const messagesExcludingEngagementMessages = state.messages?.filter(
-						message => message.source !== "engagement",
-					);
+					const messagesExcludingEngagementMessages =
+						state.messages.messageHistory?.filter(
+							message => message.source !== "engagement",
+						);
 					// Exclude controlCommands messages from filtered message list
 					const messagesExcludingControlCommands = getMessagesListWithoutControlCommands(
 						messagesExcludingEngagementMessages,

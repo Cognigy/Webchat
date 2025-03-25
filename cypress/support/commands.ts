@@ -217,7 +217,7 @@ Cypress.Commands.add("setRTLDocument", () => {
 Cypress.Commands.add("getHistory", () => {
 	return cy.getWebchat().then(webchat => {
 		// @ts-ignore
-		return webchat.store.getState().messages;
+		return webchat.store.getState().messages.messageHistory;
 	});
 });
 
