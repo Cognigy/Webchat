@@ -265,17 +265,17 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 
 #### Chat Options
 
-| Name                      | Type    | Default                                        | Description                                                                                                                                                                   |
-| ------------------------- | ------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| enabled                   | boolean | `false`                                        | Enable Chat Options Feature                                                                                                                                                   |
-| title                     | string  | `"Chat options"`                               | Chat Options header title                                                                                                                                                     |
-| quickReplyOptions         | object  | [Quick Reply Options](#quick-reply-options)    | Configure the Quick Reply section in the Chat Options                                                                                                                         |
-| showTTSToggle             | boolean | `false`                                        | Enable to show the Text-to-Speech Toggle                                                                                                                                      |
-| activateTTSToggle         | boolean | `true`                                         | Activate Text-to-Speech Toggle by default. It also requires `behavior.enableTTS` setting to be `true` to make TTS active.                                                     |
-| labelTTSToggle            | string  | `"Enable text-to-speech"`                      | Label for the Text-to-Speech toggle                                                                                                                                           |
-| rating                    | object  | [Rating Section](#chat-options-rating-section) | Configure the Rating Section                                                                                                                                                  |
-| enableDeleteConversations | boolean | `false`                                        | If enabled, a delete button is provided in chat options screen. This button can be used to delete current conversations. Confirmation is required before the delete operation |
-| footer                    | object  | [Footer](#chat-options-footer)                 | Configure the Footer                                                                                                                                                          |
+| Name                     | Type    | Default                                        | Description                                                                                                                                                                   |
+| ------------------------ | ------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| enabled                  | boolean | `false`                                        | Enable Chat Options Feature                                                                                                                                                   |
+| title                    | string  | `"Chat options"`                               | Chat Options header title                                                                                                                                                     |
+| quickReplyOptions        | object  | [Quick Reply Options](#quick-reply-options)    | Configure the Quick Reply section in the Chat Options                                                                                                                         |
+| showTTSToggle            | boolean | `false`                                        | Enable to show the Text-to-Speech Toggle                                                                                                                                      |
+| activateTTSToggle        | boolean | `true`                                         | Activate Text-to-Speech Toggle by default. It also requires `behavior.enableTTS` setting to be `true` to make TTS active.                                                     |
+| labelTTSToggle           | string  | `"Enable text-to-speech"`                      | Label for the Text-to-Speech toggle                                                                                                                                           |
+| rating                   | object  | [Rating Section](#chat-options-rating-section) | Configure the Rating Section                                                                                                                                                  |
+| enableDeleteConversation | boolean | `false`                                        | If enabled, a delete button is provided in chat options screen. This button can be used to delete current conversations. Confirmation is required before the delete operation |
+| footer                   | object  | [Footer](#chat-options-footer)                 | Configure the Footer                                                                                                                                                          |
 
 ##### Quick Reply Options
 
@@ -572,7 +572,7 @@ interface IWebchatSettings {
 			submitButtonText: string;
 			eventBannerText: string;
 		};
-		enableDeleteConversations: boolean;
+		enableDeleteConversation: boolean;
 		footer: {
 			enabled: boolean;
 			items: {
