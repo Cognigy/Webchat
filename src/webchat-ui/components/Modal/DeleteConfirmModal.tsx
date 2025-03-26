@@ -54,7 +54,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 				<>
 					<CancelButton
 						className="webchat-delete-conversation-cancel-button"
-						onClick={() => onClose(!isOpen)}
+						onClick={() => onClose(false)}
 						background={cancelButtonBackground}
 						autoFocus
 					>
