@@ -11,13 +11,15 @@ import { clearMessages } from "../../../../webchat/store/messages/message-reduce
 import DeleteConfirmModal, {
 	DeleteButton as ConfirmDeleteButton,
 } from "../../Modal/DeleteConfirmModal";
+import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-middleware";
 
 const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	> button {
-		width: 30%;
+		width: auto;
+		padding: 0 16px;
 	}
 `;
 

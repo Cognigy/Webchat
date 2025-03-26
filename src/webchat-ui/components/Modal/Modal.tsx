@@ -23,8 +23,9 @@ const StyledDialog = styled.dialog`
 	padding: 20px;
 	border: none;
 	border-radius: 16px;
+	width: 90%;
 	background-color: ${({ theme }) => theme.white};
-	margin: 20px;
+	margin: 20px auto;
 	z-index: 99999;
 
 	&.fade-enter {
@@ -72,7 +73,8 @@ const ModalFooter = styled.div`
 	justify-content: space-between;
 
 	> button {
-	 	width:30%;
+	 	width: auto;
+		padding: 0 16px;
 	 }
 	
 	@media screen and (max-width: 576px) {
