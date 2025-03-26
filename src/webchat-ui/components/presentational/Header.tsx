@@ -85,6 +85,9 @@ const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, ic
 		fill: iconColor ? iconColor : theme.black10,
 		width: 16,
 		height: 16,
+		"& path": {
+			fill: iconColor ? iconColor : theme.black10,
+		},
 	},
 	padding: 0,
 }));
