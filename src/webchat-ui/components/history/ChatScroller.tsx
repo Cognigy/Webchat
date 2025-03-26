@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import ScrollToBottom, { useScrollToBottom, useSticky } from "react-scroll-to-bottom";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
@@ -145,20 +146,51 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 	const scrollToBottom = useScrollToBottom();
 	const [sticky] = useSticky();
 
+	const scrollButtonDisabled =
+		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
+
 	useEffect(() => {
 		if (sticky && scrolledToLastInput) {
 			setShouldScrollToLastInput(false);
 		}
 	}, [scrolledToLastInput, setShouldScrollToLastInput, sticky]);
 
+	const [inputHeight, setInputHeight] = useState(0);
+
+	useEffect(() => {
+		const observeElement = element => {
+			const resizeObserver = new ResizeObserver(entries => {
+				for (const entry of entries) {
+					setInputHeight(entry.contentRect.height);
+				}
+			});
+			resizeObserver.observe(element);
+
+			return () => resizeObserver.disconnect();
+		};
+
+		const mutationObserver = new MutationObserver(() => {
+			const inputElement = document.querySelector(".webchat-input");
+			if (inputElement) {
+				observeElement(inputElement);
+				mutationObserver.disconnect();
+			}
+		});
+
+		mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+		return () => mutationObserver.disconnect();
+	}, []);
+
 	return (
 		<div>
 			{children}
-			{!sticky && (
+			{!sticky && !scrollButtonDisabled && (
 				<ScrollButton
 					className="webchat-scroll-to-bottom-button"
 					onClick={scrollToBottom}
 					aria-label="Scroll to bottom"
+					style={{ bottom: `${inputHeight + 50}px` }}
 				>
 					↓
 				</ScrollButton>

@@ -1,8 +1,18 @@
 import { IMessage, IStreamingMessage, IUserMessage } from "../../../common/interfaces/message";
 import { IMessageEvent } from "../../../common/interfaces/event";
-import { generateRandomId } from "./helper";
+import { generateRandomId, isAnimatedRichBotMessage } from "./helper";
 
-export type MessageState = (IMessage | IMessageEvent)[];
+export interface MessageState {
+	messageHistory: (IMessage | IMessageEvent)[];
+	visibleOutputMessages: string[];
+	currentlyAnimatingId: string | null;
+}
+
+const initialState: MessageState = {
+	messageHistory: [],
+	visibleOutputMessages: [],
+	currentlyAnimatingId: null,
+};
 
 const ADD_MESSAGE = "ADD_MESSAGE";
 export const addMessage = (message: IMessage, unseen?: boolean) => ({
@@ -38,11 +48,18 @@ export type ClearMessagesAction = ReturnType<typeof clearMessages>;
 
 interface CognigyData {
 	_messageId?: string;
+	_finishReason?: string;
 }
 
 // Helper to get message ID from message
 const getMessageId = (message: IMessage) => {
 	return (message.data?._cognigy as CognigyData)?._messageId;
+};
+
+// Helper to get finishReason from message
+// If there is no messageId, we are not streaming, so the message is always finished and finishReason is "stop"
+const getFinishReason = (message: IMessage, messageId?: string) => {
+	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
 // slice of the store state that contains the info about streaming mode, to avoid circular dependency
@@ -57,7 +74,7 @@ type ConfigState = {
 
 export const createMessageReducer = (getState: () => { config: ConfigState }) => {
 	return (
-		state: MessageState = [],
+		state: MessageState = initialState,
 		action:
 			| AddMessageAction
 			| AddMessageEventAction
@@ -66,7 +83,10 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 	) => {
 		switch (action.type) {
 			case "ADD_MESSAGE_EVENT": {
-				return [...state, action.event];
+				return {
+					...state,
+					messageHistory: [...state.messageHistory, action.event],
+				};
 			}
 			case "ADD_MESSAGE": {
 				const newMessage = action.message;
@@ -80,31 +100,51 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					(!isOutputCollationEnabled && !isprogressiveMessageRenderingEnabled) ||
 					(newMessage.source !== "bot" && newMessage.source !== "engagement")
 				) {
-					return [...state, newMessage];
-				}
-
-				// If message doesn't have text (e.g. Text with Quick Replies), still add an ID and animationState for enabling the animation.
-				if (!newMessage.text) {
-					return [
+					return {
 						...state,
-						{
-							...newMessage,
-							id: generateRandomId(),
-							animationState: "start",
-						},
-					];
+						messageHistory: [...state.messageHistory, newMessage],
+					};
 				}
 
+				const visibleOutputMessages = state.visibleOutputMessages;
 				let newMessageId = getMessageId(newMessage);
+				let nextAnimatingId = state.currentlyAnimatingId;
 
-				if (!newMessageId) {
-					newMessageId = generateRandomId();
+				// If message doesn't have text, still add an ID.
+				// Check if the message is an animated bot message (e.g. Text with Quick Replies) and set the animationState accordingly
+				// if there is a messageId, it means the message was a streaming message that was finished and will be handled further below
+				if (!newMessage.text && !newMessageId) {
+					const isAnimated = isAnimatedRichBotMessage(newMessage as IStreamingMessage);
+
+					const newMessageId = generateRandomId();
+
+					if (!state.currentlyAnimatingId) {
+						visibleOutputMessages.push(newMessageId as string);
+					}
+					if (!nextAnimatingId) {
+						nextAnimatingId = isAnimated ? newMessageId : null;
+					}
+
+					return {
+						...state,
+						messageHistory: [
+							...state.messageHistory,
+							{
+								...newMessage,
+								id: newMessageId,
+								animationState: isAnimated ? "start" : "done",
+								finishReason: "stop",
+							},
+						],
+						visibleOutputMessages,
+						currentlyAnimatingId: nextAnimatingId,
+					};
 				}
 
 				// Find existing message with same ID if we're collating outputs
 				let messageIndex = -1;
-				if (isOutputCollationEnabled) {
-					messageIndex = state.findIndex(msg => {
+				if (isOutputCollationEnabled && newMessageId) {
+					messageIndex = state.messageHistory.findIndex(msg => {
 						if ("text" in msg) {
 							const msgId = getMessageId(msg as IMessage);
 							if (msgId) {
@@ -115,54 +155,157 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					});
 				}
 
+				const finishReason = getFinishReason(newMessage, newMessageId);
+
+				if (!newMessageId) {
+					newMessageId = generateRandomId();
+				}
+
+				if (!nextAnimatingId) {
+					nextAnimatingId = newMessageId;
+				}
+
+				// If no matching message and the message has no text, we discard the message
+				if (messageIndex === -1 && !newMessage.text) {
+					return state;
+				}
+
 				// If no matching message, create new with array
 				if (messageIndex === -1) {
+					if (!state.currentlyAnimatingId) {
+						visibleOutputMessages.push(newMessageId as string);
+					}
+
 					// break string into chunks on new lines so that markdown is evaluated while a long text is animated
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
 
-					return [
+					return {
 						...state,
-						{
-							...newMessage,
-							text: textChunks,
-							id: newMessageId,
-							animationState: "start",
-						},
-					];
+						messageHistory: [
+							...state.messageHistory,
+							{
+								...newMessage,
+								text: textChunks,
+								id: newMessageId,
+								animationState: "start",
+								finishReason,
+							},
+						],
+						visibleOutputMessages,
+						currentlyAnimatingId: nextAnimatingId,
+					};
 				}
 
+				/*
+				 ** From here on, we are only handling a streaming message that has already been added to the messageHistory
+				 */
+
 				// Get existing message
-				const existingMessage = state[messageIndex] as IStreamingMessage;
-				const newState = [...state];
+				const existingMessage = state.messageHistory[messageIndex] as IStreamingMessage;
+				const newMessageHistory = [...state.messageHistory];
+
+				// if there is a finishReason, only add the finishReason to the streaming message
+				if (finishReason) {
+					newMessageHistory[messageIndex] = {
+						...existingMessage,
+						finishReason,
+					};
+					return {
+						...state,
+						messageHistory: newMessageHistory,
+					};
+				}
 
 				// Convert existing text to array if needed
 				const existingText = Array.isArray(existingMessage.text)
 					? existingMessage.text
 					: [existingMessage.text];
 
+				// reset animation state
 				let nextAnimationState: IStreamingMessage["animationState"] = "start";
+
+				// if the message was exited, keep it exited
 				if (existingMessage.animationState === "exited") {
 					nextAnimationState = "exited";
 				}
 
+				// if the streaming message is empty, keep the animation state of the existing message, since the empty message just streams the finishReason
+				if (!newMessage.text) {
+					nextAnimationState = existingMessage.animationState;
+				}
+
 				// Append new chunk
-				newState[messageIndex] = {
+				newMessageHistory[messageIndex] = {
 					...existingMessage,
 					text: [...existingText, newMessage.text as string],
 					animationState: nextAnimationState,
+					finishReason,
 				} as IMessage;
 
-				return newState;
+				return {
+					...state,
+					messageHistory: newMessageHistory,
+				};
 			}
+
 			case "SET_MESSAGE_ANIMATED": {
-				return state.map(message => {
-					if ("id" in message && message.id === action.messageId) {
-						return { ...message, animationState: action.animationState };
+				const messageIndex = state.messageHistory.findIndex(
+					message => "id" in message && message.id === action.messageId,
+				);
+				if (messageIndex === -1) return state;
+
+				// Create a new Set to deduplicate messages while maintaining order
+				const visibleMessagesSet = new Set(state.visibleOutputMessages);
+
+				let currentlyAnimatingId = state.currentlyAnimatingId;
+
+				// Find the next message that should be animated
+				if (action.animationState === "done" || action.animationState === "exited") {
+					let nextAnimatingMessageFound = false;
+
+					for (let i = messageIndex + 1; i < state.messageHistory.length; i++) {
+						const message = state.messageHistory[i];
+						if (
+							(message.source === "bot" || message.source === "engagement") &&
+							"id" in message
+						) {
+							visibleMessagesSet.add(message.id as string);
+
+							// If we find a message that should be animated (state is "start")
+							if (message.animationState === "start" && !nextAnimatingMessageFound) {
+								currentlyAnimatingId = message.id as string;
+								nextAnimatingMessageFound = true;
+								break;
+							}
+						}
 					}
-					return message;
-				});
+
+					// If we didn't find a next message to animate, clear the animating ID
+					if (!nextAnimatingMessageFound) {
+						currentlyAnimatingId = null;
+					}
+				}
+
+				// Convert Set back to array while maintaining order from messageHistory
+				const newVisibleOutputMessages = state.messageHistory
+					.filter(
+						message => "id" in message && visibleMessagesSet.has(message.id as string),
+					)
+					.map(message => ("id" in message ? message.id : "")) as string[];
+
+				return {
+					...state,
+					messageHistory: state.messageHistory.map(message => {
+						if ("id" in message && message.id === action.messageId) {
+							return { ...message, animationState: action.animationState };
+						}
+						return message;
+					}),
+					visibleOutputMessages: newVisibleOutputMessages,
+					currentlyAnimatingId,
+				};
 			}
 			case CLEAR_MESSAGES: {
 				return [];

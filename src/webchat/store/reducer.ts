@@ -16,6 +16,7 @@ import {
 import { StoreState } from "./store";
 import xAppOverlay from "./xapp-overlay/slice";
 import queueUpdates from "./queue-updates/slice";
+import { IStreamingMessage } from "../../common/interfaces/message";
 
 const rootReducer = (state, action) => {
 	const combinedReducer = combineReducers({
@@ -56,11 +57,16 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 			return rootReducer(
 				{
 					...state,
-					messages: [
-						// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
-						...(state.messages.length === 0 ? action.state.messages : []),
-						...state.messages,
-					],
+					messages: {
+						messageHistory: [
+							// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
+							...(state.messages.messageHistory.length === 0
+								? action.state.messages
+								: []),
+							...state.messages.messageHistory,
+						],
+						visibleOutputMessages: state.messages.visibleOutputMessages,
+					},
 					rating: {
 						...state.rating,
 						hasGivenRating: action.state.rating.hasGivenRating,
@@ -72,16 +78,23 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 
 		case "SET_PREV_STATE": {
 			const { showRatingScreen, ...rating } = action.state.rating;
+			const visibleOutputMessages = [];
 			const messages = action.state.messages.map(message => {
 				if (message.animationState) {
 					message.animationState = "done";
+				}
+				if ((message.source === "bot" || message.source === "engagement") && message.id) {
+					visibleOutputMessages.push(message.id as string);
 				}
 				return message;
 			});
 			return rootReducer(
 				{
 					...state,
-					messages: [...messages],
+					messages: {
+						messageHistory: [...messages],
+						visibleOutputMessages,
+					},
 					rating: { showRatingScreen: false, ...rating },
 				},
 				{ type: "" },

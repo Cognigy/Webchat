@@ -178,6 +178,7 @@ export interface IWebchatSettings {
 		focusInputAfterPostback: boolean;
 		enableConnectionStatusIndicator: boolean;
 		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
+		enableScrollButton: boolean;
 	};
 	startBehavior: {
 		startBehavior: "none" | "button" | "injection";

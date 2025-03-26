@@ -1,5 +1,6 @@
 import React from "react";
 import { IMessage, IStreamingMessage } from "../../common/interfaces/message";
+import { IMessageEvent } from "../../common/interfaces/event";
 import Header from "./presentational/Header";
 import { CacheProvider, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -73,7 +74,8 @@ import { forceFocus } from "../utils/force-focus";
 
 export interface WebchatUIProps {
 	currentSession: string;
-	messages: IMessage[];
+	messages: (IMessage | IMessageEvent)[];
+	visibleOutputMessages: string[];
 	unseenMessages: IMessage[];
 	fullscreenMessage?: IMessage;
 	onSetFullscreenMessage: (message: IMessage) => void;
@@ -1488,11 +1490,23 @@ export class WebchatUI extends React.PureComponent<
 	}
 
 	renderHistory() {
-		const { messages, typingIndicator, config, onEmitAnalytics, openXAppOverlay } = this.props;
+		const {
+			messages,
+			typingIndicator,
+			config,
+			onEmitAnalytics,
+			openXAppOverlay,
+			visibleOutputMessages,
+		} = this.props;
 		const { messagePlugins = [] } = this.state;
 
-		const { enableTypingIndicator, messageDelay, enableAIAgentNotice, AIAgentNoticeText } =
-			config.settings.behavior;
+		const {
+			enableTypingIndicator,
+			messageDelay,
+			enableAIAgentNotice,
+			AIAgentNoticeText,
+			progressiveMessageRendering,
+		} = config.settings.behavior;
 		const isTyping = typingIndicator !== "remove" && typingIndicator !== "hide";
 
 		const isEnded = isConversationEnded(messages);
@@ -1503,6 +1517,18 @@ export class WebchatUI extends React.PureComponent<
 			"acceptPrivacyPolicy",
 		]);
 
+		// Filter messages based on progressive rendering settings
+		const visibleMessages = progressiveMessageRendering
+			? messagesExcludingPrivacyMessage.filter(message => {
+					if (message.source !== "bot" && message.source !== "engagement") {
+						return true;
+					}
+					return visibleOutputMessages.includes(
+						(message as IStreamingMessage).id as string,
+					);
+				})
+			: messagesExcludingPrivacyMessage;
+
 		return (
 			<>
 				{enableAIAgentNotice !== false && (
@@ -1510,9 +1536,9 @@ export class WebchatUI extends React.PureComponent<
 						{AIAgentNoticeText || "You're now chatting with an AI Agent."}
 					</TopStatusMessage>
 				)}
-				{messagesExcludingPrivacyMessage.map((message, index) => {
+				{visibleMessages.map((message, index) => {
 					// Lookahead if there is a user reply
-					const hasReply = messagesExcludingPrivacyMessage
+					const hasReply = visibleMessages
 						.slice(index + 1)
 						.some(
 							message =>
@@ -1533,7 +1559,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
 							plugins={messagePlugins}
-							prevMessage={messagesExcludingPrivacyMessage?.[index - 1]}
+							prevMessage={visibleMessages?.[index - 1]}
 							theme={this.state.theme}
 							onSetMessageAnimated={this.props.onSetMessageAnimated}
 						/>
