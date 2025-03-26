@@ -7,11 +7,6 @@ import styled from "@emotion/styled";
 const GetStartedButton = styled(Button)(({ theme }) => ({
 	marginBottom: theme.unitSize * 2,
 	flexGrow: 1,
-	"&:focus": {
-		outline: "none",
-		boxShadow: `0 0 3px 1px ${theme.primaryWeakColor}`,
-		backgroundColor: theme.primaryStrongColor,
-	},
 }));
 
 const GetStartedInput = ({ onSendMessage, config }: InputComponentProps) => (
@@ -26,6 +21,7 @@ const GetStartedInput = ({ onSendMessage, config }: InputComponentProps) => (
 			}
 			color="primary"
 			id="webchatGetStartedButton"
+			className="webchat-input-get-started-button"
 		>
 			{config.settings.startBehavior.getStartedButtonText}
 		</GetStartedButton>

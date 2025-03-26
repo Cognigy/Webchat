@@ -1,6 +1,7 @@
 import GetStartedInput from "./GetStartedInput";
 import { InputRule, InputPlugin } from "../../common/interfaces/input-plugin";
 import { registerInputPlugin } from "../helper";
+import getMessagesListWithoutControlCommands from "../../webchat-ui/utils/filter-out-control-commands";
 
 const rule: InputRule = ({
 	config: {
@@ -16,7 +17,9 @@ const rule: InputRule = ({
 	},
 	messages,
 }) =>
-	(messages.length === 0 || (messages.length === 1 && messages[0].source === "engagement")) &&
+	(messages.length === 0 ||
+		(messages.length === 1 && messages[0].source === "engagement") ||
+		getMessagesListWithoutControlCommands(messages)?.length === 0) &&
 	startBehavior === "button" &&
 	!!getStartedPayload &&
 	(!!getStartedButtonText ||

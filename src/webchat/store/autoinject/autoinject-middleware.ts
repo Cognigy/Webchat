@@ -58,8 +58,13 @@ export const createAutoInjectMiddleware =
 				}
 
 				// Don't trigger the auto inject message when the history is not empty
-				// except if explicitly set via enableAutoInjectWithHistory
+				// except if explicitly set via enableInjectionWithoutEmptyHistory
 				if (!config.settings.widgetSettings.enableInjectionWithoutEmptyHistory) {
+					// If there are stored messages waiting to be sent, don't send the auto-inject message
+					if (state.ui.storedMessage) {
+						break;
+					}
+
 					// Exclude engagement messages from state.messages
 					const messagesExcludingEngagementMessages =
 						state.messages.messageHistory?.filter(
