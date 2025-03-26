@@ -59,11 +59,18 @@ interface IPrevConversationsListProps {
 	conversations: PrevConversationsState;
 	onSetShowPrevConversations: (show: boolean) => void;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
+	startNewConversationButtonRef?: React.RefObject<HTMLButtonElement>;
 }
 
 export const PrevConversationsList = (props: IPrevConversationsListProps) => {
-	const { conversations, config, onSetShowPrevConversations, onSwitchSession, currentSession } =
-		props;
+	const {
+		conversations,
+		config,
+		onSetShowPrevConversations,
+		onSwitchSession,
+		currentSession,
+		startNewConversationButtonRef,
+	} = props;
 
 	// we sort the conversation based on last message timestamp
 	// result: the last updated conversation goes on top
@@ -127,6 +134,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 					onClick={handleStartButtonClick}
 					className="webchat-prev-conversations-send-button"
 					data-testid="webchat-start-chat-button"
+					ref={startNewConversationButtonRef}
 				>
 					{config.settings.homeScreen?.previousConversations
 						?.startNewConversationButtonText ?? "Start new conversation"}

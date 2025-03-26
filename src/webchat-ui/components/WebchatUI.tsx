@@ -70,7 +70,6 @@ import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
 import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
-import { forceFocus } from "../utils/force-focus";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -263,7 +262,7 @@ export class WebchatUI extends React.PureComponent<
 	closeButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	menuButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	deleteButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
-	focusEventCleanUp: React.MutableRefObject<Function | null>;
+	startNewConversationButtonRef: React.RefObject<HTMLButtonElement>;
 	ratingButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
@@ -283,10 +282,10 @@ export class WebchatUI extends React.PureComponent<
 		this.closeButtonInHeaderRef = React.createRef();
 		this.menuButtonInHeaderRef = React.createRef();
 		this.deleteButtonInHeaderRef = React.createRef();
+		this.startNewConversationButtonRef = React.createRef();
 		this.ratingButtonInHeaderRef = React.createRef();
 		this.webchatWindowRef = React.createRef();
 		this.homeScreenCloseButtonRef = React.createRef();
-		this.focusEventCleanUp = React.createRef();
 
 		this.handleStartConversation = this.handleStartConversation.bind(this);
 	}
@@ -1259,6 +1258,7 @@ export class WebchatUI extends React.PureComponent<
 				);
 
 			if (isXAppOverlayOpen) return <XAppOverlay />;
+
 			if (showPrevConversations)
 				return (
 					<PrevConversationsList
@@ -1267,6 +1267,7 @@ export class WebchatUI extends React.PureComponent<
 						onSwitchSession={onSwitchSession}
 						config={config}
 						currentSession={currentSession}
+						startNewConversationButtonRef={this.startNewConversationButtonRef}
 					/>
 				);
 
@@ -1403,7 +1404,6 @@ export class WebchatUI extends React.PureComponent<
 									this.setState({
 										showDeleteAllConversationsModal: true,
 									});
-									this.focusEventCleanUp.current?.();
 								}}
 								logoUrl={
 									!showChatOptionsScreen && !showRatingScreen
@@ -1449,26 +1449,22 @@ export class WebchatUI extends React.PureComponent<
 					>
 						<RegularLayoutContentWrapper>
 							{getRegularLayoutContent()}
-							{this.state.showDeleteAllConversationsModal && (
-								<DeleteAllConversationsModal
-									config={config}
-									isOpen
-									onOpenChange={(open, confirmDelete) => {
-										this.setState({ showDeleteAllConversationsModal: open });
-										if (
-											!open &&
-											this.deleteButtonInHeaderRef.current &&
-											!confirmDelete
-										) {
-											this.focusEventCleanUp.current = forceFocus(
-												this.deleteButtonInHeaderRef.current,
-											);
-										} else {
-											this.focusEventCleanUp.current?.();
-										}
-									}}
-								/>
-							)}
+							<DeleteAllConversationsModal
+								config={config}
+								isOpen={this.state.showDeleteAllConversationsModal}
+								onOpenChange={(open, confirmDelete) => {
+									this.setState({ showDeleteAllConversationsModal: open });
+									if (
+										!open &&
+										this.deleteButtonInHeaderRef.current &&
+										!confirmDelete
+									) {
+										this.deleteButtonInHeaderRef.current.focus();
+									} else {
+										this.startNewConversationButtonRef.current?.focus();
+									}
+								}}
+							/>
 						</RegularLayoutContentWrapper>
 					</CSSTransition>
 				}
