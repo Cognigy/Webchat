@@ -1419,7 +1419,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 ```
 
 - _webchat-delete-conversation-button_  
-  The general delete button style.
+  The delete button style inside the chat options screen.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-delete-conversation-button {

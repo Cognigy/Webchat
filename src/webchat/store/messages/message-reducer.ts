@@ -308,7 +308,10 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				};
 			}
 			case CLEAR_MESSAGES: {
-				return [];
+				return {
+					...state,
+					messageHistory: [],
+				};
 			}
 			default:
 				return state;
