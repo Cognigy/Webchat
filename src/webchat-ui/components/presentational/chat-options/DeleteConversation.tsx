@@ -12,6 +12,7 @@ import DeleteConfirmModal, {
 	DeleteButton as ConfirmDeleteButton,
 } from "../../Modal/DeleteConfirmModal";
 import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-middleware";
+import { getOptionsKey } from "../../../../webchat/store/options/options";
 
 const Container = styled.div`
 	display: flex;
@@ -32,7 +33,7 @@ interface DeleteConversationProps {
 
 const DeleteConversation = (props: DeleteConversationProps) => {
 	const { config, onDeleteModalStateChange } = props;
-	const { userId, sessionId } = useSelector((state: StoreState) => state.options);
+	const { userId, sessionId, channel } = useSelector((state: StoreState) => state.options);
 	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 	const deleteButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -52,10 +53,12 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 				props.config.settings.embeddingConfiguration?.useSessionStorage ?? false,
 		});
 		if (storage) {
-			Object.keys(storage).forEach(key => {
-				if (key.includes(userId) && key.includes(sessionId)) {
-					storage.removeItem(key);
-				}
+			Object.keys(storage).forEach(_ => {
+				const key = getOptionsKey(
+					{ channel, userId, sessionId },
+					{ URLToken: props.config.URLToken },
+				);
+				storage.removeItem(key);
 			});
 		}
 		setIsModalOpen(false);

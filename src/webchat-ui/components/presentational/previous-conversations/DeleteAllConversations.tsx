@@ -21,7 +21,7 @@ const DeleteAllConversationsModal = (
 	},
 ) => {
 	const { config, onOpenChange, isOpen } = props;
-	const { userId } = useSelector((state: StoreState) => state.options);
+	const { userId, channel } = useSelector((state: StoreState) => state.options);
 	const dispatch = useDispatch();
 
 	const handleConfirmDelete = () => {
@@ -31,13 +31,12 @@ const DeleteAllConversationsModal = (
 		dispatch(disconnect()); // Disconnect the socket to prevent from receiving any new messages. Socket will be reconnected upon starting a new conversation
 		const storage = getStorage({
 			disableLocalStorage:
-				props.config.settings.embeddingConfiguration?.disableLocalStorage ?? false,
-			useSessionStorage:
-				props.config.settings.embeddingConfiguration?.useSessionStorage ?? false,
+				config.settings.embeddingConfiguration?.disableLocalStorage ?? false,
+			useSessionStorage: config.settings.embeddingConfiguration?.useSessionStorage ?? false,
 		});
 		if (storage) {
 			Object.keys(storage).forEach(key => {
-				if (key.includes(userId)) {
+				if (key.includes(userId) && key.includes(channel)) {
 					storage.removeItem(key);
 				}
 			});
