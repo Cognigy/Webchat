@@ -91,7 +91,6 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-modal-divider_
 - _webchat-modal-body_
 - _webchat-modal-footer_
-- _webchat-delete-conversation-container_
 - _webchat-delete-conversation-title_
 - _webchat-delete-conversation-button_
 - _webchat-delete-conversation-cancel-button_
@@ -1394,16 +1393,6 @@ The frame that adds the "card styles" such as background-color or box-shadow.
     padding: 10px;
     background-color: #f5f5f5;
     border-top: 1px solid #ddd;
-}
-```
-
-- _webchat-delete-conversation-container_  
-  The container for delete conversation confirmation dialog.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-container {
-    padding: 20px;
-    text-align: center;
 }
 ```
 
