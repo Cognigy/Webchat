@@ -54,7 +54,8 @@ export const prevConversations: Reducer<
 		}
 		case DELETE_PREV_CONVERSATION: {
 			const { sessionId } = action;
-			return { ...state, [sessionId]: undefined };
+			delete state[sessionId];
+			return state;
 		}
 
 		default:

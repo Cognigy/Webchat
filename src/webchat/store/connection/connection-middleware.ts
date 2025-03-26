@@ -24,6 +24,12 @@ export const connect = () => ({
 });
 export type ConnectAction = ReturnType<typeof connect>;
 
+const DISCONNECT = "DISCONNECT" as const;
+export const disconnect = () => ({
+	type: DISCONNECT,
+});
+export type DisConnectAction = ReturnType<typeof disconnect>;
+
 const NETWORK_ON = "NETWORK_ON";
 export const announceNetworkOn = () => ({ type: NETWORK_ON as "NETWORK_ON" });
 type announceNetworkOnAction = ReturnType<typeof announceNetworkOn>;
@@ -41,7 +47,8 @@ export const createConnectionMiddleware =
 			| SendMessageAction
 			| ShowChatScreenAction
 			| SetPageVisibleAction
-			| announceNetworkOnAction,
+			| announceNetworkOnAction
+			| DisConnectAction,
 	) => {
 		switch (action.type) {
 			case "CONNECT": {
@@ -94,6 +101,10 @@ export const createConnectionMiddleware =
 					store.dispatch(connect());
 				}
 
+				break;
+			}
+			case DISCONNECT: {
+				client.disconnect();
 				break;
 			}
 

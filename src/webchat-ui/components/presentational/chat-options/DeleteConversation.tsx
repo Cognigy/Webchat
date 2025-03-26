@@ -44,6 +44,7 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 	const handleConfirmDelete = () => {
 		dispatch(deletePrevConversation(sessionId));
 		dispatch(clearMessages());
+		dispatch(switchSession());
 		const storage = getStorage({
 			disableLocalStorage:
 				props.config.settings.embeddingConfiguration?.disableLocalStorage ?? false,
