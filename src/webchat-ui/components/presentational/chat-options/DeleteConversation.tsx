@@ -94,7 +94,7 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 			>
 				<Typography variant="body-regular" className="webchat-delete-conversation-text">
 					{config.settings.customTranslations?.delete_conversation_confirmation ??
-						"Are you sure you want to delete this conversation? This action cannot be undone"}
+						"Are you sure you want to delete this conversation? This action cannot be undone."}
 				</Typography>
 			</DeleteConfirmModal>
 		</>

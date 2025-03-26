@@ -24,7 +24,7 @@ const StyledDialog = styled.dialog`
 	border: none;
 	border-radius: 16px;
 	background-color: ${({ theme }) => theme.white};
-	margin: 20px auto;
+	margin: 20px;
 	z-index: 99999;
 
 	&.fade-enter {
