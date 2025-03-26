@@ -91,10 +91,11 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-modal-divider_
 - _webchat-modal-body_
 - _webchat-modal-footer_
+- _webchat-delete-conversation-container_
 - _webchat-delete-conversation-title_
 - _webchat-delete-conversation-button_
-- _webchat-delete-conversation-cancel-button_
-- _webchat-delete-conversation-confirm-button_
+- _webchat-delete-confirmation-cancel-button_
+- _webchat-delete-confirmation-confirm-button_
 - _webchat-delete-conversation-text_
 - _webchat-delete-all-conversation-text_
 - _webchat-header-delete-all-conversations-button_
@@ -1396,8 +1397,18 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 }
 ```
 
+- _webchat-delete-conversation-container_  
+  The container for delete conversation in chat options screen.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-delete-conversation-container {
+    padding: 20px;
+    text-align: center;
+}
+```
+
 - _webchat-delete-conversation-title_  
-  The title in delete conversation dialog.
+  The title of delete conversation setting in chat options screen.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-delete-conversation-title {
@@ -1418,21 +1429,21 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 }
 ```
 
-- _webchat-delete-conversation-cancel-button_  
-  The cancel button in delete dialog.
+- _webchat-delete-confirmation-cancel-button_  
+  The cancel button in delete confirmation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-cancel-button {
+[data-cognigy-webchat-root] .webchat-delete-confirmation-cancel-button {
     background-color: #f5f5f5;
     color: #333;
 }
 ```
 
-- _webchat-delete-conversation-confirm-button_  
-  The confirm button in delete dialog.
+- _webchat-delete-confirmation-confirm-button_  
+  The confirm button in delete confirmation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-confirm-button {
+[data-cognigy-webchat-root] .webchat-delete-confirmation-confirm-button {
     background-color: #dc3545;
     color: white;
 }
@@ -1449,7 +1460,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 ```
 
 - _webchat-delete-all-conversation-text_  
-  The warning text for deleting all conversations.
+  The warning text for deleting all conversations in delete dialog.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-delete-all-conversation-text {
@@ -1459,7 +1470,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 ```
 
 - _webchat-header-delete-all-conversations-button_  
-  The button to delete all conversations in the header.
+  The icon button to delete all conversations in the previous conversations header.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-header-delete-all-conversations-button {

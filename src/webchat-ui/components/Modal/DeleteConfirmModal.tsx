@@ -53,7 +53,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 			footer={
 				<>
 					<CancelButton
-						className="webchat-delete-conversation-cancel-button"
+						className="webchat-delete-confirmation-cancel-button"
 						onClick={() => onClose(false)}
 						background={cancelButtonBackground}
 						autoFocus
@@ -61,7 +61,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 						{cancelText}
 					</CancelButton>
 					<DeleteConfirmation
-						className="webchat-delete-conversation-confirm-button"
+						className="webchat-delete-confirmation-confirm-button"
 						onClick={onConfirmDelete}
 						background={confirmButtonBackground}
 					>
