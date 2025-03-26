@@ -4,12 +4,10 @@ import { RatingState } from "../rating/rating-reducer";
 import { IMessageEvent } from "../../../common/interfaces/event";
 
 export type PrevConversationsState = {
-	[key: string]:
-		| {
-				messages: (IMessage | IMessageEvent)[];
-				rating: RatingState;
-		  }
-		| undefined;
+	[key: string]: {
+		messages: (IMessage | IMessageEvent)[];
+		rating: RatingState;
+	};
 };
 
 const getInitialState = (): PrevConversationsState => ({});

@@ -71,7 +71,7 @@ const ModalBody = styled.div`
 const ModalFooter = styled.div`
 	display: flex;
 	justify-content: space-between;
-
+	gap: 12px;
 	> button {
 	 	width: auto;
 		padding: 0 16px;
