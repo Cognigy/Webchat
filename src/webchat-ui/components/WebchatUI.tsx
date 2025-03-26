@@ -263,6 +263,7 @@ export class WebchatUI extends React.PureComponent<
 	closeButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	menuButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	deleteButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
+	focusEventCleanUp: React.MutableRefObject<Function | null>;
 	ratingButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
@@ -285,6 +286,7 @@ export class WebchatUI extends React.PureComponent<
 		this.ratingButtonInHeaderRef = React.createRef();
 		this.webchatWindowRef = React.createRef();
 		this.homeScreenCloseButtonRef = React.createRef();
+		this.focusEventCleanUp = React.createRef();
 
 		this.handleStartConversation = this.handleStartConversation.bind(this);
 	}
@@ -1401,6 +1403,7 @@ export class WebchatUI extends React.PureComponent<
 									this.setState({
 										showDeleteAllConversationsModal: true,
 									});
+									this.focusEventCleanUp.current?.();
 								}}
 								logoUrl={
 									!showChatOptionsScreen && !showRatingScreen
@@ -1450,10 +1453,18 @@ export class WebchatUI extends React.PureComponent<
 								<DeleteAllConversationsModal
 									config={config}
 									isOpen
-									onOpenChange={open => {
+									onOpenChange={(open, confirmDelete) => {
 										this.setState({ showDeleteAllConversationsModal: open });
-										if (!open && this.deleteButtonInHeaderRef.current) {
-											forceFocus(this.deleteButtonInHeaderRef.current);
+										if (
+											!open &&
+											this.deleteButtonInHeaderRef.current &&
+											!confirmDelete
+										) {
+											this.focusEventCleanUp.current = forceFocus(
+												this.deleteButtonInHeaderRef.current,
+											);
+										} else {
+											this.focusEventCleanUp.current?.();
 										}
 									}}
 								/>

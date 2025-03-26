@@ -17,7 +17,7 @@ interface DeleteAllConversationsProps {
 const DeleteAllConversationsModal = (
 	props: DeleteAllConversationsProps & {
 		isOpen: boolean;
-		onOpenChange: (open: boolean) => void;
+		onOpenChange: (open: boolean, confirmDelete?: boolean) => void;
 	},
 ) => {
 	const { config, onOpenChange, isOpen } = props;
@@ -42,7 +42,7 @@ const DeleteAllConversationsModal = (
 				}
 			});
 		}
-		onOpenChange(false);
+		onOpenChange(false, true);
 	};
 
 	return (

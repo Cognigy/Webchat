@@ -4,16 +4,17 @@
  * @param targetElement - The HTML element that should maintain focus
  */
 export function forceFocus(targetElement: HTMLElement) {
-	setTimeout(() => {
+	const preventFocusChange = e => {
+		e.preventDefault();
 		targetElement.focus();
-
-		const preventFocusChange = e => {
-			e.preventDefault();
-			targetElement.focus();
-			document.removeEventListener("focusin", preventFocusChange);
-		};
-
+	};
+	const timer = setTimeout(() => {
+		targetElement.focus();
 		// Listen for any focus changes immediately after
 		document.addEventListener("focusin", preventFocusChange);
-	}, 10);
+	}, 0);
+	return () => {
+		document.removeEventListener("focusin", preventFocusChange);
+		clearTimeout(timer);
+	};
 }
