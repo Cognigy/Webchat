@@ -1246,19 +1246,6 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const getRegularLayoutContent = () => {
-			if (this.state.showDeleteAllConversationsModal)
-				return (
-					<DeleteAllConversationsModal
-						config={config}
-						isOpen
-						onOpenChange={open => {
-							this.setState({ showDeleteAllConversationsModal: open });
-							if (!open && this.deleteButtonInHeaderRef.current) {
-								forceFocus(this.deleteButtonInHeaderRef.current);
-							}
-						}}
-					/>
-				);
 			if (showInformationMessage) return <InformationMessage message={informMessage} />;
 
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled)
@@ -1459,6 +1446,18 @@ export class WebchatUI extends React.PureComponent<
 					>
 						<RegularLayoutContentWrapper>
 							{getRegularLayoutContent()}
+							{this.state.showDeleteAllConversationsModal && (
+								<DeleteAllConversationsModal
+									config={config}
+									isOpen
+									onOpenChange={open => {
+										this.setState({ showDeleteAllConversationsModal: open });
+										if (!open && this.deleteButtonInHeaderRef.current) {
+											forceFocus(this.deleteButtonInHeaderRef.current);
+										}
+									}}
+								/>
+							)}
 						</RegularLayoutContentWrapper>
 					</CSSTransition>
 				}
