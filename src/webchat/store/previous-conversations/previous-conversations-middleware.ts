@@ -72,7 +72,7 @@ export const createPrevConversationsMiddleware =
 				if (!currentSession) break;
 
 				const conversation = {
-					messages: store.getState().messages,
+					messages: store.getState().messages.messageHistory,
 					rating: store.getState().rating,
 				};
 				store.dispatch(upsertPrevConversation(currentSession, conversation));

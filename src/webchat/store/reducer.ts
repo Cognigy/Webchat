@@ -56,13 +56,17 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 		case "RESET_STATE": {
 			// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
 			const isEmptyHistory =
-				state.messages.length === 0 ||
-				(state.messages.length === 1 && state.messages[0].source === "engagement");
+				state.messages.messageHistory.length === 0 ||
+				(state.messages.messageHistory.length === 1 &&
+					state.messages.messageHistory[0].source === "engagement");
 			const messages = isEmptyHistory ? action.state.messages : [];
 			return rootReducer(
 				{
 					...state,
-					messages: [...messages, ...state.messages],
+					messages: {
+						messageHistory: [...messages, ...state.messages.messageHistory],
+						visibleOutputMessages: state.messages.visibleOutputMessages,
+					},
 					rating: {
 						...state.rating,
 						hasGivenRating: action.state.rating.hasGivenRating,
@@ -74,16 +78,23 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 
 		case "SET_PREV_STATE": {
 			const { showRatingScreen, ...rating } = action.state.rating;
+			const visibleOutputMessages = [];
 			const messages = action.state.messages.map(message => {
 				if (message.animationState) {
 					message.animationState = "done";
+				}
+				if ((message.source === "bot" || message.source === "engagement") && message.id) {
+					visibleOutputMessages.push(message.id as string);
 				}
 				return message;
 			});
 			return rootReducer(
 				{
 					...state,
-					messages: [...messages],
+					messages: {
+						messageHistory: [...messages],
+						visibleOutputMessages,
+					},
 					rating: { showRatingScreen: false, ...rating },
 				},
 				{ type: "" },

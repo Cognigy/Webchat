@@ -43,6 +43,7 @@ type FromState = Pick<
 	| "connected"
 	| "reconnectionLimit"
 >;
+
 type FromDispatch = Pick<
 	WebchatUIProps,
 	| "onSendMessage"
@@ -54,33 +55,62 @@ type FromDispatch = Pick<
 	| "onTriggerEngagementMessage"
 	| "onSetMessageAnimated"
 >;
+
 export type FromProps = Pick<
 	WebchatUIProps,
 	"messagePlugins" | "inputPlugins" | "webchatRootProps" | "webchatToggleProps" | "options"
 >;
+
 type Merge = FromState & FromDispatch & FromProps & Pick<WebchatUIProps, "fullscreenMessage">;
 
 export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Merge, StoreState>(
-	({
-		messages,
-		unseenMessages,
-		prevConversations,
-		connection: { connected, reconnectionLimit },
-		ui: {
+	(state: StoreState) => {
+		const {
+			messages: { messageHistory: messages, visibleOutputMessages },
+			unseenMessages,
+			prevConversations,
+			connection: { connected, reconnectionLimit },
+			ui: {
+				open,
+				typing,
+				inputMode,
+				fullscreenMessage,
+				showHomeScreen,
+				showPrevConversations,
+				showChatOptionsScreen,
+				hasAcceptedTerms,
+				ttsActive,
+				lastInputId,
+			},
+			config,
+			options: { sessionId, userId },
+			rating: {
+				showRatingScreen,
+				hasGivenRating,
+				requestRatingScreenTitle,
+				customRatingTitle,
+				customRatingCommentText,
+				requestRatingSubmitButtonText,
+				requestRatingEventBannerText,
+				requestRatingChatStatusBadgeText,
+			},
+			input: { sttActive, textActive, isDropZoneVisible, fileList, fileUploadError },
+			xAppOverlay: { open: isXAppOverlayOpen },
+		} = state;
+
+		return {
+			currentSession: sessionId,
+			messages,
+			visibleOutputMessages,
+			unseenMessages,
+			prevConversations,
 			open,
-			typing,
+			typingIndicator: typing,
 			inputMode,
 			fullscreenMessage,
-			showHomeScreen,
-			showPrevConversations,
-			showChatOptionsScreen,
-			hasAcceptedTerms,
-			ttsActive,
-			lastInputId,
-		},
-		config,
-		options: { sessionId, userId },
-		rating: {
+			config,
+			connected,
+			reconnectionLimit,
 			showRatingScreen,
 			hasGivenRating,
 			requestRatingScreenTitle,
@@ -89,43 +119,21 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			requestRatingSubmitButtonText,
 			requestRatingEventBannerText,
 			requestRatingChatStatusBadgeText,
-		},
-		input: { sttActive, textActive, isDropZoneVisible, fileList, fileUploadError },
-		xAppOverlay: { open: isXAppOverlayOpen },
-	}) => ({
-		currentSession: sessionId,
-		messages,
-		unseenMessages,
-		prevConversations,
-		open,
-		typingIndicator: typing,
-		inputMode,
-		fullscreenMessage,
-		config,
-		connected,
-		reconnectionLimit,
-		showRatingScreen,
-		hasGivenRating,
-		requestRatingScreenTitle,
-		customRatingTitle,
-		customRatingCommentText,
-		requestRatingSubmitButtonText,
-		requestRatingEventBannerText,
-		requestRatingChatStatusBadgeText,
-		showHomeScreen,
-		sttActive,
-		textActive,
-		isDropZoneVisible,
-		fileList,
-		fileUploadError,
-		showPrevConversations,
-		showChatOptionsScreen,
-		hasAcceptedTerms,
-		isXAppOverlayOpen,
-		userId,
-		ttsActive,
-		lastInputId,
-	}),
+			showHomeScreen,
+			sttActive,
+			textActive,
+			isDropZoneVisible,
+			fileList,
+			fileUploadError,
+			showPrevConversations,
+			showChatOptionsScreen,
+			hasAcceptedTerms,
+			isXAppOverlayOpen,
+			userId,
+			ttsActive,
+			lastInputId,
+		} as FromState;
+	},
 	dispatch => ({
 		onSendMessage: (text, data, options) => dispatch(sendMessage({ text, data }, options)),
 		onSetInputMode: inputMode => dispatch(setInputMode(inputMode)),
