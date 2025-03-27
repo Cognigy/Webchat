@@ -230,12 +230,13 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 
 ##### Previous Conversations
 
-| Name                           | Type    | Default                    | Description                                                                 |
-| ------------------------------ | ------- | -------------------------- | --------------------------------------------------------------------------- |
-| enabled                        | boolean | `true`                     | If enabled, the "Previous Conversations" button is shown on the Home Screen |
-| startNewConversationButtonText | string  | `"Start new conversation"` | Configure the text shown on the "Start new conversation" button             |
-| buttonText                     | string  | `"Previous conversations"` | Configure the "Previous Conversations" button                               |
-| title                          | string  | `""`                       | Configure the Header of the "Previous Conversations" page                   |
+| Name                           | Type    | Default                    | Description                                                                                                                                                                         |
+| ------------------------------ | ------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| enabled                        | boolean | `true`                     | If enabled, the "Previous Conversations" button is shown on the Home Screen                                                                                                         |
+| startNewConversationButtonText | string  | `"Start new conversation"` | Configure the text shown on the "Start new conversation" button                                                                                                                     |
+| buttonText                     | string  | `"Previous conversations"` | Configure the "Previous Conversations" button                                                                                                                                       |
+| title                          | string  | `""`                       | Configure the Header of the "Previous Conversations" page                                                                                                                           |
+| enableDeleteAllConversations   | boolean | `false`                    | If enabled, a delete button is provided in previous conversations screen. This button can be used to delete all conversations. Confirmation is required before the delete operation |
 
 ##### Conversation Starters
 
@@ -264,16 +265,17 @@ All business hours settings require the setting `embeddingConfiguration.awaitEnd
 
 #### Chat Options
 
-| Name              | Type    | Default                                        | Description                                                                                                               |
-| ----------------- | ------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| enabled           | boolean | `false`                                        | Enable Chat Options Feature                                                                                               |
-| title             | string  | `"Chat options"`                               | Chat Options header title                                                                                                 |
-| quickReplyOptions | object  | [Quick Reply Options](#quick-reply-options)    | Configure the Quick Reply section in the Chat Options                                                                     |
-| showTTSToggle     | boolean | `false`                                        | Enable to show the Text-to-Speech Toggle                                                                                  |
-| activateTTSToggle | boolean | `true`                                         | Activate Text-to-Speech Toggle by default. It also requires `behavior.enableTTS` setting to be `true` to make TTS active. |
-| labelTTSToggle    | string  | `"Enable text-to-speech"`                      | Label for the Text-to-Speech toggle                                                                                       |
-| rating            | object  | [Rating Section](#chat-options-rating-section) | Configure the Rating Section                                                                                              |
-| footer            | object  | [Footer](#chat-options-footer)                 | Configure the Footer                                                                                                      |
+| Name                     | Type    | Default                                        | Description                                                                                                                                                                   |
+| ------------------------ | ------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| enabled                  | boolean | `false`                                        | Enable Chat Options Feature                                                                                                                                                   |
+| title                    | string  | `"Chat options"`                               | Chat Options header title                                                                                                                                                     |
+| quickReplyOptions        | object  | [Quick Reply Options](#quick-reply-options)    | Configure the Quick Reply section in the Chat Options                                                                                                                         |
+| showTTSToggle            | boolean | `false`                                        | Enable to show the Text-to-Speech Toggle                                                                                                                                      |
+| activateTTSToggle        | boolean | `true`                                         | Activate Text-to-Speech Toggle by default. It also requires `behavior.enableTTS` setting to be `true` to make TTS active.                                                     |
+| labelTTSToggle           | string  | `"Enable text-to-speech"`                      | Label for the Text-to-Speech toggle                                                                                                                                           |
+| rating                   | object  | [Rating Section](#chat-options-rating-section) | Configure the Rating Section                                                                                                                                                  |
+| enableDeleteConversation | boolean | `false`                                        | If enabled, a delete button is provided in chat options screen. This button can be used to delete current conversations. Confirmation is required before the delete operation |
+| footer                   | object  | [Footer](#chat-options-footer)                 | Configure the Footer                                                                                                                                                          |
 
 ##### Quick Reply Options
 
@@ -403,12 +405,20 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 #### Custom Translations
 
-| Name          | Type   | Default                 |
-| ------------- | ------ | ----------------------- |
-| Network error | string | "Connection Lost"       |
-| No network    | string | "No network connection" |
-| Reconnecting  | string | "Reconnecting..."       |
-| Reconnect     | string | "Reconnect"             |
+| Name                                  | Type   | Default                                                                                     |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
+| Network error                         | string | "Connection Lost"                                                                           |
+| No network                            | string | "No network connection"                                                                     |
+| Reconnecting                          | string | "Reconnecting..."                                                                           |
+| Reconnect                             | string | "Reconnect"                                                                                 |
+| coversations_options                  | string | "Conversations Options"                                                                     |
+| delete_all_conversations              | string | "Delete all conversations"                                                                  |
+| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." |
+| delete_conversation                   | string | "Delete Conversation"                                                                       |
+| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"           |
+| delete                                | string | "Delete"                                                                                    |
+| delete_anyway                         | string | "Delete anyway"                                                                             |
+| cancel                                | string | "Cancel"                                                                                    |
 
 #### Settings Interface
 
@@ -511,6 +521,7 @@ interface IWebchatSettings {
 		startConversationButtonText: string;
 		previousConversations: {
 			enabled: boolean;
+			enableDeleteAllConversations: boolean;
 			buttonText: string;
 			title: string;
 		};
@@ -561,6 +572,7 @@ interface IWebchatSettings {
 			submitButtonText: string;
 			eventBannerText: string;
 		};
+		enableDeleteConversation: boolean;
 		footer: {
 			enabled: boolean;
 			items: {
@@ -612,6 +624,14 @@ interface IWebchatSettings {
 		no_network: string;
 		reconnecting: string;
 		reconnect: string;
+		conversations_options: string;
+		delete_all_conversations: string;
+		delete_all_conversations_confirmation: string;
+		delete_conversation: string;
+		delete_conversation_confirmation: string;
+		delete: string;
+		delete_anyway: string;
+		cancel: string;
 	};
 
 	// Additional Settings to configure the webchat widget behavior

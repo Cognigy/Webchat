@@ -1,4 +1,4 @@
-dist
+dist/**/*.js
 node_modules
 coverage
 alias

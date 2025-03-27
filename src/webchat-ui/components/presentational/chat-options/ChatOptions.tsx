@@ -10,6 +10,7 @@ import { WebchatUIProps } from "../../WebchatUI";
 import { ChatOptionsFooter } from "./ChatOptionsFooter";
 import getKeyboardFocusableElements from "../../../utils/find-focusable";
 import TTSOption from "./TTSOption";
+import DeleteConversation from "./DeleteConversation";
 
 const ChatOptionsRoot = styled.div(() => ({
 	width: "100%",
@@ -54,6 +55,7 @@ interface IChatOptionsProps {
 	onSendRating: (props: IOnSendRatingProps) => void;
 	onEmitAnalytics: WebchatUIProps["onEmitAnalytics"];
 	onSendActionButtonMessage: WebchatUIProps["onSendMessage"];
+	onDeleteModalStateChange: (open: boolean) => void;
 }
 
 export const ChatOptions = (props: IChatOptionsProps) => {
@@ -68,6 +70,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 		onSendRating,
 		onEmitAnalytics,
 		onSendActionButtonMessage,
+		onDeleteModalStateChange,
 	} = props;
 	const { settings } = config;
 	const { chatOptions } = settings;
@@ -96,6 +99,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 		dispatch(setTTSActive(!ttsEnabled));
 	};
 
+	const showDeleteConversation = !!chatOptions.enableDeleteConversation;
 	return (
 		<ChatOptionsRoot className="webchat-chat-options-root" ref={chatOptionsRef}>
 			<ChatOptionsContainer className="webchat-chat-options-container">
@@ -120,13 +124,24 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 					</>
 				)}
 				{showRating && (
-					<RatingWidget
-						ratingTitleText={ratingTitleText}
-						ratingCommentText={ratingCommentText}
-						onSendRating={onSendRating}
-						showRatingStatus={showOnlyRating}
-						ratingEventBannerText={ratingEventBannerText}
-						buttonText={ratingSubmitButtonText}
+					<>
+						<RatingWidget
+							ratingTitleText={ratingTitleText}
+							ratingCommentText={ratingCommentText}
+							onSendRating={onSendRating}
+							showRatingStatus={showOnlyRating}
+							ratingEventBannerText={ratingEventBannerText}
+							buttonText={ratingSubmitButtonText}
+						/>
+						<DividerWrapper>
+							<Divider />
+						</DividerWrapper>
+					</>
+				)}
+				{showDeleteConversation && (
+					<DeleteConversation
+						onDeleteModalStateChange={onDeleteModalStateChange}
+						config={config}
 					/>
 				)}
 			</ChatOptionsContainer>

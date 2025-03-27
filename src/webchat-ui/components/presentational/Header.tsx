@@ -10,6 +10,7 @@ import classnames from "classnames";
 import { Typography } from "@cognigy/chat-components";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
 import { getContrastColor } from "../../style";
+import DeleteIcon from "../../assets/bin-16px.svg";
 
 const HeaderBar = styled.div(({ theme }) => ({
 	alignItems: "center",
@@ -73,7 +74,7 @@ const HeaderIconsWrapper = styled.div(() => ({
 	gap: 24,
 }));
 
-const HeaderIconButton = styled(IconButton)(({ theme }) => ({
+const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, iconColor }) => ({
 	color: theme.black10,
 	borderRadius: 4,
 	"&:focus-visible": {
@@ -81,9 +82,12 @@ const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 		outlineOffset: 2,
 	},
 	"& svg": {
-		fill: theme.black10,
+		fill: iconColor ? iconColor : theme.black10,
 		width: 16,
 		height: 16,
+		"& path": {
+			fill: iconColor ? iconColor : theme.black10,
+		},
 	},
 	padding: 0,
 }));
@@ -100,14 +104,18 @@ interface HeaderProps {
 	title: string;
 	logoUrl?: string;
 	isChatOptionsButtonVisible?: boolean;
+	isDeleteAllConversationsButtonVisible?: boolean;
+	onDeleteAllConversations?: () => void;
 	onClose?: () => void;
 	onMinimize?: () => void;
 	onGoBack?: () => void;
 	onSetShowChatOptionsScreen?: (show: boolean) => void;
 	closeButtonRef?: React.RefObject<HTMLButtonElement>;
 	menuButtonRef?: React.RefObject<HTMLButtonElement>;
+	deleteButtonRef?: React.RefObject<HTMLButtonElement>;
 	chatToggleButtonRef?: React.RefObject<HTMLButtonElement>;
 	hideBackButton?: boolean;
+	deleteIconColor?: string;
 	showChatScreen?: boolean;
 }
 
@@ -125,6 +133,7 @@ const Header: FC<HeaderProps> = props => {
 		isChatOptionsButtonVisible,
 		hideBackButton,
 		showChatScreen,
+		onDeleteAllConversations,
 		...rest
 	} = props;
 
@@ -177,6 +186,19 @@ const Header: FC<HeaderProps> = props => {
 					</Typography>
 				</div>
 				<HeaderIconsWrapper>
+					{rest.isDeleteAllConversationsButtonVisible && (
+						<HeaderIconButton
+							data-header-delete-all-conversations-button
+							onClick={onDeleteAllConversations}
+							aria-label="Delete All Conversations"
+							className="webchat-header-delete-all-conversations-button"
+							iconColor={rest.deleteIconColor}
+							tabIndex={0}
+							ref={rest.deleteButtonRef}
+						>
+							<DeleteIcon></DeleteIcon>
+						</HeaderIconButton>
+					)}
 					{
 						// Menu Button
 						isChatOptionsButtonVisible && (

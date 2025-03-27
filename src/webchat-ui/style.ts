@@ -1,4 +1,6 @@
 import tinycolor from "tinycolor2";
+import { IWebchatConfig } from "../common/interfaces/webchat-config";
+import { Theme } from "@emotion/react";
 
 export interface IWebchatTheme {
 	// Webchat V3 theme colors
@@ -42,6 +44,7 @@ export interface IWebchatTheme {
 	green10: string;
 	red: string;
 	red10: string;
+	red20: string;
 
 	// Legacy Webchat V2 theme colors
 	primaryStrongColor: string;
@@ -99,13 +102,21 @@ const getGradient = (color: string) => {
 	return gradient;
 };
 
-const deriveHoverColor = (color: string) => {
+/**
+ * Derive hover color from given color
+ * @param color
+ */
+export const deriveHoverColor = (color: string) => {
 	const hslColor = tinycolor(color).toHsl();
 	const lightness = hslColor.l;
 	const hoverLightness = lightness >= 0.5 ? lightness - 0.2 : lightness + 0.2;
 	hslColor.l = hoverLightness;
 
 	return tinycolor(hslColor).toHslString();
+};
+
+export const getTextContrastColor = (background: string, theme: Theme) => {
+	return tinycolor(background).isDark() ? theme.textLight : theme.textDark;
 };
 
 const deriveDisabledColor = (color: string) => {
@@ -115,7 +126,10 @@ const deriveDisabledColor = (color: string) => {
 	return tinycolor(hslColor).toHslString();
 };
 
-export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchatTheme => {
+export const createWebchatTheme = (
+	theme: Partial<IWebchatTheme> = {},
+	customColors?: IWebchatConfig["settings"]["customColors"],
+): IWebchatTheme => {
 	const htmlDirection = document?.documentElement?.dir;
 	const bodyDirection = document?.body?.dir;
 	const isRTL = htmlDirection === "rtl" || bodyDirection === "rtl";
@@ -158,6 +172,7 @@ export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchat
 	const green10 = "#E5F5E8";
 	const red = "#FF0000";
 	const red10 = "#FFE5E5";
+	const red20 = "#E55050";
 
 	// calculate new gradient based on optional theme.primaryColor if no theme.backgroundHome is given
 	if (
@@ -255,6 +270,8 @@ export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchat
 	if (!theme.red) theme.red = red;
 
 	if (!theme.red10) theme.red10 = red10;
+
+	if (!theme.red20) theme.red20 = red20;
 
 	if (!theme.primaryWeakColor) theme.primaryWeakColor = weak(theme.primaryColor);
 

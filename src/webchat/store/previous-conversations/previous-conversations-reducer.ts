@@ -12,36 +12,48 @@ export type PrevConversationsState = {
 
 const getInitialState = (): PrevConversationsState => ({});
 
-const SET_CONVERSATIONS = "SET_CONVERSATIONS";
+const SET_CONVERSATIONS = "SET_CONVERSATIONS" as const;
 export const setConversations = (conversations: PrevConversationsState) => ({
-	type: SET_CONVERSATIONS as "SET_CONVERSATIONS",
+	type: SET_CONVERSATIONS,
 	conversations,
 });
 export type SetConversationsAction = ReturnType<typeof setConversations>;
 
-const UPSERT_PREV_CONVERSATION = "UPSERT_PREV_CONVERSATION";
+const UPSERT_PREV_CONVERSATION = "UPSERT_PREV_CONVERSATION" as const;
 export const upsertPrevConversation = (
 	sessionId: string,
 	conversation: PrevConversationsState[string],
 ) => ({
-	type: UPSERT_PREV_CONVERSATION as "UPSERT_PREV_CONVERSATION",
+	type: UPSERT_PREV_CONVERSATION,
 	sessionId,
 	conversation,
 });
 export type UpsertPrevConversation = ReturnType<typeof upsertPrevConversation>;
 
+const DELETE_PREV_CONVERSATION = "DELETE_PREV_CONVERSATION" as const;
+export const deletePrevConversation = (sessionId: string) => ({
+	type: DELETE_PREV_CONVERSATION,
+	sessionId,
+});
+export type DeletePrevConversation = ReturnType<typeof deletePrevConversation>;
+
 export const prevConversations: Reducer<
 	PrevConversationsState,
-	SetConversationsAction | UpsertPrevConversation
+	SetConversationsAction | UpsertPrevConversation | DeletePrevConversation
 > = (state = getInitialState(), action) => {
 	switch (action.type) {
-		case "SET_CONVERSATIONS": {
+		case SET_CONVERSATIONS: {
 			return action.conversations;
 		}
 
-		case "UPSERT_PREV_CONVERSATION": {
+		case UPSERT_PREV_CONVERSATION: {
 			const { sessionId, conversation } = action;
 			return { ...state, [sessionId]: conversation };
+		}
+		case DELETE_PREV_CONVERSATION: {
+			const { sessionId } = action;
+			delete state[sessionId];
+			return state;
 		}
 
 		default:

@@ -11,6 +11,7 @@ export interface IBaseMessage {
 
 export interface IUserMessage extends IBaseMessage {
 	source: "user";
+	id: string;
 }
 
 export interface IBotMessage extends IBaseMessage {
