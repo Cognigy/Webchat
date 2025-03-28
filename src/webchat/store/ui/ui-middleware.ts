@@ -37,7 +37,7 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			}
 
 			case "SET_OPEN": {
-				const open = action.open;
+				const { open } = action;
 
 				const { showHomeScreen, showPrevConversations, showChatOptionsScreen } =
 					store.getState().ui;
