@@ -39,8 +39,10 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			case "SET_OPEN": {
 				const { open } = action;
 
+				// We determine if the chat history is visible by other screens visibility.
 				const { showHomeScreen, showPrevConversations, showChatOptionsScreen } =
 					store.getState().ui;
+
 				const isChatHistoryVisible =
 					!showPrevConversations && !showChatOptionsScreen && !showHomeScreen;
 
