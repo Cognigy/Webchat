@@ -7,6 +7,7 @@ import {
 	ShowChatScreenAction,
 	SetPageVisibleAction,
 	SetHasAcceptedTermsAction,
+	SetOpenAction,
 } from "./ui-reducer";
 import { getStorage } from "../../helper/storage";
 import { setHasAcceptedTermsInStorage } from "../../helper/privacyPolicy";
@@ -17,6 +18,7 @@ export const uiMiddleware: Middleware<object, StoreState> =
 	(
 		action:
 			| ToggleOpenAction
+			| SetOpenAction
 			| ShowChatScreenAction
 			| SetPageVisibleAction
 			| SetHasAcceptedTermsAction,
@@ -30,6 +32,21 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				const open = store.getState().ui.open;
 
 				store.dispatch(setOpen(!open));
+
+				break;
+			}
+
+			case "SET_OPEN": {
+				const open = action.open;
+
+				const { showHomeScreen, showPrevConversations, showChatOptionsScreen } =
+					store.getState().ui;
+				const isChatHistoryVisible =
+					!showPrevConversations && !showChatOptionsScreen && !showHomeScreen;
+
+				if (open && isChatHistoryVisible) {
+					store.dispatch(clearUnseenMessages());
+				}
 
 				break;
 			}
