@@ -1238,12 +1238,9 @@ export class WebchatUI extends React.PureComponent<
 		const handleDragEnter = e => {
 			e.preventDefault();
 			e.stopPropagation();
-
-			this.props.onSetDropZoneVisible(true);
-		};
-
-		const handleDropZoneVisibility = (isDropZoneVisible: boolean) => {
-			this.props.onSetDropZoneVisible(isDropZoneVisible);
+			if (config?.settings?.fileStorageSettings?.enabled) {
+				this.props.onSetDropZoneVisible(true);
+			}
 		};
 
 		const getRegularLayoutContent = () => {
