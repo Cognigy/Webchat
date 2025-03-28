@@ -16,7 +16,6 @@ import {
 import { StoreState } from "./store";
 import xAppOverlay from "./xapp-overlay/slice";
 import queueUpdates from "./queue-updates/slice";
-import { IStreamingMessage } from "../../common/interfaces/message";
 
 const rootReducer = (state, action) => {
 	const combinedReducer = combineReducers({
@@ -53,18 +52,19 @@ export type SetPrevStateAction = ReturnType<typeof setPrevState>;
 
 export const reducer = (state = rootReducer(undefined, { type: "" }), action) => {
 	switch (action.type) {
+		// This is actually "Restore persisted history"
 		case "RESET_STATE": {
+			// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
+			const isEmptyHistory =
+				state.messages.messageHistory.length === 0 ||
+				(state.messages.messageHistory.length === 1 &&
+					state.messages.messageHistory[0].source === "engagement");
+			const messages = isEmptyHistory ? action.state.messages : [];
 			return rootReducer(
 				{
 					...state,
 					messages: {
-						messageHistory: [
-							// To avoid duplicate messages in chat history during re-connection, we only restore messages and prepend them if the current message history is empty
-							...(state.messages.messageHistory.length === 0
-								? action.state.messages
-								: []),
-							...state.messages.messageHistory,
-						],
+						messageHistory: [...messages, ...state.messages.messageHistory],
 						visibleOutputMessages: state.messages.visibleOutputMessages,
 					},
 					rating: {
