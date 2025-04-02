@@ -13,6 +13,7 @@ import { IFile } from "../../../../../webchat/store/input/input-reducer";
 import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
 import IconButton from "../../../presentational/IconButton";
+import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
 
 const InputWrapper = styled.div(() => ({
 	display: "flex",
@@ -140,6 +141,8 @@ const SubmitButton = styled(Button)(({ theme }) => iconButtonStyles);
 
 export interface TextInputState {
 	text: string;
+	selectionStart: number;
+	selectionEnd: number;
 }
 
 interface ISpeechInputState {
@@ -215,6 +218,8 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			speechResult: "",
 			isFinalResult: false,
 			isMenuOpen: false,
+			selectionStart: 0,
+			selectionEnd: 0,
 		} as IBaseInputState;
 	}
 
@@ -418,10 +423,40 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		}, 200);
 	};
 
-	handleBlur = () => {
+	handleBlur: React.FocusEventHandler<HTMLTextAreaElement> = e => {
 		setTimeout(() => {
 			this.props.onSetTextActive(false);
 		}, 200);
+		this.setState({
+			selectionStart: e.target.selectionStart,
+			selectionEnd: e.target.selectionEnd,
+		});
+	};
+
+	togglePeristentMenu = () => {
+		this.setState(
+			prevState => ({
+				isMenuOpen: !prevState.isMenuOpen,
+			}),
+			() => {
+				if (!this.state.isMenuOpen) {
+					if (this.inputRef.current) {
+						this.inputRef.current?.setSelectionRange(
+							this.state.selectionStart,
+							this.state.selectionEnd,
+						);
+						this.inputRef.current.focus();
+					}
+				}
+			},
+		);
+	};
+
+	onSelectPersistentMenuItem = (item: IPersistentMenuItem) => {
+		this.togglePeristentMenu();
+		this.props.onSendMessage(item.payload, null, {
+			label: item.title,
+		});
 	};
 
 	render() {
@@ -456,7 +491,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 					>
 						{showPersistentMenu && (
 							<MenuButton
-								onClick={() => this.setState({ isMenuOpen: !isMenuOpen })}
+								onClick={this.togglePeristentMenu}
 								aria-label="Toggle persistent menu"
 								aria-expanded={isMenuOpen}
 								className="webchat-input-persistent-menu-button"
@@ -471,14 +506,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 							<PersistentMenu
 								title={persistentMenu.title}
 								menuItems={persistentMenu.menuItems}
-								onSelect={item => {
-									this.setState({ isMenuOpen: false });
-									this.props.onSendMessage(item.payload, null, {
-										label: item.title,
-									});
-
-									if (this.inputRef.current) this.inputRef.current.focus();
-								}}
+								onSelect={this.onSelectPersistentMenuItem}
 							/>
 						) : (
 							<>
