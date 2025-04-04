@@ -89,6 +89,14 @@ const MenuButton = styled(Button)<{ open: boolean }>(({ theme, open }) => ({
 	...iconButtonStyles,
 	padding: "6px",
 	fill: open ? theme.primaryColor : "initial",
+	":focus-visible": {
+		outline: `2px solid ${theme.primaryColor}`,
+	},
+	":hover": {
+		svg: {
+			fill: theme.primaryColor,
+		},
+	},
 }));
 
 const AttachFileButton = styled(Button)(({ theme }) => iconButtonStyles);
