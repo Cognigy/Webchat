@@ -142,7 +142,10 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 						<CloseIconWrapper
 							className="webchat-teaser-message-header-close-button"
 							onClick={handleHideTeaserMessage}
-							aria-label="Close teaser message"
+							aria-label={
+								config.settings.customTranslations?.ariaLabels
+									?.closeTeaserMessage ?? "Close teaser message"
+							}
 						>
 							<CloseIcon />
 						</CloseIconWrapper>

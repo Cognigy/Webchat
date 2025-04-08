@@ -117,6 +117,8 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 		}
 	};
 
+	const openConversationAriaLabel =
+		config.settings.customTranslations?.ariaLabels?.openConversation ?? "Open conversation";
 	return (
 		<ListItem
 			className="webchat-prev-conversations-item"
@@ -124,7 +126,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 			onKeyDown={handleKeyDown}
 			tabIndex={0}
 			role="button"
-			aria-label={`Open conversation ${index + 1}`}
+			aria-label={`${openConversationAriaLabel} ${index + 1}`}
 		>
 			<Left>
 				{avatars.length > 0 ? (

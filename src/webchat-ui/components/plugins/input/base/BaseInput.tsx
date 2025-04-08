@@ -474,7 +474,8 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 		const { text, speechResult: speechInterim, isMenuOpen } = state;
 
-		const { layout, fileStorageSettings, widgetSettings } = props.config.settings;
+		const { layout, fileStorageSettings, widgetSettings, customTranslations } =
+			props.config.settings;
 
 		const {
 			disableInputAutocomplete,
@@ -500,7 +501,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 						{showPersistentMenu && (
 							<MenuButton
 								onClick={this.togglePeristentMenu}
-								aria-label="Toggle persistent menu"
+								aria-label={
+									customTranslations?.ariaLabels?.togglePersistentMenu ??
+									"Toggle persistent menu"
+								}
 								aria-expanded={isMenuOpen}
 								className="webchat-input-persistent-menu-button"
 								id="webchatInputButtonMenu"
@@ -530,7 +534,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 										<AttachFileButton
 											className="webchat-input-button-add-attachments"
 											onClick={this.handleUploadFile}
-											aria-label="Add Attachments"
+											aria-label={
+												customTranslations?.ariaLabels?.addAttachment ??
+												"Add Attachments"
+											}
 											id="webchatInputMessageAttachFileButton"
 										>
 											<AttachFileIcon />
@@ -551,7 +558,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 												props.config.settings.behavior.inputPlaceholder
 											}
 											className="webchat-input-message-input"
-											aria-label="Message to send"
+											aria-label={
+												customTranslations?.ariaLabels?.messageToSend ??
+												"Message to send"
+											}
 											minRows={1}
 											maxRows={inputAutogrowMaxRows}
 											autoComplete={
@@ -570,7 +580,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 											"webchat-input-button-speech",
 											sttActive && "webchat-input-button-speech-active",
 										)}
-										aria-label="Speech to text"
+										aria-label={
+											customTranslations?.ariaLabels?.speechToText ??
+											"Speech to text"
+										}
 										id="webchatInputMessageSpeechButton"
 										onClick={this.toggleSTT}
 										disabled={!this.isSTTSupported()}
@@ -601,7 +614,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 										fileUploadError
 									}
 									className="webchat-input-button-send cc-rtl-flip"
-									aria-label="Send Message"
+									aria-label={
+										customTranslations?.ariaLabels?.sendMessage ??
+										"Send Message"
+									}
 									id="webchatInputMessageSendMessageButton"
 								>
 									<SendIcon />

@@ -230,7 +230,10 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 						ref={closeButtonRef}
 						onClick={onClose}
 						className="webchat-homescreen-close-button"
-						aria-label="Close chat"
+						aria-label={
+							config.settings.customTranslations?.ariaLabels?.closeChat ??
+							"Close chat"
+						}
 						color="primary"
 					>
 						<CloseIcon />

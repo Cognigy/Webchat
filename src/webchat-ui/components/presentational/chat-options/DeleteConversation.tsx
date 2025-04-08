@@ -97,6 +97,9 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 				confirmText={config.settings.customTranslations?.delete_anyway ?? "Delete anyway"}
 				cancelButtonBackground={config.settings.customColors?.cancelButtonColor}
 				confirmButtonBackground={config.settings.customColors?.deleteButtonColor}
+				ariaLabels={{
+					close: config.settings.customTranslations?.ariaLabels?.close,
+				}}
 			>
 				<Typography variant="body-regular" className="webchat-delete-conversation-text">
 					{config.settings.customTranslations?.delete_conversation_confirmation ??

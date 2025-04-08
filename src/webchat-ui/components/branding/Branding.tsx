@@ -34,10 +34,11 @@ interface IBrandingProps {
 	watermark?: IWebchatSettings["layout"]["watermark"];
 	watermarkText?: string;
 	watermarkUrl?: string;
+	brandingText?: string;
 }
 
 const Branding: FC<IBrandingProps> = props => {
-	const { id, watermark, watermarkText, watermarkUrl } = props;
+	const { id, watermark, watermarkText, brandingText, watermarkUrl } = props;
 
 	if (watermark === "none") return <Placeholder />;
 
@@ -45,7 +46,7 @@ const Branding: FC<IBrandingProps> = props => {
 		<Link
 			href={watermarkUrl || URL}
 			target="_blank"
-			aria-label="Powered by Cognigy. Opens in new tab"
+			aria-label={brandingText ?? "Powered by Cognigy. Opens in new tab"}
 			id={id ?? "cognigyBrandingLink"}
 		>
 			<Typography variant="copy-medium" component="span" fontSize={10} lineHeight="120%">

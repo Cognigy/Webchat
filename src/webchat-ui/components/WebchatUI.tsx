@@ -974,13 +974,22 @@ export class WebchatUI extends React.PureComponent<
 			enableConnectionStatusIndicator && !connected && hadConnection;
 
 		const openChatAriaLabel = () => {
+			if (open)
+				return config.settings.customTranslations?.ariaLabels?.closeChat ?? "Close chat";
+
 			switch (unseenMessages.length) {
 				case 0:
-					return "Open chat";
+					return config.settings.customTranslations?.ariaLabels?.openChat ?? "Open chat";
 				case 1:
-					return "One unread message in chat. Open chat";
+					return (
+						config.settings.customTranslations?.ariaLabels?.unreadMessageSingularText ??
+						"One unread message in chat. Open chat"
+					);
 				default:
-					return `${unseenMessages.length} unread messages in chat. Open chat`;
+					return `${unseenMessages.length} ${
+						config.settings.customTranslations?.ariaLabels?.unreadMessagePluralText ??
+						"unread messages in chat. Open chat"
+					}`;
 			}
 		};
 
@@ -1103,9 +1112,7 @@ export class WebchatUI extends React.PureComponent<
 												{...webchatToggleProps}
 												type="button"
 												className="webchat-toggle-button"
-												aria-label={
-													open ? "Close chat" : openChatAriaLabel()
-												}
+												aria-label={openChatAriaLabel()}
 												ref={this.chatToggleButtonRef}
 											>
 												{open ? <CollapseIcon /> : <ChatIcon />}
@@ -1113,7 +1120,11 @@ export class WebchatUI extends React.PureComponent<
 													<Badge
 														_content={unseenMessages.length}
 														className="webchat-unread-message-badge"
-														aria-label={`${unseenMessages.length} unread messages`}
+														aria-label={`${unseenMessages.length} ${
+															config.settings.customTranslations
+																?.ariaLabels?.unreadMessages ??
+															"unread messages"
+														}`}
 													/>
 												) : null}
 											</FAB>

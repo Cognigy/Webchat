@@ -314,6 +314,32 @@ export interface IWebchatSettings {
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
+		ariaLabels?: {
+			branding?: string;
+			unreadMessages?: string;
+			scrollToBottom?: string;
+			close?: string;
+			togglePersistentMenu?: string;
+			addAttachment?: string;
+			messageToSend?: string;
+			speechToText?: string;
+			sendMessage?: string;
+			removeFileAttachment?: string;
+			closeWarning?: string;
+			goBack?: string;
+			deleteAllConversations?: string;
+			chatOptions?: string;
+			minimizeChat?: string;
+			closeChat?: string;
+			openChat?: string;
+			unreadMessageSingularText?: string;
+			unreadMessagePluralText?: string;
+			closeTeaserMessage?: string;
+			opensInNewTab?: string;
+			thumbsUp?: string;
+			thumbsDown?: string;
+			openConversation?: string;
+		};
 	};
 	demoWebchat: {
 		enabled: boolean;

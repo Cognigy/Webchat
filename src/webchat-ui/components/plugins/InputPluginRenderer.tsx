@@ -143,6 +143,7 @@ const InputPluginRenderer = ({
 				watermark={config.settings.layout.watermark}
 				watermarkText={config.settings.layout.watermarkText}
 				watermarkUrl={config.settings.layout.watermarkUrl}
+				brandingText={config.settings.customTranslations?.ariaLabels?.branding}
 			/>
 		</InputRoot>
 	);
