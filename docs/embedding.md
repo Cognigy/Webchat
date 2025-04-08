@@ -654,19 +654,45 @@ interface IWebchatSettings {
 		};
 	};
 	// Custom translations for texts that are not possible to configure in endpoint editor
-	customTranslations: {
-		network_error: string;
-		no_network: string;
-		reconnecting: string;
-		reconnect: string;
-		conversations_options: string;
-		delete_all_conversations: string;
-		delete_all_conversations_confirmation: string;
-		delete_conversation: string;
-		delete_conversation_confirmation: string;
-		delete: string;
-		delete_anyway: string;
-		cancel: string;
+	customTranslations?: {
+		network_error?: string;
+		no_network?: string;
+		reconnecting?: string;
+		reconnect?: string;
+		conversations_options?: string;
+		delete_all_conversations?: string;
+		delete_all_conversations_confirmation?: string;
+		delete_conversation?: string;
+		delete_conversation_confirmation?: string;
+		delete?: string;
+		delete_anyway?: string;
+		cancel?: string;
+		ariaLabels?: {
+			branding?: string;
+			unreadMessages?: string;
+			scrollToBottom?: string;
+			close?: string;
+			togglePersistentMenu?: string;
+			addAttachment?: string;
+			messageToSend?: string;
+			speechToText?: string;
+			sendMessage?: string;
+			removeFileAttachment?: string;
+			closeWarning?: string;
+			goBack?: string;
+			deleteAllConversations?: string;
+			chatOptions?: string;
+			minimizeChat?: string;
+			closeChat?: string;
+			openChat?: string;
+			unreadMessageSingularText?: string;
+			unreadMessagePluralText?: string;
+			closeTeaserMessage?: string;
+			opensInNewTab?: string;
+			thumbsUp?: string;
+			thumbsDown?: string;
+			openConversation?: string;
+		};
 	};
 
 	// Additional Settings to configure the webchat widget behavior
