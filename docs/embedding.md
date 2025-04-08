@@ -405,20 +405,55 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 #### Custom Translations
 
-| Name                                  | Type   | Default                                                                                     |
-| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
-| Network error                         | string | "Connection Lost"                                                                           |
-| No network                            | string | "No network connection"                                                                     |
-| Reconnecting                          | string | "Reconnecting..."                                                                           |
-| Reconnect                             | string | "Reconnect"                                                                                 |
-| coversations_options                  | string | "Conversations Options"                                                                     |
-| delete_all_conversations              | string | "Delete all conversations"                                                                  |
-| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." |
-| delete_conversation                   | string | "Delete Conversation"                                                                       |
-| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"           |
-| delete                                | string | "Delete"                                                                                    |
-| delete_anyway                         | string | "Delete anyway"                                                                             |
-| cancel                                | string | "Cancel"                                                                                    |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+
+| Name                                  | Type   | Default                                                                                     | Description                                                           |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| network_error                         | string | "Connection Lost"                                                                           | Label shown in the connectivity overlay when a network error occurs.  |
+| no_network                            | string | "No network connection"                                                                     | Label displayed when there is no network connection.                  |
+| reconnect                             | string | "Reconnect"                                                                                 | Label for the button allowing the user to manually reconnect.         |
+| reconnecting                          | string | "Reconnecting..."                                                                           | Text displayed while trying to re-establish the connection.           |
+| coversations_options                  | string | "Conversations Options"                                                                     | Label for the conversations options menu in the webchat.              |
+| delete_all_conversations              | string | "Delete all conversations"                                                                  | Label for the button to delete all previous conversations.            |
+| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." | Confirmation message shown when deleting all conversations.           |
+| delete_conversation                   | string | "Delete Conversation"                                                                       | Label for the button to delete the current conversation.              |
+| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"           | Confirmation message shown when deleting the current conversation.    |
+| delete                                | string | "Delete"                                                                                    | Generic label for delete actions.                                     |
+| delete_anyway                         | string | "Delete anyway"                                                                             | Label for confirming deletion despite warnings.                       |
+| cancel                                | string | "Cancel"                                                                                    | Label for canceling a delete or confirm action.                       |
+| ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements. |
+
+#### Aria Labels
+
+The following table defines the default aria labels used throughout the Webchat for accessibility. Use them for managing aria-labels based on the preferred language
+
+| Name                      | Type   | Default                    | Description                                                    |
+| ------------------------- | ------ | -------------------------- | -------------------------------------------------------------- |
+| branding                  | string | "Powered by Cognigy"       | Label for the branding element in the chat header.             |
+| unreadMessages            | string | "Unread messages"          | Label indicating the unread messages status.                   |
+| scrollToBottom            | string | "Scroll to bottom"         | Label for the button that scrolls the chat view to the bottom. |
+| close                     | string | "Close"                    | Label for close buttons in modals or dialogs.                  |
+| togglePersistentMenu      | string | "Toggle menu"              | Label for the button toggling the persistent menu.             |
+| addAttachment             | string | "Add attachment"           | Label for the button that allows uploading attachments.        |
+| messageToSend             | string | "Type your message"        | Label for the message input field.                             |
+| speechToText              | string | "Activate speech-to-text"  | Label for the speech-to-text control button.                   |
+| sendMessage               | string | "Send message"             | Label for the send message button.                             |
+| removeFileAttachment      | string | "Remove attachment"        | Label for the button to remove a file attachment.              |
+| closeWarning              | string | "Close warning"            | Label for closing warning dialogs.                             |
+| goBack                    | string | "Go back"                  | Label for buttons allowing the user to go back.                |
+| deleteAllConversations    | string | "Delete all conversations" | Label for the button to delete all conversations.              |
+| chatOptions               | string | "Chat options"             | Label for accessing the chat options.                          |
+| minimizeChat              | string | "Minimize chat"            | Label for minimizing the chat window.                          |
+| closeChat                 | string | "Close chat"               | Label for closing the chat window.                             |
+| openChat                  | string | "Open chat"                | Label for opening the chat window.                             |
+| unreadMessageSingularText | string | "new message"              | Label for a single unread message indicator.                   |
+| unreadMessagePluralText   | string | "new messages"             | Label for multiple unread messages.                            |
+| closeTeaserMessage        | string | "Close teaser message"     | Label for the teaser message close button.                     |
+| opensInNewTab             | string | "Opens in new tab"         | Label for links that open in a new tab.                        |
+| thumbsUp                  | string | "Thumbs up"                | Label for the positive feedback button.                        |
+| thumbsDown                | string | "Thumbs down"              | Label for the negative feedback button.                        |
+| openConversation          | string | "Open conversation"        | Label for the button that opens a conversation thread.         |
 
 #### Settings Interface
 
