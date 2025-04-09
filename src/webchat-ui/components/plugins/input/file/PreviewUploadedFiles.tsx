@@ -57,7 +57,7 @@ const FileName = styled(Typography)<Pick<IFile, "hasUploadError">>(({ hasUploadE
 	whiteSpace: "nowrap",
 	textOverflow: "ellipsis",
 	overflow: "hidden",
-	color: hasUploadError ? "hsl(0, 100%, 50%)" : theme.black10,
+	color: hasUploadError ? theme.red40 : theme.black10,
 	alignSelf: "center",
 }));
 
