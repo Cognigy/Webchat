@@ -94,7 +94,7 @@ const HomeScreenHeaderIconButton = styled(IconButton)(({ theme }) => ({
 	color: theme.textLight,
 	borderRadius: 4,
 	padding: 0,
-	margin: 8,
+	margin: 4,
 	svg: {
 		fill: theme.textLight,
 		width: 16,
