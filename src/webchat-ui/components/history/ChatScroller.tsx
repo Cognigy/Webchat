@@ -126,9 +126,9 @@ export function ChatScroller({
 					id="webchatChatHistoryWrapperLiveLogPanel"
 					tabIndex={tabIndex}
 					role="log"
-					aria-live="polite"
 					onFocus={handleFocus}
 					onBlur={handleBlur}
+					aria-labelledby="webchatChatHistoryHeading"
 				>
 					<ScrollerContent
 						scrolledToLastInput={scrolledToLastInput}
