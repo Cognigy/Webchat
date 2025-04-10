@@ -245,7 +245,7 @@ const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 export class WebchatUI extends React.PureComponent<
 	React.HTMLProps<HTMLDivElement> & WebchatUIProps,
 	WebchatUIState
-	> {
+> {
 	state = {
 		theme: createWebchatTheme(),
 		messagePlugins: [],
@@ -505,17 +505,17 @@ export class WebchatUI extends React.PureComponent<
 
 		if (
 			this?.props?.config?.settings?.colors?.primaryColor !==
-			prevProps?.config?.settings?.colors?.primaryColor ||
+				prevProps?.config?.settings?.colors?.primaryColor ||
 			this?.props?.config?.settings?.colors?.secondaryColor !==
-			prevProps?.config?.settings?.colors?.secondaryColor ||
+				prevProps?.config?.settings?.colors?.secondaryColor ||
 			this?.props?.config?.settings?.colors?.chatInterfaceColor !==
-			prevProps?.config?.settings?.colors?.chatInterfaceColor ||
+				prevProps?.config?.settings?.colors?.chatInterfaceColor ||
 			this?.props?.config?.settings?.colors?.botMessageColor !==
-			prevProps?.config?.settings?.colors?.botMessageColor ||
+				prevProps?.config?.settings?.colors?.botMessageColor ||
 			this?.props?.config?.settings?.colors?.userMessageColor !==
-			prevProps?.config?.settings?.colors?.userMessageColor ||
+				prevProps?.config?.settings?.colors?.userMessageColor ||
 			this?.props?.config?.settings?.colors?.textLinkColor !==
-			prevProps?.config?.settings?.colors?.textLinkColor
+				prevProps?.config?.settings?.colors?.textLinkColor
 		) {
 			this.setState({
 				theme: createWebchatTheme({
@@ -679,7 +679,7 @@ export class WebchatUI extends React.PureComponent<
 					this.props.unseenMessages.length === 1
 						? this.props.config.settings.unreadMessages.unreadMessageTitleText
 						: this.props.config.settings.unreadMessages.unreadMessageTitleTextPlural
-					}`;
+				}`;
 				this.titleType = "unread";
 			}
 		}
@@ -1108,29 +1108,29 @@ export class WebchatUI extends React.PureComponent<
 												</FABDisabled>
 											</div>
 										) : (
-												<FAB
-													data-cognigy-webchat-toggle
-													onClick={this.handleFabClick}
-													{...webchatToggleProps}
-													type="button"
-													className="webchat-toggle-button"
-													aria-label={openChatAriaLabel()}
-													ref={this.chatToggleButtonRef}
-												>
-													{open ? <CollapseIcon /> : <ChatIcon />}
-													{config.settings.unreadMessages.enableBadge ? (
-														<Badge
-															_content={unseenMessages.length}
-															className="webchat-unread-message-badge"
-															aria-label={`${unseenMessages.length} ${
-																config.settings.customTranslations
-																	?.ariaLabels?.unreadMessages ??
-																"unread messages"
-																}`}
-														/>
-													) : null}
-												</FAB>
-											)}
+											<FAB
+												data-cognigy-webchat-toggle
+												onClick={this.handleFabClick}
+												{...webchatToggleProps}
+												type="button"
+												className="webchat-toggle-button"
+												aria-label={openChatAriaLabel()}
+												ref={this.chatToggleButtonRef}
+											>
+												{open ? <CollapseIcon /> : <ChatIcon />}
+												{config.settings.unreadMessages.enableBadge ? (
+													<Badge
+														_content={unseenMessages.length}
+														className="webchat-unread-message-badge"
+														aria-label={`${unseenMessages.length} ${
+															config.settings.customTranslations
+																?.ariaLabels?.unreadMessages ??
+															"unread messages"
+														}`}
+													/>
+												) : null}
+											</FAB>
+										)}
 									</div>
 								)}
 							</CacheProvider>
@@ -1493,7 +1493,7 @@ export class WebchatUI extends React.PureComponent<
 				onSendMessage={this.sendMessage}
 				config={config}
 				plugins={messagePlugins}
-				onSetFullscreen={() => { }}
+				onSetFullscreen={() => {}}
 				onDismissFullscreen={onDismissFullscreenMessage}
 				message={fullscreenMessage as IMessage}
 				webchatTheme={this.state.theme}
@@ -1536,13 +1536,13 @@ export class WebchatUI extends React.PureComponent<
 		// Filter messages based on progressive rendering settings
 		const visibleMessages = progressiveMessageRendering
 			? messagesExcludingPrivacyMessage.filter(message => {
-				if (message.source !== "bot" && message.source !== "engagement") {
-					return true;
-				}
-				return visibleOutputMessages.includes(
-					(message as IStreamingMessage).id as string,
-				);
-			})
+					if (message.source !== "bot" && message.source !== "engagement") {
+						return true;
+					}
+					return visibleOutputMessages.includes(
+						(message as IStreamingMessage).id as string,
+					);
+				})
 			: messagesExcludingPrivacyMessage;
 
 		return (
@@ -1570,7 +1570,7 @@ export class WebchatUI extends React.PureComponent<
 							config={config}
 							hasReply={hasReply}
 							isConversationEnded={isEnded}
-							onDismissFullscreen={() => { }}
+							onDismissFullscreen={() => {}}
 							onEmitAnalytics={onEmitAnalytics}
 							onSetFullscreen={() => this.props.onSetFullscreenMessage(message)}
 							openXAppOverlay={openXAppOverlay}
