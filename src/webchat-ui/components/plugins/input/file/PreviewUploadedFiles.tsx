@@ -49,7 +49,7 @@ const UploadedFilePreview = styled.div(() => ({
 	alignItems: "center",
 	justifyContent: "center",
 	gap: 12,
-	padding: "0px 12px",
+	padding: "0 12px 0 6px",
 	height: "100%",
 }));
 
@@ -57,7 +57,7 @@ const FileName = styled(Typography)<Pick<IFile, "hasUploadError">>(({ hasUploadE
 	whiteSpace: "nowrap",
 	textOverflow: "ellipsis",
 	overflow: "hidden",
-	color: hasUploadError ? "hsla(0, 100%, 50%, .7)" : theme.black10,
+	color: hasUploadError ? theme.red40 : theme.black10,
 	alignSelf: "center",
 }));
 
@@ -69,9 +69,10 @@ const FileSize = styled(Typography)(({ theme }) => ({
 
 const RemoveFileButton = styled(IconButton)(({ theme }) => ({
 	padding: 0,
+	marginRight: -6,
 	"& svg": {
-		width: 10,
-		height: 10,
+		width: 12,
+		height: 12,
 	},
 	"&:focus, &:hover": {
 		"& path": {

@@ -20,6 +20,11 @@ export default styled.button<IIconButtonProps>(({ theme }) => {
 		border: "none",
 		outline: "none",
 		margin: 0,
+		minWidth: 24,
+		minHeight: 24,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
 
 		"&:not(.disabled)": {
 			cursor: "pointer",

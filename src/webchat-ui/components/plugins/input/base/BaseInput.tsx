@@ -12,7 +12,6 @@ import { IUploadFileMetaData } from "../../../../../common/interfaces/file-uploa
 import { IFile } from "../../../../../webchat/store/input/input-reducer";
 import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
-import IconButton from "../../../presentational/IconButton";
 import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
 
 const InputWrapper = styled.div(() => ({

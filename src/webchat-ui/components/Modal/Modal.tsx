@@ -40,17 +40,19 @@ const StyledDialog = styled.dialog`
 const ModalHeader = styled.div`
 	display: flex;
 	align-items: center;
+	position: relative;
 
 	> h3 {
-		margin: 0;
-		margin-left: auto;
+		margin: auto;
+		text-align: center;
 	}
 `;
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
 	color: theme.black10,
 	borderRadius: 4,
-	marginLeft: "auto",
+	position: "absolute",
+	right: -4,
 
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
