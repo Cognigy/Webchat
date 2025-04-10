@@ -315,7 +315,6 @@ export interface IWebchatSettings {
 		delete_anyway: string;
 		cancel: string;
 		ariaLabels?: {
-			unreadMessages?: string;
 			scrollToBottom?: string;
 			close?: string;
 			togglePersistentMenu?: string;
@@ -331,6 +330,7 @@ export interface IWebchatSettings {
 			minimizeChat?: string;
 			closeChat?: string;
 			openChat?: string;
+			unreadMessages?: string;
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
 			closeTeaserMessage?: string;

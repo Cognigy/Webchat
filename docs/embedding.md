@@ -428,31 +428,31 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 The following table defines the default aria labels used throughout the Webchat for accessibility. Use them for managing aria-labels based on the preferred language
 
-| Name                      | Type   | Default                      | Description                                                    |
-| ------------------------- | ------ | ---------------------------- | -------------------------------------------------------------- |
-| unreadMessages            | string | "Unread messages"            | Label indicating the unread messages status.                   |
-| scrollToBottom            | string | "Scroll to bottom"           | Label for the button that scrolls the chat view to the bottom. |
-| close                     | string | "Close"                      | Label for close buttons in modals or dialogs.                  |
-| togglePersistentMenu      | string | "Toggle menu"                | Label for the button toggling the persistent menu.             |
-| addAttachment             | string | "Add attachment"             | Label for the button that allows uploading attachments.        |
-| messageToSend             | string | "Type your message"          | Label for the message input field.                             |
-| speechToText              | string | "Activate speech-to-text"    | Label for the speech-to-text control button.                   |
-| sendMessage               | string | "Send message"               | Label for the send message button.                             |
-| removeFileAttachment      | string | "Remove attachment"          | Label for the button to remove a file attachment.              |
-| closeWarning              | string | "Close warning"              | Label for closing warning dialogs.                             |
-| goBack                    | string | "Go back"                    | Label for buttons allowing the user to go back.                |
-| deleteAllConversations    | string | "Delete all conversations"   | Label for the button to delete all conversations.              |
-| chatOptions               | string | "Chat options"               | Label for accessing the chat options.                          |
-| minimizeChat              | string | "Minimize chat"              | Label for minimizing the chat window.                          |
-| closeChat                 | string | "Close chat"                 | Label for closing the chat window.                             |
-| openChat                  | string | "Open chat"                  | Label for opening the chat window.                             |
-| unreadMessageSingularText | string | "One unread message in chat" | Label for a single unread message indicator.                   |
-| unreadMessagePluralText   | string | "unread messages in chat"    | Label for multiple unread messages indicator.                  |
-| closeTeaserMessage        | string | "Close teaser message"       | Label for the teaser message close button.                     |
-| opensInNewTab             | string | "Opens in new tab"           | Label for links that open in a new tab.                        |
-| thumbsUp                  | string | "Thumbs up"                  | Label for the positive feedback button.                        |
-| thumbsDown                | string | "Thumbs down"                | Label for the negative feedback button.                        |
-| openConversation          | string | "Open conversation"          | Label for the button that opens a conversation thread.         |
+| Name                      | Type   | Default                      | Description                                                                         |
+| ------------------------- | ------ | ---------------------------- | ----------------------------------------------------------------------------------- |
+| scrollToBottom            | string | "Scroll to bottom"           | Label for the button that scrolls the chat view to the bottom.                      |
+| close                     | string | "Close"                      | Label for close buttons in modals or dialogs.                                       |
+| togglePersistentMenu      | string | "Toggle menu"                | Label for the button toggling the persistent menu.                                  |
+| addAttachment             | string | "Add attachment"             | Label for the button that allows uploading attachments.                             |
+| messageToSend             | string | "Type your message"          | Label for the message input field.                                                  |
+| speechToText              | string | "Activate speech-to-text"    | Label for the speech-to-text control button.                                        |
+| sendMessage               | string | "Send message"               | Label for the send message button.                                                  |
+| removeFileAttachment      | string | "Remove attachment"          | Label for the button to remove a file attachment.                                   |
+| closeWarning              | string | "Close warning"              | Label for closing warning dialogs.                                                  |
+| goBack                    | string | "Go back"                    | Label for buttons allowing the user to go back.                                     |
+| deleteAllConversations    | string | "Delete all conversations"   | Label for the button to delete all conversations.                                   |
+| chatOptions               | string | "Chat options"               | Label for accessing the chat options.                                               |
+| minimizeChat              | string | "Minimize chat"              | Label for minimizing the chat window.                                               |
+| closeChat                 | string | "Close chat"                 | Label for closing the chat window.                                                  |
+| openChat                  | string | "Open chat"                  | Label for opening the chat window.                                                  |
+| unreadMessages            | string | "Unread messages"            | Label indicating the unread messages status in the badge inside chat toggle button. |
+| unreadMessageSingularText | string | "One unread message in chat" | Label for a single unread message indicator for the chat toggle button.             |
+| unreadMessagePluralText   | string | "unread messages in chat"    | Label for multiple unread messages indicator for the chat toggle button.            |
+| closeTeaserMessage        | string | "Close teaser message"       | Label for the teaser message close button.                                          |
+| opensInNewTab             | string | "Opens in new tab"           | Label for links that open in a new tab.                                             |
+| thumbsUp                  | string | "Thumbs up"                  | Label for the positive feedback button.                                             |
+| thumbsDown                | string | "Thumbs down"                | Label for the negative feedback button.                                             |
+| openConversation          | string | "Open conversation"          | Label for the button that opens a conversation thread.                              |
 
 #### Settings Interface
 
@@ -667,8 +667,6 @@ interface IWebchatSettings {
 		delete_anyway?: string;
 		cancel?: string;
 		ariaLabels?: {
-			branding?: string;
-			unreadMessages?: string;
 			scrollToBottom?: string;
 			close?: string;
 			togglePersistentMenu?: string;
@@ -684,6 +682,7 @@ interface IWebchatSettings {
 			minimizeChat?: string;
 			closeChat?: string;
 			openChat?: string;
+			unreadMessages?: string;
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
 			closeTeaserMessage?: string;
