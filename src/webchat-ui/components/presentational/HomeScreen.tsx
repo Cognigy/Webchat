@@ -224,8 +224,8 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 							alt="Chat logo"
 						/>
 					) : (
-						<CognigyAIAvatar className={"webchat-homescreen-header-cognigy-logo"} />
-					)}
+							<CognigyAIAvatar className={"webchat-homescreen-header-cognigy-logo"} />
+						)}
 					<HomeScreenHeaderIconButton
 						ref={closeButtonRef}
 						onClick={onClose}

@@ -2,6 +2,7 @@ import React, { FC, memo } from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import { IWebchatSettings } from "../../../common/interfaces/webchat-config";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
 const Link = styled.a(({ theme }) => ({
 	display: "flex",
@@ -34,19 +35,18 @@ interface IBrandingProps {
 	watermark?: IWebchatSettings["layout"]["watermark"];
 	watermarkText?: string;
 	watermarkUrl?: string;
-	brandingText?: string;
 }
 
 const Branding: FC<IBrandingProps> = props => {
-	const { id, watermark, watermarkText, brandingText, watermarkUrl } = props;
-
+	const { id, watermark, watermarkText, watermarkUrl } = props;
+	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
 	if (watermark === "none") return <Placeholder />;
 
 	return (
 		<Link
 			href={watermarkUrl || URL}
 			target="_blank"
-			aria-label={brandingText ?? "Powered by Cognigy. Opens in new tab"}
+			aria-label={`${watermarkText}.${ariaLabels?.opensInNewTab ?? "Opens in a new tab"}`}
 			id={id ?? "cognigyBrandingLink"}
 		>
 			<Typography variant="copy-medium" component="span" fontSize={10} lineHeight="120%">

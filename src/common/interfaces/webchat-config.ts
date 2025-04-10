@@ -315,7 +315,6 @@ export interface IWebchatSettings {
 		delete_anyway: string;
 		cancel: string;
 		ariaLabels?: {
-			branding?: string;
 			unreadMessages?: string;
 			scrollToBottom?: string;
 			close?: string;
