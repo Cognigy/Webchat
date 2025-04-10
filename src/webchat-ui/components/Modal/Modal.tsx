@@ -170,7 +170,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children,
 							{title}
 						</Typography>
 						<CloseButton
-							aria-label={ariaLabels?.close ?? "Close"}
+							aria-label={ariaLabels?.close ?? "Close Dialog"}
 							onClick={handleOnClose}
 							className="webchat-modal-close-button"
 						>

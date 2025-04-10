@@ -316,7 +316,7 @@ export interface IWebchatSettings {
 		cancel: string;
 		ariaLabels?: {
 			scrollToBottom?: string;
-			close?: string;
+			closeDialog?: string;
 			togglePersistentMenu?: string;
 			addAttachment?: string;
 			messageToSend?: string;

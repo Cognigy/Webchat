@@ -431,13 +431,13 @@ The following table defines the default aria labels used throughout the Webchat 
 | Name                      | Type   | Default                      | Description                                                                         |
 | ------------------------- | ------ | ---------------------------- | ----------------------------------------------------------------------------------- |
 | scrollToBottom            | string | "Scroll to bottom"           | Label for the button that scrolls the chat view to the bottom.                      |
-| close                     | string | "Close"                      | Label for close buttons in modals or dialogs.                                       |
+| closeDialog               | string | "Close Dialog"               | Label for close buttons in modals or dialogs.                                       |
 | togglePersistentMenu      | string | "Toggle menu"                | Label for the button toggling the persistent menu.                                  |
 | addAttachment             | string | "Add attachment"             | Label for the button that allows uploading attachments.                             |
-| messageToSend             | string | "Type your message"          | Label for the message input field.                                                  |
-| speechToText              | string | "Activate speech-to-text"    | Label for the speech-to-text control button.                                        |
-| sendMessage               | string | "Send message"               | Label for the send message button.                                                  |
-| removeFileAttachment      | string | "Remove attachment"          | Label for the button to remove a file attachment.                                   |
+| messageToSend             | string | "Message to send"            | Label for the message input field.                                                  |
+| speechToText              | string | "Speech to text"             | Label for the speech-to-text control button.                                        |
+| sendMessage               | string | "Send Message"               | Label for the send message button.                                                  |
+| removeFileAttachment      | string | "Remove File Attachment"     | Label for the button to remove a file attachment.                                   |
 | closeWarning              | string | "Close warning"              | Label for closing warning dialogs.                                                  |
 | goBack                    | string | "Go back"                    | Label for buttons allowing the user to go back.                                     |
 | deleteAllConversations    | string | "Delete all conversations"   | Label for the button to delete all conversations.                                   |
@@ -668,7 +668,7 @@ interface IWebchatSettings {
 		cancel?: string;
 		ariaLabels?: {
 			scrollToBottom?: string;
-			close?: string;
+			closeDialog?: string;
 			togglePersistentMenu?: string;
 			addAttachment?: string;
 			messageToSend?: string;

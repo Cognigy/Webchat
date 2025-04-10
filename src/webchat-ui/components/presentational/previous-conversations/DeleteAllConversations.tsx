@@ -59,7 +59,7 @@ const DeleteAllConversationsModal = (
 				cancelButtonBackground={config.settings.customColors?.cancelButtonColor}
 				confirmButtonBackground={config.settings.customColors?.deleteButtonColor}
 				ariaLabels={{
-					close: config.settings.customTranslations?.ariaLabels?.close,
+					close: config.settings.customTranslations?.ariaLabels?.closeDialog,
 				}}
 			>
 				<Typography variant="body-regular" className="webchat-delete-all-conversation-text">
