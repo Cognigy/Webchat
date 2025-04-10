@@ -128,7 +128,6 @@ export function ChatScroller({
 					role="log"
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-					aria-labelledby="webchatChatHistoryHeading"
 				>
 					<ScrollerContent
 						scrolledToLastInput={scrolledToLastInput}
