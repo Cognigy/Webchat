@@ -139,6 +139,8 @@ const Header: FC<HeaderProps> = props => {
 	} = props;
 
 	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
+	const settings = useSelector(state => state.config.settings);
+
 	const handleCloseClick = () => {
 		onClose?.();
 		// Restore focus to chat toggle button
@@ -148,7 +150,6 @@ const Header: FC<HeaderProps> = props => {
 	const handleMenuClick = () => {
 		onSetShowChatOptionsScreen?.(true);
 	};
-
 	return (
 		<>
 			<HeaderBar {...rest} className="webchat-header-bar">
@@ -209,7 +210,7 @@ const Header: FC<HeaderProps> = props => {
 							<HeaderIconButton
 								data-header-menu-button
 								onClick={handleMenuClick}
-								aria-label={ariaLabels?.chatOptions ?? "Menu"}
+								aria-label={ariaLabels?.chatOptions ?? settings.chatOptions.title}
 								ref={menuButtonRef}
 							>
 								<MenuIcon />
