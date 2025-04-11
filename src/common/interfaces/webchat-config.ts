@@ -339,6 +339,11 @@ export interface IWebchatSettings {
 			thumbsDown?: string;
 			openConversation?: string;
 		};
+		screenReader?: {
+			chatHistory?: string;
+			homeScreen?: string;
+			newMessagePreview?: string;
+		};
 	};
 	demoWebchat: {
 		enabled: boolean;
