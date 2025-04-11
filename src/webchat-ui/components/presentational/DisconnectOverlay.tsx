@@ -103,7 +103,9 @@ const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: Disconne
 				data-disconnect-overlay-close-button
 				onClick={onClose}
 				className="webchat-header-close-button"
-				aria-label="Close Warning"
+				aria-label={
+					config.settings.customTranslations?.ariaLabels?.closeWarning ?? "Close Warning"
+				}
 			>
 				<CloseIcon />
 			</HeaderIconButton>

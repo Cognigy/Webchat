@@ -33,6 +33,9 @@ interface DeleteConfirmModalProps {
 	cancelButtonBackground?: string;
 	confirmButtonBackground?: string;
 	confirmText: string;
+	ariaLabels?: {
+		close?: string;
+	};
 }
 
 const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
@@ -46,6 +49,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 		confirmText,
 		cancelButtonBackground,
 		confirmButtonBackground,
+		ariaLabels,
 	} = props;
 
 	return (
@@ -72,6 +76,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 			isOpen={isOpen}
 			onClose={onClose}
 			title={title}
+			ariaLabels={ariaLabels}
 		>
 			{children}
 		</Modal>

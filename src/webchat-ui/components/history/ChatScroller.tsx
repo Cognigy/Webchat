@@ -145,6 +145,9 @@ export function ChatScroller({
 const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastInput }) => {
 	const scrollToBottom = useScrollToBottom();
 	const [sticky] = useSticky();
+	const scrollToBottomText = useSelector(
+		state => state.config.settings.customTranslations?.ariaLabels?.scrollToBottom,
+	);
 
 	const scrollButtonDisabled =
 		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
@@ -189,7 +192,7 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 				<ScrollButton
 					className="webchat-scroll-to-bottom-button"
 					onClick={scrollToBottom}
-					aria-label="Scroll to bottom"
+					aria-label={scrollToBottomText ?? "Scroll to bottom"}
 					style={{ bottom: `${inputHeight + 50}px` }}
 				>
 					↓

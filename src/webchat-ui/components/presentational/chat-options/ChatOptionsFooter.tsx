@@ -36,7 +36,7 @@ interface IChatOptionsFooterProps {
 
 export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 	const { settings } = props;
-	const { chatOptions } = settings;
+	const { chatOptions, customTranslations } = settings;
 
 	const footerItem1Text = chatOptions?.footer?.items?.[0]?.title || "Imprint";
 	const footerItem2Text = chatOptions?.footer?.items?.[1]?.title || "Data Privacy";
@@ -45,14 +45,14 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 		chatOptions?.footer?.items?.[0]?.url || "https://www.cognigy.com/legal-notice";
 	const footerItem2URL =
 		chatOptions?.footer?.items?.[1]?.url || "https://www.cognigy.com/privacy-policy";
-
+	const opensInNewTab = customTranslations?.ariaLabels?.opensInNewTab || "Opens in new tab";
 	return (
 		<Footer className="webchat-chat-options-footer">
 			<Link
 				href={footerItem1URL}
 				target="_blank"
 				id="footer-text-1"
-				aria-label={`${footerItem1Text}. Opens in new tab`}
+				aria-label={`${footerItem1Text}. ${opensInNewTab}`}
 				className="webchat-chat-options-footer-link"
 			>
 				<StyledFooterTypography
@@ -67,7 +67,7 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 					href={footerItem2URL}
 					target="_blank"
 					id="footer-text-2"
-					aria-label={`${footerItem2Text}. Opens in new tab`}
+					aria-label={`${footerItem2Text}. ${opensInNewTab}`}
 				>
 					<StyledFooterTypography variant="body-semibold">
 						{footerItem2Text}
