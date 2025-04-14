@@ -1091,6 +1091,7 @@ export class WebchatUI extends React.PureComponent<
 													className="webchat-toggle-button-disabled"
 													aria-label={getDisabledMessage()}
 													ref={this.chatToggleButtonRef}
+													id="webchatWindowToggleButton"
 													disabled
 												>
 													<ChatIcon />
@@ -1103,6 +1104,7 @@ export class WebchatUI extends React.PureComponent<
 												{...webchatToggleProps}
 												type="button"
 												className="webchat-toggle-button"
+												id="webchatWindowToggleButton"
 												aria-label={
 													open ? "Close chat" : openChatAriaLabel()
 												}
