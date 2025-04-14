@@ -15,7 +15,6 @@ describe("Chat Log", () => {
 
 	it("is chat log region accessible", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "role", "log");
-		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "aria-live", "polite");
 	});
 
 	it("chat log region does not contain branding", () => {

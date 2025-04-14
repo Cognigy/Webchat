@@ -103,7 +103,7 @@ describe("Bot message", () => {
 		cy.openWebchat().startConversation();
 		cy.receiveMessage("bot message", {}, "bot");
 
-		cy.get('[data-testid="avatar"]').should(
+		cy.get('[data-testid="bot-avatar"]').should(
 			"have.attr",
 			"src",
 			"https://placewaifu.com/image/300/300",
