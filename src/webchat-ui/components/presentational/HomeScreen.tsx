@@ -94,7 +94,7 @@ const HomeScreenHeaderIconButton = styled(IconButton)(({ theme }) => ({
 	color: theme.textLight,
 	borderRadius: 4,
 	padding: 0,
-	margin: 8,
+	margin: 4,
 	svg: {
 		fill: theme.textLight,
 		width: 16,
@@ -214,7 +214,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 			aria-hidden={!showHomeScreen}
 			ref={homeScreenRef}
 		>
-			<h2 className="sr-only">Home Screen</h2>
+			<h2 className="sr-only">Chat home screen</h2>
 			<HomeScreenContent className="webchat-homescreen-content" settings={config?.settings}>
 				<HomeScreenHeader className="webchat-homescreen-header">
 					{config?.settings?.layout?.logoUrl ? (

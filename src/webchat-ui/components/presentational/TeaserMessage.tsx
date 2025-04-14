@@ -33,12 +33,13 @@ const TeaserMessageHeader = styled.div(() => ({
 const TeaserMessageHeaderContent = styled.div(() => ({
 	display: "flex",
 	justifyContent: "space-between",
-	alignItems: "flex-start",
+	alignItems: "center",
 	flex: "1 0 0",
 }));
 
 const CloseIconWrapper = styled(IconButton)(({ theme }) => ({
 	padding: 0,
+	marginRight: -4,
 	borderRadius: 4,
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
