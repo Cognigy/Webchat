@@ -338,8 +338,6 @@ export interface IWebchatSettings {
 			thumbsUp?: string;
 			thumbsDown?: string;
 			openConversation?: string;
-		};
-		screenReader?: {
 			chatHistory?: string;
 			homeScreen?: string;
 			newMessagePreview?: string;

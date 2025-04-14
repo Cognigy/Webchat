@@ -423,7 +423,6 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | delete_anyway                         | string | "Delete anyway"                                                                             | Label for confirming deletion despite warnings.                       |
 | cancel                                | string | "Cancel"                                                                                    | Label for canceling a delete or confirm action.                       |
 | ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements. |
-| screenReader                          | object | [Screen Reader](#screen-reader)                                                             | Object containing default text for screen reader only elements        |
 
 #### Aria Labels
 
@@ -454,15 +453,9 @@ The following table defines the default aria labels used throughout the Webchat 
 | thumbsUp                  | string | "Thumbs up"                  | Label for the positive feedback button.                                             |
 | thumbsDown                | string | "Thumbs down"                | Label for the negative feedback button.                                             |
 | openConversation          | string | "Open conversation"          | Label for the button that opens a conversation thread.                              |
-
-#### Screen reader
-
-The following is a list of texts used by screen reader only elements
-| Name | Type | Default | Description |
-| ------------------------- | ------ | ---------------------------- | ----------------------------------------------------------------------------------- |
-| chatHistory | string | "Chat History" | This text is used inside coversation to indicate the chat history |
-| homeScreen | string | "Home screen" | This text is used in the home screen to indicate the heading |
-| newMessagePreview | string | "New message preview" | This text is used inside the teader message to indicate a new message has arrived |
+| chatHistory               | string | "Chat History"               | This text is used inside coversation to indicate the chat history                   |
+| homeScreen                | string | "Home screen"                | This text is used in the home screen to indicate the heading                        |
+| newMessagePreview         | string | "New message preview"        | This text is used inside the teader message to indicate a new message has arrived   |
 
 #### Settings Interface
 
@@ -700,8 +693,6 @@ interface IWebchatSettings {
 			thumbsUp?: string;
 			thumbsDown?: string;
 			openConversation?: string;
-		};
-		screenReader?: {
 			chatHistory?: string;
 			homeScreen?: string;
 			newMessagePreview?: string;

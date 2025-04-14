@@ -152,7 +152,7 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 					</TeaserMessageHeaderContent>
 				</TeaserMessageHeader>
 				<span className="sr-only">
-					{config.settings.customTranslations?.screenReader?.newMessagePreview ??
+					{config.settings.customTranslations?.ariaLabels?.newMessagePreview ??
 						"New message preview"}
 				</span>
 				<Typography
