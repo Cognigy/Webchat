@@ -428,34 +428,46 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 The following table defines the default aria labels used throughout the Webchat for accessibility. Use them for managing aria-labels based on the preferred language
 
-| Name                      | Type   | Default                      | Description                                                                         |
-| ------------------------- | ------ | ---------------------------- | ----------------------------------------------------------------------------------- |
-| scrollToBottom            | string | "Scroll to bottom"           | Label for the button that scrolls the chat view to the bottom.                      |
-| closeDialog               | string | "Close Dialog"               | Label for close buttons in modals or dialogs.                                       |
-| togglePersistentMenu      | string | "Toggle menu"                | Label for the button toggling the persistent menu.                                  |
-| addAttachment             | string | "Add attachment"             | Label for the button that allows uploading attachments.                             |
-| messageToSend             | string | "Message to send"            | Label for the message input field.                                                  |
-| speechToText              | string | "Speech to text"             | Label for the speech-to-text control button.                                        |
-| sendMessage               | string | "Send Message"               | Label for the send message button.                                                  |
-| removeFileAttachment      | string | "Remove File Attachment"     | Label for the button to remove a file attachment.                                   |
-| closeWarning              | string | "Close warning"              | Label for closing warning dialogs.                                                  |
-| goBack                    | string | "Go back"                    | Label for buttons allowing the user to go back.                                     |
-| deleteAllConversations    | string | "Delete all conversations"   | Label for the button to delete all conversations.                                   |
-| chatOptions               | string | "Chat options"               | Label for accessing the chat options.                                               |
-| minimizeChat              | string | "Minimize chat"              | Label for minimizing the chat window.                                               |
-| closeChat                 | string | "Close chat"                 | Label for closing the chat window.                                                  |
-| openChat                  | string | "Open chat"                  | Label for opening the chat window.                                                  |
-| unreadMessages            | string | "Unread messages"            | Label indicating the unread messages status in the badge inside chat toggle button. |
-| unreadMessageSingularText | string | "One unread message in chat" | Label for a single unread message indicator for the chat toggle button.             |
-| unreadMessagePluralText   | string | "unread messages in chat"    | Label for multiple unread messages indicator for the chat toggle button.            |
-| closeTeaserMessage        | string | "Close teaser message"       | Label for the teaser message close button.                                          |
-| opensInNewTab             | string | "Opens in new tab"           | Label for links that open in a new tab.                                             |
-| thumbsUp                  | string | "Thumbs up"                  | Label for the positive feedback button.                                             |
-| thumbsDown                | string | "Thumbs down"                | Label for the negative feedback button.                                             |
-| openConversation          | string | "Open conversation"          | Label for the button that opens a conversation thread.                              |
-| chatHistory               | string | "Chat History"               | This text is used inside coversation to indicate the chat history                   |
-| homeScreen                | string | "Home screen"                | This text is used in the home screen to indicate the heading                        |
-| newMessagePreview         | string | "New message preview"        | This text is used inside the teader message to indicate a new message has arrived   |
+| Name                      | Type   | Default                       | Description                                                                         |
+| ------------------------- | ------ | ----------------------------- | ----------------------------------------------------------------------------------- |
+| scrollToBottom            | string | "Scroll to bottom"            | Label for the button that scrolls the chat view to the bottom.                      |
+| closeDialog               | string | "Close Dialog"                | Label for close buttons in modals or dialogs.                                       |
+| togglePersistentMenu      | string | "Toggle menu"                 | Label for the button toggling the persistent menu.                                  |
+| addAttachment             | string | "Add attachment"              | Label for the button that allows uploading attachments.                             |
+| messageToSend             | string | "Message to send"             | Label for the message input field.                                                  |
+| speechToText              | string | "Speech to text"              | Label for the speech-to-text control button.                                        |
+| sendMessage               | string | "Send Message"                | Label for the send message button.                                                  |
+| removeFileAttachment      | string | "Remove File Attachment"      | Label for the button to remove a file attachment.                                   |
+| closeWarning              | string | "Close warning"               | Label for closing warning dialogs.                                                  |
+| goBack                    | string | "Go back"                     | Label for buttons allowing the user to go back.                                     |
+| deleteAllConversations    | string | "Delete all conversations"    | Label for the button to delete all conversations.                                   |
+| chatOptions               | string | "Chat options"                | Label for accessing the chat options.                                               |
+| minimizeChat              | string | "Minimize chat"               | Label for minimizing the chat window.                                               |
+| closeChat                 | string | "Close chat"                  | Label for closing the chat window.                                                  |
+| openChat                  | string | "Open chat"                   | Label for opening the chat window.                                                  |
+| unreadMessages            | string | "Unread messages"             | Label indicating the unread messages status in the badge inside chat toggle button. |
+| unreadMessageSingularText | string | "One unread message in chat"  | Label for a single unread message indicator for the chat toggle button.             |
+| unreadMessagePluralText   | string | "unread messages in chat"     | Label for multiple unread messages indicator for the chat toggle button.            |
+| closeTeaserMessage        | string | "Close teaser message"        | Label for the teaser message close button.                                          |
+| opensInNewTab             | string | "Opens in new tab"            | Label for links that open in a new tab.                                             |
+| thumbsUp                  | string | "Thumbs up"                   | Label for the positive feedback button.                                             |
+| thumbsDown                | string | "Thumbs down"                 | Label for the negative feedback button.                                             |
+| openConversation          | string | "Open conversation"           | Label for the button that opens a conversation thread.                              |
+| chatHistory               | string | "Chat History"                | This text is used inside coversation to indicate the chat history                   |
+| homeScreen                | string | "Home screen"                 | This text is used in the home screen to indicate the heading                        |
+| newMessagePreview         | string | "New message preview"         | This text is used inside the teader message to indicate a new message has arrived   |
+| audioPlaybackProgress     | string | "Audio playback progress"     | This text is used to indicate the audio playback progress                           |
+| pauseAudio                | string | "Pause audio"                 | This text is used for the pause audio button                                        |
+| playAudio                 | string | "Play audio"                  | This text is used for the play audio button                                         |
+| playVideo                 | string | "Play video"                  | This text is used for the play video button                                         |
+| downloadTranscript        | string | "Download transcript"         | This text is used for the download transcript button                                |
+| closeDatePicker           | string | "Close datepicker"            | This text is used for the close datepicker button                                   |
+| viewImageInFullsize       | string | "View Image in fullsize"      | This text is used for the view image in fullsize button                             |
+| lightbox                  | string | "Lightbox"                    | This text is used for the view lightbox dialog                                      |
+| downloadFullsizeImage     | string | "Download full size image"    | This text is used for the download full size image button                           |
+| closeFullsizeImageModal   | string | "Close full size image modal" | This text is used for the close full size image modal button                        |
+| attachmentImage           | string | "Attachment image"            | This text is used for the attachment image text                                     |
+| datePickerDescription     | string | "Datepicker description"      | This text is used for the date picker description                                   |
 
 #### Settings Interface
 
@@ -659,9 +671,8 @@ interface IWebchatSettings {
 	customTranslations?: {
 		network_error?: string;
 		no_network?: string;
-		reconnecting?: string;
 		reconnect?: string;
-		conversations_options?: string;
+		reconnecting?: string;
 		delete_all_conversations?: string;
 		delete_all_conversations_confirmation?: string;
 		delete_conversation?: string;
@@ -689,13 +700,25 @@ interface IWebchatSettings {
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
 			closeTeaserMessage?: string;
-			opensInNewTab?: string;
 			thumbsUp?: string;
 			thumbsDown?: string;
 			openConversation?: string;
 			chatHistory?: string;
 			homeScreen?: string;
 			newMessagePreview?: string;
+			opensInNewTab?: string;
+			audioPlaybackProgress?: string;
+			pauseAudio?: string;
+			playAudio?: string;
+			playVideo?: string;
+			downloadTranscript?: string;
+			closeDatePicker?: string;
+			viewImageInFullsize?: string;
+			lightbox?: string;
+			downloadFullsizeImage?: string;
+			closeFullsizeImageModal?: string;
+			attachmentImage?: string;
+			datePickerDescription?: string;
 		};
 	};
 

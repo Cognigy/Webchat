@@ -334,13 +334,26 @@ export interface IWebchatSettings {
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
 			closeTeaserMessage?: string;
-			opensInNewTab?: string;
 			thumbsUp?: string;
 			thumbsDown?: string;
 			openConversation?: string;
 			chatHistory?: string;
 			homeScreen?: string;
 			newMessagePreview?: string;
+			opensInNewTab?: string;
+			// The following is used by chat components
+			audioPlaybackProgress?: string;
+			pauseAudio?: string;
+			playAudio?: string;
+			playVideo?: string;
+			downloadTranscript?: string;
+			closeDatePicker?: string;
+			viewImageInFullsize?: string;
+			lightbox?: string;
+			downloadFullsizeImage?: string;
+			closeFullsizeImageModal?: string;
+			attachmentImage?: string;
+			datePickerDescription?: string;
 		};
 	};
 	demoWebchat: {
