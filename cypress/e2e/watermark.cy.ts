@@ -3,7 +3,7 @@ describe("Watermark", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 	});
 
-	it("	is visible after opening the webchat", () => {
+	it("is visible after opening the webchat", () => {
 		cy.get('[aria-label^="Powered by Cognigy"]').should("be.visible");
 	});
 
@@ -32,7 +32,7 @@ describe("Watermark", () => {
 		cy.get("#cognigyBrandingLink").should(
 			"have.attr",
 			"aria-label",
-			"Powered by Cognigy. Opens in new tab",
+			"Powered by Cognigy.AI. Opens in new tab",
 		);
 	});
 

@@ -214,7 +214,9 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 			aria-hidden={!showHomeScreen}
 			ref={homeScreenRef}
 		>
-			<h2 className="sr-only">Chat home screen</h2>
+			<h2 className="sr-only">
+				{config.settings.customTranslations?.ariaLabels?.homeScreen ?? "Chat home screen"}
+			</h2>
 			<HomeScreenContent className="webchat-homescreen-content" settings={config?.settings}>
 				<HomeScreenHeader className="webchat-homescreen-header">
 					{config?.settings?.layout?.logoUrl ? (
@@ -230,7 +232,10 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 						ref={closeButtonRef}
 						onClick={onClose}
 						className="webchat-homescreen-close-button"
-						aria-label="Close chat"
+						aria-label={
+							config.settings.customTranslations?.ariaLabels?.closeChat ??
+							"Close chat"
+						}
 						color="primary"
 					>
 						<CloseIcon />

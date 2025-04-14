@@ -8,6 +8,7 @@ import PrimaryButton from "../PrimaryButton";
 import { createNotification } from "../Notifications";
 import MultilineInput from "../MultilineInput";
 import { IOnSendRatingProps } from "./ChatOptions";
+import { useSelector } from "../../../../webchat/helper/useSelector";
 
 const RatingWidgetRoot = styled.div(() => ({
 	width: "100%",
@@ -102,6 +103,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 	const ratingInputRef = useRef(null);
 
 	const disableSendButton = ratingValue !== -1 && ratingValue !== 1;
+	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
 
 	const handleSubmitFeedback = () => {
 		onSendRating({ rating: ratingValue, comment: ratingText, showRatingStatus });
@@ -127,7 +129,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					onClick={() => setRatingValue(1)}
 					className="webchat-rating-widget-thumbs-up-button"
 					aria-pressed={ratingValue === 1}
-					aria-label="Thumbs Up"
+					aria-label={ariaLabels?.thumbsUp ?? "Thumbs Up"}
 					selected={ratingValue === 1}
 				>
 					<RatingUpIcon selected={ratingValue === 1} />
@@ -136,7 +138,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					onClick={() => setRatingValue(-1)}
 					className="webchat-rating-widget-thumbs-down-button"
 					aria-pressed={ratingValue === -1}
-					aria-label="Thumbs Down"
+					aria-label={ariaLabels?.thumbsDown ?? "Thumbs Down"}
 					selected={ratingValue === -1}
 				>
 					<RatingDownIcon selected={ratingValue === -1} />

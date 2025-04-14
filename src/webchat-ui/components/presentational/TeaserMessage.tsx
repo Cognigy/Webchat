@@ -143,13 +143,19 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 						<CloseIconWrapper
 							className="webchat-teaser-message-header-close-button"
 							onClick={handleHideTeaserMessage}
-							aria-label="Close teaser message"
+							aria-label={
+								config.settings.customTranslations?.ariaLabels
+									?.closeTeaserMessage ?? "Close teaser message"
+							}
 						>
 							<CloseIcon />
 						</CloseIconWrapper>
 					</TeaserMessageHeaderContent>
 				</TeaserMessageHeader>
-				<span className="sr-only">New message preview</span>
+				<span className="sr-only">
+					{config.settings.customTranslations?.ariaLabels?.newMessagePreview ??
+						"New message preview"}
+				</span>
 				<Typography
 					variant="body-regular"
 					className="webchat-unread-message-preview-text"

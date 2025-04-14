@@ -3,11 +3,13 @@ describe("Rating", () => {
 		cy.visitWebchat();
 	});
 
+	const chatOptionsTitle = "Menu";
 	it("header button shouldn't show up by default", () => {
 		cy.initMockWebchat({
 			settings: {
 				chatOptions: {
 					enabled: true,
+					title: chatOptionsTitle,
 					rating: {
 						enabled: "always",
 					},
@@ -16,7 +18,7 @@ describe("Rating", () => {
 		})
 			.openWebchat()
 			.startConversation();
-		cy.get('[aria-label="Menu"]').as("menuButton");
+		cy.get(`[aria-label="${chatOptionsTitle}"]`).as("menuButton");
 
 		cy.get("@menuButton").click();
 
@@ -105,6 +107,7 @@ describe("Rating", () => {
 			settings: {
 				chatOptions: {
 					enabled: true,
+					title: chatOptionsTitle,
 					rating: {
 						enabled: "always",
 					},
@@ -113,7 +116,7 @@ describe("Rating", () => {
 		});
 		cy.openWebchat().startConversation();
 
-		cy.get('[aria-label="Menu"]').should("be.visible");
+		cy.get(`[aria-label="${chatOptionsTitle}"]`).should("be.visible");
 	});
 
 	it("shows a dialog with default texts when clicking the rating button", () => {
@@ -121,6 +124,7 @@ describe("Rating", () => {
 			settings: {
 				chatOptions: {
 					enabled: true,
+					title: chatOptionsTitle,
 					rating: {
 						enabled: "always",
 					},
@@ -129,7 +133,7 @@ describe("Rating", () => {
 		});
 		cy.openWebchat().startConversation();
 
-		cy.get('[aria-label="Menu"]').click();
+		cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
 
 		cy.contains("Please rate your chat experience").should("be.visible");
 		cy.get('[data-test="rating-input"]').should(
@@ -144,6 +148,7 @@ describe("Rating", () => {
 			settings: {
 				chatOptions: {
 					enabled: true,
+					title: chatOptionsTitle,
 					rating: {
 						enabled: "always",
 					},
@@ -152,7 +157,7 @@ describe("Rating", () => {
 		});
 		cy.openWebchat().startConversation();
 
-		cy.get('[aria-label="Menu"]').click();
+		cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
 
 		cy.get('[aria-label="Thumbs Up"]').click();
 		cy.get('[data-test="rating-input"]').type("I loved it");
@@ -166,6 +171,7 @@ describe("Rating", () => {
 			settings: {
 				chatOptions: {
 					enabled: true,
+					title: chatOptionsTitle,
 					rating: {
 						enabled: "once",
 					},
@@ -174,7 +180,7 @@ describe("Rating", () => {
 		});
 		cy.openWebchat().startConversation();
 
-		cy.get('[aria-label="Menu"]').should("be.visible");
+		cy.get(`[aria-label="${chatOptionsTitle}"]`).should("be.visible");
 	});
 
 	it("can't submit another rating when it was set to once", () => {
@@ -182,6 +188,7 @@ describe("Rating", () => {
 			settings: {
 				chatOptions: {
 					enabled: true,
+					title: chatOptionsTitle,
 					rating: {
 						enabled: "once",
 					},
@@ -190,7 +197,7 @@ describe("Rating", () => {
 		});
 		cy.openWebchat().startConversation();
 
-		cy.get('[aria-label="Menu"]').click();
+		cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
 
 		cy.get('[aria-label="Thumbs Up"]').click();
 		cy.get('[data-test="rating-input"]').type("I loved it");
