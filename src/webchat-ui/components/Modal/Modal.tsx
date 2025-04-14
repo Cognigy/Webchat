@@ -105,9 +105,12 @@ interface ModalProps {
 	title: string;
 	children: React.ReactNode;
 	footer: React.ReactNode;
+	ariaLabels?: {
+		close?: string;
+	};
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children, ariaLabels }) => {
 	const dialogRef = useRef<HTMLDialogElement>(null);
 	const handleOnClose = () => {
 		onClose(false);
@@ -169,7 +172,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 							{title}
 						</Typography>
 						<CloseButton
-							aria-label="Close"
+							aria-label={ariaLabels?.close ?? "Close Dialog"}
 							onClick={handleOnClose}
 							className="webchat-modal-close-button"
 						>

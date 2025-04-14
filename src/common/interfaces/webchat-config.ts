@@ -314,6 +314,47 @@ export interface IWebchatSettings {
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
+		ariaLabels?: {
+			scrollToBottom?: string;
+			closeDialog?: string;
+			togglePersistentMenu?: string;
+			addAttachment?: string;
+			messageToSend?: string;
+			speechToText?: string;
+			sendMessage?: string;
+			removeFileAttachment?: string;
+			closeWarning?: string;
+			goBack?: string;
+			deleteAllConversations?: string;
+			chatOptions?: string;
+			minimizeChat?: string;
+			closeChat?: string;
+			openChat?: string;
+			unreadMessages?: string;
+			unreadMessageSingularText?: string;
+			unreadMessagePluralText?: string;
+			closeTeaserMessage?: string;
+			thumbsUp?: string;
+			thumbsDown?: string;
+			openConversation?: string;
+			chatHistory?: string;
+			homeScreen?: string;
+			newMessagePreview?: string;
+			opensInNewTab?: string;
+			// The following is used by chat components
+			audioPlaybackProgress?: string;
+			pauseAudio?: string;
+			playAudio?: string;
+			playVideo?: string;
+			downloadTranscript?: string;
+			closeDatePicker?: string;
+			viewImageInFullsize?: string;
+			lightbox?: string;
+			downloadFullsizeImage?: string;
+			closeFullsizeImageModal?: string;
+			attachmentImage?: string;
+			datePickerDescription?: string;
+		};
 	};
 	demoWebchat: {
 		enabled: boolean;

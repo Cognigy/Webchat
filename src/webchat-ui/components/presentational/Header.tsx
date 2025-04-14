@@ -11,6 +11,7 @@ import { Typography } from "@cognigy/chat-components";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
 import { getContrastColor } from "../../style";
 import DeleteIcon from "../../assets/bin-16px.svg";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
 const HeaderBar = styled.div(({ theme }) => ({
 	alignItems: "center",
@@ -137,6 +138,9 @@ const Header: FC<HeaderProps> = props => {
 		...rest
 	} = props;
 
+	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
+	const settings = useSelector(state => state.config.settings);
+
 	const handleCloseClick = () => {
 		onClose?.();
 		// Restore focus to chat toggle button
@@ -146,7 +150,6 @@ const Header: FC<HeaderProps> = props => {
 	const handleMenuClick = () => {
 		onSetShowChatOptionsScreen?.(true);
 	};
-
 	return (
 		<>
 			<HeaderBar {...rest} className="webchat-header-bar">
@@ -156,7 +159,7 @@ const Header: FC<HeaderProps> = props => {
 							data-header-back-button
 							onClick={onGoBack}
 							className="webchat-header-back-button cc-rtl-flip"
-							aria-label="Go Back"
+							aria-label={ariaLabels?.goBack ?? "Go Back"}
 							ref={closeButtonRef}
 						>
 							<GoBackIcon />
@@ -190,7 +193,9 @@ const Header: FC<HeaderProps> = props => {
 						<HeaderIconButton
 							data-header-delete-all-conversations-button
 							onClick={onDeleteAllConversations}
-							aria-label="Delete All Conversations"
+							aria-label={
+								ariaLabels?.deleteAllConversations ?? "Delete All Conversations"
+							}
 							className="webchat-header-delete-all-conversations-button"
 							iconColor={rest.deleteIconColor}
 							tabIndex={0}
@@ -205,7 +210,7 @@ const Header: FC<HeaderProps> = props => {
 							<HeaderIconButton
 								data-header-menu-button
 								onClick={handleMenuClick}
-								aria-label="Menu"
+								aria-label={ariaLabels?.chatOptions ?? settings.chatOptions.title}
 								ref={menuButtonRef}
 							>
 								<MenuIcon />
@@ -219,7 +224,7 @@ const Header: FC<HeaderProps> = props => {
 								data-header-minimize-button
 								onClick={onMinimize}
 								className="webchat-header-minimize-button"
-								aria-label="Minimize Chat"
+								aria-label={ariaLabels?.minimizeChat ?? "Minimize Chat"}
 							>
 								<MinimizeIcon />
 							</HeaderIconButton>
@@ -232,7 +237,7 @@ const Header: FC<HeaderProps> = props => {
 								data-header-close-button
 								onClick={handleCloseClick}
 								className="webchat-header-close-button"
-								aria-label="Close Chat"
+								aria-label={ariaLabels?.closeChat ?? "Close Chat"}
 								ref={closeButtonRef}
 							>
 								<CloseIcon />
