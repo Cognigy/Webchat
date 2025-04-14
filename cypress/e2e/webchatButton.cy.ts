@@ -31,7 +31,7 @@ describe("Webchat Button", () => {
 			.should("not.exist");
 	});
 
-	it("should have correct aria-label for open webchat button with one unread message", () => {
+	it("should have correct aria-label for open webchat button with more than one unread message", () => {
 		cy.visitWebchat()
 			.initMockWebchat({
 				settings: {

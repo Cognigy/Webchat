@@ -46,7 +46,7 @@ const Branding: FC<IBrandingProps> = props => {
 		<Link
 			href={watermarkUrl || URL}
 			target="_blank"
-			aria-label={`${watermarkText}.${ariaLabels?.opensInNewTab ?? "Opens in a new tab"}`}
+			aria-label={`${watermarkText}. ${ariaLabels?.opensInNewTab ?? "Opens in new tab"}`}
 			id={id ?? "cognigyBrandingLink"}
 		>
 			<Typography variant="copy-medium" component="span" fontSize={10} lineHeight="120%">

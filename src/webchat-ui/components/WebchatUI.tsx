@@ -981,10 +981,10 @@ export class WebchatUI extends React.PureComponent<
 				config.settings.customTranslations?.ariaLabels?.openChat ?? "Open chat";
 			const unReadMessage =
 				config.settings.customTranslations?.ariaLabels?.unreadMessageSingularText ??
-				"One unread message in chat." + openChat;
+				"One unread message in chat." + " " + openChat;
 			const unreadMessages =
 				config.settings.customTranslations?.ariaLabels?.unreadMessagePluralText ??
-				"unread messages in chat." + openChat;
+				"unread messages in chat." + " " + openChat;
 			switch (unseenMessages.length) {
 				case 0:
 					return openChat;
