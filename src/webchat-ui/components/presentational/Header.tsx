@@ -25,7 +25,7 @@ const HeaderBar = styled.div(({ theme }) => ({
 	fontWeight: 600,
 	lineHeight: 1.3,
 	margin: 0,
-	padding: 20,
+	padding: "20px 16px",
 	resize: "vertical",
 	textAlign: "center",
 	zIndex: 3,
@@ -72,7 +72,7 @@ const BackButtonWrapper = styled.div(() => ({
 const HeaderIconsWrapper = styled.div(() => ({
 	display: "flex",
 	alignItems: "flex-start",
-	gap: 24,
+	gap: 16,
 }));
 
 const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, iconColor }) => ({
@@ -154,7 +154,7 @@ const Header: FC<HeaderProps> = props => {
 		<>
 			<HeaderBar {...rest} className="webchat-header-bar">
 				{onGoBack && !hideBackButton && (
-					<BackButtonWrapper style={{ width: isChatOptionsButtonVisible ? 56 : 16 }}>
+					<BackButtonWrapper style={{ width: isChatOptionsButtonVisible ? 64 : 24 }}>
 						<HeaderIconButton
 							data-header-back-button
 							onClick={onGoBack}

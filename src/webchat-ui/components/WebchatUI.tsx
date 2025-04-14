@@ -1327,7 +1327,6 @@ export class WebchatUI extends React.PureComponent<
 						scrollBehavior={config.settings.behavior.scrollingBehavior}
 						lastInputId={lastInputId}
 						className="webchat-chat-history"
-						tabIndex={messages?.length === 0 ? -1 : 0} // When no messages, remove chat history from tab order
 						onDragEnter={handleDragEnter}
 						id="webchatChatHistory"
 					>

@@ -6,7 +6,6 @@ import { useSelector } from "../../../webchat/helper/useSelector";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
-	tabIndex: 0 | -1;
 	lastInputId: string;
 	scrollBehavior: IWebchatConfig["settings"]["behavior"]["scrollingBehavior"];
 }
@@ -66,7 +65,6 @@ const ScrollButton = styled("button")(({ theme }) => ({
  */
 export function ChatScroller({
 	children,
-	tabIndex,
 	lastInputId,
 	scrollBehavior,
 	...restProps
@@ -118,15 +116,22 @@ export function ChatScroller({
 		[lastInputId, shouldScrollToLastInput, outerRef.current],
 	);
 
+	// Find if the chat log is overflowing to allow for focus (for keyboard users to scroll)
+	const isChatLogOverflowing = () => {
+		if (!outerRef.current || !innerRef.current) return false;
+		const outerHeight = outerRef.current.clientHeight;
+		const innerHeight = innerRef.current.scrollHeight;
+		return innerHeight > outerHeight;
+	};
+
 	return (
 		<ChatLogWrapper ref={outerRef} {...restProps} showFocusOutline={isChatLogFocused}>
 			<Scroller followButtonClassName="hiddenAutoScrollButton" scroller={scrollerFn}>
 				<ChatLog
 					ref={innerRef}
 					id="webchatChatHistoryWrapperLiveLogPanel"
-					tabIndex={tabIndex}
+					tabIndex={isChatLogOverflowing() ? 0 : -1}
 					role="log"
-					aria-live="polite"
 					onFocus={handleFocus}
 					onBlur={handleBlur}
 				>

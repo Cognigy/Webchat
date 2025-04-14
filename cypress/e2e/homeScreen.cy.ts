@@ -12,7 +12,7 @@ describe("Home Screen", () => {
 			},
 		});
 		cy.openWebchat();
-		cy.get("h2").contains("Home Screen").should("not.exist");
+		cy.get("h2").contains("Chat home screen").should("not.exist");
 	});
 
 	it("is displayed when it is enabled", () => {
@@ -24,7 +24,7 @@ describe("Home Screen", () => {
 			},
 		});
 		cy.openWebchat();
-		cy.get("h2").contains("Home Screen");
+		cy.get("h2").contains("Chat home screen");
 	});
 
 	it("has default logo displayed when not configured", () => {

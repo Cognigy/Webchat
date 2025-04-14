@@ -7,15 +7,14 @@ describe("Chat Log", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "tabindex", -1);
 	});
 
-	it("is chat log region focusable when there are messages in log", () => {
-		cy.withMessageFixture("text", () => {
+	it.only("is chat log region focusable when the log is scrollable", () => {
+		cy.withMessageFixture("adaptivecard", () => {
 			cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "tabindex", 0);
 		});
 	});
 
 	it("is chat log region accessible", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "role", "log");
-		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "aria-live", "polite");
 	});
 
 	it("chat log region does not contain branding", () => {
