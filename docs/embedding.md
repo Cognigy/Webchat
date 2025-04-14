@@ -454,7 +454,7 @@ The following table defines the default aria labels used throughout the Webchat 
 | thumbsDown                | string | "Thumbs down"                 | Label for the negative feedback button.                                             |
 | openConversation          | string | "Open conversation"           | Label for the button that opens a conversation thread.                              |
 | chatHistory               | string | "Chat History"                | This text is used inside coversation to indicate the chat history                   |
-| homeScreen                | string | "Chat home screen"                 | This text is used in the home screen to indicate the heading                        |
+| homeScreen                | string | "Chat home screen"            | This text is used in the home screen to indicate the heading                        |
 | newMessagePreview         | string | "New message preview"         | This text is used inside the teader message to indicate a new message has arrived   |
 | audioPlaybackProgress     | string | "Audio playback progress"     | This text is used to indicate the audio playback progress                           |
 | pauseAudio                | string | "Pause audio"                 | This text is used for the pause audio button                                        |
