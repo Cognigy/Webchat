@@ -40,25 +40,6 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			case "SET_OPEN": {
 				const { open } = action;
 
-				if (open) {
-					// When the webchat is opened, focus is moved to the first focusable element inside the webchat window.
-					// This happens only if the currently focused element is the toggle button, ensuring no interruption to other interactions or auto-focus behavior.
-					// This prevents focus loss when no element with auto-focus is found inside the webchat window.
-					setTimeout(() => {
-						const webchatWindowEl = document.getElementById("webchatWindow");
-						const webchatToggleButton = document.getElementById(
-							"webchatWindowToggleButton",
-						);
-						const { firstFocusable } = getKeyboardFocusableElements(
-							webchatWindowEl as HTMLElement,
-						);
-
-						if (document.activeElement === webchatToggleButton && firstFocusable) {
-							firstFocusable.focus();
-						}
-					}, 0);
-				}
-
 				// We determine if the chat history is visible by other screens visibility.
 				const { showHomeScreen, showPrevConversations, showChatOptionsScreen } =
 					store.getState().ui;
