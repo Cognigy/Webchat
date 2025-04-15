@@ -13,7 +13,7 @@ describe("Send Message", () => {
 			.initMockWebchat()
 			.openWebchat()
 			.startConversation()
-			.get('[aria-label="Type something here..."]')
+			.get('[aria-label="Type something here…"]')
 			.type("Hi")
 			.get('[aria-label="Send message"]')
 			.click()

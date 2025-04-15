@@ -86,8 +86,8 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 
 		assertOffline();
 
-		// Send a  messages
-		cy.get('[aria-label="Type something here..."]')
+		// Send a message
+		cy.get('[aria-label="Type something here…"]')
 			.type("Hi")
 			.get('[aria-label="Send message"]')
 			.click()
