@@ -23,7 +23,7 @@ describe("Message with Image", { retries: 3 }, () => {
 			cy.get(".webchat-media-template-image img").should(
 				"have.attr",
 				"alt",
-				"Attachment Image",
+				"A cute dog",
 			);
 		});
 	});
