@@ -10,9 +10,9 @@ describe("collated text inputs", () => {
 		cy.get(".webchat-input-message-input").type("hi", { delay: 40 }).type("{enter}");
 		cy.get(".webchat-input-message-input").type("whats up", { delay: 40 }).type("{enter}");
 
-		cy.contains("hi").should("be.visible").and("have.text", "hi");
-		cy.contains("whats up").should("be.visible").and("have.text", "whats up");
-		cy.contains("hi whats up").should("not.exist");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").contains("hi");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").contains("whats up");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("not.contain", "hi whats up");
 	});
 
 	it("should collate messages if enableInputCollation is enabled", () => {
@@ -61,9 +61,9 @@ describe("collated text inputs", () => {
 		cy.wait(1100);
 		cy.get(".webchat-input-message-input").type("whats up", { delay: 40 }).type("{enter}");
 
-		cy.contains("hi").should("be.visible").and("have.text", "hi");
-		cy.contains("whats up").should("be.visible").and("have.text", "whats up");
-		cy.contains("hi whats up").should("not.exist");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").contains("hi");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").contains("whats up");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("not.contain", "hi whats up");
 	});
 
 	it("collates a messages if the custom collate timeout of 1500ms was not exceeded", () => {

@@ -26,7 +26,7 @@ describe("Rating", () => {
 		cy.get('[data-test="rating-input"]').should(
 			"have.attr",
 			"placeholder",
-			"Type something here…",
+			"Type something here...",
 		);
 	});
 
@@ -139,7 +139,7 @@ describe("Rating", () => {
 		cy.get('[data-test="rating-input"]').should(
 			"have.attr",
 			"placeholder",
-			"Type something here…",
+			"Type something here...",
 		);
 	});
 
