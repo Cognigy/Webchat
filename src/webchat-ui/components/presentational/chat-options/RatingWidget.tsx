@@ -119,8 +119,8 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 		<RatingWidgetRoot className="webchat-rating-widget-root">
 			<Typography
 				variant="title1-semibold"
-				component="div"
 				className="webchat-rating-widget-title"
+				margin={0}
 			>
 				{ratingTitleText}
 			</Typography>
