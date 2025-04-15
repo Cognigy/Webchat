@@ -5,6 +5,7 @@ import CloseIcon from "../../assets/close-16px.svg";
 import { CSSTransition } from "react-transition-group";
 import { Typography } from "@cognigy/chat-components";
 import getKeyboardFocusableElements from "../../utils/find-focusable";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
 const Overlay = styled.div`
 	position: absolute;
@@ -105,13 +106,15 @@ interface ModalProps {
 	title: string;
 	children: React.ReactNode;
 	footer: React.ReactNode;
-	ariaLabels?: {
-		close?: string;
-	};
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children, ariaLabels }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
 	const dialogRef = useRef<HTMLDialogElement>(null);
+
+	const closeButtonAriaLabel =
+		useSelector(state => state.config.settings.customTranslations?.ariaLabels?.closeDialog) ??
+		"Close dialog";
+
 	const handleOnClose = () => {
 		onClose(false);
 	};
@@ -172,7 +175,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children,
 							{title}
 						</Typography>
 						<CloseButton
-							aria-label={ariaLabels?.close ?? "Close Dialog"}
+							aria-label={closeButtonAriaLabel}
 							onClick={handleOnClose}
 							className="webchat-modal-close-button"
 						>

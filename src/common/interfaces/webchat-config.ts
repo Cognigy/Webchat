@@ -323,7 +323,7 @@ export interface IWebchatSettings {
 			speechToText?: string;
 			sendMessage?: string;
 			removeFileAttachment?: string;
-			closeWarning?: string;
+			closeConnectionWarning?: string;
 			goBack?: string;
 			deleteAllConversations?: string;
 			chatOptions?: string;
@@ -349,10 +349,9 @@ export interface IWebchatSettings {
 			downloadTranscript?: string;
 			closeDatePicker?: string;
 			viewImageInFullsize?: string;
-			lightbox?: string;
+			fullSizeImageViewerTitle?: string;
 			downloadFullsizeImage?: string;
 			closeFullsizeImageModal?: string;
-			attachmentImage?: string;
 			datePickerDescription?: string;
 		};
 	};

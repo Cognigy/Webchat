@@ -197,7 +197,7 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 				<ScrollButton
 					className="webchat-scroll-to-bottom-button"
 					onClick={scrollToBottom}
-					aria-label={scrollToBottomText ?? "Scroll to bottom"}
+					aria-label={scrollToBottomText ?? "Scroll to the bottom of the chat"}
 					style={{ bottom: `${inputHeight + 50}px` }}
 				>
 					↓

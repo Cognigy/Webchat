@@ -19,7 +19,7 @@ describe("Image fullsize with Lightbox", () => {
 			cy.get(".webchat-media-template-image[role=button]").click();
 			cy.get('[role="dialog"]').should("exist");
 
-			cy.get('[aria-label="Close fullsize image modal"]').click();
+			cy.get('[aria-label="Close full-size image viewer"]').click();
 			cy.get('[role="dialog"]').should("not.exist");
 		});
 	});

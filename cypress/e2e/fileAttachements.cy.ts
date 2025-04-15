@@ -125,7 +125,7 @@ describe("File Attachement", () => {
 			)
 			.then(() => {
 				cy.get("#filePreview0").contains("myfile.txt");
-				cy.get("[aria-label='Remove File Attachment 1']").click();
+				cy.get("[aria-label='Remove file attachment 1']").click();
 				cy.get("#filePreview0").should("not.exist");
 			});
 	});

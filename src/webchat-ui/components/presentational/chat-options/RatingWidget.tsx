@@ -129,7 +129,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					onClick={() => setRatingValue(1)}
 					className="webchat-rating-widget-thumbs-up-button"
 					aria-pressed={ratingValue === 1}
-					aria-label={ariaLabels?.thumbsUp ?? "Thumbs Up"}
+					aria-label={ariaLabels?.thumbsUp ?? "Like"}
 					selected={ratingValue === 1}
 				>
 					<RatingUpIcon selected={ratingValue === 1} />
@@ -138,7 +138,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					onClick={() => setRatingValue(-1)}
 					className="webchat-rating-widget-thumbs-down-button"
 					aria-pressed={ratingValue === -1}
-					aria-label={ariaLabels?.thumbsDown ?? "Thumbs Down"}
+					aria-label={ariaLabels?.thumbsDown ?? "Dislike"}
 					selected={ratingValue === -1}
 				>
 					<RatingDownIcon selected={ratingValue === -1} />

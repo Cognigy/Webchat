@@ -112,7 +112,7 @@ const PreviewUploadedFiles: FC = () => {
 									});
 								}
 							}}
-							aria-label={`${removeFileAttachment ?? "Remove File Attachment"} ${index + 1}`}
+							aria-label={`${removeFileAttachment ?? "Remove file attachment"} ${index + 1}`}
 							ref={ref => {
 								if (ref) {
 									removeFileButtonRefs.current[index] = ref;

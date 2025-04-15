@@ -502,7 +502,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 								onClick={this.togglePeristentMenu}
 								aria-label={
 									customTranslations?.ariaLabels?.togglePersistentMenu ??
-									"Toggle persistent menu"
+									"Toggle chat input menu"
 								}
 								aria-expanded={isMenuOpen}
 								className="webchat-input-persistent-menu-button"
@@ -535,7 +535,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 											onClick={this.handleUploadFile}
 											aria-label={
 												customTranslations?.ariaLabels?.addAttachment ??
-												"Add Attachments"
+												"Add attachments"
 											}
 											id="webchatInputMessageAttachFileButton"
 										>
@@ -558,8 +558,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 											}
 											className="webchat-input-message-input"
 											aria-label={
-												customTranslations?.ariaLabels?.messageToSend ??
-												"Message to send"
+												props.config.settings.behavior.inputPlaceholder
 											}
 											minRows={1}
 											maxRows={inputAutogrowMaxRows}
@@ -615,7 +614,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									className="webchat-input-button-send cc-rtl-flip"
 									aria-label={
 										customTranslations?.ariaLabels?.sendMessage ??
-										"Send Message"
+										"Send message"
 									}
 									id="webchatInputMessageSendMessageButton"
 								>

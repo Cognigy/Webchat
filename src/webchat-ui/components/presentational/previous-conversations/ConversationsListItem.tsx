@@ -119,6 +119,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 
 	const openConversationAriaLabel =
 		config.settings.customTranslations?.ariaLabels?.openConversation ?? "Open conversation";
+
 	return (
 		<ListItem
 			className="webchat-prev-conversations-item"
@@ -136,7 +137,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 								<FallBackAvatar key={i} className="webchat-header-cognigy-logo" />
 							);
 
-						return <Avatar key={i} src={avatar} alt="Image avatar" />;
+						return <Avatar key={i} src={avatar} alt="" />;
 					})
 				) : (
 					<FallBackAvatar />

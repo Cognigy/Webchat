@@ -1334,7 +1334,7 @@ export class WebchatUI extends React.PureComponent<
 					>
 						<h2 className="sr-only" id="webchatChatHistoryHeading">
 							{config.settings.customTranslations?.ariaLabels?.chatHistory ??
-								"Chat History"}
+								"Chat history"}
 						</h2>
 						{this.renderHistory()}
 					</HistoryWrapper>
