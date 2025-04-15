@@ -24,11 +24,11 @@ const Link = styled.a(({ theme }) => ({
 	},
 }));
 
-const StyledFooterTypography = styled(Typography)(() => ({
+const StyledFooterTypography = styled(Typography)({
 	lineHeight: "19.6px",
 	wordWrap: "break-word",
 	margin: 0,
-}));
+});
 
 interface IChatOptionsFooterProps {
 	settings: IWebchatSettings;

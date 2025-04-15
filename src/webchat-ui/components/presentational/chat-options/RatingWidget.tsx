@@ -10,21 +10,21 @@ import MultilineInput from "../MultilineInput";
 import { IOnSendRatingProps } from "./ChatOptions";
 import { useSelector } from "../../../../webchat/helper/useSelector";
 
-const RatingWidgetRoot = styled.div(() => ({
+const RatingWidgetRoot = styled.div({
 	width: "100%",
 	height: "310px",
 	display: "flex",
 	flexDirection: "column",
 	padding: "20px 0",
 	gap: 24,
-}));
+});
 
-const RatingButtonContainer = styled.div(() => ({
+const RatingButtonContainer = styled.div({
 	width: "100%",
 	display: "flex",
 	alignItems: "flex-start",
 	gap: 8,
-}));
+});
 
 const RatingButton = styled(IconButton)(({ theme, selected }) => ({
 	background: selected ? theme.primaryColor : theme.black95,
@@ -56,14 +56,14 @@ const RatingDownIcon = styled(RatingDown)(({ theme, selected }) => ({
 	},
 }));
 
-const RatingTextContainer = styled.div(() => ({
+const RatingTextContainer = styled.div({
 	display: "flex",
 	flexDirection: "column",
 	justifyContent: "center",
 	alignItems: "flex-start",
 	gap: 16,
 	alignSelf: "stretch",
-}));
+});
 
 const SendButton = styled(PrimaryButton)(({ theme }) => ({
 	width: "100%",

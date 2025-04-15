@@ -12,25 +12,25 @@ import getKeyboardFocusableElements from "../../../utils/find-focusable";
 import TTSOption from "./TTSOption";
 import DeleteConversation from "./DeleteConversation";
 
-const ChatOptionsRoot = styled.div(() => ({
+const ChatOptionsRoot = styled.div({
 	width: "100%",
 	height: "100%",
 	display: "flex",
 	flexDirection: "column",
-}));
+});
 
-const ChatOptionsContainer = styled.div(() => ({
+const ChatOptionsContainer = styled.div({
 	width: "100%",
 	height: "100%",
 	display: "flex",
 	padding: "0 20px",
 	flexDirection: "column",
 	overflowY: "auto",
-}));
+});
 
-const DividerWrapper = styled.div(() => ({
+const DividerWrapper = styled.div({
 	padding: "12px 0px",
-}));
+});
 
 const Divider = styled.div(({ theme }) => ({
 	height: 1,
