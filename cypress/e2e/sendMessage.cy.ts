@@ -4,7 +4,7 @@ describe("Send Message", () => {
 			.initMockWebchat()
 			.openWebchat()
 			.startConversation()
-			.get('[aria-label="Send Message"]')
+			.get('[aria-label="Send message"]')
 			.should("be.visible");
 	});
 
@@ -13,9 +13,9 @@ describe("Send Message", () => {
 			.initMockWebchat()
 			.openWebchat()
 			.startConversation()
-			.get('[aria-label="Message to send"]')
+			.get('[aria-label="Type something here..."]')
 			.type("Hi")
-			.get('[aria-label="Send Message"]')
+			.get('[aria-label="Send message"]')
 			.click()
 			.get(".webchat-chat-history")
 			.contains("Hi");
