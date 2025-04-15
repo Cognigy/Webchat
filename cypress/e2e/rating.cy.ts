@@ -70,7 +70,7 @@ describe("Rating", () => {
 			"bot",
 		);
 
-		cy.get('[aria-label="Thumbs Up"]').click();
+		cy.get('[aria-label="Like"]').click();
 		cy.get('[data-test="rating-input"]').type("I liked it");
 		cy.get(".webchat-rating-widget-send-button").click();
 
@@ -95,7 +95,7 @@ describe("Rating", () => {
 			"bot",
 		);
 
-		cy.get('[aria-label="Thumbs Down"]').click();
+		cy.get('[aria-label="Dislike"]').click();
 		cy.get('[data-test="rating-input"]').type("I didnt like it");
 		cy.get(".webchat-rating-widget-send-button").click();
 
@@ -159,7 +159,7 @@ describe("Rating", () => {
 
 		cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
 
-		cy.get('[aria-label="Thumbs Up"]').click();
+		cy.get('[aria-label="Like"]').click();
 		cy.get('[data-test="rating-input"]').type("I loved it");
 		cy.get(".webchat-rating-widget-send-button").click();
 
@@ -199,7 +199,7 @@ describe("Rating", () => {
 
 		cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
 
-		cy.get('[aria-label="Thumbs Up"]').click();
+		cy.get('[aria-label="Like"]').click();
 		cy.get('[data-test="rating-input"]').type("I loved it");
 		cy.get(".webchat-rating-widget-send-button").click();
 
