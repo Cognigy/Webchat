@@ -126,10 +126,10 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 						<HeaderLogo
 							src={config?.settings?.layout?.logoUrl}
 							className={"webchat-teaser-message-header-logo"}
-							alt="Chat logo"
+							alt=""
 						/>
 					) : (
-						<CognigyAIAvatar alt="Chat logo" />
+						<CognigyAIAvatar alt="" />
 					)}
 					<TeaserMessageHeaderContent>
 						<Typography

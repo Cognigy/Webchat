@@ -172,7 +172,7 @@ const Header: FC<HeaderProps> = props => {
 							<Logo
 								src={logoUrl}
 								className={classnames("webchat-header-logo")}
-								alt="Chat logo"
+								alt=""
 							/>
 						) : (
 							<CognigyAIAvatar
