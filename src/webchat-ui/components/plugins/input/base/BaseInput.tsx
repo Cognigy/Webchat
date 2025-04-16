@@ -61,6 +61,7 @@ const Button = styled.button(({ theme }) => ({
 	padding: 0,
 	backgroundColor: "transparent",
 	border: "none",
+	borderRadius: 4,
 	fill: theme.textDark,
 	cursor: "pointer",
 	outline: "none",
@@ -69,10 +70,15 @@ const Button = styled.button(({ theme }) => ({
 		fill: theme.black60,
 		cursor: "default",
 	},
-
+	"&:not(:disabled):hover": {
+		fill: theme.primaryColor,
+	},
 	"&:focus": {
 		fill: theme.primaryColor,
 	},
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColor}`,
+	}	
 }));
 
 const iconButtonStyles = {
@@ -88,14 +94,6 @@ const MenuButton = styled(Button)<{ open: boolean }>(({ theme, open }) => ({
 	...iconButtonStyles,
 	padding: "6px",
 	fill: open ? theme.primaryColor : "initial",
-	":focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
-	},
-	":hover": {
-		svg: {
-			fill: theme.primaryColor,
-		},
-	},
 }));
 
 const AttachFileButton = styled(Button)(() => iconButtonStyles);
@@ -144,7 +142,7 @@ const HiddenFileInput = styled.input(() => ({
 	display: "none",
 }));
 
-const SubmitButton = styled(Button)(() => iconButtonStyles);
+const SendMessageButton = styled(Button)(() => iconButtonStyles);
 
 export interface TextInputState {
 	text: string;
@@ -605,7 +603,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									</SpeechButton>
 								)}
 
-								<SubmitButton
+								<SendMessageButton
 									disabled={
 										(this.state.text === "" && isFileListEmpty) ||
 										fileUploadError
@@ -618,7 +616,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									id="webchatInputMessageSendMessageButton"
 								>
 									<SendIcon />
-								</SubmitButton>
+								</SendMessageButton>
 							</>
 						)}
 					</InputForm>
