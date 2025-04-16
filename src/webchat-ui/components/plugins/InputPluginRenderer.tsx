@@ -12,6 +12,7 @@ import { IWebchatTheme } from "../../style";
 import IconButton from "../presentational/IconButton";
 import Branding from "../branding/Branding";
 import classnames from "classnames";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
 type HTMLDivPropsWithoutInputMode = Omit<React.HTMLProps<HTMLDivElement>, "inputMode">;
 
@@ -22,7 +23,6 @@ export interface InputProps extends InputComponentProps, HTMLDivPropsWithoutInpu
 	inputMode: string;
 	webchatTheme: IWebchatTheme;
 	sttActive: boolean;
-	textActive: boolean;
 }
 
 const SmallToolbar = styled(Toolbar)({
@@ -70,10 +70,10 @@ const InputPluginRenderer = ({
 	webchatTheme,
 	onEmitAnalytics,
 	sttActive,
-	textActive,
 	...props
 }: InputProps): JSX.Element => {
-	const results: any[] = [];
+
+	const textActive = useSelector((state) => state.input.textActive);
 
 	const attributes = Object.keys(props).length > 0 ? props : undefined;
 

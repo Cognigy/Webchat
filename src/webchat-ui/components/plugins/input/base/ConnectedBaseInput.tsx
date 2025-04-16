@@ -13,7 +13,6 @@ import { addFilesToList } from "../../../../../webchat/store/input/file-input-mi
 
 export const ConnectedBaseInput = (props: InputComponentProps) => {
 	const sttActive = useSelector((state: StoreState) => state.input.sttActive);
-	const textActive = useSelector((state: StoreState) => state.input.textActive);
 	const fileList = useSelector((state: StoreState) => state.input.fileList);
 	const fileUploadError = useSelector((state: StoreState) => state.input.fileUploadError);
 
@@ -24,7 +23,6 @@ export const ConnectedBaseInput = (props: InputComponentProps) => {
 			{...props}
 			sttActive={sttActive}
 			onSetSTTActive={(active: boolean) => dispatch(setSTTActive(active))}
-			textActive={textActive}
 			onSetTextActive={(active: boolean) => dispatch(setTextActive(active))}
 			fileList={fileList}
 			fileUploadError={fileUploadError}

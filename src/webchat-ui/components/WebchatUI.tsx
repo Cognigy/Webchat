@@ -120,7 +120,6 @@ export interface WebchatUIProps {
 	onSetShowHomeScreen: (show: boolean) => void;
 
 	sttActive: boolean;
-	textActive: boolean;
 	isDropZoneVisible: boolean;
 	onSetDropZoneVisible: (isVisible: boolean) => void;
 	fileList: IFile[];
@@ -724,7 +723,6 @@ export class WebchatUI extends React.PureComponent<
 				onEmitAnalytics={this.props.onEmitAnalytics}
 				theme={this.state.theme}
 				sttActive={this.props.sttActive}
-				textActive={this.props.textActive}
 			/>
 		);
 	};
