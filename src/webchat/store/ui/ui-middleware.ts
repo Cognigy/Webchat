@@ -11,7 +11,6 @@ import {
 } from "./ui-reducer";
 import { getStorage } from "../../helper/storage";
 import { setHasAcceptedTermsInStorage } from "../../helper/privacyPolicy";
-import getKeyboardFocusableElements from "../../../webchat-ui/utils/find-focusable";
 
 export const uiMiddleware: Middleware<object, StoreState> =
 	store =>
