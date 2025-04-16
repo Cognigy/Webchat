@@ -683,7 +683,6 @@ interface IWebchatSettings {
 			closeDialog?: string;
 			togglePersistentMenu?: string;
 			addAttachment?: string;
-			messageToSend?: string;
 			speechToText?: string;
 			sendMessage?: string;
 			removeFileAttachment?: string;
