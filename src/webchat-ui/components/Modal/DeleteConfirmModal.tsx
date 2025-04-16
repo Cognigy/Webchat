@@ -6,10 +6,10 @@ import { getTextContrastColor, deriveHoverColor } from "../../style";
 import SecondaryButton from "../presentational/SecondaryButton";
 
 export const DeleteButton = styled(Button)<{ background?: string }>(({ theme, background }) => ({
-	background: background ? background : theme.red20,
-	color: getTextContrastColor(background ? background : theme.red20, theme),
+	background: background ? background : theme.red30,
+	color: getTextContrastColor(background ? background : theme.red30, theme),
 	"&:hover:not(:disabled)": {
-		background: deriveHoverColor(background ? background : theme.red20),
+		background: deriveHoverColor(background ? background : theme.red30),
 	},
 }));
 
@@ -19,7 +19,7 @@ const CancelButton = styled(SecondaryButton)<{ background?: string }>(({ theme, 
 	marginRight: "auto",
 }));
 
-const DeleteConfirmation = styled(DeleteButton)(({ theme }) => ({
+const DeleteConfirmation = styled(DeleteButton)(() => ({
 	marginLeft: "auto",
 }));
 

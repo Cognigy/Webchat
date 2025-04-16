@@ -45,6 +45,7 @@ export interface IWebchatTheme {
 	red: string;
 	red10: string;
 	red20: string;
+	red30: string;
 	red40: string;
 
 	// Legacy Webchat V2 theme colors
@@ -174,6 +175,7 @@ export const createWebchatTheme = (
 	const red = "#FF0000";
 	const red10 = "#FFE5E5";
 	const red20 = "#E55050";
+	const red30 = "#E02E2E";
 	const red40 = "#B22F2F";
 
 	// calculate new gradient based on optional theme.primaryColor if no theme.backgroundHome is given
@@ -274,6 +276,8 @@ export const createWebchatTheme = (
 	if (!theme.red10) theme.red10 = red10;
 
 	if (!theme.red20) theme.red20 = red20;
+
+	if (!theme.red30) theme.red30 = red30;
 
 	if (!theme.red40) theme.red40 = red40;
 
