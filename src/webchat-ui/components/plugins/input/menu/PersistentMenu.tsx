@@ -1,7 +1,7 @@
 import React from "react";
 import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
 import styled from "@emotion/styled";
-import { ActionButtons } from "@cognigy/chat-components";
+import { ActionButtons, Typography } from "@cognigy/chat-components";
 import { IWebchatButton } from "@cognigy/socket-client";
 
 interface PersistentMenuProps {
@@ -30,12 +30,6 @@ const ActionButtonsWrapper = styled.div(({ theme }) => ({
 	paddingLeft: theme.unitSize,
 }));
 
-const PersistentMenuTitle = styled.h5(({ theme }) => ({
-	color: "hsla(0, 0%, 0%, .3)",
-	padding: `0 ${theme.unitSize}px ${theme.unitSize}px`,
-	margin: 0,
-}));
-
 const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSelect }) => {
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -53,7 +47,7 @@ const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSel
 						menuRef.current.lastChild) as HTMLButtonElement;
 				break;
 			case "ArrowDown":
-				newFocusTarget = (target.nextElementSibling ||
+				newFocusTarget = ((target as HTMLElement).nextElementSibling ||
 					menuRef.current.firstChild) as HTMLButtonElement;
 				break;
 			case "Home":
@@ -80,7 +74,9 @@ const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSel
 
 	return (
 		<PersistentMenuContainer className="webchat-input-persistent-menu" tabIndex={-1}>
-			<PersistentMenuTitle>{title}</PersistentMenuTitle>
+			<Typography variant="body-semibold" component="h3" marginTop={4} marginLeft={8}>
+				{title}
+			</Typography>
 			<ActionButtonsWrapper
 				aria-labelledby="persistentMenuTitle"
 				role="menu"
