@@ -5,7 +5,8 @@
 			"_default": {
 				"_image": {
 					"type": "image",
-					"imageUrl": "https://picsum.photos/id/237/200/200"
+					"imageUrl": "https://picsum.photos/id/237/200/200",
+					"imageAltText": "A cute dog"
 				}
 			},
 			"_webchat": {
@@ -13,7 +14,8 @@
 					"attachment": {
 						"type": "image",
 						"payload": {
-							"url": "https://picsum.photos/id/237/200/200"
+							"url": "https://picsum.photos/id/237/200/200",
+							"altText": "A cute dog"
 						}
 					}
 				}

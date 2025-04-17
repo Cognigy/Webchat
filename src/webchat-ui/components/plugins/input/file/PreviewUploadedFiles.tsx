@@ -87,7 +87,8 @@ const PreviewUploadedFiles: FC = () => {
 
 	const fileList = useSelector((state: StoreState) => state.input.fileList);
 	const removeFileAttachment = useSelector(
-		(state: StoreState) => state.config.settings.customTranslations?.ariaLabels,
+		(state: StoreState) =>
+			state.config.settings.customTranslations?.ariaLabels?.removeFileAttachment,
 	);
 
 	const dispatch = useDispatch();
@@ -112,7 +113,7 @@ const PreviewUploadedFiles: FC = () => {
 									});
 								}
 							}}
-							aria-label={`${removeFileAttachment ?? "Remove File Attachment"} ${index + 1}`}
+							aria-label={`${removeFileAttachment ?? "Remove file attachment"} ${index + 1}`}
 							ref={ref => {
 								if (ref) {
 									removeFileButtonRefs.current[index] = ref;

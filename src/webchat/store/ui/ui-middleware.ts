@@ -49,7 +49,6 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				if (open && isChatHistoryVisible) {
 					store.dispatch(clearUnseenMessages());
 				}
-
 				break;
 			}
 

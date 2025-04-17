@@ -215,7 +215,8 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 			ref={homeScreenRef}
 		>
 			<h2 className="sr-only">
-				{config.settings.customTranslations?.ariaLabels?.homeScreen ?? "Chat home screen"}
+				{config.settings.customTranslations?.ariaLabels?.homeScreen ??
+					"Chat window home screen"}
 			</h2>
 			<HomeScreenContent className="webchat-homescreen-content" settings={config?.settings}>
 				<HomeScreenHeader className="webchat-homescreen-header">

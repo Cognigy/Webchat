@@ -159,7 +159,7 @@ const Header: FC<HeaderProps> = props => {
 							data-header-back-button
 							onClick={onGoBack}
 							className="webchat-header-back-button cc-rtl-flip"
-							aria-label={ariaLabels?.goBack ?? "Go Back"}
+							aria-label={ariaLabels?.goBack ?? "Go back"}
 							ref={closeButtonRef}
 						>
 							<GoBackIcon />
@@ -194,7 +194,7 @@ const Header: FC<HeaderProps> = props => {
 							data-header-delete-all-conversations-button
 							onClick={onDeleteAllConversations}
 							aria-label={
-								ariaLabels?.deleteAllConversations ?? "Delete All Conversations"
+								ariaLabels?.deleteAllConversations ?? "Delete all conversations"
 							}
 							className="webchat-header-delete-all-conversations-button"
 							iconColor={rest.deleteIconColor}
@@ -224,7 +224,7 @@ const Header: FC<HeaderProps> = props => {
 								data-header-minimize-button
 								onClick={onMinimize}
 								className="webchat-header-minimize-button"
-								aria-label={ariaLabels?.minimizeChat ?? "Minimize Chat"}
+								aria-label={ariaLabels?.minimizeChat ?? "Minimize chat"}
 							>
 								<MinimizeIcon />
 							</HeaderIconButton>
@@ -237,7 +237,7 @@ const Header: FC<HeaderProps> = props => {
 								data-header-close-button
 								onClick={handleCloseClick}
 								className="webchat-header-close-button"
-								aria-label={ariaLabels?.closeChat ?? "Close Chat"}
+								aria-label={ariaLabels?.closeChat ?? "Close chat"}
 								ref={closeButtonRef}
 							>
 								<CloseIcon />

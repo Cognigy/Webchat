@@ -487,6 +487,19 @@ export class WebchatUI extends React.PureComponent<
 	}
 
 	async componentDidUpdate(prevProps: WebchatUIProps, prevState: WebchatUIState) {
+		// When the webchat is opened, focus is moved to the first focusable element inside the webchat window.
+		// This happens only if the currently focused element is the toggle button, ensuring no interruption to other interactions or auto-focus behavior.
+		// This prevents focus loss when no element with auto-focus is found inside the webchat window.
+		if (prevProps.open !== this.props.open && this.props.open) {
+			const webchatWindowEl = this.webchatWindowRef?.current;
+			const webchatToggleButton = this.chatToggleButtonRef?.current;
+			const { firstFocusable } = getKeyboardFocusableElements(webchatWindowEl as HTMLElement);
+
+			if (document.activeElement === webchatToggleButton && firstFocusable) {
+				firstFocusable.focus();
+			}
+		}
+
 		if (
 			prevProps.ttsActive !== this.props.ttsActive ||
 			prevProps.inputPlugins !== this.props.inputPlugins ||
@@ -1102,6 +1115,7 @@ export class WebchatUI extends React.PureComponent<
 													className="webchat-toggle-button-disabled"
 													aria-label={getDisabledMessage()}
 													ref={this.chatToggleButtonRef}
+													id="webchatWindowToggleButton"
 													disabled
 												>
 													<ChatIcon />
@@ -1114,6 +1128,7 @@ export class WebchatUI extends React.PureComponent<
 												{...webchatToggleProps}
 												type="button"
 												className="webchat-toggle-button"
+												id="webchatWindowToggleButton"
 												aria-label={openChatAriaLabel()}
 												ref={this.chatToggleButtonRef}
 											>
@@ -1332,7 +1347,7 @@ export class WebchatUI extends React.PureComponent<
 					>
 						<h2 className="sr-only" id="webchatChatHistoryHeading">
 							{config.settings.customTranslations?.ariaLabels?.chatHistory ??
-								"Chat History"}
+								"Chat history"}
 						</h2>
 						{this.renderHistory()}
 					</HistoryWrapper>

@@ -22,6 +22,7 @@ const GetStartedInput = ({ onSendMessage, config }: InputComponentProps) => (
 			color="primary"
 			id="webchatGetStartedButton"
 			className="webchat-input-get-started-button"
+			autoFocus
 		>
 			{config.settings.startBehavior.getStartedButtonText}
 		</GetStartedButton>

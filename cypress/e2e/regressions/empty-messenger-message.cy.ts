@@ -9,6 +9,6 @@ describe("Empty Messenger Message", () => {
 		});
 
 		cy.receiveMessage("hi");
-		cy.contains("hi").should("be.visible");
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").contains("hi");
 	});
 });
