@@ -1,4 +1,4 @@
-Created on 04-04-2025 at 11:31:22
+Created on 17-04-2025 at 15:46:16
 
 {
   "@ampproject/remapping@2.3.0": {
@@ -150,7 +150,7 @@ Created on 04-04-2025 at 11:31:22
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.43.0": {
+  "@cognigy/chat-components@0.47.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
