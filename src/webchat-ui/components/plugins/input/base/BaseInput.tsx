@@ -78,7 +78,7 @@ const Button = styled.button(({ theme }) => ({
 	},
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
-	}	
+	},
 }));
 
 const iconButtonStyles = {

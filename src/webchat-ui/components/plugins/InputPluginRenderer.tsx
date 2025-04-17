@@ -72,8 +72,7 @@ const InputPluginRenderer = ({
 	sttActive,
 	...props
 }: InputProps): JSX.Element => {
-
-	const textActive = useSelector((state) => state.input.textActive);
+	const textActive = useSelector(state => state.input.textActive);
 
 	const attributes = Object.keys(props).length > 0 ? props : undefined;
 
