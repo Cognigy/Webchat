@@ -18,17 +18,22 @@ const Link = styled.a(({ theme }) => ({
 	textDecoration: "none",
 	color: theme.black10,
 
-	"&:focus": {
+	"&:focus, &:hover": {
 		outline: "none",
-		color: theme.primaryWeakColor,
+		color: theme.primaryColor,
+	},
+
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColor}`,
+		outlineOffset: 2,
 	},
 }));
 
-const StyledFooterTypography = styled(Typography)(() => ({
+const StyledFooterTypography = styled(Typography)({
 	lineHeight: "19.6px",
 	wordWrap: "break-word",
 	margin: 0,
-}));
+});
 
 interface IChatOptionsFooterProps {
 	settings: IWebchatSettings;

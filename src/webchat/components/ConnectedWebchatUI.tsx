@@ -94,7 +94,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 				requestRatingEventBannerText,
 				requestRatingChatStatusBadgeText,
 			},
-			input: { sttActive, textActive, isDropZoneVisible, fileList, fileUploadError },
+			input: { sttActive, isDropZoneVisible, fileList, fileUploadError },
 			xAppOverlay: { open: isXAppOverlayOpen },
 		} = state;
 
@@ -121,7 +121,6 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			requestRatingChatStatusBadgeText,
 			showHomeScreen,
 			sttActive,
-			textActive,
 			isDropZoneVisible,
 			fileList,
 			fileUploadError,

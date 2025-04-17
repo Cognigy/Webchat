@@ -14,11 +14,11 @@ import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
 import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
 
-const InputWrapper = styled.div(() => ({
+const InputWrapper = styled.div({
 	display: "flex",
 	flexDirection: "column",
 	gap: 12,
-}));
+});
 
 const InputForm = styled.form<{ persistentMenuOpen: boolean }>(({ persistentMenuOpen }) => ({
 	display: "flex",
@@ -61,6 +61,7 @@ const Button = styled.button(({ theme }) => ({
 	padding: 0,
 	backgroundColor: "transparent",
 	border: "none",
+	borderRadius: 4,
 	fill: theme.textDark,
 	cursor: "pointer",
 	outline: "none",
@@ -69,9 +70,14 @@ const Button = styled.button(({ theme }) => ({
 		fill: theme.black60,
 		cursor: "default",
 	},
-
+	"&:not(:disabled):hover": {
+		fill: theme.primaryColor,
+	},
 	"&:focus": {
 		fill: theme.primaryColor,
+	},
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColor}`,
 	},
 }));
 
@@ -88,17 +94,9 @@ const MenuButton = styled(Button)<{ open: boolean }>(({ theme, open }) => ({
 	...iconButtonStyles,
 	padding: "6px",
 	fill: open ? theme.primaryColor : "initial",
-	":focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
-	},
-	":hover": {
-		svg: {
-			fill: theme.primaryColor,
-		},
-	},
 }));
 
-const AttachFileButton = styled(Button)(({ theme }) => iconButtonStyles);
+const AttachFileButton = styled(Button)(() => iconButtonStyles);
 
 const SpeechButton = styled(Button)(({ theme }) => ({
 	...iconButtonStyles,
@@ -109,9 +107,9 @@ const SpeechButton = styled(Button)(({ theme }) => ({
 	},
 }));
 
-const SpeechIcon = styled(SpeechIconSVG)(() => ({
+const SpeechIcon = styled(SpeechIconSVG)({
 	position: "relative",
-}));
+});
 
 const SpeechButtonBackground = styled.div(({ theme }) => ({
 	position: "absolute",
@@ -144,7 +142,7 @@ const HiddenFileInput = styled.input(() => ({
 	display: "none",
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => iconButtonStyles);
+const SendMessageButton = styled(Button)(() => iconButtonStyles);
 
 export interface TextInputState {
 	text: string;
@@ -167,7 +165,6 @@ interface IBaseInputState extends TextInputState, ISpeechInputState, IPersistent
 interface IBaseInputProps extends InputComponentProps {
 	sttActive: boolean;
 	onSetSTTActive: (active: boolean) => void;
-	textActive: boolean;
 	onSetTextActive: (active: boolean) => void;
 	fileUploadError: boolean;
 	fileList: IFile[];
@@ -469,7 +466,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	render() {
 		const { props, state } = this;
 
-		const { sttActive, fileUploadError, fileList, textActive } = props;
+		const { sttActive, fileUploadError, fileList } = props;
 
 		const { text, speechResult: speechInterim, isMenuOpen } = state;
 
@@ -491,7 +488,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 		return (
 			<>
-				<InputWrapper data-active={textActive && isFileListEmpty}>
+				<InputWrapper>
 					<InputForm
 						onSubmit={this.handleSubmit}
 						className={classnames("webchat-input-menu-form")}
@@ -606,7 +603,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									</SpeechButton>
 								)}
 
-								<SubmitButton
+								<SendMessageButton
 									disabled={
 										(this.state.text === "" && isFileListEmpty) ||
 										fileUploadError
@@ -619,7 +616,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									id="webchatInputMessageSendMessageButton"
 								>
 									<SendIcon />
-								</SubmitButton>
+								</SendMessageButton>
 							</>
 						)}
 					</InputForm>

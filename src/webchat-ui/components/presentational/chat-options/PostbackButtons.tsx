@@ -5,16 +5,16 @@ import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { WebchatUIProps } from "../../WebchatUI";
 import { IWebchatButton } from "@cognigy/socket-client";
 
-const PostbackButtonsRoot = styled.div(() => ({
+const PostbackButtonsRoot = styled.div({
 	display: "flex",
 	flexDirection: "column",
 	alignItems: "flex-start",
 	gap: 24,
 	alignSelf: "stretch",
 	padding: "20px 0",
-}));
+});
 
-const ActionButtonsWrapper = styled.div(() => ({
+const ActionButtonsWrapper = styled.div({
 	display: "flex",
 	width: "295px",
 	flexDirection: "row",
@@ -22,7 +22,7 @@ const ActionButtonsWrapper = styled.div(() => ({
 	alignItems: "flex-end",
 	alignContent: "flex-end",
 	gap: 8,
-}));
+});
 
 interface IPostbackButtonsProps {
 	config: IWebchatConfig;

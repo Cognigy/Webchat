@@ -7,8 +7,9 @@ describe("Chat Log", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "tabindex", -1);
 	});
 
-	it.only("is chat log region focusable when the log is scrollable", () => {
+	it("is chat log region focusable when the log is scrollable", () => {
 		cy.withMessageFixture("adaptivecard", () => {
+			cy.get("#webchatChatHistoryWrapperLiveLogPanel").focus();
 			cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "tabindex", 0);
 		});
 	});

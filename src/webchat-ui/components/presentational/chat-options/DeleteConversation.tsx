@@ -14,15 +14,15 @@ import DeleteConfirmModal, {
 import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-middleware";
 import { getOptionsKey } from "../../../../webchat/store/options/options";
 
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	> button {
-		width: auto;
-		padding: 0 16px;
-	}
-`;
+const Container = styled.div({
+	display: "flex",
+	flexDirection: "column",
+	alignItems: "flex-start",
+	"& > button": {
+		width: "auto",
+		padding: "0 16px",
+	},
+});
 
 const DeleteButton = styled(ConfirmDeleteButton)``;
 
