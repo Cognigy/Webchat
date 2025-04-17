@@ -87,7 +87,8 @@ const PreviewUploadedFiles: FC = () => {
 
 	const fileList = useSelector((state: StoreState) => state.input.fileList);
 	const removeFileAttachment = useSelector(
-		(state: StoreState) => state.config.settings.customTranslations?.ariaLabels,
+		(state: StoreState) =>
+			state.config.settings.customTranslations?.ariaLabels?.removeFileAttachment,
 	);
 
 	const dispatch = useDispatch();
