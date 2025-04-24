@@ -114,9 +114,9 @@ export const input: Reducer<IInputState, InputAction> = (state = getInitialState
 		}
 
 		case REMOVE_FILE_FROM_LIST: {
-			const fileIem = state.fileList[action.index];
-			if (fileIem?.abortController) {
-				fileIem.abortController.abort();
+			const fileItem = state.fileList[action.index];
+			if (fileItem?.abortController) {
+				fileItem.abortController.abort();
 			}
 			const nextFileList = state.fileList.filter((_, i) => i !== action.index);
 			let fileUploadError = false;
