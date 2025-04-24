@@ -1,208 +1,138 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import styled from "@emotion/styled";
-import ScrollToBottom, { useScrollToBottom, useSticky } from "react-scroll-to-bottom";
-import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
-import { useSelector } from "../../../webchat/helper/useSelector";
+import React from 'react'
+import styled from '@emotion/styled';
 
-interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
-	showFocusOutline?: boolean;
-	lastInputId: string;
-	scrollBehavior: IWebchatConfig["settings"]["behavior"]["scrollingBehavior"];
+const CLIENT_HEIGHT_OFFSET = 16 + 70; // banner + typing indicator
+
+export interface OuterProps extends React.HTMLProps<HTMLDivElement> {
+    showFocusOutline: boolean;
+    scrollToPosition: number;
+    lastScrolledPosition: number | null;
+    setScrollToPosition?: (position: number) => void;
+    setLastScrolledPosition?: (position: number | null) => void;
+    tabIndex: 0 | -1;
+ }
+
+type InnerProps = OuterProps;
+
+interface IState {
+    height: number;
+    isChatLogFocused: boolean;
 }
 
-const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => ({
-	overflowY: "auto",
-	flexGrow: 1,
-	minHeight: 0,
-	height: theme.blockSize,
-	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
+const ChatLogWrapper = styled.div<OuterProps>(({theme}) => props => ({
+    outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
+}))
+
+const ChatLog = styled.div(({theme}) => ({
+    paddingTop: theme.unitSize * 2,
+    "&:focus": {
+        outline: "none",
+    }
 }));
 
-const Scroller = styled(ScrollToBottom)({
-	height: "100% !important",
-	width: "100%",
-	overflowY: "auto" as const,
-	position: "initial",
+export class ChatScroller extends React.Component<InnerProps, IState> {
+    rootRef: React.RefObject<HTMLDivElement>;
+    innerRef: React.RefObject<HTMLDivElement>
 
-	"& .hiddenAutoScrollButton": {
-		display: "none",
-	},
-});
+    constructor(props: InnerProps) {
+        super(props);
 
-const ChatLog = styled.div(({ theme }) => ({
-	paddingBottom: theme.unitSize * 2,
-	"&:focus": {
-		outline: "none",
-	},
-}));
+        this.state = {
+            height: 0,
+            isChatLogFocused: false
+        }
 
-const ScrollButton = styled("button")(({ theme }) => ({
-	position: "absolute",
-	zIndex: 10,
-	bottom: "110px",
-	left: "50%",
-	transform: "translateX(-50%)",
-	backgroundColor: theme.primaryWeakColor,
-	color: theme.primaryContrastColor,
-	border: "none",
-	borderRadius: "50%",
-	width: "30px",
-	height: "30px",
-	cursor: "pointer",
-	boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-	"&:hover": {
-		backgroundColor: theme.primaryStrongColor,
-	},
-}));
+        this.rootRef = React.createRef();
+        this.innerRef = React.createRef();
+    }
 
-/**
- * The ChatScroller component handles the scrolling logic for the chat log.
- * - If scrolled to bottom, it will auto-scroll to bottom if new messages come in (sticky).
- * - It will not scroll to the bottom when the user has scrolled up.
- * - It will only auto-scroll to the bottom until the last user input is at the top.
- * 	This stops once the user scrolled to the bottom again and resets when the next user input comes in.
- * - It will show a scroll button when scrolled up from bottom.
- */
-export function ChatScroller({
-	children,
-	lastInputId,
-	scrollBehavior,
-	...restProps
-}: IChatLogWrapperProps) {
-	const innerRef = useRef<HTMLDivElement>(null);
-	const outerRef = useRef<HTMLDivElement>(null);
+    getSnapshotBeforeUpdate() {
+        const root = this.rootRef.current;
+        if (!root)
+            return false;
 
-	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
-	const [shouldScrollToLastInput, setShouldScrollToLastInput] = useState(false);
-	const [scrolledToLastInput, setScrolledToLastInput] = useState(false);
+        const isScrolledToBottom = root.scrollHeight - root.scrollTop <= root.clientHeight + CLIENT_HEIGHT_OFFSET;
 
-	useEffect(() => {
-		if (lastInputId) {
-			setShouldScrollToLastInput(true);
-			setScrolledToLastInput(false);
-		}
-	}, [lastInputId]);
+        return isScrolledToBottom
+    }
 
-	const handleFocus = () => {
-		if (innerRef.current === document.activeElement) {
-			setIsChatLogFocused(true);
-		}
-	};
+    componentDidUpdate(prevProps: InnerProps, prevState: IState, wasScrolledToBottom: boolean) {
+        const { setScrollToPosition, scrollToPosition, lastScrolledPosition, setLastScrolledPosition } = this.props;
+        if (scrollToPosition && setScrollToPosition) {
+            // we skip scrollToPosition on first render and re-renders
+            if (lastScrolledPosition === null && setLastScrolledPosition) {
+                setTimeout(() => { this.handleScrollTo() }, 1000);
+                setLastScrolledPosition(0);
+            } else if (typeof lastScrolledPosition === "number" && scrollToPosition > lastScrolledPosition) {
+                setTimeout(() => { this.handleScrollTo(scrollToPosition) }, 0);
+                setLastScrolledPosition && setLastScrolledPosition(scrollToPosition);
+            } else if (wasScrolledToBottom) {
+                setTimeout(() => { this.handleScrollTo() }, 0);
+            }
+            setScrollToPosition(0);
+        } else if (wasScrolledToBottom) {
+            setTimeout(() => { this.handleScrollTo(undefined, true) }, 0);
+        }  
+    }
 
-	const handleBlur = () => {
-		setIsChatLogFocused(false);
-	};
+    componentDidMount() {
+        setTimeout(() => { this.handleScrollTo() }, 0);
+    }
 
-	const scrollerFn = useCallback(
-		({ maxValue }) => {
-			if (!lastInputId || !scrollBehavior || scrollBehavior === "alwaysScroll")
-				return maxValue;
+    componentWillUnmount() {
+        const { setLastScrolledPosition } = this.props;
+        setLastScrolledPosition && setLastScrolledPosition(null);
+    }
 
-			const targetElement = document.getElementById(lastInputId);
-			if (!targetElement || !outerRef.current) return maxValue;
+    handleScrollTo = (position?: number, instant = false) => {
+        const root = this.rootRef.current;
 
-			const containerRect = outerRef.current.getBoundingClientRect();
-			const elementRect = targetElement.getBoundingClientRect();
-			const elementTopPosition = elementRect.top - containerRect.top;
+        // we need the container reference to perform a scroll on it
+        if (!root)
+            return;
 
-			// If last input element is near the top (within threshold), stop scrolling
-			if (shouldScrollToLastInput && elementTopPosition <= 32) {
-				setScrolledToLastInput(true);
-				return 0;
-			}
+        const scrollTo = position ? position - 70 : root.scrollHeight - root.clientHeight;
 
-			return maxValue;
-		},
-		[lastInputId, shouldScrollToLastInput, outerRef.current],
-	);
+        try {
+            root.scroll({
+                top: scrollTo,
+                behavior: instant ? "instant" : "smooth",
+            });
+        } catch (e) {
+            root.scrollTop = scrollTo;
+        }
+    }
 
-	// Find if the chat log is overflowing to allow for focus (for keyboard users to scroll)
-	const isChatLogOverflowing = () => {
-		if (!outerRef.current || !innerRef.current) return false;
-		const outerHeight = outerRef.current.clientHeight;
-		const innerHeight = innerRef.current.scrollHeight;
-		return innerHeight > outerHeight;
-	};
+    // Add outline to the parent element when Chat log receives focus
+    handleFocus = () => {
+        if(this.innerRef.current === document.activeElement) {
+            this.setState({isChatLogFocused: true});
+        }
+    }
 
-	return (
-		<ChatLogWrapper ref={outerRef} {...restProps} showFocusOutline={isChatLogFocused}>
-			<Scroller followButtonClassName="hiddenAutoScrollButton" scroller={scrollerFn}>
-				<ChatLog
-					ref={innerRef}
-					id="webchatChatHistoryWrapperLiveLogPanel"
-					tabIndex={isChatLogOverflowing() ? 0 : -1}
-					role="log"
-					onFocus={handleFocus}
-					onBlur={handleBlur}
-				>
-					<ScrollerContent
-						scrolledToLastInput={scrolledToLastInput}
-						setShouldScrollToLastInput={setShouldScrollToLastInput}
-					>
-						{children}
-					</ScrollerContent>
+    // Remove outline from the parent element when Chat log loses focus 
+    handleBlur = () => {
+        this.setState({isChatLogFocused: false})
+    }
+
+    render() {
+		const { children, showFocusOutline, tabIndex, ...restProps } = this.props;
+
+        return (
+            <ChatLogWrapper ref={this.rootRef} showFocusOutline={this.state.isChatLogFocused} {...restProps}>
+                {/* Focusable Chat log region*/}
+                <ChatLog
+                    ref={this.innerRef}
+                    id="webchatChatHistoryWrapperLiveLogPanel"
+                    tabIndex={tabIndex}
+                    role="log"
+                    aria-live="polite"
+                    onFocus={this.handleFocus}
+                    onBlur={this.handleBlur}
+                >
+                    {children}
 				</ChatLog>
-			</Scroller>
-		</ChatLogWrapper>
-	);
+            </ChatLogWrapper>
+        )
+    }
 }
-
-const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastInput }) => {
-	const scrollToBottom = useScrollToBottom();
-	const [sticky] = useSticky();
-	const scrollToBottomText = useSelector(
-		state => state.config.settings.customTranslations?.ariaLabels?.scrollToBottom,
-	);
-
-	const scrollButtonDisabled =
-		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
-
-	useEffect(() => {
-		if (sticky && scrolledToLastInput) {
-			setShouldScrollToLastInput(false);
-		}
-	}, [scrolledToLastInput, setShouldScrollToLastInput, sticky]);
-
-	const [inputHeight, setInputHeight] = useState(0);
-
-	useEffect(() => {
-		const observeElement = element => {
-			const resizeObserver = new ResizeObserver(entries => {
-				for (const entry of entries) {
-					setInputHeight(entry.contentRect.height);
-				}
-			});
-			resizeObserver.observe(element);
-
-			return () => resizeObserver.disconnect();
-		};
-
-		const mutationObserver = new MutationObserver(() => {
-			const inputElement = document.querySelector(".webchat-input");
-			if (inputElement) {
-				observeElement(inputElement);
-				mutationObserver.disconnect();
-			}
-		});
-
-		mutationObserver.observe(document.body, { childList: true, subtree: true });
-
-		return () => mutationObserver.disconnect();
-	}, []);
-
-	return (
-		<div>
-			{children}
-			{!sticky && !scrollButtonDisabled && (
-				<ScrollButton
-					className="webchat-scroll-to-bottom-button"
-					onClick={scrollToBottom}
-					aria-label={scrollToBottomText ?? "Scroll to the bottom of the chat"}
-					style={{ bottom: `${inputHeight + 50}px` }}
-				>
-					↓
-				</ScrollButton>
-			)}
-		</div>
-	);
-};
