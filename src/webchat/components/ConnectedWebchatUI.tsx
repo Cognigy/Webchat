@@ -14,6 +14,7 @@ import {
 	setHasAcceptedTerms,
 	UIState,
 	setStoredMessage,
+	setMinimize,
 } from "../store/ui/ui-reducer";
 import { getPluginsForMessage, isFullscreenPlugin } from "../../plugins/helper";
 import { connect as doConnect } from "../store/connection/connection-middleware";
@@ -139,6 +140,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 		onSetFullscreenMessage: message => dispatch(setFullscreenMessage(message)),
 		onDismissFullscreenMessage: () => dispatch(setFullscreenMessage(undefined)),
 		onClose: () => dispatch(setOpen(false)),
+		onMinimize: () => dispatch(setMinimize()),
 		onToggle: () => dispatch(toggleOpen()),
 		onTriggerEngagementMessage: () => dispatch(triggerEngagementMessage()),
 		onConnect: () => dispatch(doConnect()),

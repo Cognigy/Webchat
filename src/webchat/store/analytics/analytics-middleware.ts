@@ -1,6 +1,6 @@
 import { Middleware } from "redux";
 import { StoreState } from "../store";
-import { SetOpenAction, ToggleOpenAction } from "../ui/ui-reducer";
+import { SetOpenAction, ToggleOpenAction, SetMinimizeAction } from "../ui/ui-reducer";
 import { SendMessageAction } from "../messages/message-middleware";
 import { ReceiveMessageAction } from "../messages/message-handler";
 import { Webchat } from "../../components/Webchat";
@@ -8,6 +8,7 @@ import { SwitchSessionAction } from "../previous-conversations/previous-conversa
 
 type AnalyticsAction =
 	| SetOpenAction
+	| SetMinimizeAction
 	| ToggleOpenAction
 	| SendMessageAction
 	| ReceiveMessageAction
@@ -22,6 +23,11 @@ export const createAnalyticsMiddleware =
 		switch (action.type) {
 			case "SET_OPEN": {
 				webchat.emitAnalytics(action.open ? "webchat/open" : "webchat/close");
+				break;
+			}
+
+			case "SET_MINIMIZE": {
+				webchat.emitAnalytics("webchat/minimize");
 				break;
 			}
 
