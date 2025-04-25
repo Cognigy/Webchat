@@ -1396,6 +1396,8 @@ export class WebchatUI extends React.PureComponent<
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
 
 		const showDeleteAllConversationButton = !!(
+			((config.settings.privacyNotice.enabled && this.props.hasAcceptedTerms) ||
+				!config.settings.privacyNotice.enabled) &&
 			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&
 			showPrevConversations &&
 			Object.keys(this.props.prevConversations).length
