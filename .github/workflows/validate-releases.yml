@@ -3,6 +3,7 @@ name: Validate Release Assets and Mark as Pre-release
 on:
     release:
         types: [released, prereleased, edited, created]
+    workflow_dispatch: #Allow manual triggering of the workflow
 
 jobs:
     validate-assets:
