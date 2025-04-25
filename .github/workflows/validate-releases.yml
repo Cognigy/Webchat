@@ -1,0 +1,73 @@
+name: Validate Release Assets and Mark as Pre-release
+
+on:
+    release:
+        types: [released, prereleased, edited, created]
+
+jobs:
+    validate-assets:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Fetch Release Details
+              id: fetch-release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # Fetch release details
+                  RELEASE=$(curl -H "Authorization: token $GITHUB_TOKEN" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }})
+
+                  # Extract necessary fields
+                  echo "draft=$(echo "$RELEASE" | jq -r '.draft')" >> $GITHUB_ENV
+                  echo "release_id=$(echo "$RELEASE" | jq -r '.id')" >> $GITHUB_ENV
+                  echo "release_url=$(echo "$RELEASE" | jq -r '.html_url')" >> $GITHUB_ENV
+                  echo "uploaded_assets=$(echo "$RELEASE" | jq -r '.assets[].name')" >> $GITHUB_ENV
+
+            - name: Validate Required Assets
+              id: validate-assets
+              run: |
+                  # Define the required asset names
+                  REQUIRED_ASSETS=("webchat.js" "plugin.test.js","webchat.js.gz","webchat.js.br","OSS_LICENSE.txt")
+
+                  # Check for missing assets
+                  MISSING_ASSETS=()
+                  for asset in "${REQUIRED_ASSETS[@]}"; do
+                    if ! echo "$uploaded_assets" | grep -q "$asset"; then
+                      MISSING_ASSETS+=("$asset")
+                    fi
+                  done
+
+                  # Output missing assets for later steps
+                  echo "missing_assets=${MISSING_ASSETS[*]}" >> $GITHUB_ENV
+
+                  if [ ${#MISSING_ASSETS[@]} -gt 0 ]; then
+                    echo "Missing assets: ${MISSING_ASSETS[*]}"
+                  else
+                    echo "All required assets are present!"
+                  fi
+
+            - name: Mark Release as Pre-release
+              if: env.draft == 'false' && env.missing_assets != ''
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  echo "Marking release as pre-release due to missing assets: ${missing_assets}"
+                  curl -X PATCH \
+                    -H "Authorization: token $GITHUB_TOKEN" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    https://api.github.com/repos/${{ github.repository }}/releases/${{ env.release_id }} \
+                    -d '{"prerelease": true}'
+
+            - name: Post Comment on the Release Regarding Missing Assets
+              if: env.missing_assets != ''
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  COMMENT_BODY="⚠️ The following required assets are missing from the release: ${missing_assets}. Please address this issue."
+                  curl -X POST \
+                    -H "Authorization: token $GITHUB_TOKEN" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    https://api.github.com/repos/${{ github.repository }}/issues/${{ env.release_id }}/comments \
+                    -d "{\"body\": \"$COMMENT_BODY\"}"
