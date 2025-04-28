@@ -42,7 +42,6 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	public client: SocketClient;
 	public analytics: EventEmitter = new EventEmitter();
 	public _handleOutput: (output: unknown) => void;
-	protected storage: ReturnType<typeof getStorage>;
 	// component lifecycle methods
 	constructor(props: WebchatProps) {
 		super(props);
@@ -62,10 +61,6 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		this.store = store;
 
 		this._handleOutput = createOutputHandler(this.store);
-		this.storage = getStorage({
-			disableLocalStorage: settings?.embeddingConfiguration?.disableLocalStorage ?? false,
-			useSessionStorage: settings?.embeddingConfiguration?.useSessionStorage ?? false,
-		});
 	}
 
 	UNSAFE_componentWillMount() {
@@ -192,6 +187,9 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		this.store.dispatch(updateSettings(settings));
 	};
 
+	/**
+	 * This method will switch to a new session and clear the messages in the current session.
+	 */
 	endSession = () => {
 		this.store.dispatch(switchSession());
 		this.store.dispatch(clearMessages());
