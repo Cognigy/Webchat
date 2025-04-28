@@ -1,46 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>webchat development</title>
+	</head>
 
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>webchat development</title>
-</head>
-
-<body>
-    <script src="./webchat.js"></script>
-    <script>
-            initWebchat('https://endpoint-dev.cognigy.ai/896f0112910ff0755a529b4dcb1622aeaf9931e516b52e8528603ad10d879661', {
-            // userId: "user1",
-            // sessionId: "session1",
-            settings: {
-                layout: {
-                    watermark: "default",
-                    watermarkText: "Some Random Watermark"
-                },
-                unreadMessages: {
-                    enableIndicator: true,
-                    enableBadge: true,  
-                    enablePreview: true,
-                    enableSound: true
-                },
-                teaserMessage:{
-                    showInChat: true,
-                    teaserMessageDelay: 5000,
-                    text: "Hi there!"
-                    },
-                startBehavior: {
-                    getStartedText: ""
-                },
-                widgetSettings: {
-                    enableFocusTrap: true,
-                }
-            },
-        }).then(function (webchat) {
-            window.cognigyWebchat = webchat;
-            // webchat.open();
-			// webchat.startConversation();
-        })
-    </script>
-</body>
-
+	<body>
+		<script src="./webchat.js"></script>
+		<script>
+			initWebchat(
+				"https://endpoint-dev.cognigy.ai/7992a50f6fa7c93d5d8bd27cf5a76f628fda6feae7c581fbac7d751dc86f83eb",
+				{
+					settings: {
+						layout: {
+							watermark: "default",
+							watermarkText: "Some Random Watermark",
+						},
+						unreadMessages: {
+							enableIndicator: true,
+							enableBadge: true,
+							enablePreview: true,
+							enableSound: true,
+						},
+						teaserMessage: {
+							showInChat: true,
+							teaserMessageDelay: 5000,
+							text: "Hi there!",
+						},
+						startBehavior: {
+							getStartedText: "",
+						},
+						widgetSettings: {
+							enableFocusTrap: true,
+						},
+					},
+				},
+			).then(function (webchat) {
+				window.cognigyWebchat = webchat;
+				// webchat.open();
+				// webchat.startConversation();
+				window.cognigyWebchat.registerAnalyticsService(event => {
+					if (event.type === "webchat/close") {
+						webchat.endSession();
+					}
+				});
+			});
+		</script>
+	</body>
 </html>

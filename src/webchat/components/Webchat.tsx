@@ -27,6 +27,8 @@ import { createNotification } from "../../webchat-ui/components/presentational/N
 import { getStorage } from "../helper/storage";
 import { hasAcceptedTermsInStorage } from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
+import { switchSession } from "../store/previous-conversations/previous-conversations-middleware";
+import { clearMessages } from "../store/messages/message-reducer";
 
 export interface WebchatProps extends FromProps {
 	url: string;
@@ -40,7 +42,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	public client: SocketClient;
 	public analytics: EventEmitter = new EventEmitter();
 	public _handleOutput: (output: unknown) => void;
-
+	protected storage: ReturnType<typeof getStorage>;
 	// component lifecycle methods
 	constructor(props: WebchatProps) {
 		super(props);
@@ -60,6 +62,10 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		this.store = store;
 
 		this._handleOutput = createOutputHandler(this.store);
+		this.storage = getStorage({
+			disableLocalStorage: settings?.embeddingConfiguration?.disableLocalStorage ?? false,
+			useSessionStorage: settings?.embeddingConfiguration?.useSessionStorage ?? false,
+		});
 	}
 
 	UNSAFE_componentWillMount() {
@@ -184,6 +190,11 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 
 	updateSettings = (settings: IWebchatSettings) => {
 		this.store.dispatch(updateSettings(settings));
+	};
+
+	endSession = () => {
+		this.store.dispatch(switchSession());
+		this.store.dispatch(clearMessages());
 	};
 
 	render() {
