@@ -29,6 +29,7 @@ By checking for `event.type`, you can filter events for the ones you are interes
 | -------------------------- | ---------------- | ------------------------------------------------------------ |
 | `webchat/open`             | -                | The webchat was opened                                       |
 | `webchat/close`            | -                | The webchat was closed                                       |
+| `webchat/minimize`         | -                | The webchat was minimized                                    |
 | `webchat/incoming-message` | `{ text, data }` | A message was received from Cognigy                          |
 | `webchat/outgoing-message` | `{ text, data }` | A message was sent to Cognigy                                |
 | `plugin/messenger/action`  | `Object`         | An action was triggered from a Webchat or Messenger Template |
