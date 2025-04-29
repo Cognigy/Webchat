@@ -314,6 +314,8 @@ export interface IWebchatSettings {
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
+		datePickerMonthLabel?: string;
+		datePickerYearLabel?: string;
 		ariaLabels?: {
 			scrollToBottom?: string;
 			closeDialog?: string;
@@ -351,7 +353,8 @@ export interface IWebchatSettings {
 			fullSizeImageViewerTitle?: string;
 			downloadFullsizeImage?: string;
 			closeFullsizeImageModal?: string;
-			datePickerDescription?: string;
+			datePickerPreviousMonth?: string;
+			datePickerNextMonth?: string;
 		};
 	};
 	demoWebchat: {
