@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
+import getMessagesListWithoutControlCommands from "../../utils/filter-out-control-commands";
 
 interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
@@ -13,7 +14,8 @@ interface LiveMessage {
 
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveContent }) => {
 	const [liveMessage, setLiveMessage] = useState<LiveMessage | null>(null);
-	const messages = useSelector(state => state.messages.messageHistory);
+	const messageHistory = useSelector(state => state.messages.messageHistory);
+	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
 
 	useEffect(() => {
@@ -42,8 +44,6 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			const text = cleanUpText(rawText) || "A new message";
 
 			setLiveMessage({ id, text });
-
-			setTimeout(() => setLiveMessage(null), 500);
 		}, 100);
 
 		return () => clearTimeout(timeout);
