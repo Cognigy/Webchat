@@ -1,46 +1,44 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "../../../webchat/helper/useSelector";
-import { cleanUpText, extractTextForScreenReader } from "../../utils/live-region-announcement";
+import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
 
 interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
 }
 
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveContent }) => {
-	const [debouncedMessageIds, setDebouncedMessageIds] = useState<string[]>([]);
+	const [liveMessages, setLiveMessages] = useState<string[]>([]);
 	const messages = useSelector(state => state.messages.messageHistory);
+	const announcedIdsRef = useRef<Set<string>>(new Set());
 
 	useEffect(() => {
-		if (messages.length > 0) {
-			const lastMessage = messages[messages.length - 1];
-			const messageId = `webchatMessageId-${lastMessage.timestamp}`;
-			if (!debouncedMessageIds.includes(messageId)) {
-				const timeout = setTimeout(() => {
-					setDebouncedMessageIds(prevIds => [...prevIds, messageId]);
-				}, 500);
-				return () => clearTimeout(timeout);
-			}
-		}
-	}, [messages, debouncedMessageIds]);
+		if (!messages.length) return;
 
-	// If live content is available for a message, use it. Otherwise, extract text from the DOM.
-	const liveText = useMemo(() => {
-		return debouncedMessageIds.map(messageId => {
-			if (liveContent[messageId]) {
-				const cleanText = cleanUpText(liveContent[messageId]);
-				return <div key={messageId}>{cleanText}</div>;
-			}
-
-			const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-			if (messageElement) {
-				const cleanText = extractTextForScreenReader(messageElement as HTMLElement);
-				return <div key={messageId}>{cleanText || "A new message"}</div>;
-			}
-
-			// Fallback text when message arrives
-			return <div key={messageId}>A new message</div>;
+		// Identify unannounced messages
+		const unannouncedMessages = messages.filter(msg => {
+			const id = `webchatMessageId-${msg.timestamp}`;
+			return !announcedIdsRef.current.has(id);
 		});
-	}, [debouncedMessageIds, liveContent]);
+
+		if (!unannouncedMessages.length) return;
+
+		// Process unannounced messages
+		const timeout = setTimeout(() => {
+			const newLiveMessages = unannouncedMessages.map(msg => {
+				const id = `webchatMessageId-${msg.timestamp}`;
+				announcedIdsRef.current.add(id);
+
+				// Use live content if available, otherwise extract from DOM
+				const text = liveContent[id] || getTextFromDOM(id);
+
+				return cleanUpText(text) || "A new message";
+			});
+
+			setLiveMessages(prev => [...prev, ...newLiveMessages]);
+		}, 100);
+
+		return () => clearTimeout(timeout);
+	}, [messages, liveContent]);
 
 	return (
 		<div
@@ -49,7 +47,9 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			id="webchatMessageContainerScreenReaderLiveRegion"
 			className="sr-only"
 		>
-			{liveText}
+			{liveMessages.map((msg, index) => (
+				<div key={index}>{msg}</div>
+			))}
 		</div>
 	);
 };

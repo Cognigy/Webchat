@@ -25,7 +25,6 @@ export const cleanUpText = (text: string): string => {
  * Extracts text content from a DOM element for screen readers by:
  * - Walking the DOM tree recursively
  * - Ignoring hidden or presentational elements
- * - Prioritizing `aria-label` attributes when available
  * - Handling specific tags like headings, paragraphs, lists, and line breaks
  *
  * @param root - The root DOM element to extract text from
@@ -53,11 +52,6 @@ export const extractTextForScreenReader = (root: HTMLElement): string => {
 
 		if (isHidden) return "";
 
-		// Use aria-label if available
-		if (el.hasAttribute("aria-label")) {
-			return el.getAttribute("aria-label") + "\n";
-		}
-
 		// Handle specific elements
 		const tagHandlers: Record<string, () => string> = {
 			H1: () => walkChildren(el).trim() + ".\n",
@@ -84,4 +78,19 @@ export const extractTextForScreenReader = (root: HTMLElement): string => {
 	const cleanedText = cleanUpText(extractedText);
 
 	return cleanedText;
+};
+
+/**
+ * Extracts text from the DOM for a given message ID by:
+ * - Querying the DOM for the element with the specified ID
+ * - Using the extractTextForScreenReader function to get the text content
+ *
+ * @param id - The message ID to extract text for
+ * @returns The extracted text or a default message if not found
+ */
+export const getTextFromDOM = (id: string): string => {
+	const messageElement = document.querySelector(`[data-message-id="${id}"]`);
+	return messageElement
+		? extractTextForScreenReader(messageElement as HTMLElement)
+		: "A new message";
 };
