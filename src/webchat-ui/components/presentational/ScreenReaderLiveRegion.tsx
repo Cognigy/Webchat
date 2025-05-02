@@ -31,6 +31,12 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
 			announcedIdsRef.current.add(id);
 
+			// Skip announcement if the message is marked as "IGNORE". Done by ChatEvent message component, as it has aria-live="assertive"
+			if (liveContent[id] === `IGNORE-${id}`) {
+				setLiveMessage(null);
+				return;
+			}
+
 			// Use live content if available, otherwise extract from DOM
 			const rawText = liveContent[id] || getTextFromDOM(id);
 			const text = cleanUpText(rawText) || "A new message";
@@ -49,7 +55,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			aria-relevant="additions text"
 			aria-atomic="true"
 			id="webchatMessageContainerScreenReaderLiveRegion"
-			className="sr-only"
+			// className="sr-only"
 		>
 			{liveMessage && <div key={liveMessage.id}>{liveMessage.text}</div>}
 		</div>
