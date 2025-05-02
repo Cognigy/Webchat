@@ -7,7 +7,7 @@ interface ScreenReaderLiveRegionProps {
 }
 
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveContent }) => {
-	const [liveMessages, setLiveMessages] = useState<string[]>([]);
+	const [liveMessages, setLiveMessages] = useState<{ id: string; text: string }[]>([]);
 	const messages = useSelector(state => state.messages.messageHistory);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
 
@@ -31,10 +31,10 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 				// Use live content if available, otherwise extract from DOM
 				const text = liveContent[id] || getTextFromDOM(id);
 
-				return cleanUpText(text) || "A new message";
+				return { id, text: cleanUpText(text) || "A new message" };
 			});
 
-			setLiveMessages(prev => [...prev, ...newLiveMessages]);
+			setLiveMessages(prev => [...prev.slice(-3), ...newLiveMessages]);
 		}, 100);
 
 		return () => clearTimeout(timeout);
@@ -44,11 +44,12 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		<div
 			aria-live="polite"
 			aria-relevant="additions text"
+			aria-atomic="false"
 			id="webchatMessageContainerScreenReaderLiveRegion"
 			className="sr-only"
 		>
-			{liveMessages.map((msg, index) => (
-				<div key={index}>{msg}</div>
+			{liveMessages.map(message => (
+				<div key={message.id}>{message.text}</div>
 			))}
 		</div>
 	);
