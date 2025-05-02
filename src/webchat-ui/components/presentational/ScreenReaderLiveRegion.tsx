@@ -22,47 +22,60 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		}
 	}, [messages, debouncedMessageIds]);
 
-	// Extract text from the message element by prioritizing aria-label and excluding hidden elements
+	// Extract text from the DOM for screen reader by walking the DOM tree and concatenating text content while ignoring hidden elements
 	const extractTextForScreenReader = (root: HTMLElement): string => {
-		const walker = document.createTreeWalker(
-			root,
-			NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-			{
-				acceptNode: node => {
-					if (node.nodeType === Node.ELEMENT_NODE) {
-						const el = node as HTMLElement;
-						const isHidden =
-							el.hasAttribute("aria-hidden") ||
-							el.getAttribute("role") === "presentation" ||
-							el.getAttribute("role") === "none" ||
-							el.hasAttribute("hidden") ||
-							getComputedStyle(el).display === "none" ||
-							getComputedStyle(el).visibility === "hidden";
-						return isHidden ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_SKIP;
-					}
-					return NodeFilter.FILTER_ACCEPT;
-				},
-			},
-		);
-
-		let node: Node | null;
-		let textContent = "";
-
-		while ((node = walker.nextNode())) {
-			if (node.nodeType === Node.ELEMENT_NODE) {
-				const el = node as HTMLElement;
-				if (el.hasAttribute("aria-label")) {
-					textContent += el.getAttribute("aria-label") + " ";
-				}
-			} else if (node.nodeType === Node.TEXT_NODE) {
-				textContent += (node as Text).textContent + " ";
+		// Helper function to recursively walk through child nodes
+		const walk = (node: Node): string => {
+			if (node.nodeType === Node.TEXT_NODE) {
+				return node.textContent ?? "";
 			}
-		}
 
-		return textContent;
+			if (node.nodeType !== Node.ELEMENT_NODE) return "";
+
+			const el = node as HTMLElement;
+
+			// Skip hidden or presentational elements
+			const isHidden =
+				el.hasAttribute("aria-hidden") ||
+				el.getAttribute("role") === "presentation" ||
+				el.getAttribute("role") === "none" ||
+				el.hasAttribute("hidden") ||
+				getComputedStyle(el).display === "none" ||
+				getComputedStyle(el).visibility === "hidden";
+
+			if (isHidden) return "";
+
+			// Use aria-label if available
+			if (el.hasAttribute("aria-label")) {
+				return el.getAttribute("aria-label") + "\n";
+			}
+
+			// Handle specific elements
+			const tagHandlers: Record<string, () => string> = {
+				H1: () => walkChildren(el).trim() + ".\n",
+				H2: () => walkChildren(el).trim() + ".\n",
+				H3: () => walkChildren(el).trim() + ".\n",
+				H4: () => walkChildren(el).trim() + ".\n",
+				H5: () => walkChildren(el).trim() + ".\n",
+				H6: () => walkChildren(el).trim() + ".\n",
+				P: () => walkChildren(el).trim() + "\n",
+				LI: () => walkChildren(el).trim() + ", ",
+				UL: () => walkChildren(el),
+				OL: () => walkChildren(el),
+				BR: () => "\n",
+			};
+
+			return tagHandlers[el.tagName]?.() ?? walkChildren(el);
+		};
+
+		const walkChildren = (el: HTMLElement): string => {
+			return Array.from(el.childNodes).map(walk).join("");
+		};
+
+		return walk(root);
 	};
 
-	// Clean up the text by removing emojis, HTML tags, and extra spaces
+	// Clean up text by removing emojis, HTML tags, and extra spaces
 	const cleanUpText = (text: string) => {
 		const textWithoutEmoji = text
 			.replace(
