@@ -23,12 +23,26 @@ Anytime an event is being emitted within the Webchat, it will cause the passed c
 The `event` object will always have a `type` property and may have a `payload` property depending on the event.
 By checking for `event.type`, you can filter events for the ones you are interested in.
 
+If you e.g. want to end session when user closes the webchat widget, you can do it like this:
+
+```javascript
+webchat.registerAnalyticsService(event => {
+	if (event.type === "webchat/close") {
+		webchat.endSession();
+	}
+});
+```
+
+This will end the current session and clear any messages from the session.
+
 ## Webchat Events
 
 | Type                       | Payload          | Description                                                  |
 | -------------------------- | ---------------- | ------------------------------------------------------------ |
 | `webchat/open`             | -                | The webchat was opened                                       |
 | `webchat/close`            | -                | The webchat was closed                                       |
+| `webchat/minimize`         | -                | The webchat was minimized                                    |
+| `webchat/switch-session`   | `sessionId`      | The session was switched                                     |
 | `webchat/incoming-message` | `{ text, data }` | A message was received from Cognigy                          |
 | `webchat/outgoing-message` | `{ text, data }` | A message was sent to Cognigy                                |
 | `plugin/messenger/action`  | `Object`         | An action was triggered from a Webchat or Messenger Template |

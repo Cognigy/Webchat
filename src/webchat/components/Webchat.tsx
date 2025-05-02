@@ -27,6 +27,8 @@ import { createNotification } from "../../webchat-ui/components/presentational/N
 import { getStorage } from "../helper/storage";
 import { hasAcceptedTermsInStorage } from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
+import { switchSession } from "../store/previous-conversations/previous-conversations-middleware";
+import { clearMessages } from "../store/messages/message-reducer";
 
 export interface WebchatProps extends FromProps {
 	url: string;
@@ -40,7 +42,6 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	public client: SocketClient;
 	public analytics: EventEmitter = new EventEmitter();
 	public _handleOutput: (output: unknown) => void;
-
 	// component lifecycle methods
 	constructor(props: WebchatProps) {
 		super(props);
@@ -184,6 +185,14 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 
 	updateSettings = (settings: IWebchatSettings) => {
 		this.store.dispatch(updateSettings(settings));
+	};
+
+	/**
+	 * This method will switch to a new session and clear the messages in the current session.
+	 */
+	endSession = () => {
+		this.store.dispatch(switchSession());
+		this.store.dispatch(clearMessages());
 	};
 
 	render() {
