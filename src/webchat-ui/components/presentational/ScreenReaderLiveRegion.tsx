@@ -6,15 +6,19 @@ interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
 }
 
+interface LiveMessage {
+	id: string;
+	text: string;
+}
+
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveContent }) => {
-	const [liveMessages, setLiveMessages] = useState<{ id: string; text: string }[]>([]);
+	const [liveMessage, setLiveMessage] = useState<LiveMessage | null>(null);
 	const messages = useSelector(state => state.messages.messageHistory);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
 
 	useEffect(() => {
 		if (!messages.length) return;
 
-		// Identify unannounced messages
 		const unannouncedMessages = messages.filter(msg => {
 			const id = `webchatMessageId-${msg.timestamp}`;
 			return !announcedIdsRef.current.has(id);
@@ -22,19 +26,18 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 
 		if (!unannouncedMessages.length) return;
 
-		// Process unannounced messages
 		const timeout = setTimeout(() => {
-			const newLiveMessages = unannouncedMessages.map(msg => {
-				const id = `webchatMessageId-${msg.timestamp}`;
-				announcedIdsRef.current.add(id);
+			const firstUnannouncedMsg = unannouncedMessages[0]; // Only announce one at a time
+			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
+			announcedIdsRef.current.add(id);
 
-				// Use live content if available, otherwise extract from DOM
-				const text = liveContent[id] || getTextFromDOM(id);
+			// Use live content if available, otherwise extract from DOM
+			const rawText = liveContent[id] || getTextFromDOM(id);
+			const text = cleanUpText(rawText) || "A new message";
 
-				return { id, text: cleanUpText(text) || "A new message" };
-			});
+			setLiveMessage({ id, text });
 
-			setLiveMessages(prev => [...prev.slice(-3), ...newLiveMessages]);
+			setTimeout(() => setLiveMessage(null), 500);
 		}, 100);
 
 		return () => clearTimeout(timeout);
@@ -44,13 +47,11 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		<div
 			aria-live="polite"
 			aria-relevant="additions text"
-			aria-atomic="false"
+			aria-atomic="true"
 			id="webchatMessageContainerScreenReaderLiveRegion"
 			className="sr-only"
 		>
-			{liveMessages.map(message => (
-				<div key={message.id}>{message.text}</div>
-			))}
+			{liveMessage && <div key={liveMessage.id}>{liveMessage.text}</div>}
 		</div>
 	);
 };
