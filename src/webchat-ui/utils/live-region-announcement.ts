@@ -47,6 +47,7 @@ export const extractTextForScreenReader = (root: HTMLElement): string => {
 			el.getAttribute("role") === "presentation" ||
 			el.getAttribute("role") === "none" ||
 			el.hasAttribute("hidden") ||
+			el.hasAttribute("data-skip-live-region") ||
 			getComputedStyle(el).display === "none" ||
 			getComputedStyle(el).visibility === "hidden";
 
