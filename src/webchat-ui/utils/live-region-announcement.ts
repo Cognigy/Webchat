@@ -53,21 +53,18 @@ export const extractTextForScreenReader = (root: HTMLElement): string => {
 		if (isHidden) return "";
 
 		// Handle specific elements
-		const tagHandlers: Record<string, () => string> = {
-			H1: () => walkChildren(el).trim() + ".\n",
-			H2: () => walkChildren(el).trim() + ".\n",
-			H3: () => walkChildren(el).trim() + ".\n",
-			H4: () => walkChildren(el).trim() + ".\n",
-			H5: () => walkChildren(el).trim() + ".\n",
-			H6: () => walkChildren(el).trim() + ".\n",
-			P: () => walkChildren(el).trim() + "\n",
-			LI: () => walkChildren(el).trim() + ", ",
-			UL: () => walkChildren(el),
-			OL: () => walkChildren(el),
-			BR: () => "\n",
+		const tagHandlers: Record<string, (el: HTMLElement) => string> = {
+			P: el => walkChildren(el).trim() + "\n",
+			LI: el => walkChildren(el).trim() + ". ",
+			UL: walkChildren,
+			OL: walkChildren,
 		};
 
-		return tagHandlers[el.tagName]?.() ?? walkChildren(el);
+		["H1", "H2", "H3", "H4", "H5", "H6"].forEach(tag => {
+			tagHandlers[tag] = el => walkChildren(el).trim() + ".\n";
+		});
+
+		return tagHandlers[el.tagName]?.(el) ?? walkChildren(el);
 	};
 
 	const walkChildren = (el: HTMLElement): string => {

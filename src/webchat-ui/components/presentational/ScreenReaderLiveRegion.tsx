@@ -41,7 +41,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 
 			// Use live content if available, otherwise extract from DOM
 			const rawText = liveContent[id] || getTextFromDOM(id);
-			const text = cleanUpText(rawText) || "A new message";
+			const text = cleanUpText(rawText || "A new message");
 
 			setLiveMessage({ id, text });
 		}, 100);
@@ -55,7 +55,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			aria-relevant="additions text"
 			aria-atomic="true"
 			id="webchatMessageContainerScreenReaderLiveRegion"
-			// className="sr-only"
+			className="sr-only"
 		>
 			{liveMessage && <div key={liveMessage.id}>{liveMessage.text}</div>}
 		</div>
