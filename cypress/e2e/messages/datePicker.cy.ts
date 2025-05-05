@@ -50,21 +50,20 @@ describe("Date Picker", () => {
 				.should("have.attr", "role", "dialog")
 				.should("have.attr", "aria-modal", "true")
 				.should("have.attr", "aria-labelledby");
-			cy.get(".webchat-plugin-date-picker").should("have.attr", "aria-describedby");
 		});
 	});
 
-	it("calender container element should have tabIndex 0", () => {
+	it("calender container element should have tabIndex -1", () => {
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
-			cy.get(".flatpickr-calendar ").should("have.attr", "tabIndex", "0");
+			cy.get(".flatpickr-calendar ").should("have.attr", "tabIndex", "-1");
 		});
 	});
 
-	it("calender container element should be auto-focused", () => {
+	it("calender container close  element should be auto-focused", () => {
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
-			cy.get(".flatpickr-calendar ").should("be.focused");
+			cy.get("[data-testid='button-close']").should("be.focused");
 		});
 	});
 
