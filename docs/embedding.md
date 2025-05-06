@@ -405,16 +405,19 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 #### Custom Translations
 
- With our latest release (v3.21.0), its is now possible to interpolate dynamic values into your custom translations.
- > With future webchat releases this functionality will be further extend with robust internationalization support
- 
- #### Example 
- ```json 
- {
-	"key":"{count} out of {total} buttons exists"
- }
- ```
- In the above example only the texts outside the `{}` braces needs to be translated. Rest will be handled by interpolation during runtime
+With our latest release (v3.21.0), its is now possible to interpolate dynamic values into your custom translations.
+
+> With future webchat releases this functionality will be further extend with robust internationalization support
+
+#### Example
+
+```json
+{
+	"key": "{count} out of {total} buttons exists"
+}
+```
+
+In the above example only the texts outside the `{}` braces needs to be translated. Rest will be handled by interpolation during runtime
 
 | Name                                  | Type   | Default                                                                                     | Description                                                                   |
 | ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -438,49 +441,48 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 The following table defines the default aria labels used throughout the Webchat for accessibility. Use them for managing aria-labels based on the preferred language
 
-| Name                      | Type   | Default                            | Description                                                                                                              |
-| ------------------------- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| scrollToBottom            | string | "Scroll to the bottom of the chat" | Label for the button that scrolls the chat log to the bottom.                                                            |
-| closeDialog               | string | "Close dialog"                     | Label for close buttons in modals or dialogs.                                                                            |
-| togglePersistentMenu      | string | "Toggle chat input menu"           | Label for the button toggling the persistent menu.                                                                       |
-| addAttachment             | string | "Add attachments"                  | Label for the button that allows uploading attachments.                                                                  |
-| speechToText              | string | "Speech to text"                   | Label for the speech-to-text control button.                                                                             |
-| sendMessage               | string | "Send message"                     | Label for the send message button.                                                                                       |
-| removeFileAttachment      | string | "Remove file attachment"           | Label for the button to remove a file attachment.                                                                        |
-| closeConnectionWarning    | string | "Close connection lost overlay"    | Label for closing warning dialogs .                                                                                      |
-| goBack                    | string | "Go back"                          | Label for buttons allowing the user to go back.                                                                          |
-| deleteAllConversations    | string | "Delete all conversations"         | Label for the button to delete all conversations in the previous conversation screen.                                    |
-| chatOptions               | string | "Chat options"                     | Label for the button that opens the chat options screen. By default, the text provided for the Chat screen will be used. |
-| minimizeChat              | string | "Minimize chat"                    | Label for minimizing the chat window.                                                                                    |
-| closeChat                 | string | "Close chat"                       | Label for closing the chat window.                                                                                       |
-| openChat                  | string | "Open chat"                        | Label for opening the chat window.                                                                                       |
-| unreadMessages            | string | "Unread messages"                  | Label indicating the unread messages status in the badge inside chat toggle button.                                      |
-| unreadMessageSingularText | string | "One unread message in chat"       | Label for a single unread message indicator for the chat toggle button.                                                  |
-| unreadMessagePluralText   | string | "unread messages in chat"          | Label for multiple unread messages indicator for the chat toggle button.                                                 |
-| closeTeaserMessage        | string | "Close teaser message"             | Label for the teaser message close button.                                                                               |
-| opensInNewTab             | string | "Opens in new tab"                 | Label for links that open in a new tab.                                                                                  |
-| thumbsUp                  | string | "Like"                             | Label for the positive feedback button.                                                                                  |
-| thumbsDown                | string | "Dislike"                          | Label for the negative feedback button.                                                                                  |
-| openConversation          | string | "Open conversation"                | Label for the button that opens a conversation thread in the previous conversation list.                                 |
-| chatHistory               | string | "Chat history"                     | This text is used as a heading to indicate the chat history region.                                                      |
-| homeScreen                | string | "Chat window home screen"          | This text is used as a heading to indicate the home screen.                                                              |
-| newMessagePreview         | string | "New message preview"              | This text is used inside the teaser message to indicate a new message has arrived.                                       |
-| audioPlaybackProgress     | string | "Audio playback progress"          | This text is used to indicate the audio playback progress.                                                               |
-| pauseAudio                | string | "Pause audio"                      | This text is used for the pause audio button.                                                                            |
-| playAudio                 | string | "Play audio"                       | This text is used for the play audio button.                                                                             |
-| playVideo                 | string | "Play video"                       | This text is used for the play video button.                                                                             |
-| downloadTranscript        | string | "Download transcript"              | This text is used for the download transcript button in the audio player.                                                |
-| closeDatePicker           | string | "Close date-picker"                | This text is used for the close date-picker button.                                                                      |
-| viewImageInFullsize       | string | "View full-size image"             | This text is used for the button to view image in full-size.                                                             |
-| fullSizeImageViewerTitle  | string | "Full-size image viewer"           | This text is used for the heading in the full-size image viewer.                                                         |
-| downloadFullsizeImage     | string | "Download full-size image"         | This text is used for the download button in the full-size image viewer.                                                 |
-| closeFullsizeImageModal   | string | "Close full-size image viewer"     | This text is used for the close button in the full-size image viewer.                                                    |
-| datePickerPreviousMonth   | string | "Previous month"                   | This text is used as the label for the button to go to the previous month in the date-picker.                            |
-| datePickerNextMonth       | string | "Next month"                       | This text is used as the label for the button to go to the next month in the date-picker.                                |
-| messageHeaderSrText       | string | "At {time}, {speaker} said:"                       | This text is used by screen reader to read the message header. The {time} and {speaker} will rendered on run time.                                |
-| actionButtonTextSr       | string | "With {buttons} buttons or links in"                       | This text is used by screen reader to read the button texts in chat section. {buttons}  will rendered on run time.                                |
-| actionButtonAriaLabel       | string | "Item {position} of {total}: {buttonTitleWithTarget}"                       | This text is used as aria label for buttons in the webchat. All strings inside `{}` will be rendered on runtime |
-
+| Name                      | Type   | Default                                               | Description                                                                                                              |
+| ------------------------- | ------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| scrollToBottom            | string | "Scroll to the bottom of the chat"                    | Label for the button that scrolls the chat log to the bottom.                                                            |
+| closeDialog               | string | "Close dialog"                                        | Label for close buttons in modals or dialogs.                                                                            |
+| togglePersistentMenu      | string | "Toggle chat input menu"                              | Label for the button toggling the persistent menu.                                                                       |
+| addAttachment             | string | "Add attachments"                                     | Label for the button that allows uploading attachments.                                                                  |
+| speechToText              | string | "Speech to text"                                      | Label for the speech-to-text control button.                                                                             |
+| sendMessage               | string | "Send message"                                        | Label for the send message button.                                                                                       |
+| removeFileAttachment      | string | "Remove file attachment"                              | Label for the button to remove a file attachment.                                                                        |
+| closeConnectionWarning    | string | "Close connection lost overlay"                       | Label for closing warning dialogs .                                                                                      |
+| goBack                    | string | "Go back"                                             | Label for buttons allowing the user to go back.                                                                          |
+| deleteAllConversations    | string | "Delete all conversations"                            | Label for the button to delete all conversations in the previous conversation screen.                                    |
+| chatOptions               | string | "Chat options"                                        | Label for the button that opens the chat options screen. By default, the text provided for the Chat screen will be used. |
+| minimizeChat              | string | "Minimize chat"                                       | Label for minimizing the chat window.                                                                                    |
+| closeChat                 | string | "Close chat"                                          | Label for closing the chat window.                                                                                       |
+| openChat                  | string | "Open chat"                                           | Label for opening the chat window.                                                                                       |
+| unreadMessages            | string | "Unread messages"                                     | Label indicating the unread messages status in the badge inside chat toggle button.                                      |
+| unreadMessageSingularText | string | "One unread message in chat"                          | Label for a single unread message indicator for the chat toggle button.                                                  |
+| unreadMessagePluralText   | string | "unread messages in chat"                             | Label for multiple unread messages indicator for the chat toggle button.                                                 |
+| closeTeaserMessage        | string | "Close teaser message"                                | Label for the teaser message close button.                                                                               |
+| opensInNewTab             | string | "Opens in new tab"                                    | Label for links that open in a new tab.                                                                                  |
+| thumbsUp                  | string | "Like"                                                | Label for the positive feedback button.                                                                                  |
+| thumbsDown                | string | "Dislike"                                             | Label for the negative feedback button.                                                                                  |
+| openConversation          | string | "Open conversation"                                   | Label for the button that opens a conversation thread in the previous conversation list.                                 |
+| chatHistory               | string | "Chat history"                                        | This text is used as a heading to indicate the chat history region.                                                      |
+| homeScreen                | string | "Chat window home screen"                             | This text is used as a heading to indicate the home screen.                                                              |
+| newMessagePreview         | string | "New message preview"                                 | This text is used inside the teaser message to indicate a new message has arrived.                                       |
+| audioPlaybackProgress     | string | "Audio playback progress"                             | This text is used to indicate the audio playback progress.                                                               |
+| pauseAudio                | string | "Pause audio"                                         | This text is used for the pause audio button.                                                                            |
+| playAudio                 | string | "Play audio"                                          | This text is used for the play audio button.                                                                             |
+| playVideo                 | string | "Play video"                                          | This text is used for the play video button.                                                                             |
+| downloadTranscript        | string | "Download transcript"                                 | This text is used for the download transcript button in the audio player.                                                |
+| closeDatePicker           | string | "Close date-picker"                                   | This text is used for the close date-picker button.                                                                      |
+| viewImageInFullsize       | string | "View full-size image"                                | This text is used for the button to view image in full-size.                                                             |
+| fullSizeImageViewerTitle  | string | "Full-size image viewer"                              | This text is used for the heading in the full-size image viewer.                                                         |
+| downloadFullsizeImage     | string | "Download full-size image"                            | This text is used for the download button in the full-size image viewer.                                                 |
+| closeFullsizeImageModal   | string | "Close full-size image viewer"                        | This text is used for the close button in the full-size image viewer.                                                    |
+| datePickerPreviousMonth   | string | "Previous month"                                      | This text is used as the label for the button to go to the previous month in the date-picker.                            |
+| datePickerNextMonth       | string | "Next month"                                          | This text is used as the label for the button to go to the next month in the date-picker.                                |
+| messageHeaderSrText       | string | "At {time}, {speaker} said:"                          | This text is used by screen reader to read the message header. The {time} and {speaker} will rendered on run time.       |
+| actionButtonTextSr        | string | "With {buttons} buttons or links in"                  | This text is used by screen reader to read the button texts in chat section. {buttons} will rendered on run time.        |
+| actionButtonAriaLabel     | string | "Item {position} of {total}: {buttonTitleWithTarget}" | This text is used as aria label for buttons in the webchat. All strings inside `{}` will be rendered on runtime          |
 
 #### Settings Interface
 
