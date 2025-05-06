@@ -1352,6 +1352,7 @@ export class WebchatUI extends React.PureComponent<
 						</h2>
 						{this.renderHistory()}
 					</HistoryWrapper>
+					<ScreenReaderLiveRegion liveContent={this.state.liveContent} />
 					<QueueUpdates />
 					{this.renderInput()}
 				</>
@@ -1477,7 +1478,6 @@ export class WebchatUI extends React.PureComponent<
 					>
 						<RegularLayoutContentWrapper>
 							{getRegularLayoutContent()}
-							<ScreenReaderLiveRegion liveContent={this.state.liveContent} />
 							<DeleteAllConversationsModal
 								config={config}
 								isOpen={this.state.showDeleteAllConversationsModal}
