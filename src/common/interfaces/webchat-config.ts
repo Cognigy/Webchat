@@ -355,6 +355,9 @@ export interface IWebchatSettings {
 			closeFullsizeImageModal?: string;
 			datePickerPreviousMonth?: string;
 			datePickerNextMonth?: string;
+			messageHeaderSrText?: string;
+			actionButtonTextSr?: string;
+			actionButtonAriaLabel?: string;
 		};
 	};
 	demoWebchat: {

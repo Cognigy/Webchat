@@ -405,8 +405,16 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 #### Custom Translations
 
-| Name | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
+ With our latest release (v3.21.0), its is now possible to interpolate dynamic values into your custom translations.
+ > With future webchat releases this functionality will be further extend with robust internationalization support
+ 
+ #### Example 
+ ```json 
+ {
+	"key":"{count} out of {total} buttons exists"
+ }
+ ```
+ In the above example only the texts outside the `{}` braces needs to be translated. Rest will be handled by interpolation during runtime
 
 | Name                                  | Type   | Default                                                                                     | Description                                                                   |
 | ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -469,6 +477,10 @@ The following table defines the default aria labels used throughout the Webchat 
 | closeFullsizeImageModal   | string | "Close full-size image viewer"     | This text is used for the close button in the full-size image viewer.                                                    |
 | datePickerPreviousMonth   | string | "Previous month"                   | This text is used as the label for the button to go to the previous month in the date-picker.                            |
 | datePickerNextMonth       | string | "Next month"                       | This text is used as the label for the button to go to the next month in the date-picker.                                |
+| messageHeaderSrText       | string | "At {time}, {speaker} said:"                       | This text is used by screen reader to read the message header. The {time} and {speaker} will rendered on run time.                                |
+| actionButtonTextSr       | string | "With {buttons} buttons or links in"                       | This text is used by screen reader to read the button texts in chat section. {buttons}  will rendered on run time.                                |
+| actionButtonAriaLabel       | string | "Item {position} of {total}: {buttonTitleWithTarget}"                       | This text is used as aria label for buttons in the webchat. All strings inside `{}` will be rendered on runtime |
+
 
 #### Settings Interface
 
@@ -721,6 +733,9 @@ interface IWebchatSettings {
 			closeFullsizeImageModal?: string;
 			datePickerPreviousMonth?: string;
 			datePickerNextMonth?: string;
+			messageHeaderSrText?: string;
+			actionButtonTextSr?: string;
+			actionButtonAriaLabel?: string;
 		};
 	};
 
