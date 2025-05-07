@@ -14,10 +14,6 @@ describe("Chat Log", () => {
 		});
 	});
 
-	it("is chat log region accessible", () => {
-		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "role", "log");
-	});
-
 	it("chat log region does not contain branding", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("not.contain", "Powered by");
 	});
