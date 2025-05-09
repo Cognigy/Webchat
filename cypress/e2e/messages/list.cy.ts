@@ -60,12 +60,9 @@ describe("Message with List", () => {
 		});
 	});
 
-	it("should render list and list items with correct roles", () => {
+	it("should render list and list items with correct tags", () => {
 		cy.withMessageFixture("list", () => {
-			cy.get("[role=list]")
-				.should("be.visible")
-				.get("[role=list] [role=listitem]")
-				.contains("foobar009l2");
+			cy.get("ul").should("be.visible").get("ul > li").contains("foobar009l2");
 		});
 	});
 

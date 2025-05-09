@@ -35,21 +35,22 @@ describe("Message with Buttons", () => {
 		});
 	});
 
-	it("group off buttons should have role 'group'", () => {
+	it("group off buttons should have tag UL", () => {
 		cy.withMessageFixture("buttons", () => {
-			cy.get(".webchat-chat-history [role=group] .webchat-buttons-template-button").should(
-				"have.length",
-				4,
-			);
+			cy.get(".webchat-chat-history [data-testid=action-buttons]")
+				.should("have.prop", "tagName")
+				.and("equal", "UL");
+			cy.get(
+				".webchat-chat-history [data-testid=action-buttons] .webchat-buttons-template-button",
+			).should("have.length", 4);
 		});
 	});
 
 	it("button group should have 'aria-labelledby' attribute", () => {
 		cy.withMessageFixture("buttons", () => {
-			cy.get(".webchat-chat-history [role=group]")
+			cy.get(".webchat-chat-history [data-testid=action-buttons]")
 				.invoke("attr", "aria-labelledby")
-				.should("contain", "webchatButtonTemplateHeader")
-				.should("contain", "srOnly-webchatButtonTemplateHeader");
+				.should("contain", "webchatButtonTemplateHeader");
 		});
 	});
 
@@ -58,14 +59,14 @@ describe("Message with Buttons", () => {
 			cy.wrap([1, 2, 3, 4]).each(number => {
 				cy.contains(`foobar005b${number}`)
 					.invoke("attr", "aria-label")
-					.should("contain", `Item ${number} of 4: foobar005b${number}`);
+					.should("contain", `${number} of 4: foobar005b${number}`);
 			});
 		});
 	});
 
 	it("phone number button should be an anchor element with 'href' attribute", () => {
 		cy.withMessageFixture("buttons", () => {
-			cy.get('a[aria-label="Item 4 of 4: foobar005b4"]')
+			cy.get('a[aria-label="4 of 4: foobar005b4"]')
 				.invoke("attr", "href")
 				.should("contain", `tel:000111222`);
 		});
