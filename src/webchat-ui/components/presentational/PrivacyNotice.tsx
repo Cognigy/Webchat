@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import PrimaryButton from "./PrimaryButton";
-import TertiaryButton from "./TertiaryButton";
+import PolicyLink from "./PrimaryLink";
 import { IWebchatSettings } from "../../../common/interfaces/webchat-config";
 
 const PrivacyNoticeRoot = styled.div(({ theme }) => ({
@@ -31,8 +31,6 @@ const AcceptButton = styled(PrimaryButton)(() => ({
 	width: 303,
 }));
 
-const PolicyButton = styled(TertiaryButton)(() => ({}));
-
 interface IPrivacyNoticeProps {
 	privacyNotice: IWebchatSettings["privacyNotice"];
 	onAcceptTerms: () => void;
@@ -41,10 +39,6 @@ interface IPrivacyNoticeProps {
 export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 	const { privacyNotice, onAcceptTerms } = props;
 	const { text, submitButtonText, urlText, url } = privacyNotice;
-
-	const handleLinkClick = () => {
-		window.open(url || "https://www.cognigy.com/", "_blank");
-	};
 
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
@@ -61,9 +55,12 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				>
 					{submitButtonText}
 				</AcceptButton>
-				<PolicyButton onClick={handleLinkClick} className="webchat-privacy-policy-link">
-					{urlText || "Privacy policy"}
-				</PolicyButton>
+				<PolicyLink
+					url={url || "https://www.cognigy.com/"}
+					target="_blank"
+					className="webchat-privacy-policy-link"
+					text={urlText || "Privacy policy"}
+				/>
 			</PrivacyActions>
 		</PrivacyNoticeRoot>
 	);

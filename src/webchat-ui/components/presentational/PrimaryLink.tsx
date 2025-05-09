@@ -1,22 +1,29 @@
 import React from "react";
 import ArrowIcon from "../../assets/arrow-back-16px.svg";
 import styled from "@emotion/styled";
-import Button from "./Button";
 import { Typography } from "@cognigy/chat-components";
 import classNames from "classnames";
+import { useSelector } from "../../../webchat/helper/useSelector";
 
-interface TertiaryButtonProps {
-	onClick: () => void;
+interface LinkProps {
+	text: string;
+	url: string;
+	target?: string;
+	icon?: string;
 	className?: string;
 }
 
-const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
+const LinkWrapper = styled.a(({ theme }) => ({
 	display: "inline-flex",
 	justifyContent: "center",
 	alignItems: "center",
 	gap: 8,
 	color: theme.black10,
 	backgroundColor: theme.white,
+	width: 303,
+	height: 44,
+	borderRadius: 10,
+	textDecoration: "none",
 	svg: {
 		transform: "rotate(180deg)",
 		fill: theme.black10,
@@ -51,6 +58,11 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 		},
 	},
 
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColor}`,
+		outlineOffset: 2,
+	},
+
 	"&:active:not(:disabled)": {
 		color: theme.black40,
 		backgroundColor: theme.white,
@@ -60,16 +72,24 @@ const TertiaryButtonWrapper = styled(Button)(({ theme }) => ({
 	},
 }));
 
-const TertiaryButton: React.FC<TertiaryButtonProps> = ({ children, className, onClick }) => {
+const Link: React.FC<LinkProps> = props => {
+	const { text, url, target, icon, className } = props;
+
+	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
+	const opensInNewTab = ariaLabels?.opensInNewTab || "Opens in new tab";
+	const ariaLabel = target === "_blank" ? `${text}. ${opensInNewTab}` : undefined;
+
 	return (
-		<TertiaryButtonWrapper
+		<LinkWrapper
 			className={classNames("tertiary-button", className)}
-			onClick={onClick}
+			href={url}
+			target={target}
+			aria-label={ariaLabel}
 		>
-			<Typography variant="cta-semibold">{children}</Typography>
-			<ArrowIcon />
-		</TertiaryButtonWrapper>
+			<Typography variant="cta-semibold">{text}</Typography>
+			{icon || <ArrowIcon />}
+		</LinkWrapper>
 	);
 };
 
-export default TertiaryButton;
+export default Link;
