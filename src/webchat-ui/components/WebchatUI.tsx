@@ -93,7 +93,7 @@ export interface WebchatUIProps {
 	inputMode: string;
 	onSetInputMode: (inputMode: string) => void;
 	onClose: () => void;
-	onConnect: () => void;
+	onMinimize: () => void;
 	onToggle: () => void;
 	lastInputId: string;
 
@@ -1221,8 +1221,9 @@ export class WebchatUI extends React.PureComponent<
 		// TODO: implement better navigation history and currentPage string property on redux
 		const isSecondaryView = showInformationMessage;
 
-		const handleOnClose = () => {
-			onClose?.();
+		/** Minimize will only change the open state of the webchat */
+		const handleOnMinimize = () => {
+			this.props.onMinimize?.();
 			// Restore focus to chat toggle button
 			this.chatToggleButtonRef?.current?.focus?.();
 		};
@@ -1420,7 +1421,7 @@ export class WebchatUI extends React.PureComponent<
 						{!isXAppOverlayOpen && (
 							<Header
 								onClose={handleCloseAndReset}
-								onMinimize={handleOnClose}
+								onMinimize={handleOnMinimize}
 								onGoBack={showInformationMessage ? undefined : handleOnGoBack}
 								onSetShowChatOptionsScreen={() => {
 									onSetShowChatOptionsScreen(true);
@@ -1461,7 +1462,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetShowHomeScreen={onSetShowHomeScreen}
 							onStartConversation={this.handleStartConversation}
 							onSetShowPrevConversations={onSetShowPrevConversations}
-							onClose={handleOnClose}
+							onClose={handleOnMinimize}
 							config={config}
 							onEmitAnalytics={onEmitAnalytics}
 							onSendActionButtonMessage={this.handleSendActionButtonMessage}

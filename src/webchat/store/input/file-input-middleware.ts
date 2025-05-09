@@ -66,33 +66,42 @@ export const createFileInputMiddleware =
 					store.dispatch(setFileList(existingFileList.concat(newFileList)));
 				}, 100);
 
-				newFileList = await Promise.all(
-					newFileList.map(async fileItem => {
-						try {
-							if (!fileItem.hasUploadError) {
-								fileItem.uploadFileMeta = await uploadFile(
-									fileItem.file,
-									response.fileUploadUrl,
-									response.token,
-								);
-								if (fileItem.uploadFileMeta.status === "infected") {
-									fileItem.hasUploadError = true;
-									fileItem.uploadErrorReason = "Infected File";
+				newFileList = (
+					await Promise.all(
+						newFileList.map(async fileItem => {
+							try {
+								if (!fileItem.hasUploadError && !fileItem.isCancelled) {
+									fileItem.abortController = new AbortController();
+									fileItem.uploadFileMeta = await uploadFile(
+										fileItem.file,
+										response.fileUploadUrl,
+										response.token,
+										fileItem.abortController,
+									);
+									if (fileItem.uploadFileMeta.status === "infected") {
+										fileItem.hasUploadError = true;
+										fileItem.uploadErrorReason = "Infected File";
+										store.dispatch(setFileUploadError(true));
+									}
+									fileItem.uploadFileMeta.fileName = fileItem.file.name;
+									fileItem.progressPercentage = 100;
+								} else {
 									store.dispatch(setFileUploadError(true));
 								}
-								fileItem.uploadFileMeta.fileName = fileItem.file.name;
-								fileItem.progressPercentage = 100;
-							} else {
-								store.dispatch(setFileUploadError(true));
+							} catch (err) {
+								if (err.code === "ERR_CANCELED") {
+									fileItem.isCancelled = true;
+									return;
+								} else {
+									fileItem.hasUploadError = true;
+									fileItem.uploadErrorReason = "Failed Upload!";
+									store.dispatch(setFileUploadError(true));
+								}
 							}
-						} catch (err) {
-							fileItem.hasUploadError = true;
-							fileItem.uploadErrorReason = "Failed Upload!";
-							store.dispatch(setFileUploadError(true));
-						}
-						return fileItem;
-					}),
-				);
+							return fileItem;
+						}),
+					)
+				).filter(Boolean) as IFile[];
 				store.dispatch(setFileList(existingFileList.concat(newFileList)));
 				break;
 			}

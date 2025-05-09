@@ -41,7 +41,12 @@ export const fetchFileUploadToken = async (fileUploadTokenUrl: string) => {
 	return response.json() as IUploadFileToken;
 };
 
-export const uploadFile = async (file: File, fileUploadUrl: string, token: string) => {
+export const uploadFile = async (
+	file: File,
+	fileUploadUrl: string,
+	token: string,
+	signal?: AbortController,
+) => {
 	const axiosRequest: AxiosRequestConfig = {
 		data: { file: file },
 		headers: {
@@ -50,6 +55,7 @@ export const uploadFile = async (file: File, fileUploadUrl: string, token: strin
 		},
 		method: "POST",
 		url: fileUploadUrl,
+		signal: signal ? signal.signal : undefined,
 	};
 	const axiosResponse: AxiosResponse = await Axios(axiosRequest);
 

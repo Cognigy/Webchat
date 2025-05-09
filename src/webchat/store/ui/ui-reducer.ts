@@ -32,6 +32,12 @@ export const setOpen = (open: boolean) => ({
 });
 export type SetOpenAction = ReturnType<typeof setOpen>;
 
+export const SET_MINIMIZE = "SET_MINIMIZE" as const;
+export const setMinimize = () => ({
+	type: SET_MINIMIZE,
+});
+export type SetMinimizeAction = ReturnType<typeof setMinimize>;
+
 const TOGGLE_OPEN = "TOGGLE_OPEN";
 export const toggleOpen = () => ({
 	type: TOGGLE_OPEN as "TOGGLE_OPEN",
@@ -154,6 +160,7 @@ const getInitialState = (): UIState => ({
 
 type UIAction =
 	| SetOpenAction
+	| SetMinimizeAction
 	| SetTypingAction
 	| SetInputModeAction
 	| SetFullscreenMessageAction
@@ -174,6 +181,13 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				open: action.open,
+			};
+		}
+
+		case SET_MINIMIZE: {
+			return {
+				...state,
+				open: false,
 			};
 		}
 
