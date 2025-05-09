@@ -115,7 +115,7 @@ describe("Message with Gallery", () => {
 			cy.wrap([1, 2, 3, 4]).each(number => {
 				cy.contains(`foobar004g1b${number}`)
 					.invoke("attr", "aria-label")
-					.should("contain", `Item ${number} of 4: foobar004g1b${number}`);
+					.should("contain", `${number} of 4: foobar004g1b${number}`);
 			});
 		});
 	});

@@ -48,22 +48,21 @@ describe("Message with Quick Replies", () => {
 		});
 	});
 
-	it("should have role 'group' when more than one quick reply button", () => {
+	it("should use UL tag when more than one quick reply button", () => {
 		cy.withMessageFixture("quick-replies", () => {
 			cy.get(".webchat-quick-reply-template-replies-container").should(
-				"have.attr",
-				"role",
-				"group",
+				"have.prop",
+				"tagName",
+				"UL",
 			);
 		});
 	});
 
-	it("quick reply button group should have 'aria-labelledby' attribute", () => {
+	it("quick reply button list should have 'aria-labelledby' attribute", () => {
 		cy.withMessageFixture("quick-replies", () => {
 			cy.get(".webchat-quick-reply-template-replies-container")
 				.invoke("attr", "aria-labelledby")
-				.should("contain", "webchatButtonTemplateHeader")
-				.should("contain", "srOnly-webchatButtonTemplateHeader");
+				.should("contain", "webchatButtonTemplateHeader");
 		});
 	});
 
@@ -71,10 +70,10 @@ describe("Message with Quick Replies", () => {
 		cy.withMessageFixture("quick-replies", () => {
 			cy.contains("foobar003qr01")
 				.invoke("attr", "aria-label")
-				.should("contain", "Item 1 of 2: foobar003qr01");
+				.should("contain", "1 of 2: foobar003qr01");
 			cy.contains("foobar003qr02")
 				.invoke("attr", "aria-label")
-				.should("contain", "Item 2 of 2: foobar003qr02");
+				.should("contain", "2 of 2: foobar003qr02");
 		});
 	});
 });

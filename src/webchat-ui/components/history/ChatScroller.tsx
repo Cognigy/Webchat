@@ -131,7 +131,7 @@ export function ChatScroller({
 					ref={innerRef}
 					id="webchatChatHistoryWrapperLiveLogPanel"
 					tabIndex={isChatLogOverflowing() ? 0 : -1}
-					role="log"
+					aria-labelledby="webchatChatHistoryHeading"
 					onFocus={handleFocus}
 					onBlur={handleBlur}
 				>
