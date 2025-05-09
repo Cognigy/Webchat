@@ -62,7 +62,7 @@ describe("Message with Quick Replies", () => {
 		cy.withMessageFixture("quick-replies", () => {
 			cy.get(".webchat-quick-reply-template-replies-container")
 				.invoke("attr", "aria-labelledby")
-				.should("contain", "webchatButtonTemplateHeader")
+				.should("contain", "webchatButtonTemplateHeader");
 		});
 	});
 
