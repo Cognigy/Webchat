@@ -126,7 +126,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 			</Typography>
 			<RatingButtonContainer className="webchat-rating-widget-content-container">
 				<RatingButton
-					onClick={() => setRatingValue(1)}
+					onClick={() => setRatingValue(ratingValue === 1 ? null : 1)}
 					className="webchat-rating-widget-thumbs-up-button"
 					aria-pressed={ratingValue === 1}
 					aria-label={ariaLabels?.thumbsUp ?? "Like"}
@@ -135,7 +135,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					<RatingUpIcon selected={ratingValue === 1} />
 				</RatingButton>
 				<RatingButton
-					onClick={() => setRatingValue(-1)}
+					onClick={() => setRatingValue(ratingValue === -1 ? null : -1)}
 					className="webchat-rating-widget-thumbs-down-button"
 					aria-pressed={ratingValue === -1}
 					aria-label={ariaLabels?.thumbsDown ?? "Dislike"}
