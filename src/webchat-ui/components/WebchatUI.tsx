@@ -68,7 +68,7 @@ import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
-import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
+import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 
 export interface WebchatUIProps {
@@ -1278,6 +1278,7 @@ export class WebchatUI extends React.PureComponent<
 					<PrivacyNotice
 						privacyNotice={config.settings.privacyNotice}
 						onAcceptTerms={handleAcceptTerms}
+						isHomeScreenEnabled={isHomeScreenEnabled}
 					/>
 				);
 
