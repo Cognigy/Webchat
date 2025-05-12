@@ -1039,6 +1039,9 @@ export class WebchatUI extends React.PureComponent<
 			this.chatToggleButtonRef.current?.focus();
 		};
 
+		const chatRegionAriaLabel =
+			config.settings.customTranslations?.ariaLabels?.chatRegion ?? "Chat window";
+
 		return (
 			<>
 				<ThemeProvider theme={theme}>
@@ -1048,7 +1051,7 @@ export class WebchatUI extends React.PureComponent<
 							data-cognigy-webchat-root
 							{...restProps}
 							className="webchat-root"
-							aria-labelledby="webchatHeaderTitle"
+							aria-label={chatRegionAriaLabel}
 							role="region"
 							onKeyDown={this.handleKeydown}
 						>
