@@ -68,8 +68,9 @@ import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
-import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
+import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
+import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -161,6 +162,7 @@ interface WebchatUIState {
 	timedOut: boolean;
 	showDeleteAllConversationsModal: boolean;
 	deleteConversationsModalState: boolean;
+	liveContent?: Record<string, string>;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -255,6 +257,7 @@ export class WebchatUI extends React.PureComponent<
 		timedOut: false,
 		showDeleteAllConversationsModal: false,
 		deleteConversationsModalState: false,
+		liveContent: {},
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -1350,6 +1353,7 @@ export class WebchatUI extends React.PureComponent<
 						</h2>
 						{this.renderHistory()}
 					</HistoryWrapper>
+					<ScreenReaderLiveRegion liveContent={this.state.liveContent} />
 					<QueueUpdates />
 					{this.renderInput()}
 				</>
@@ -1561,6 +1565,15 @@ export class WebchatUI extends React.PureComponent<
 				})
 			: messagesExcludingPrivacyMessage;
 
+		const handleLiveRegionText = (messageId: string, text: string) => {
+			this.setState(prevState => ({
+				liveContent: {
+					...prevState.liveContent,
+					[messageId]: text,
+				},
+			}));
+		};
+
 		return (
 			<>
 				{enableAIAgentNotice !== false && (
@@ -1594,6 +1607,8 @@ export class WebchatUI extends React.PureComponent<
 							prevMessage={visibleMessages?.[index - 1]}
 							theme={this.state.theme}
 							onSetMessageAnimated={this.props.onSetMessageAnimated}
+							onSetLiveRegionText={handleLiveRegionText}
+							data-message-id={`webchatMessageId-${message.timestamp}`}
 						/>
 					);
 				})}
