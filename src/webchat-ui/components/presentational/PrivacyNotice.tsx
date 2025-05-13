@@ -56,11 +56,17 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 		}
 		// If the home screen is enabled, delay focusing the privacy notice message
 		// to allow any home screen transition animations to complete before moving focus.
-		setTimeout(() => {
+		const timeoutId = setTimeout(() => {
 			if (privacyNoticeRef.current) {
 				privacyNoticeRef.current.focus();
 			}
 		}, 200);
+
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		};
 	}, [isHomeScreenEnabled]);
 
 	return (

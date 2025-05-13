@@ -11,6 +11,7 @@ interface LinkProps {
 	target?: string;
 	icon?: string;
 	className?: string;
+	rel?: string;
 }
 
 const LinkWrapper = styled.a(({ theme }) => ({
@@ -73,11 +74,12 @@ const LinkWrapper = styled.a(({ theme }) => ({
 }));
 
 const Link: React.FC<LinkProps> = props => {
-	const { text, url, target, icon, className } = props;
+	const { text, url, target, icon, className, rel } = props;
 
 	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
 	const opensInNewTab = ariaLabels?.opensInNewTab || "Opens in new tab";
 	const ariaLabel = target === "_blank" ? `${text}. ${opensInNewTab}` : undefined;
+	const computedRel = rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
 
 	return (
 		<LinkWrapper
@@ -85,6 +87,7 @@ const Link: React.FC<LinkProps> = props => {
 			href={url}
 			target={target}
 			aria-label={ariaLabel}
+			rel={computedRel}
 		>
 			<Typography variant="cta-semibold">{text}</Typography>
 			{icon || <ArrowIcon />}
