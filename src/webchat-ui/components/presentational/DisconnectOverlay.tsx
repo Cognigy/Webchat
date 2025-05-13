@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import IconButton from "./IconButton";
 import CloseIcon from "../../assets/baseline-close-24px.svg";
@@ -6,20 +6,6 @@ import Button from "./Button";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 
 const Wrapper = styled.div(({ theme }) => ({
-	"@keyframes appearAnimation": {
-		from: {
-			opacity: 0,
-			transform: "scale(.95)",
-			translateZ: -2,
-		},
-		to: {
-			opacity: 0.93,
-			transform: "scale(1)",
-			translateZ: -2,
-		},
-	},
-
-	animation: "appearAnimation 0.33s 0.75s both",
 	display: "flex",
 	justifyContent: "center",
 	alignItems: "center",
@@ -32,9 +18,7 @@ const Wrapper = styled.div(({ theme }) => ({
 
 	padding: 20,
 	boxSizing: "border-box",
-	backgroundColor: `color-mix(in srgb, ${theme.white}, #0001)`,
-	backdropFilter: "blur(18px)",
-	opacity: 0,
+	backgroundColor: theme.white,
 	zIndex: 4,
 }));
 
@@ -53,11 +37,12 @@ const DialogHeader = styled.div(({ theme }) => ({
 
 const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 	position: "absolute",
-	right: 15,
-	top: 17,
+	right: 20,
+	top: 20,
+	padding: 0,
 
-	color: theme.textLight,
-	fill: theme.textLight,
+	color: theme.textDark,
+	fill: theme.textDark,
 	borderRadius: "50%",
 }));
 
@@ -69,16 +54,22 @@ interface DisconnectOverlayProps {
 }
 
 const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: DisconnectOverlayProps) => {
+	const ref = useCallback(ref => ref?.focus?.(), []);
 	return (
 		<Wrapper>
-			<Dialog>
+			<Dialog ref={ref}>
 				{isPermanent ? (
 					<>
 						<DialogHeader>
 							{config.settings.customTranslations?.network_error ?? "Connection lost"}
 						</DialogHeader>
 						{navigator.onLine ? (
-							<Button onClick={onConnect} color="primary" style={{ margin: "auto" }}>
+							<Button
+								autoFocus
+								onClick={onConnect}
+								color="primary"
+								style={{ margin: "auto" }}
+							>
 								{config.settings.customTranslations?.reconnect ?? "Reconnect"}
 							</Button>
 						) : (
