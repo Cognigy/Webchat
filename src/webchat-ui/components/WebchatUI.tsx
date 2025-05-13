@@ -265,6 +265,7 @@ export class WebchatUI extends React.PureComponent<
 	ratingButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
+	private previousFocus: HTMLElement | null = null;
 
 	private unreadTitleIndicatorInterval: ReturnType<typeof setInterval> | null = null;
 	private originalTitle: string = window.document.title;
@@ -497,6 +498,21 @@ export class WebchatUI extends React.PureComponent<
 			if (document.activeElement === webchatToggleButton && firstFocusable) {
 				firstFocusable.focus();
 			}
+		}
+
+		const disconnectOverlayNow =
+			this.props.config.settings.behavior.enableConnectionStatusIndicator &&
+			!this.props.connected &&
+			this.state.hadConnection;
+		const disconnectOverlayPrev =
+			prevProps.config.settings.behavior.enableConnectionStatusIndicator &&
+			!prevProps.connected &&
+			prevState.hadConnection;
+		if (disconnectOverlayNow && !disconnectOverlayPrev) {
+			this.previousFocus = document.activeElement as HTMLElement;
+		} else if (!disconnectOverlayNow && disconnectOverlayPrev && this.previousFocus) {
+			this.previousFocus.focus();
+			this.previousFocus = null;
 		}
 
 		if (
