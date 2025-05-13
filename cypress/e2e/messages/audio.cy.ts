@@ -23,7 +23,7 @@ describe("Message with Audio", () => {
 
 	it("should have class 'webchat-media-template-audio'", () => {
 		cy.withMessageFixture("audio", () => {
-			cy.get(".webchat-message-row .webchat-media-template-audio");
+			cy.get(".webchat-message-row .webchat-media-template-audio").should("exist");
 		});
 	});
 });
