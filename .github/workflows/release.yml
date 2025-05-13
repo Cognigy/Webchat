@@ -20,10 +20,10 @@ jobs:
                   node-version: "22"
 
             - name: Build
+              run: npm ci && npm run build
+
             - name: Release
               uses: softprops/action-gh-release@v1
-              with:
-                  contents: write
               with:
                   draft: true
                   files: |
