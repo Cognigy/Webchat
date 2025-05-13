@@ -405,7 +405,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 
 #### Custom Translations
 
-With our latest release (v3.22.0), its is now possible to interpolate dynamic values into your custom translations.
+With our latest release (v3.22.0), it is now possible to interpolate dynamic values into your custom translations.
 
 #### Example
 
@@ -522,7 +522,7 @@ This object is used for aria-live attribute of audio elements in the chat conver
 This object is used for aria-live attribute of file attachments elements
 | Name | Type | Default | Description |
 | ------------- | ------ | ------- | ----------- |
-| singleFile | string | "{text}. A {type} named '{fileName}' with size {sizeLabel}." | This text is for single file attachements |
+| singleFile | string | "{text}. A {type} named '{fileName}' with size {sizeLabel}." | This text is for single file attachments |
 | multipleFiles | string | "File {index}: '{fileName}', size {sizeLabel}." | This text is used for multiple file attachments |
 
 ##### Message Header
