@@ -526,12 +526,13 @@ This object is used for aria-live attribute of file attachments elements
 | multipleFiles | string | "File {index}: '{fileName}', size {sizeLabel}." | This text is used for multiple file attachments |
 
 ##### Message Header
+
 This object is used by screen reader in message header element
-| Name      | Type   | Default | Description |
+| Name | Type | Default | Description |
 | --------- | ------ | ------- | ----------- |
-| user      | string | "You said:"         |  The screen reader text used for announcing user messages            |
-| bot       | string |  "{name} said:"       |  The screen reader text used for announcing bot message header. The name is the name of the configured configured in the endpoint editor            |
-| timestamp | string | "At {time}"         |    The time at which the message was sent         |
+| user | string | "You said:" | The screen reader text used for announcing user messages |
+| bot | string | "{name} said:" | The screen reader text used for announcing bot message header. The name is the name of the configured configured in the endpoint editor |
+| timestamp | string | "At {time}" | The time at which the message was sent |
 
 #### Settings Interface
 
