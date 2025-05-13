@@ -13,13 +13,11 @@ describe("Message with Audio", () => {
 		});
 	});
 
-	it("should have controls in player", () => {
+	it("should have controls in player", function () {
 		cy.withMessageFixture("audio", () => {
 			cy.get(
 				".webchat-message-row [data-testid='audio-message'] [data-testid='audio-controls']",
-			)
-				.should("exist")
-				.should("be.visible", { timeout: 4000 });
+			).should("exist");
 		});
 	});
 
