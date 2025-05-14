@@ -15,11 +15,8 @@ describe("Message with Quick Replies", () => {
 	it("should verify quick reply behavior in enabled and disabled states", () => {
 		// First run - check clickable state
 		cy.withMessageFixture("quick-replies", () => {
-			cy.get("button:contains('foobar003qr01')")
-				.last()
-				.should("not.be.disabled")
-				.focus()
-				.click();
+			cy.get("button:contains('foobar003qr01')").last().should("not.be.disabled").focus();
+			cy.get("button:contains('foobar003qr01')").last().click();
 			cy.get(".webchat-message-row.user").contains("foobar003qr01");
 		});
 
