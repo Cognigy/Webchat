@@ -480,7 +480,7 @@ The following table defines the default texts used throughout the Webchat for ac
 | datePickerNextMonth       | string   | "Next month"                          | This text is used as the label for the button to go to the next month in the date-picker.                                |
 | buttonGroupLabel          | string   | "Available actions:"                  | This text is used for live message announcements of text with buttons and quick replies messages.                        |
 | slidesCountText           | string   | "{slidesCount} slides."               | This text is used for live message announcements of slides count in a gallery message.                                   |
-| slide             | string   | "Slide"                               | This text is used for live message announcements of text "Slide" in gallery message.                                     |
+| slide                     | string   | "Slide"                               | This text is used for live message announcements of text "Slide" in gallery message.                                     |
 | listItemGroupLabel        | string   | "Available list items:"               | This text is used for live message announcements of text in list message.                                                |
 | imageContent              | `Object` | [See Image Content](#image-content)   | Image related aria live announcements by screen readers                                                                  |
 | videoContent              | `Object` | [See Video Content](#video-content)   | Video related aria live announcements by screen readers                                                                  |
