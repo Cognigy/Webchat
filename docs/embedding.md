@@ -411,7 +411,7 @@ With our latest release (v3.22.0), it is now possible to interpolate dynamic val
 
 ```json
 {
-	"key": "{count} out of {total} buttons exists"
+	"textWithButtons": "{text}, Verfügbare Optionen: {buttons}"
 }
 ```
 
@@ -437,7 +437,7 @@ In the above example only the texts outside the `{}` braces needs to be translat
 
 #### Aria Labels
 
-The following table defines the default aria labels used throughout the Webchat for accessibility. Use them for managing aria-labels based on the preferred language
+The following table defines the default texts used throughout the Webchat for accessibility. Use them for managing aria-labels and other screen reader relevant texts based on the preferred language.
 
 | Name                      | Type     | Default                                            | Description                                                                                                              |
 | ------------------------- | -------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -478,12 +478,11 @@ The following table defines the default aria labels used throughout the Webchat 
 | closeFullsizeImageModal   | string   | "Close full-size image viewer"                     | This text is used for the close button in the full-size image viewer.                                                    |
 | datePickerPreviousMonth   | string   | "Previous month"                                   | This text is used as the label for the button to go to the previous month in the date-picker.                            |
 | datePickerNextMonth       | string   | "Next month"                                       | This text is used as the label for the button to go to the next month in the date-picker.                                |
-| actionButton              | string   | "{position} of {total}: {buttonTitleWithTarget}"   | This text is used for indicating list of action buttons in conversation. Position indicates the position of the button   |
-| textWithButtons           | string   | "{text}. Available options: {buttons}"             | This text is used by Aria live attribute for buttons with text                                                           |
-| galleryContent            | string   | "Available actions: {buttonlabels}"                | This text is used by Aria live attribute for Image gallery content                                                       |
-| slidesCountText           | string   | "{slidesCount} slides."                            | This text is used by Aria live attribute for Slides count inside Gallery                                                 |
-| slidesContent             | string   | "Slide {index}: {slideText}. {galleryContent}"     | This text is used by Aria live attribute for slides content inside Gallery.                                              |
-| listContent               | string   | "{headerLabel} Available list items: {itemLabels}" | This text is used by Aria live attribute for List elements. HeaderLabels are based on the data                           |
+| textWithButtons           | string   | "{text}. Available options: {buttons}"             | This text is used for live message announcements of text with buttons and quick replies messages.                        |
+| galleryContent            | string   | "Available actions: {buttonlabels}"                | This text is used for live message announcements of text in image gallery.                                               |
+| slidesCountText           | string   | "{slidesCount} slides."                            | This text is used for live message announcements of text slides count in image gallery.                                  |
+| slidesContent             | string   | "Slide {index}: {slideText}. {galleryContent}"     | This text is used for live message announcements of text in slides inside image gallery.                                 |
+| listContent               | string   | "{headerLabel} Available list items: {itemLabels}" | This text is used for live message announcements of text in list elements.                                               |
 | imageContent              | `Object` | [See Image Content](#image-content)                | Image related aria labels                                                                                                |
 | videoContent              | `Object` | [See Video Content](#video-content)                | Video related aria labels                                                                                                |
 | audioContent              | `Object` | [See Audio Content](#audio-content)                | Audio related aria labels                                                                                                |
@@ -493,7 +492,7 @@ The following table defines the default aria labels used throughout the Webchat 
 
 ##### Image Content
 
-Image content related text content is used by aria-live attributes of Image elements
+Image content related text announcements for image elements
 | Name | Type | Default | Description |
 | --------------- | ------ | ------- | ----------- |
 | downloadable | string | "An image with download option. {altTextLabel}" | This text indicates an image which is downloadable. `altText` is based on the image metadata |
@@ -501,7 +500,7 @@ Image content related text content is used by aria-live attributes of Image elem
 
 ##### Video Content
 
-This object is used for aria-live attribute of video elements in the chat conversation
+Video content related text announcements for video elements
 | Name | Type | Default | Description |
 | ---------------------------- | ------ | ------- | ----------- |
 | withTranscriptAndCaptions | string | "A video with transcript and captions." | This text is used by video elements with transcript and captions |
@@ -511,7 +510,7 @@ This object is used for aria-live attribute of video elements in the chat conver
 
 ##### Audio Content
 
-This object is used for aria-live attribute of audio elements in the chat conversation
+Audio content related text announcements for audio elements
 | Name | Type | Default | Description |
 | ----------------- | ------ | ------- | ----------- |
 | withTranscript | string | "An audio message with transcript" | This text is used by audio element with transcript |
@@ -519,7 +518,7 @@ This object is used for aria-live attribute of audio elements in the chat conver
 
 ##### File Content
 
-This object is used for aria-live attribute of file attachments elements
+File content related text announcements for file attachments
 | Name | Type | Default | Description |
 | ------------- | ------ | ------- | ----------- |
 | singleFile | string | "{text}. A {type} named '{fileName}' with size {sizeLabel}." | This text is for single file attachments |
@@ -527,7 +526,7 @@ This object is used for aria-live attribute of file attachments elements
 
 ##### Message Header
 
-This object is used by screen reader in message header element
+Message header related accessibility text content used by screen reader in message header
 | Name | Type | Default | Description |
 | --------- | ------ | ------- | ----------- |
 | user | string | "You said:" | The screen reader text used for announcing user messages |
