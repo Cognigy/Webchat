@@ -357,10 +357,10 @@ export interface IWebchatSettings {
 			datePickerNextMonth?: string;
 			actionButton?: string;
 			textWithButtons?: string;
-			galleryContent?: string;
+			buttonGroupLabel?: string;
 			slidesCountText?: string;
-			slidesContent?: string;
-			listContent?: string;
+			slide?: string;
+			listItemGroupLabel?: string;
 			imageContent?: {
 				downloadable?: string;
 				nonDownloadable?: string;

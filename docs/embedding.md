@@ -439,64 +439,63 @@ In the above example only the texts outside the `{}` braces needs to be translat
 
 The following table defines the default texts used throughout the Webchat for accessibility. Use them for managing aria-labels and other screen reader relevant texts based on the preferred language.
 
-| Name                      | Type     | Default                                            | Description                                                                                                              |
-| ------------------------- | -------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| scrollToBottom            | string   | "Scroll to the bottom of the chat"                 | Label for the button that scrolls the chat log to the bottom.                                                            |
-| closeDialog               | string   | "Close dialog"                                     | Label for close buttons in modals or dialogs.                                                                            |
-| togglePersistentMenu      | string   | "Toggle chat input menu"                           | Label for the button toggling the persistent menu.                                                                       |
-| addAttachment             | string   | "Add attachments"                                  | Label for the button that allows uploading attachments.                                                                  |
-| speechToText              | string   | "Speech to text"                                   | Label for the speech-to-text control button.                                                                             |
-| sendMessage               | string   | "Send message"                                     | Label for the send message button.                                                                                       |
-| removeFileAttachment      | string   | "Remove file attachment"                           | Label for the button to remove a file attachment.                                                                        |
-| closeConnectionWarning    | string   | "Close connection lost overlay"                    | Label for closing warning dialogs .                                                                                      |
-| goBack                    | string   | "Go back"                                          | Label for buttons allowing the user to go back.                                                                          |
-| deleteAllConversations    | string   | "Delete all conversations"                         | Label for the button to delete all conversations in the previous conversation screen.                                    |
-| chatOptions               | string   | "Chat options"                                     | Label for the button that opens the chat options screen. By default, the text provided for the Chat screen will be used. |
-| minimizeChat              | string   | "Minimize chat"                                    | Label for minimizing the chat window.                                                                                    |
-| closeChat                 | string   | "Close chat"                                       | Label for closing the chat window.                                                                                       |
-| openChat                  | string   | "Open chat"                                        | Label for opening the chat window.                                                                                       |
-| unreadMessages            | string   | "Unread messages"                                  | Label indicating the unread messages status in the badge inside chat toggle button.                                      |
-| unreadMessageSingularText | string   | "One unread message in chat"                       | Label for a single unread message indicator for the chat toggle button.                                                  |
-| unreadMessagePluralText   | string   | "unread messages in chat"                          | Label for multiple unread messages indicator for the chat toggle button.                                                 |
-| closeTeaserMessage        | string   | "Close teaser message"                             | Label for the teaser message close button.                                                                               |
-| opensInNewTab             | string   | "Opens in new tab"                                 | Label for links that open in a new tab.                                                                                  |
-| thumbsUp                  | string   | "Like"                                             | Label for the positive feedback button.                                                                                  |
-| thumbsDown                | string   | "Dislike"                                          | Label for the negative feedback button.                                                                                  |
-| openConversation          | string   | "Open conversation"                                | Label for the button that opens a conversation thread in the previous conversation list.                                 |
-| chatHistory               | string   | "Chat history"                                     | This text is used as a heading to indicate the chat history region.                                                      |
-| homeScreen                | string   | "Chat window home screen"                          | This text is used as a heading to indicate the home screen.                                                              |
-| newMessagePreview         | string   | "New message preview"                              | This text is used inside the teaser message to indicate a new message has arrived.                                       |
-| audioPlaybackProgress     | string   | "Audio playback progress"                          | This text is used to indicate the audio playback progress.                                                               |
-| pauseAudio                | string   | "Pause audio"                                      | This text is used for the pause audio button.                                                                            |
-| playAudio                 | string   | "Play audio"                                       | This text is used for the play audio button.                                                                             |
-| playVideo                 | string   | "Play video"                                       | This text is used for the play video button.                                                                             |
-| downloadTranscript        | string   | "Download transcript"                              | This text is used for the download transcript button in the audio player.                                                |
-| closeDatePicker           | string   | "Close date-picker"                                | This text is used for the close date-picker button.                                                                      |
-| viewImageInFullsize       | string   | "View full-size image"                             | This text is used for the button to view image in full-size.                                                             |
-| fullSizeImageViewerTitle  | string   | "Full-size image viewer"                           | This text is used for the heading in the full-size image viewer.                                                         |
-| downloadFullsizeImage     | string   | "Download full-size image"                         | This text is used for the download button in the full-size image viewer.                                                 |
-| closeFullsizeImageModal   | string   | "Close full-size image viewer"                     | This text is used for the close button in the full-size image viewer.                                                    |
-| datePickerPreviousMonth   | string   | "Previous month"                                   | This text is used as the label for the button to go to the previous month in the date-picker.                            |
-| datePickerNextMonth       | string   | "Next month"                                       | This text is used as the label for the button to go to the next month in the date-picker.                                |
-| textWithButtons           | string   | "{text}. Available options: {buttons}"             | This text is used for live message announcements of text with buttons and quick replies messages.                        |
-| galleryContent            | string   | "Available actions: {buttonlabels}"                | This text is used for live message announcements of text in image gallery.                                               |
-| slidesCountText           | string   | "{slidesCount} slides."                            | This text is used for live message announcements of text slides count in image gallery.                                  |
-| slidesContent             | string   | "Slide {index}: {slideText}. {galleryContent}"     | This text is used for live message announcements of text in slides inside image gallery.                                 |
-| listContent               | string   | "{headerLabel} Available list items: {itemLabels}" | This text is used for live message announcements of text in list elements.                                               |
-| imageContent              | `Object` | [See Image Content](#image-content)                | Image related aria labels                                                                                                |
-| videoContent              | `Object` | [See Video Content](#video-content)                | Video related aria labels                                                                                                |
-| audioContent              | `Object` | [See Audio Content](#audio-content)                | Audio related aria labels                                                                                                |
-| fileContent               | `Object` | [See File content](#file-content)                  | File content related aria labels                                                                                         |
-| messageHeader             | `Object` | [See Message Header](#message-header)              | Labels for message headers in conversation                                                                               |
-| audioTimeRemaining        | string   | "{time} remaining"                                 | This text is used by aria-valuetext attribute of input element indicating the remaning time left in the Audio playback   |
+| Name                      | Type     | Default                               | Description                                                                                                              |
+| ------------------------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| scrollToBottom            | string   | "Scroll to the bottom of the chat"    | Label for the button that scrolls the chat log to the bottom.                                                            |
+| closeDialog               | string   | "Close dialog"                        | Label for close buttons in modals or dialogs.                                                                            |
+| togglePersistentMenu      | string   | "Toggle chat input menu"              | Label for the button toggling the persistent menu.                                                                       |
+| addAttachment             | string   | "Add attachments"                     | Label for the button that allows uploading attachments.                                                                  |
+| speechToText              | string   | "Speech to text"                      | Label for the speech-to-text control button.                                                                             |
+| sendMessage               | string   | "Send message"                        | Label for the send message button.                                                                                       |
+| removeFileAttachment      | string   | "Remove file attachment"              | Label for the button to remove a file attachment.                                                                        |
+| closeConnectionWarning    | string   | "Close connection lost overlay"       | Label for closing warning dialogs .                                                                                      |
+| goBack                    | string   | "Go back"                             | Label for buttons allowing the user to go back.                                                                          |
+| deleteAllConversations    | string   | "Delete all conversations"            | Label for the button to delete all conversations in the previous conversation screen.                                    |
+| chatOptions               | string   | "Chat options"                        | Label for the button that opens the chat options screen. By default, the text provided for the Chat screen will be used. |
+| minimizeChat              | string   | "Minimize chat"                       | Label for minimizing the chat window.                                                                                    |
+| closeChat                 | string   | "Close chat"                          | Label for closing the chat window.                                                                                       |
+| openChat                  | string   | "Open chat"                           | Label for opening the chat window.                                                                                       |
+| unreadMessages            | string   | "Unread messages"                     | Label indicating the unread messages status in the badge inside chat toggle button.                                      |
+| unreadMessageSingularText | string   | "One unread message in chat"          | Label for a single unread message indicator for the chat toggle button.                                                  |
+| unreadMessagePluralText   | string   | "unread messages in chat"             | Label for multiple unread messages indicator for the chat toggle button.                                                 |
+| closeTeaserMessage        | string   | "Close teaser message"                | Label for the teaser message close button.                                                                               |
+| opensInNewTab             | string   | "Opens in new tab"                    | Label for links that open in a new tab.                                                                                  |
+| thumbsUp                  | string   | "Like"                                | Label for the positive feedback button.                                                                                  |
+| thumbsDown                | string   | "Dislike"                             | Label for the negative feedback button.                                                                                  |
+| openConversation          | string   | "Open conversation"                   | Label for the button that opens a conversation thread in the previous conversation list.                                 |
+| chatHistory               | string   | "Chat history"                        | This text is used as a heading to indicate the chat history region.                                                      |
+| homeScreen                | string   | "Chat window home screen"             | This text is used as a heading to indicate the home screen.                                                              |
+| newMessagePreview         | string   | "New message preview"                 | This text is used inside the teaser message to indicate a new message has arrived.                                       |
+| audioPlaybackProgress     | string   | "Audio playback progress"             | This text is used to indicate the audio playback progress.                                                               |
+| pauseAudio                | string   | "Pause audio"                         | This text is used for the pause audio button.                                                                            |
+| playAudio                 | string   | "Play audio"                          | This text is used for the play audio button.                                                                             |
+| playVideo                 | string   | "Play video"                          | This text is used for the play video button.                                                                             |
+| downloadTranscript        | string   | "Download transcript"                 | This text is used for the download transcript button in the audio player.                                                |
+| closeDatePicker           | string   | "Close date-picker"                   | This text is used for the close date-picker button.                                                                      |
+| viewImageInFullsize       | string   | "View full-size image"                | This text is used for the button to view image in full-size.                                                             |
+| fullSizeImageViewerTitle  | string   | "Full-size image viewer"              | This text is used for the heading in the full-size image viewer.                                                         |
+| downloadFullsizeImage     | string   | "Download full-size image"            | This text is used for the download button in the full-size image viewer.                                                 |
+| closeFullsizeImageModal   | string   | "Close full-size image viewer"        | This text is used for the close button in the full-size image viewer.                                                    |
+| datePickerPreviousMonth   | string   | "Previous month"                      | This text is used as the label for the button to go to the previous month in the date-picker.                            |
+| datePickerNextMonth       | string   | "Next month"                          | This text is used as the label for the button to go to the next month in the date-picker.                                |
+| buttonGroupLabel          | string   | "Available actions:"                  | This text is used for live message announcements of text with buttons and quick replies messages.                        |
+| slidesCountText           | string   | "{slidesCount} slides."               | This text is used for live message announcements of slides count in a gallery message.                                   |
+| slide             | string   | "Slide"                               | This text is used for live message announcements of text "Slide" in gallery message.                                     |
+| listItemGroupLabel        | string   | "Available list items:"               | This text is used for live message announcements of text in list message.                                                |
+| imageContent              | `Object` | [See Image Content](#image-content)   | Image related aria live announcements by screen readers                                                                  |
+| videoContent              | `Object` | [See Video Content](#video-content)   | Video related aria live announcements by screen readers                                                                  |
+| audioContent              | `Object` | [See Audio Content](#audio-content)   | Audio related aria live announcements by screen readers                                                                  |
+| fileContent               | `Object` | [See File content](#file-content)     | File content related aria live announcements by screen readers                                                           |
+| messageHeader             | `Object` | [See Message Header](#message-header) | Labels for message headers in conversation                                                                               |
+| audioTimeRemaining        | string   | "{time} remaining"                    | This text is used by aria-valuetext attribute of input element indicating the remaning time left in the Audio playback   |
 
 ##### Image Content
 
 Image content related text announcements for image elements
 | Name | Type | Default | Description |
 | --------------- | ------ | ------- | ----------- |
-| downloadable | string | "An image with download option. {altTextLabel}" | This text indicates an image which is downloadable. `altText` is based on the image metadata |
-| nonDownloadable | string | "An image. {altTextLabel}" | This text indicates an image which is not downloadable.`altText` is based on the image metadata |
+| downloadable | string | "An image with download option." | This text indicates an image which is downloadable. |
+| nonDownloadable | string | "An image." | This text indicates an image which is not downloadable. |
 
 ##### Video Content
 
@@ -521,7 +520,7 @@ Audio content related text announcements for audio elements
 File content related text announcements for file attachments
 | Name | Type | Default | Description |
 | ------------- | ------ | ------- | ----------- |
-| singleFile | string | "{text}. A {type} named '{fileName}' with size {sizeLabel}." | This text is for single file attachments |
+| singleFile | string | "A {type} named '{fileName}' with size {sizeLabel}." | This text is for single file attachments |
 | multipleFiles | string | "File {index}: '{fileName}', size {sizeLabel}." | This text is used for multiple file attachments |
 
 ##### Message Header
@@ -530,7 +529,7 @@ Message header related accessibility text content used by screen reader in messa
 | Name | Type | Default | Description |
 | --------- | ------ | ------- | ----------- |
 | user | string | "You said:" | The screen reader text used for announcing user messages |
-| bot | string | "{name} said:" | The screen reader text used for announcing bot message header. The name is the name of the configured configured in the endpoint editor |
+| bot | string | "{name} said:" | The screen reader text used for announcing bot message header. The name is the name of the bot configured in the endpoint editor |
 | timestamp | string | "At {time}" | The time at which the message was sent |
 
 #### Settings Interface
@@ -785,11 +784,10 @@ interface IWebchatSettings {
 			datePickerPreviousMonth?: string;
 			datePickerNextMonth?: string;
 			actionButton?: string;
-			textWithButtons?: string;
-			galleryContent?: string;
+			buttonGroupLabel?: string;
 			slidesCountText?: string;
-			slidesContent?: string;
-			listContent?: string;
+			slide?: string;
+			listItemGroupLabel?: string;
 			imageContent?: {
 				downloadable?: string;
 				nonDownloadable?: string;
