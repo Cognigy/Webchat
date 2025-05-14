@@ -1086,7 +1086,10 @@ export class WebchatUI extends React.PureComponent<
 											}
 										>
 											{!fullscreenMessage
-												? this.renderRegularLayout(isInforming)
+												? this.renderRegularLayout(
+														isInforming,
+														showDisconnectOverlay,
+													)
 												: this.renderFullscreenMessageLayout()}
 											{showDisconnectOverlay && (
 												<DisconnectOverlay
@@ -1170,7 +1173,7 @@ export class WebchatUI extends React.PureComponent<
 		);
 	}
 
-	renderRegularLayout(isInforming: boolean) {
+	renderRegularLayout(isInforming: boolean, isHidden: boolean) {
 		const {
 			currentSession,
 			config,
@@ -1310,7 +1313,7 @@ export class WebchatUI extends React.PureComponent<
 					/>
 				);
 
-			if (showChatOptionsScreen || showRatingScreen)
+			if (!isHidden && (showChatOptionsScreen || showRatingScreen))
 				return (
 					<ChatOptions
 						config={config}
@@ -1342,7 +1345,7 @@ export class WebchatUI extends React.PureComponent<
 					/>
 				);
 
-			if (isDropZoneVisible)
+			if (!isHidden && isDropZoneVisible)
 				return (
 					<DropZone
 						layoutSettings={config.settings.layout}
@@ -1356,6 +1359,7 @@ export class WebchatUI extends React.PureComponent<
 						scrollBehavior={config.settings.behavior.scrollingBehavior}
 						lastInputId={lastInputId}
 						className="webchat-chat-history"
+						aria-hidden={isHidden}
 						onDragEnter={handleDragEnter}
 						id="webchatChatHistory"
 					>
@@ -1418,7 +1422,7 @@ export class WebchatUI extends React.PureComponent<
 		);
 
 		return (
-			<RegularLayoutRoot>
+			<RegularLayoutRoot aria-hidden={isHidden}>
 				{!isXAppOverlayOpen && (
 					<CSSTransition
 						in={!!(!showEnabledHomeScreen || showInformationMessage)}

@@ -1,9 +1,8 @@
-import React, { useCallback } from "react";
+import React from "react";
 import styled from "@emotion/styled";
-import IconButton from "./IconButton";
-import CloseIcon from "../../assets/baseline-close-24px.svg";
 import Button from "./Button";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
+import Modal from "../Modal/Modal";
 
 const Wrapper = styled.div(({ theme }) => ({
 	display: "flex",
@@ -22,30 +21,6 @@ const Wrapper = styled.div(({ theme }) => ({
 	zIndex: 4,
 }));
 
-const Dialog = styled.div(({ theme }) => ({
-	padding: theme.unitSize * 2,
-	borderRadius: theme.unitSize,
-
-	textAlign: "center",
-}));
-
-const DialogHeader = styled.div(({ theme }) => ({
-	marginBottom: theme.unitSize * 2,
-	fontSize: 22,
-	fontWeight: 600,
-}));
-
-const HeaderIconButton = styled(IconButton)(({ theme }) => ({
-	position: "absolute",
-	right: 20,
-	top: 20,
-	padding: 0,
-
-	color: theme.textDark,
-	fill: theme.textDark,
-	borderRadius: "50%",
-}));
-
 interface DisconnectOverlayProps {
 	isPermanent: boolean;
 	onClose: () => void;
@@ -54,15 +29,24 @@ interface DisconnectOverlayProps {
 }
 
 const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: DisconnectOverlayProps) => {
-	const ref = useCallback(ref => ref?.focus?.(), []);
 	return (
 		<Wrapper>
-			<Dialog ref={ref}>
+			<Modal
+				dialogStyle={{
+					display: "flex",
+					flexDirection: "column",
+					width: "100%",
+					height: "100%",
+				}}
+				bodyStyle={{
+					margin: "auto",
+				}}
+				isOpen
+				onClose={onClose}
+				title={config.settings.customTranslations?.network_error ?? "Connection lost"}
+			>
 				{isPermanent ? (
 					<>
-						<DialogHeader>
-							{config.settings.customTranslations?.network_error ?? "Connection lost"}
-						</DialogHeader>
 						{navigator.onLine ? (
 							<Button
 								autoFocus
@@ -81,26 +65,12 @@ const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: Disconne
 					</>
 				) : (
 					<div>
-						<DialogHeader>
-							{config.settings.customTranslations?.network_error ?? "Connection lost"}
-						</DialogHeader>
 						<div>
 							{config.settings.customTranslations?.reconnecting ?? "Reconnecting..."}
 						</div>
 					</div>
 				)}
-			</Dialog>
-			<HeaderIconButton
-				data-disconnect-overlay-close-button
-				onClick={onClose}
-				className="webchat-header-close-button"
-				aria-label={
-					config.settings.customTranslations?.ariaLabels?.closeConnectionWarning ??
-					"Close connection lost overlay"
-				}
-			>
-				<CloseIcon />
-			</HeaderIconButton>
+			</Modal>
 		</Wrapper>
 	);
 };
