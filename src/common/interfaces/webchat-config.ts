@@ -356,7 +356,6 @@ export interface IWebchatSettings {
 			datePickerPreviousMonth?: string;
 			datePickerNextMonth?: string;
 			actionButtonPositionText?: string;
-			textWithButtons?: string;
 			buttonGroupLabel?: string;
 			slidesCountText?: string;
 			slide?: string;
