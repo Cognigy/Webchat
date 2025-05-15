@@ -487,37 +487,37 @@ The following table defines the default texts used throughout the Webchat for ac
 | audioContent              | `Object` | [See Audio Content](#audio-content)   | Audio related aria live announcements by screen readers                                                                  |
 | fileContent               | `Object` | [See File content](#file-content)     | File content related aria live announcements by screen readers                                                           |
 | messageHeader             | `Object` | [See Message Header](#message-header) | Labels for message headers in conversation                                                                               |
-| audioTimeRemaining        | string   | "{time} remaining"                    | This text is used by aria-valuetext attribute of input element indicating the remaning time left in the Audio playback   |
+| audioTimeRemaining        | string   | "{time} remaining"                    | This text is used by aria-valuetext attribute of input element in an audio message indicating the remaning time left in the Audio playback   |
 
 ##### Image Content
 
 Image content related text announcements for image elements
 | Name | Type | Default | Description |
 | --------------- | ------ | ------- | ----------- |
-| downloadable | string | "An image with download option." | This text indicates an image which is downloadable. |
-| nonDownloadable | string | "An image." | This text indicates an image which is not downloadable. |
+| downloadable | string | "An image with download option." | This text used by image messages where the image is downloadable. |
+| nonDownloadable | string | "An image." | This text used by image messages where the image is not downloadable. |
 
 ##### Video Content
 
-Video content related text announcements for video elements
+Video content related text announcements for video messages
 | Name | Type | Default | Description |
 | ---------------------------- | ------ | ------- | ----------- |
 | withTranscriptAndCaptions | string | "A video with transcript and captions." | This text is used by video elements with transcript and captions |
-| withTranscript | string | "A video with transcript." | This text is used by video elements with transcript |
-| withCaptions | string | "A video with captions." | This text is used by video elements with only captions |
-| withoutTranscriptAndCaptions | string | "A video message." | This text is used by video elements without transcript and captions |
+| withTranscript | string | "A video with transcript." | This text is used by video messages with transcript |
+| withCaptions | string | "A video with captions." | This text is used by video messages with only captions |
+| withoutTranscriptAndCaptions | string | "A video message." | This text is used by video messages without transcript and captions |
 
 ##### Audio Content
 
-Audio content related text announcements for audio elements
+Audio content related text announcements for audio messages
 | Name | Type | Default | Description |
 | ----------------- | ------ | ------- | ----------- |
-| withTranscript | string | "An audio message with transcript" | This text is used by audio element with transcript |
-| withoutTranscript | string | "An audio message." | This text is used by audio element without transcript |
+| withTranscript | string | "An audio message with transcript" | This text is used by audio messages with transcript |
+| withoutTranscript | string | "An audio message." | This text is used by audio messages without transcript |
 
 ##### File Content
 
-File content related text announcements for file attachments
+File content related text announcements for file attachments in messages
 | Name | Type | Default | Description |
 | ------------- | ------ | ------- | ----------- |
 | singleFile | string | "A {type} named '{fileName}' with size {sizeLabel}." | This text is for single file attachments |
