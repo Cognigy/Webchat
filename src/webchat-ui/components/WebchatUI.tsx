@@ -1042,6 +1042,9 @@ export class WebchatUI extends React.PureComponent<
 			this.chatToggleButtonRef.current?.focus();
 		};
 
+		const chatRegionAriaLabel =
+			config.settings.customTranslations?.ariaLabels?.chatRegion ?? "Chat window";
+
 		return (
 			<>
 				<ThemeProvider theme={theme}>
@@ -1051,7 +1054,7 @@ export class WebchatUI extends React.PureComponent<
 							data-cognigy-webchat-root
 							{...restProps}
 							className="webchat-root"
-							aria-labelledby="webchatHeaderTitle"
+							aria-label={chatRegionAriaLabel}
 							role="region"
 							onKeyDown={this.handleKeydown}
 						>
@@ -1281,6 +1284,7 @@ export class WebchatUI extends React.PureComponent<
 					<PrivacyNotice
 						privacyNotice={config.settings.privacyNotice}
 						onAcceptTerms={handleAcceptTerms}
+						isHomeScreenEnabled={isHomeScreenEnabled}
 					/>
 				);
 
@@ -1347,10 +1351,10 @@ export class WebchatUI extends React.PureComponent<
 						onDragEnter={handleDragEnter}
 						id="webchatChatHistory"
 					>
-						<h2 className="sr-only" id="webchatChatHistoryHeading">
+						<h3 className="sr-only" id="webchatChatHistoryHeading">
 							{config.settings.customTranslations?.ariaLabels?.chatHistory ??
 								"Chat history"}
-						</h2>
+						</h3>
 						{this.renderHistory()}
 					</HistoryWrapper>
 					<ScreenReaderLiveRegion liveContent={this.state.liveContent} />

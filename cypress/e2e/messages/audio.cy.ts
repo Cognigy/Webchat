@@ -13,7 +13,7 @@ describe("Message with Audio", () => {
 		});
 	});
 
-	it("should have controls in player", () => {
+	it("should have controls in player", function () {
 		cy.withMessageFixture("audio", () => {
 			cy.get(".webchat-message-row audio").should("exist");
 			cy.get("[data-testid='audio-controls']", { timeout: 5000 }).should("exist");

@@ -75,16 +75,9 @@ describe("Privacy Notice", () => {
 		cy.openWebchat();
 		cy.startConversation();
 
-		cy.window().then(win => {
-			cy.stub(win, "open")
-				.callsFake(url => {
-					win.location.href = url;
-				})
-				.as("windowOpen");
-		});
-
-		cy.get(".tertiary-button").click();
-		cy.get("@windowOpen").should("be.calledOnce");
-		cy.get("@windowOpen").should("be.calledWith", "https://cognigy.com");
+		cy.get(".tertiary-button")
+			.should("have.attr", "href", "https://cognigy.com")
+			.and("have.attr", "target", "_blank")
+			.and("have.attr", "rel", "noopener noreferrer");
 	});
 });
