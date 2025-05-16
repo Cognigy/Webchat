@@ -685,7 +685,7 @@ interface IWebchatSettings {
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
 		ariaLabels?: {
-			chatRegion: string;
+			chatRegion?: string;
 			scrollToBottom?: string;
 			closeDialog?: string;
 			togglePersistentMenu?: string;
