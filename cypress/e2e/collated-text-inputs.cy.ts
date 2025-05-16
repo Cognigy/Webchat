@@ -123,11 +123,8 @@ describe("collated text inputs", () => {
 		it("should verify quick reply behavior in enabled and disabled states", () => {
 			// First run - check clickable state
 			cy.withMessageFixture("quick-replies", () => {
-				cy.get("button:contains('foobar003qr01')")
-					.last()
-					.should("not.be.disabled")
-					.focus()
-					.click();
+				cy.get("button:contains('foobar003qr01')").last().should("not.be.disabled");
+				cy.get("button:contains('foobar003qr01')").last().click();
 				cy.get(".webchat-message-row.user", { timeout: 1000 }).contains("foobar003qr01");
 			});
 

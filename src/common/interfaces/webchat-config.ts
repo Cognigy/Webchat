@@ -356,6 +356,35 @@ export interface IWebchatSettings {
 			closeFullsizeImageModal?: string;
 			datePickerPreviousMonth?: string;
 			datePickerNextMonth?: string;
+			actionButtonPositionText?: string;
+			buttonGroupLabel?: string;
+			slidesCountText?: string;
+			slide?: string;
+			listItemGroupLabel?: string;
+			imageContent?: {
+				downloadable?: string;
+				nonDownloadable?: string;
+			};
+			videoContent?: {
+				withTranscriptAndCaptions?: string;
+				withTranscript?: string;
+				withCaptions?: string;
+				withoutTranscriptAndCaptions?: string;
+			};
+			audioContent?: {
+				withTranscript?: string;
+				withoutTranscript?: string;
+			};
+			fileContent?: {
+				singleFile?: string;
+				multipleFiles?: string;
+			};
+			messageHeader?: {
+				user?: string;
+				bot?: string;
+				timestamp?: string;
+			};
+			audioTimeRemaining?: string;
 		};
 	};
 	demoWebchat: {
