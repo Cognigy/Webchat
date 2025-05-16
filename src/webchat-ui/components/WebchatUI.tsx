@@ -268,6 +268,7 @@ export class WebchatUI extends React.PureComponent<
 	ratingButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
+	private previousFocus: HTMLElement | null = null;
 
 	private unreadTitleIndicatorInterval: ReturnType<typeof setInterval> | null = null;
 	private originalTitle: string = window.document.title;
@@ -500,6 +501,21 @@ export class WebchatUI extends React.PureComponent<
 			if (document.activeElement === webchatToggleButton && firstFocusable) {
 				firstFocusable.focus();
 			}
+		}
+
+		const disconnectOverlayNow =
+			this.props.config.settings.behavior.enableConnectionStatusIndicator &&
+			!this.props.connected &&
+			this.state.hadConnection;
+		const disconnectOverlayPrev =
+			prevProps.config.settings.behavior.enableConnectionStatusIndicator &&
+			!prevProps.connected &&
+			prevState.hadConnection;
+		if (disconnectOverlayNow && !disconnectOverlayPrev) {
+			this.previousFocus = document.activeElement as HTMLElement;
+		} else if (!disconnectOverlayNow && disconnectOverlayPrev && this.previousFocus) {
+			this.previousFocus.focus();
+			this.previousFocus = null;
 		}
 
 		if (
@@ -1076,7 +1092,10 @@ export class WebchatUI extends React.PureComponent<
 											}
 										>
 											{!fullscreenMessage
-												? this.renderRegularLayout(isInforming)
+												? this.renderRegularLayout(
+														isInforming,
+														showDisconnectOverlay,
+													)
 												: this.renderFullscreenMessageLayout()}
 											{showDisconnectOverlay && (
 												<DisconnectOverlay
@@ -1160,7 +1179,7 @@ export class WebchatUI extends React.PureComponent<
 		);
 	}
 
-	renderRegularLayout(isInforming: boolean) {
+	renderRegularLayout(isInforming: boolean, isHidden: boolean) {
 		const {
 			currentSession,
 			config,
@@ -1302,7 +1321,7 @@ export class WebchatUI extends React.PureComponent<
 					/>
 				);
 
-			if (showChatOptionsScreen || showRatingScreen)
+			if (!isHidden && (showChatOptionsScreen || showRatingScreen))
 				return (
 					<ChatOptions
 						config={config}
@@ -1334,7 +1353,7 @@ export class WebchatUI extends React.PureComponent<
 					/>
 				);
 
-			if (isDropZoneVisible)
+			if (!isHidden && isDropZoneVisible)
 				return (
 					<DropZone
 						layoutSettings={config.settings.layout}
@@ -1348,6 +1367,7 @@ export class WebchatUI extends React.PureComponent<
 						scrollBehavior={config.settings.behavior.scrollingBehavior}
 						lastInputId={lastInputId}
 						className="webchat-chat-history"
+						aria-hidden={isHidden}
 						onDragEnter={handleDragEnter}
 						id="webchatChatHistory"
 					>
@@ -1413,7 +1433,7 @@ export class WebchatUI extends React.PureComponent<
 		);
 
 		return (
-			<RegularLayoutRoot>
+			<RegularLayoutRoot aria-hidden={isHidden}>
 				{!isXAppOverlayOpen && (
 					<CSSTransition
 						in={!!(!showEnabledHomeScreen || showInformationMessage)}
