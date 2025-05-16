@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import PrimaryButton from "./PrimaryButton";
-import TertiaryButton from "./TertiaryButton";
+import PolicyLink from "./PrimaryLink";
 import { IWebchatSettings } from "../../../common/interfaces/webchat-config";
 
 const PrivacyNoticeRoot = styled.div(({ theme }) => ({
@@ -18,7 +18,12 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	overflowY: "auto",
 }));
 
-const PrivacyMessage = styled.div(() => ({}));
+const PrivacyMessage = styled.div(({ theme }) => ({
+	":focus-visible": {
+		outline: `2px solid ${theme.primaryColor}`,
+		outlineOffset: 8,
+	},
+}));
 
 const PrivacyActions = styled.div({
 	display: "flex",
@@ -31,24 +36,46 @@ const AcceptButton = styled(PrimaryButton)(() => ({
 	width: 303,
 }));
 
-const PolicyButton = styled(TertiaryButton)(() => ({}));
-
 interface IPrivacyNoticeProps {
 	privacyNotice: IWebchatSettings["privacyNotice"];
 	onAcceptTerms: () => void;
+	isHomeScreenEnabled: boolean;
 }
 
 export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
-	const { privacyNotice, onAcceptTerms } = props;
+	const { privacyNotice, onAcceptTerms, isHomeScreenEnabled } = props;
 	const { text, submitButtonText, urlText, url } = privacyNotice;
+	const privacyNoticeRef = useRef<HTMLDivElement>(null);
 
-	const handleLinkClick = () => {
-		window.open(url || "https://www.cognigy.com/", "_blank");
-	};
+	useEffect(() => {
+		if (!isHomeScreenEnabled) {
+			if (privacyNoticeRef.current) {
+				privacyNoticeRef.current.focus();
+			}
+			return;
+		}
+		// If the home screen is enabled, delay focusing the privacy notice message
+		// to allow any home screen transition animations to complete before moving focus.
+		const timeoutId = setTimeout(() => {
+			if (privacyNoticeRef.current) {
+				privacyNoticeRef.current.focus();
+			}
+		}, 200);
+
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		};
+	}, [isHomeScreenEnabled]);
 
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
-			<PrivacyMessage className="webchat-privacy-notice-message">
+			<PrivacyMessage
+				className="webchat-privacy-notice-message"
+				tabIndex={-1}
+				ref={privacyNoticeRef}
+			>
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
 					{text}
 				</Typography>
@@ -57,13 +84,15 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				<AcceptButton
 					className="webchat-privacy-notice-accept-button"
 					onClick={onAcceptTerms}
-					autoFocus
 				>
 					{submitButtonText}
 				</AcceptButton>
-				<PolicyButton onClick={handleLinkClick} className="webchat-privacy-policy-link">
-					{urlText || "Privacy policy"}
-				</PolicyButton>
+				<PolicyLink
+					url={url || "https://www.cognigy.com/"}
+					target="_blank"
+					className="webchat-privacy-policy-link"
+					text={urlText || "Privacy policy"}
+				/>
 			</PrivacyActions>
 		</PrivacyNoticeRoot>
 	);

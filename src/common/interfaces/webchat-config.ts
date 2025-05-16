@@ -317,6 +317,7 @@ export interface IWebchatSettings {
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
 		ariaLabels?: {
+			chatRegion?: string;
 			scrollToBottom?: string;
 			closeDialog?: string;
 			togglePersistentMenu?: string;

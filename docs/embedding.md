@@ -432,6 +432,7 @@ The following table defines the default aria labels used throughout the Webchat 
 
 | Name                      | Type   | Default                            | Description                                                                                                              |
 | ------------------------- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| chatRegion                | string | "Chat window".                     | Label for the main chat region (container)                                                                               |
 | scrollToBottom            | string | "Scroll to the bottom of the chat" | Label for the button that scrolls the chat log to the bottom.                                                            |
 | closeDialog               | string | "Close dialog"                     | Label for close buttons in modals or dialogs.                                                                            |
 | togglePersistentMenu      | string | "Toggle chat input menu"           | Label for the button toggling the persistent menu.                                                                       |
@@ -684,6 +685,7 @@ interface IWebchatSettings {
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
 		ariaLabels?: {
+			chatRegion?: string;
 			scrollToBottom?: string;
 			closeDialog?: string;
 			togglePersistentMenu?: string;
