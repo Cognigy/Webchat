@@ -69,8 +69,9 @@ import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
-import { isValidMarkdown, removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
+import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
+import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -93,7 +94,7 @@ export interface WebchatUIProps {
 	inputMode: string;
 	onSetInputMode: (inputMode: string) => void;
 	onClose: () => void;
-	onConnect: () => void;
+	onMinimize: () => void;
 	onToggle: () => void;
 	lastInputId: string;
 
@@ -162,6 +163,7 @@ interface WebchatUIState {
 	timedOut: boolean;
 	showDeleteAllConversationsModal: boolean;
 	deleteConversationsModalState: boolean;
+	liveContent?: Record<string, string>;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -256,6 +258,7 @@ export class WebchatUI extends React.PureComponent<
 		timedOut: false,
 		showDeleteAllConversationsModal: false,
 		deleteConversationsModalState: false,
+		liveContent: {},
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -1040,6 +1043,9 @@ export class WebchatUI extends React.PureComponent<
 			this.chatToggleButtonRef.current?.focus();
 		};
 
+		const chatRegionAriaLabel =
+			config.settings.customTranslations?.ariaLabels?.chatRegion ?? "Chat window";
+
 		return (
 			<>
 				<ThemeProvider theme={theme}>
@@ -1049,7 +1055,7 @@ export class WebchatUI extends React.PureComponent<
 							data-cognigy-webchat-root
 							{...restProps}
 							className="webchat-root"
-							aria-labelledby="webchatHeaderTitle"
+							aria-label={chatRegionAriaLabel}
 							role="region"
 							onKeyDown={this.handleKeydown}
 						>
@@ -1218,8 +1224,9 @@ export class WebchatUI extends React.PureComponent<
 		// TODO: implement better navigation history and currentPage string property on redux
 		const isSecondaryView = showInformationMessage;
 
-		const handleOnClose = () => {
-			onClose?.();
+		/** Minimize will only change the open state of the webchat */
+		const handleOnMinimize = () => {
+			this.props.onMinimize?.();
 			// Restore focus to chat toggle button
 			this.chatToggleButtonRef?.current?.focus?.();
 		};
@@ -1277,6 +1284,7 @@ export class WebchatUI extends React.PureComponent<
 					<PrivacyNotice
 						privacyNotice={config.settings.privacyNotice}
 						onAcceptTerms={handleAcceptTerms}
+						isHomeScreenEnabled={isHomeScreenEnabled}
 					/>
 				);
 
@@ -1345,12 +1353,13 @@ export class WebchatUI extends React.PureComponent<
 						onDragEnter={handleDragEnter}
 						id="webchatChatHistory"
 					>
-						<h2 className="sr-only" id="webchatChatHistoryHeading">
+						<h3 className="sr-only" id="webchatChatHistoryHeading">
 							{config.settings.customTranslations?.ariaLabels?.chatHistory ??
 								"Chat history"}
-						</h2>
+						</h3>
 						{this.renderHistory()}
 					</HistoryWrapper>
+					<ScreenReaderLiveRegion liveContent={this.state.liveContent} />
 					<QueueUpdates />
 					{this.renderInput()}
 				</>
@@ -1398,6 +1407,8 @@ export class WebchatUI extends React.PureComponent<
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
 
 		const showDeleteAllConversationButton = !!(
+			((config.settings.privacyNotice.enabled && this.props.hasAcceptedTerms) ||
+				!config.settings.privacyNotice.enabled) &&
 			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&
 			showPrevConversations &&
 			Object.keys(this.props.prevConversations).length
@@ -1416,7 +1427,7 @@ export class WebchatUI extends React.PureComponent<
 						{!isXAppOverlayOpen && (
 							<Header
 								onClose={handleCloseAndReset}
-								onMinimize={handleOnClose}
+								onMinimize={handleOnMinimize}
 								onGoBack={showInformationMessage ? undefined : handleOnGoBack}
 								onSetShowChatOptionsScreen={() => {
 									onSetShowChatOptionsScreen(true);
@@ -1457,7 +1468,7 @@ export class WebchatUI extends React.PureComponent<
 							onSetShowHomeScreen={onSetShowHomeScreen}
 							onStartConversation={this.handleStartConversation}
 							onSetShowPrevConversations={onSetShowPrevConversations}
-							onClose={handleOnClose}
+							onClose={handleOnMinimize}
 							config={config}
 							onEmitAnalytics={onEmitAnalytics}
 							onSendActionButtonMessage={this.handleSendActionButtonMessage}
@@ -1560,6 +1571,15 @@ export class WebchatUI extends React.PureComponent<
 				})
 			: messagesExcludingPrivacyMessage;
 
+		const handleLiveRegionText = (messageId: string, text: string) => {
+			this.setState(prevState => ({
+				liveContent: {
+					...prevState.liveContent,
+					[messageId]: text,
+				},
+			}));
+		};
+
 		return (
 			<>
 				{enableAIAgentNotice !== false && (
@@ -1593,6 +1613,8 @@ export class WebchatUI extends React.PureComponent<
 							prevMessage={visibleMessages?.[index - 1]}
 							theme={this.state.theme}
 							onSetMessageAnimated={this.props.onSetMessageAnimated}
+							onSetLiveRegionText={handleLiveRegionText}
+							data-message-id={`webchatMessageId-${message.timestamp}`}
 						/>
 					);
 				})}

@@ -6,7 +6,9 @@ export interface IFile {
 	progressPercentage?: number;
 	uploadFileMeta?: IUploadFileMetaData;
 	hasUploadError?: boolean;
+	isCancelled?: boolean;
 	uploadErrorReason?: string;
+	abortController?: AbortController;
 }
 export interface IInputState {
 	sttActive: boolean;
@@ -112,6 +114,10 @@ export const input: Reducer<IInputState, InputAction> = (state = getInitialState
 		}
 
 		case REMOVE_FILE_FROM_LIST: {
+			const fileItem = state.fileList[action.index];
+			if (fileItem?.abortController) {
+				fileItem.abortController.abort();
+			}
 			const nextFileList = state.fileList.filter((_, i) => i !== action.index);
 			let fileUploadError = false;
 			// When files with upload error is removed, we want to enable the send button

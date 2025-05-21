@@ -314,7 +314,10 @@ export interface IWebchatSettings {
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
+		datePickerMonthLabel?: string;
+		datePickerYearLabel?: string;
 		ariaLabels?: {
+			chatRegion?: string;
 			scrollToBottom?: string;
 			closeDialog?: string;
 			togglePersistentMenu?: string;
@@ -351,7 +354,37 @@ export interface IWebchatSettings {
 			fullSizeImageViewerTitle?: string;
 			downloadFullsizeImage?: string;
 			closeFullsizeImageModal?: string;
-			datePickerDescription?: string;
+			datePickerPreviousMonth?: string;
+			datePickerNextMonth?: string;
+			actionButtonPositionText?: string;
+			buttonGroupLabel?: string;
+			slidesCountText?: string;
+			slide?: string;
+			listItemGroupLabel?: string;
+			imageContent?: {
+				downloadable?: string;
+				nonDownloadable?: string;
+			};
+			videoContent?: {
+				withTranscriptAndCaptions?: string;
+				withTranscript?: string;
+				withCaptions?: string;
+				withoutTranscriptAndCaptions?: string;
+			};
+			audioContent?: {
+				withTranscript?: string;
+				withoutTranscript?: string;
+			};
+			fileContent?: {
+				singleFile?: string;
+				multipleFiles?: string;
+			};
+			messageHeader?: {
+				user?: string;
+				bot?: string;
+				timestamp?: string;
+			};
+			audioTimeRemaining?: string;
 		};
 	};
 	demoWebchat: {

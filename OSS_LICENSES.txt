@@ -1,4 +1,4 @@
-Created on 17-04-2025 at 15:46:16
+Created on 16-05-2025 at 17:26:17
 
 {
   "@ampproject/remapping@2.3.0": {
@@ -150,19 +150,19 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.47.0": {
+  "@cognigy/chat-components@0.53.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
   },
-  "@cognigy/socket-client@5.0.0-beta.22": {
+  "@cognigy/socket-client@5.0.0-beta.23": {
     "licenses": "MIT*",
     "publisher": "Robin Schuster",
     "email": "r.schuster@cognigy.com",
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.19.0": {
+  "@cognigy/webchat@3.21.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -310,14 +310,14 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@floating-ui/core@1.6.9": {
+  "@floating-ui/core@1.7.0": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/core/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@floating-ui/dom@1.6.13": {
+  "@floating-ui/dom@1.7.0": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
@@ -797,14 +797,14 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/debuglog/LICENSE",
     "copyright": "Copyright Joyent, Inc. and other Node contributors. All rights reserved."
   },
-  "decode-named-character-reference@1.0.2": {
+  "decode-named-character-reference@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/wooorm/decode-named-character-reference",
     "publisher": "Titus Wormer",
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/decode-named-character-reference/license",
-    "copyright": "Copyright (c) 2021 Titus Wormer <tituswormer@gmail.com>"
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "deepmerge@4.3.1": {
     "licenses": "MIT",
@@ -899,7 +899,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/engine.io-parser/LICENSE",
     "copyright": "Copyright (c) 2014-present Guillermo Rauch and Socket.IO contributors"
   },
-  "entities@4.5.0": {
+  "entities@6.0.0": {
     "licenses": "BSD-2-Clause",
     "repository": "https://github.com/fb55/entities",
     "publisher": "Felix Boehm",
@@ -1131,7 +1131,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/hasown/LICENSE",
     "copyright": "Copyright (c) Jordan Harband and contributors"
   },
-  "hast-util-from-parse5@8.0.2": {
+  "hast-util-from-parse5@8.0.3": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/hast-util-from-parse5",
     "publisher": "Titus Wormer",
@@ -1158,7 +1158,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/hast-util-raw/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
-  "hast-util-to-jsx-runtime@2.3.2": {
+  "hast-util-to-jsx-runtime@2.3.6": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/hast-util-to-jsx-runtime",
     "publisher": "Titus Wormer",
@@ -1185,14 +1185,14 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/hast-util-whitespace/license",
     "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
-  "hastscript@9.0.0": {
+  "hastscript@9.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/hastscript",
     "publisher": "Titus Wormer",
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/hastscript/license",
-    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "hoist-non-react-statics@3.3.2": {
     "licenses": "BSD-3-Clause",
@@ -1588,7 +1588,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/memoize-one/LICENSE",
     "copyright": "Copyright (c) 2019 Alexander Reardon"
   },
-  "micromark-core-commonmark@2.0.2": {
+  "micromark-core-commonmark@2.0.3": {
     "licenses": "MIT",
     "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark",
     "publisher": "Titus Wormer",
@@ -1804,7 +1804,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/micromark-util-sanitize-uri/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
-  "micromark-util-subtokenize@2.0.4": {
+  "micromark-util-subtokenize@2.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize",
     "publisher": "Titus Wormer",
@@ -1822,7 +1822,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/micromark-util-symbol/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
-  "micromark-util-types@2.0.1": {
+  "micromark-util-types@2.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-types",
     "publisher": "Titus Wormer",
@@ -1831,7 +1831,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/micromark-util-types/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
-  "micromark@4.0.1": {
+  "micromark@4.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/micromark/micromark/tree/main/packages/micromark",
     "publisher": "Titus Wormer",
@@ -2008,7 +2008,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/parse-json/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
   },
-  "parse5@7.2.1": {
+  "parse5@7.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/inikulin/parse5",
     "publisher": "Ivan Nikulin",
@@ -2068,8 +2068,17 @@ Created on 17-04-2025 at 15:46:16
     "publisher": "Titus Wormer",
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
-    "licenseFile": "node_modules/property-information/license",
+    "licenseFile": "node_modules/hast-util-to-parse5/node_modules/property-information/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
+  },
+  "property-information@7.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wooorm/property-information",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/property-information/license",
+    "copyright": "Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>"
   },
   "proxy-from-env@1.1.0": {
     "licenses": "MIT",
@@ -2138,7 +2147,7 @@ Created on 17-04-2025 at 15:46:16
     "repository": "https://github.com/remarkjs/react-markdown",
     "publisher": "Espen Hovlandsdal",
     "email": "espen@hovlandsdal.com",
-    "licenseFile": "node_modules/@cognigy/chat-components/node_modules/react-markdown/license",
+    "licenseFile": "node_modules/react-markdown/license",
     "copyright": "Copyright (c) Espen Hovlandsdal"
   },
   "react-player@2.16.0": {
@@ -2286,7 +2295,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/remark-parse/license",
     "copyright": "Copyright (c) 2014 Titus Wormer <tituswormer@gmail.com>"
   },
-  "remark-rehype@11.1.1": {
+  "remark-rehype@11.1.2": {
     "licenses": "MIT",
     "repository": "https://github.com/remarkjs/remark-rehype",
     "publisher": "Titus Wormer",
@@ -2494,6 +2503,14 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/stringify-entities/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
   },
+  "style-to-js@1.1.16": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/style-to-js",
+    "publisher": "Mark",
+    "email": "mark@remarkablemark.org",
+    "licenseFile": "node_modules/style-to-js/LICENSE",
+    "copyright": "Copyright (c) 2020 Menglin \"Mark\" Xu <mark@remarkablemark.org>"
+  },
   "style-to-object@1.0.8": {
     "licenses": "MIT",
     "repository": "https://github.com/remarkablemark/style-to-object",
@@ -2541,7 +2558,7 @@ Created on 17-04-2025 at 15:46:16
     "licenseFile": "node_modules/supports-preserve-symlinks-flag/LICENSE",
     "copyright": "Copyright (c) 2022 Inspect JS"
   },
-  "swiper@11.1.4": {
+  "swiper@11.2.6": {
     "licenses": "MIT",
     "repository": "https://github.com/nolimits4web/Swiper",
     "publisher": "Vladimir Kharlampidi",
