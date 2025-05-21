@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import MediaQuery from "react-responsive";
 import FloatingLabel from "../plugins/input/base/FloatingLabel";
 
-const InputWrapper = styled.div(({ theme }) => ({
+const InputWrapper = styled.div<{ disabled?: boolean }>(({ theme, disabled }) => ({
 	borderRadius: 10,
 	border: `1px solid var(--basics-black-60, ${theme.black60})`,
 	background: `var(--Basics-white, ${theme.white})`,
@@ -14,6 +14,7 @@ const InputWrapper = styled.div(({ theme }) => ({
 		borderColor: "transparent",
 		outline: `2px solid ${theme.primaryColor}`,
 	},
+	borderColor: disabled ? theme.black80 : theme.black60,
 }));
 
 const Input = styled.textarea(({ theme }) => ({
@@ -33,12 +34,8 @@ const Input = styled.textarea(({ theme }) => ({
 		outline: "none",
 	},
 
-	"&::placeholder": {
-		color: theme.black10,
-	},
-
-	"&:disabled::placeholder": {
-		color: theme.black40,
+	"&:disabled": {
+		color: theme.black60,
 	},
 
 	"::-webkit-scrollbar": {
@@ -71,9 +68,10 @@ interface IMultilineInputProps extends ComponentProps<typeof Input> {
 
 const MultilineInput = forwardRef<HTMLTextAreaElement, IMultilineInputProps>((props, ref) => {
 	const { className, dataTest, label, isVisible, inputId, ...restProps } = props;
+	const { disabled } = props;
 
 	return (
-		<InputWrapper>
+		<InputWrapper disabled={disabled}>
 			<MediaQuery maxWidth={575}>
 				{matches => (
 					<InputContainer className={`${className}-container`}>
@@ -82,13 +80,14 @@ const MultilineInput = forwardRef<HTMLTextAreaElement, IMultilineInputProps>((pr
 							isVisible={isVisible}
 							label={label}
 							className={`${className}-label`}
+							disabled={disabled}
 						/>
 						<Input
 							{...restProps}
 							id={inputId}
 							data-test={dataTest}
 							ref={ref}
-							className={`${className} ${props.disabled ? "disabled" : ""}`.trim()}
+							className={`${className} ${disabled ? "disabled" : ""}`.trim()}
 							style={matches ? { fontSize: "16px" } : undefined}
 						/>
 					</InputContainer>
