@@ -20,6 +20,8 @@ const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 	position: "absolute",
 	right: 15,
 	top: 17,
+	width: 24,
+	height: 24,
 	borderRadius: 4,
 	"&:focus": {
 		outline: `2px solid ${theme.primaryColor}`,
