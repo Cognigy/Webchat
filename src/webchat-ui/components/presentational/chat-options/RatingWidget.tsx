@@ -154,7 +154,7 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					rows={4}
 					ref={ratingInputRef}
 					inputId="webchatRatingInput"
-					isVisible={true}
+					isVisible={!ratingText}
 					label={ratingCommentText}
 				/>
 				<SendButton
