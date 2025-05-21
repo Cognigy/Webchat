@@ -49,6 +49,7 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				overlay: {
 					position: "absolute",
 					zIndex: 3,
+					backgroundColor: "rgba(0, 0, 0, 0.5)", // High-contrast background for accessibility
 				},
 				content: {
 					inset: 50,
