@@ -152,6 +152,10 @@ const InputContainer = styled.div({
 	flexGrow: 1,
 });
 
+const Label = styled(FloatingLabel)({
+	padding: "8px 2px",
+});
+
 export interface TextInputState {
 	text: string;
 	selectionStart: number;
@@ -552,14 +556,15 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									{matches => {
 										const hasValue = !!combineStrings(text, speechInterim);
 										return (
-											<InputContainer>
-												<FloatingLabel
+											<InputContainer className="webchat-input-message-container">
+												<Label
 													inputId="webchatInputMessageInputInTextMode"
 													isVisible={!hasValue}
 													label={
 														props.config.settings.behavior
 															.inputPlaceholder
 													}
+													className="webchat-input-message-label"
 												/>
 												<TextArea
 													ref={
