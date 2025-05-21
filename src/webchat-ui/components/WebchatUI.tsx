@@ -1342,7 +1342,7 @@ export class WebchatUI extends React.PureComponent<
 					/>
 				);
 
-			ReactModal.setAppElement(".webchat-root");
+			// ReactModal.setAppElement moved to componentDidMount to avoid repeated invocations.
 
 			return (
 				<>
