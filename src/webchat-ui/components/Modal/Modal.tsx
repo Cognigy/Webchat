@@ -106,19 +106,9 @@ interface ModalProps {
 	title: string;
 	children: React.ReactNode;
 	footer?: React.ReactNode;
-	dialogStyle: React.CSSProperties;
-	bodyStyle: React.CSSProperties;
 }
 
-const Modal: React.FC<ModalProps> = ({
-	isOpen,
-	onClose,
-	title,
-	footer,
-	children,
-	dialogStyle,
-	bodyStyle,
-}) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
 	const dialogRef = useRef<HTMLDialogElement>(null);
 
 	const closeButtonAriaLabel =
@@ -175,7 +165,6 @@ const Modal: React.FC<ModalProps> = ({
 					aria-labelledby="modal-title"
 					aria-describedby="modal-body"
 					ref={dialogRef}
-					style={dialogStyle}
 				>
 					<ModalHeader className="webchat-modal-header">
 						<Typography
@@ -196,7 +185,7 @@ const Modal: React.FC<ModalProps> = ({
 					<DividerWrapper className="webchat-modal-divider-wrapper">
 						<Divider className="webchat-modal-divider" />
 					</DividerWrapper>
-					<ModalBody style={bodyStyle} id="modal-body" className="webchat-modal-body">
+					<ModalBody id="modal-body" className="webchat-modal-body">
 						{children}
 					</ModalBody>
 					{footer ? (
