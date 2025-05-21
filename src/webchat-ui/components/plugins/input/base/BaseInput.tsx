@@ -577,7 +577,6 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 													onFocus={this.handleFocus}
 													onBlur={this.handleBlur}
 													onKeyDown={this.handleInputKeyDown}
-													placeholder=""
 													className="webchat-input-message-input"
 													minRows={1}
 													maxRows={inputAutogrowMaxRows}
