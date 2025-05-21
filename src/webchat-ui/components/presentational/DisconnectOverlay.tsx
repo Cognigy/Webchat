@@ -1,77 +1,100 @@
 import React from "react";
 import styled from "@emotion/styled";
+import ReactModal from "react-modal";
+
 import Button from "./Button";
+import IconButton from "./IconButton";
+import CloseIcon from "../../assets/baseline-close-24px.svg";
+
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
-import Modal from "../Modal/Modal";
 
-const Wrapper = styled.div(({ theme }) => ({
-	display: "flex",
-	justifyContent: "center",
-	alignItems: "center",
-
-	position: "absolute",
-	left: 0,
-	top: 0,
-	width: "100%",
-	height: "100%",
-
-	padding: 20,
+const Title = styled.h2(({ theme }) => ({
+	fontSize: "1.5rem",
+	marginBlockStart: "-.25rem",
+	fontWeight: 600,
 	boxSizing: "border-box",
-	backgroundColor: theme.white,
 	zIndex: 4,
 }));
 
+const HeaderIconButton = styled(IconButton)(({ theme }) => ({
+	position: "absolute",
+	right: 15,
+	top: 17,
+	borderRadius: 4,
+	"&:focus": {
+		outline: `2px solid ${theme.primaryColor}`,
+		outlineOffset: 2,
+	},
+}));
+
 interface DisconnectOverlayProps {
+	isOpen: boolean;
 	isPermanent: boolean;
 	onClose: () => void;
 	onConnect: () => void;
 	config: IWebchatConfig;
 }
 
-const DisconnectOverlay = ({ isPermanent, onClose, onConnect, config }: DisconnectOverlayProps) => {
+const DisconnectOverlay = (props: DisconnectOverlayProps) => {
+	const { isPermanent, onClose, onConnect, config, isOpen } = props;
+
+	const parentSelector = () => document.querySelector("#webchatWindow");
+
 	return (
-		<Wrapper>
-			<Modal
-				dialogStyle={{
+		<ReactModal
+			isOpen={isOpen}
+			parentSelector={parentSelector}
+			onClose={onClose}
+			style={{
+				overlay: {
+					position: "absolute",
+					zIndex: 3,
+				},
+				content: {
+					inset: 50,
 					display: "flex",
 					flexDirection: "column",
-					width: "100%",
-					height: "100%",
-				}}
-				bodyStyle={{
+					alignItems: "center",
 					margin: "auto",
-				}}
-				isOpen
-				onClose={onClose}
-				title={config.settings.customTranslations?.network_error ?? "Connection lost"}
+					justifyContent: "center",
+				},
+			}}
+		>
+			<HeaderIconButton
+				autoFocus
+				data-disconnect-overlay-close-button
+				onClick={onClose}
+				className="webchat-header-close-button"
+				aria-label={
+					config.settings.customTranslations?.ariaLabels?.closeConnectionWarning ??
+					"Close connection lost overlay"
+				}
 			>
-				{isPermanent ? (
-					<>
-						{navigator.onLine ? (
-							<Button
-								autoFocus
-								onClick={onConnect}
-								color="primary"
-								style={{ margin: "auto" }}
-							>
-								{config.settings.customTranslations?.reconnect ?? "Reconnect"}
-							</Button>
-						) : (
-							<div>
-								{config.settings.customTranslations?.no_network ??
-									"No network connection"}
-							</div>
-						)}
-					</>
-				) : (
-					<div>
+				<CloseIcon style={{ fill: "#000" }} />
+			</HeaderIconButton>
+			<Title>{config.settings.customTranslations?.network_error ?? "Connection lost"}</Title>
+			{isPermanent ? (
+				<>
+					{navigator.onLine ? (
+						<Button
+							autoFocus
+							onClick={onConnect}
+							color="primary"
+							style={{ margin: "auto" }}
+						>
+							{config.settings.customTranslations?.reconnect ?? "Reconnect"}
+						</Button>
+					) : (
 						<div>
-							{config.settings.customTranslations?.reconnecting ?? "Reconnecting..."}
+							{config.settings.customTranslations?.no_network ??
+								"No network connection"}
 						</div>
-					</div>
-				)}
-			</Modal>
-		</Wrapper>
+					)}
+				</>
+			) : (
+				<div>{config.settings.customTranslations?.reconnecting ?? "Reconnecting..."}</div>
+			)}
+		</ReactModal>
 	);
 };
 
