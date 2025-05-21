@@ -20,7 +20,6 @@ const Label = styled.label<{ visible: boolean; disabled?: boolean }>(
 		lineHeight: "140%",
 		pointerEvents: "none",
 		opacity: visible ? 1 : 0,
-		visibility: visible ? "visible" : "hidden",
 		transition: "opacity 0.15s, visibility 0.15s, color 0.15s",
 		whiteSpace: "nowrap",
 		overflow: "hidden",
