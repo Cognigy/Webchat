@@ -61,7 +61,7 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 			}}
 		>
 			<HeaderIconButton
-				autoFocus
+				autoFocus={!isPermanent} // Focus only if the reconnect button is not rendered
 				data-disconnect-overlay-close-button
 				onClick={onClose}
 				className="webchat-header-close-button"
