@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "@emotion/styled";
 import ReactModal from "react-modal";
 
@@ -40,16 +40,23 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 
 	const parentSelector = () => document.querySelector("#webchatWindow");
 
+	const closeRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		// Hack around stolen autofocus after widget open
+		setTimeout(() => closeRef.current?.focus(), 200);
+	}, []);
+
 	return (
 		<ReactModal
-			isOpen={isOpen}
+			isOpen={true}
 			parentSelector={parentSelector}
 			onRequestClose={onClose}
 			style={{
 				overlay: {
 					position: "absolute",
 					zIndex: 3,
-					backgroundColor: "rgba(0, 0, 0, 0.5)", // High-contrast background for accessibility
+					backgroundColor: "rgba(0, 0, 0, 0.5)",
 				},
 				content: {
 					inset: 50,
@@ -65,6 +72,7 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				autoFocus={!isPermanent} // Focus only if the reconnect button is not rendered
 				data-disconnect-overlay-close-button
 				onClick={onClose}
+				ref={closeRef}
 				className="webchat-header-close-button"
 				aria-label={
 					config.settings.customTranslations?.ariaLabels?.closeConnectionWarning ??

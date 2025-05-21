@@ -1046,6 +1046,11 @@ export class WebchatUI extends React.PureComponent<
 		const chatRegionAriaLabel =
 			config.settings.customTranslations?.ariaLabels?.chatRegion ?? "Chat window";
 
+		const handleClose = () => {
+			onClose();
+			this.chatToggleButtonRef.current?.focus();
+		};
+
 		return (
 			<>
 				<ThemeProvider theme={theme}>
@@ -1083,7 +1088,7 @@ export class WebchatUI extends React.PureComponent<
 												isOpen={showDisconnectOverlay}
 												onConnect={onConnect}
 												isPermanent={!!reconnectionLimit}
-												onClose={onClose}
+												onClose={handleClose}
 												config={config}
 											/>
 										</WebchatRoot>
