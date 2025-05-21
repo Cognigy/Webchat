@@ -30,6 +30,8 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-input_
 - _webchat-input-menu-form_
 - _webchat-input-button-menu_
+- _webchat-input-message-container_
+- _webchat-input-message-label_
 - _webchat-input-message-input_
 - _webchat-input-button-add-attachments_
 - _webchat-input-drag-and-drop-file-text_
@@ -74,6 +76,8 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-rating-widget-content-container_
 - _webchat-rating-widget-thumbs-up-button_
 - _webchat-rating-widget-thumbs-down-button_
+- _webchat-rating-widget-comment-input-field-container_
+- _webchat-rating-widget-comment-input-field-label_
 - _webchat-rating-widget-comment-input-field_
 - _webchat-rating-widget-send-button_
 - _webchat-chat-options-footer-link_
@@ -380,6 +384,28 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 
     border-radius: 5px;
     background-color: white;
+}
+```
+
+- _webchat-input-message-container_  
+  The container for the message input and its label.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-input-message-container {
+    background: #f8f8f8;
+    padding: 8px 0;
+    border-radius: 8px;
+}
+```
+
+- _webchat-input-message-label_  
+  The floating label for the message input.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-input-message-label {
+    color:rgb(209, 22, 22);
+    font-style: italic;
+    font-size: 14px;
 }
 ```
 
@@ -835,6 +861,24 @@ To change the font-family of the homescreen starter button labels, you need to t
 ```CSS
 [data-cognigy-webchat-root] .webchat-rating-widget-thumbs-down-button {
     background-color: #cc0000 !important;
+}
+```
+
+- _webchat-rating-widget-comment-input-field-label_  
+  The label for comments input field in the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-container {
+  background: #cc0000;
+}
+```
+
+- _webchat-rating-widget-comment-input-field-label_  
+  The label for comments input field in the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-label {
+    font-size: 20px;
 }
 ```
 
