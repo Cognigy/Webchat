@@ -49,7 +49,7 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 
 	return (
 		<ReactModal
-			isOpen={true}
+			isOpen={isOpen}
 			parentSelector={parentSelector}
 			onRequestClose={onClose}
 			style={{
