@@ -1,7 +1,7 @@
+import React, { LabelHTMLAttributes } from "react";
 import styled from "@emotion/styled";
-import React, { InputHTMLAttributes } from "react";
 
-interface FloatingLabelProps extends InputHTMLAttributes<HTMLInputElement> {
+interface FloatingLabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
 	label: string;
 	isVisible: boolean;
 	inputId: string;

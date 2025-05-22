@@ -864,8 +864,8 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
-- _webchat-rating-widget-comment-input-field-label_  
-  The label for comments input field in the rating widget.
+- _webchat-rating-widget-comment-input-field-container_  
+  The container for comments input field with label in the rating widget.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-container {
