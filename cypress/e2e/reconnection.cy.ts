@@ -87,8 +87,11 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 		assertOffline();
 
 		// Send a message
-		cy.get('[aria-label="Type something here…"]')
-			.type("Hi")
+		cy.contains("label", "Type something here…")
+			.invoke("attr", "for")
+			.then(inputId => {
+				cy.get(`#${inputId}`).type("Hi");
+			})
 			.get('[aria-label="Send message"]')
 			.click()
 			.get(".webchat-chat-history")

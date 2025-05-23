@@ -31,6 +31,7 @@ export interface IWebchatTheme {
 	black10: string;
 	black20: string;
 	black40: string;
+	black50: string;
 	black60: string;
 	black80: string;
 	black95: string;
@@ -162,6 +163,7 @@ export const createWebchatTheme = (
 	const black10 = BLACK_10;
 	const black20 = "#333333";
 	const black40 = "#666666";
+	const black50 = "#808080";
 	const black60 = "#999999";
 	const black80 = "#CCCCCC";
 	const black95 = "#F2F2F2";
@@ -254,6 +256,8 @@ export const createWebchatTheme = (
 	if (!theme.black20) theme.black20 = black20;
 
 	if (!theme.black40) theme.black40 = black40;
+
+	if (!theme.black50) theme.black50 = black50;
 
 	if (!theme.black60) theme.black60 = black60;
 

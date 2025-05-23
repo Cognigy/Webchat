@@ -9,12 +9,13 @@ describe("Send Message", () => {
 	});
 
 	it("should be possible to type and send message", () => {
-		cy.visitWebchat()
-			.initMockWebchat()
-			.openWebchat()
-			.startConversation()
-			.get('[aria-label="Type something here…"]')
-			.type("Hi")
+		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
+		cy.get(".webchat-input-message-label")
+			.contains("label", "Type something here…")
+			.invoke("attr", "for")
+			.then(inputId => {
+				cy.get(`#${inputId}`).type("Hi");
+			})
 			.get('[aria-label="Send message"]')
 			.click()
 			.get(".webchat-chat-history")
