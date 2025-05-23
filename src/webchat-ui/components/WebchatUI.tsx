@@ -15,6 +15,7 @@ import Input from "./plugins/InputPluginRenderer";
 import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
+import ReactModal from "react-modal";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
@@ -1045,6 +1046,11 @@ export class WebchatUI extends React.PureComponent<
 		const chatRegionAriaLabel =
 			config.settings.customTranslations?.ariaLabels?.chatRegion ?? "Chat window";
 
+		const handleClose = () => {
+			onClose();
+			this.chatToggleButtonRef.current?.focus();
+		};
+
 		return (
 			<>
 				<ThemeProvider theme={theme}>
@@ -1078,14 +1084,13 @@ export class WebchatUI extends React.PureComponent<
 											{!fullscreenMessage
 												? this.renderRegularLayout(isInforming)
 												: this.renderFullscreenMessageLayout()}
-											{showDisconnectOverlay && (
-												<DisconnectOverlay
-													onConnect={onConnect}
-													isPermanent={!!reconnectionLimit}
-													onClose={onClose}
-													config={config}
-												/>
-											)}
+											<DisconnectOverlay
+												isOpen={showDisconnectOverlay}
+												onConnect={onConnect}
+												isPermanent={!!reconnectionLimit}
+												onClose={handleClose}
+												config={config}
+											/>
 										</WebchatRoot>
 									)}
 								{!disableToggleButton && (
@@ -1341,6 +1346,8 @@ export class WebchatUI extends React.PureComponent<
 						dropzoneText={config.settings.fileStorageSettings?.dropzoneText}
 					/>
 				);
+
+			// ReactModal.setAppElement moved to componentDidMount to avoid repeated invocations.
 
 			return (
 				<>
