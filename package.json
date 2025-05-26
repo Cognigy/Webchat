@@ -1,6 +1,6 @@
 {
 	"name": "@cognigy/webchat",
-	"version": "3.22.0",
+	"version": "3.22.1",
 	"description": "Webchat Widget for Cognigy.AI",
 	"author": "Cognigy GmbH <info@cognigy.com>",
 	"contributors": [
@@ -30,7 +30,7 @@
 	},
 	"dependencies": {
 		"@braintree/sanitize-url": "^6.0.0",
-		"@cognigy/chat-components": "0.53.0",
+		"@cognigy/chat-components": "0.53.1",
 		"@cognigy/socket-client": "5.0.0-beta.23",
 		"@emotion/cache": "^10.0.29",
 		"@emotion/react": "^11.13.0",
