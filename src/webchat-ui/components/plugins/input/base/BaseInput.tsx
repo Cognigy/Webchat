@@ -12,6 +12,7 @@ import { IUploadFileMetaData } from "../../../../../common/interfaces/file-uploa
 import { IFile } from "../../../../../webchat/store/input/input-reducer";
 import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
+import FloatingLabel from "./FloatingLabel";
 import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
 
 const InputWrapper = styled.div({
@@ -143,6 +144,17 @@ const HiddenFileInput = styled.input(() => ({
 }));
 
 const SendMessageButton = styled(Button)(() => iconButtonStyles);
+
+const InputContainer = styled.div({
+	position: "relative",
+	display: "flex",
+	flexDirection: "column",
+	flexGrow: 1,
+});
+
+const Label = styled(FloatingLabel)({
+	padding: "8px 2px",
+});
 
 export interface TextInputState {
 	text: string;
@@ -541,32 +553,45 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 									</>
 								)}
 								<MediaQuery maxWidth={575}>
-									{matches => (
-										<TextArea
-											ref={this.inputRef as React.Ref<HTMLTextAreaElement>}
-											autoFocus={!disableInputAutofocus}
-											value={combineStrings(text, speechInterim)}
-											onChange={this.handleChangeTextValue}
-											onFocus={this.handleFocus}
-											onBlur={this.handleBlur}
-											onKeyDown={this.handleInputKeyDown}
-											placeholder={
-												props.config.settings.behavior.inputPlaceholder
-											}
-											className="webchat-input-message-input"
-											aria-label={
-												props.config.settings.behavior.inputPlaceholder
-											}
-											minRows={1}
-											maxRows={inputAutogrowMaxRows}
-											autoComplete={
-												disableInputAutocomplete ? "off" : undefined
-											}
-											spellCheck={false}
-											id="webchatInputMessageInputInTextMode"
-											style={matches ? { fontSize: "16px" } : undefined}
-										/>
-									)}
+									{matches => {
+										const hasValue = !!combineStrings(text, speechInterim);
+										return (
+											<InputContainer className="webchat-input-message-container">
+												<Label
+													inputId="webchatInputMessageInputInTextMode"
+													isVisible={!hasValue}
+													label={
+														props.config.settings.behavior
+															.inputPlaceholder
+													}
+													className="webchat-input-message-label"
+												/>
+												<TextArea
+													ref={
+														this
+															.inputRef as React.Ref<HTMLTextAreaElement>
+													}
+													autoFocus={!disableInputAutofocus}
+													value={combineStrings(text, speechInterim)}
+													onChange={this.handleChangeTextValue}
+													onFocus={this.handleFocus}
+													onBlur={this.handleBlur}
+													onKeyDown={this.handleInputKeyDown}
+													className="webchat-input-message-input"
+													minRows={1}
+													maxRows={inputAutogrowMaxRows}
+													autoComplete={
+														disableInputAutocomplete ? "off" : undefined
+													}
+													spellCheck={false}
+													id="webchatInputMessageInputInTextMode"
+													style={
+														matches ? { fontSize: "16px" } : undefined
+													}
+												/>
+											</InputContainer>
+										);
+									}}
 								</MediaQuery>
 
 								{props.config.settings.behavior.enableSTT && (

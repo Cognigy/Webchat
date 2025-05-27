@@ -153,8 +153,9 @@ export const RatingWidget = (props: IRatingWidgetProps) => {
 					className="webchat-rating-widget-comment-input-field"
 					rows={4}
 					ref={ratingInputRef}
-					placeholder={ratingCommentText}
-					aria-label={ratingCommentText}
+					inputId="webchatRatingInput"
+					isVisible={!ratingText}
+					label={ratingCommentText}
 				/>
 				<SendButton
 					className={`webchat-rating-widget-send-button ${
