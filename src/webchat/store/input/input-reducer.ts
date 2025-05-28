@@ -30,7 +30,7 @@ export const setTextActive = (active: boolean) => ({
 	type: SET_TEXT_ACTIVE as "SET_TEXT_ACTIVE",
 	active,
 });
-type TSetTextActiveAction = ReturnType<typeof setTextActive>;
+export type TSetTextActiveAction = ReturnType<typeof setTextActive>;
 
 const SET_DROP_ZONE_VISIBLE = "SET_DROP_ZONE_VISIBLE";
 export const setDropZoneVisible = (visible: boolean) => ({

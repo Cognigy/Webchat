@@ -179,6 +179,7 @@ export interface IWebchatSettings {
 		enableConnectionStatusIndicator: boolean;
 		scrollingBehavior: "alwaysScroll" | "scrollUntilLastInputAtTop";
 		enableScrollButton: boolean;
+		disableUserTypingEvent: boolean;
 	};
 	startBehavior: {
 		startBehavior: "none" | "button" | "injection";

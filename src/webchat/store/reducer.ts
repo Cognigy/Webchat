@@ -16,6 +16,7 @@ import {
 import { StoreState } from "./store";
 import xAppOverlay from "./xapp-overlay/slice";
 import queueUpdates from "./queue-updates/slice";
+import userTyping from "./typing/slice";
 
 const rootReducer = (state, action) => {
 	const combinedReducer = combineReducers({
@@ -32,6 +33,7 @@ const rootReducer = (state, action) => {
 		prevConversations,
 		xAppOverlay,
 		queueUpdates,
+		userTyping,
 	});
 	return combinedReducer(state, action);
 };
