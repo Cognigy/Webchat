@@ -2,6 +2,7 @@ import { Store } from "redux";
 import { setTyping } from "../ui/ui-reducer";
 import { SocketClient } from "@cognigy/socket-client";
 
+// >>>Incoming TypingStatus handler<<<
 export const registerTypingHandler = (store: Store, client: SocketClient) => {
 	client.on("typingStatus", payload => {
 		try {

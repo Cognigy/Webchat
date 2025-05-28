@@ -163,6 +163,7 @@ interface IPersistentMenuState {
 interface IBaseInputState extends TextInputState, ISpeechInputState, IPersistentMenuState {}
 
 interface IBaseInputProps extends InputComponentProps {
+	onChange: (value: string) => void;
 	sttActive: boolean;
 	onSetSTTActive: (active: boolean) => void;
 	onSetTextActive: (active: boolean) => void;
@@ -343,6 +344,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		this.setState({
 			text: e.target.value,
 		});
+		this.props.onChange(e.target.value);
 	};
 
 	handleSubmit: React.FormEventHandler = e => {
