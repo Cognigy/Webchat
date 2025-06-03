@@ -28,17 +28,13 @@ export const ConnectedBaseInput = (props: InputComponentProps) => {
 		[],
 	);
 
-	const handleChange = () => {
-		throttledInputContentUpdated();
-	};
-
 	return (
 		<BaseInput
 			{...props}
 			sttActive={sttActive}
 			onSetSTTActive={(active: boolean) => dispatch(setSTTActive(active))}
 			onSetTextActive={(active: boolean) => dispatch(setTextActive(active))}
-			onChange={handleChange}
+			onChange={throttledInputContentUpdated}
 			fileList={fileList}
 			fileUploadError={fileUploadError}
 			onSetFileList={(fileList: IFile[]) => dispatch(setFileList(fileList))}
