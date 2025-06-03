@@ -24,8 +24,8 @@ describe("Text message", () => {
 	it("should render html in text message", () => {
 		cy.withMessageFixture("text-html", () => {
 			cy.contains("foobar010")
-				.get(".webchat-message-row .chat-bubble > div h1")
-				.get(".webchat-message-row .chat-bubble > div > div")
+				.get(".webchat-message-row .chat-bubble > p h1")
+				.get(".webchat-message-row .chat-bubble > p div")
 				.contains("foobar010red")
 				.should("have.css", "background");
 		});
