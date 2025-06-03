@@ -18,6 +18,7 @@ import { createAutoInjectMiddleware } from "./autoinject/autoinject-middleware";
 import { createInputCollationMiddleware } from "./input-collation/input-collation-middleware";
 import { createPrevConversationsMiddleware } from "./previous-conversations/previous-conversations-middleware";
 import { createFileInputMiddleware } from "./input/file-input-middleware";
+import { userTypingMiddleware } from "./typing/middleware";
 
 export type StoreState = StateType<typeof reducer>;
 
@@ -43,6 +44,7 @@ export const createWebchatStore = (
 				createFileInputMiddleware(),
 				optionsMiddleware,
 				uiMiddleware,
+				userTypingMiddleware, // TODO: fix ts warning
 			),
 		),
 	);

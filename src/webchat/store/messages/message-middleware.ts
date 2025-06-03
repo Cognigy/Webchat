@@ -34,6 +34,13 @@ export const sendMessage = (
 });
 export type SendMessageAction = ReturnType<typeof sendMessage>;
 
+const SET_USER_TYPING = "SET_USER_TYPING";
+export const setUserTyping = (typing: boolean) => ({
+	type: SET_USER_TYPING as "SET_USER_TYPING",
+	typing,
+});
+export type SetUserTypingAction = ReturnType<typeof setUserTyping>;
+
 const TRIGGER_ENGAGEMENT_MESSAGE = "TRIGGER_ENGAGEMENT_MESSAGE";
 export const triggerEngagementMessage = () => ({
 	type: TRIGGER_ENGAGEMENT_MESSAGE as "TRIGGER_ENGAGEMENT_MESSAGE",
@@ -100,7 +107,13 @@ export const createMessageMiddleware =
 	(client: SocketClient): Middleware<object, StoreState> =>
 	store =>
 	next =>
-	(action: SendMessageAction | ReceiveMessageAction | TriggerEngagementMessageAction) => {
+	(
+		action:
+			| SendMessageAction
+			| ReceiveMessageAction
+			| TriggerEngagementMessageAction
+			| SetUserTypingAction,
+	) => {
 		switch (action.type) {
 			case "SEND_MESSAGE": {
 				const { message, options } = action;
@@ -144,6 +157,18 @@ export const createMessageMiddleware =
 					}),
 				);
 
+				break;
+			}
+
+			case "SET_USER_TYPING": {
+				const { typing } = action;
+				// Opt-out setting
+				if (store.getState().config.settings.behavior.disableUserTypingEvent) return;
+				if (typing) {
+					client.sendTypingStatus("typingOn");
+				} else {
+					client.sendTypingStatus("typingOff");
+				}
 				break;
 			}
 
