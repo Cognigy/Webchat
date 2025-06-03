@@ -9,41 +9,38 @@
 		<script src="./webchat.js"></script>
 		<script>
 			initWebchat(
-				"https://endpoint-dev.cognigy.ai/896f0112910ff0755a529b4dcb1622aeaf9931e516b52e8528603ad10d879661",
+				"https://endpoint-dev.cognigy.ai/45c4ec61c937e830ecdebfaad977e2ed0bd84001e3b6df736e84560b73506463",
 				{
 					// userId: "user1",
 					// sessionId: "session1",
-					settings: {
-						layout: {
-							watermark: "default",
-							watermarkText: "Some Random Watermark",
-						},
-						unreadMessages: {
-							enableIndicator: true,
-							enableBadge: true,
-							enablePreview: true,
-							enableSound: true,
-						},
-						teaserMessage: {
-							showInChat: true,
-							teaserMessageDelay: 5000,
-							text: "Hi there!",
-						},
-						startBehavior: {
-							getStartedText: "",
-						},
-						widgetSettings: {
-							enableFocusTrap: true,
-						},
-						behavior: {
-							disableUserTypingEvent: false,
-						},
-					},
+					// settings: {
+					//     layout: {
+					//         watermark: "default",
+					//         watermarkText: "Some Random Watermark"
+					//     },
+					//     unreadMessages: {
+					//         enableIndicator: true,
+					//         enableBadge: true,
+					//         enablePreview: true,
+					//         enableSound: true
+					//     },
+					//     teaserMessage:{
+					//         showInChat: true,
+					//         teaserMessageDelay: 5000,
+					//         text: "Hi there!"
+					//         },
+					//     startBehavior: {
+					//         getStartedText: ""
+					//     },
+					//     widgetSettings: {
+					//         enableFocusTrap: true,
+					//     }
+					// },
 				},
 			).then(function (webchat) {
 				window.cognigyWebchat = webchat;
-				// webchat.open();
-				// webchat.startConversation();
+				webchat.open();
+				webchat.startConversation();
 			});
 		</script>
 	</body>
