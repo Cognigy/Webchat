@@ -23,11 +23,10 @@ describe("Rating", () => {
 		cy.get("@menuButton").click();
 
 		cy.contains("Please rate your chat experience").should("be.visible");
-		cy.get('[data-test="rating-input"]').should(
-			"have.attr",
-			"placeholder",
-			"Type something here...",
-		);
+		cy.get('[data-test="rating-input"]').then($input => {
+			const inputId = $input.attr("id");
+			cy.get(`label[for="${inputId}"]`).should("have.text", "Type something here...");
+		});
 	});
 
 	it("dialog should show up if requested", () => {
@@ -49,7 +48,10 @@ describe("Rating", () => {
 		);
 
 		cy.contains("rating title").should("be.visible");
-		cy.get('[data-test="rating-input"]').should("have.attr", "placeholder", "rating text");
+		cy.get('[data-test="rating-input"]').then($input => {
+			const inputId = $input.attr("id");
+			cy.get(`label[for="${inputId}"]`).should("have.text", "rating text");
+		});
 	});
 
 	it("submits a positive rating on request", () => {
@@ -136,11 +138,10 @@ describe("Rating", () => {
 		cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
 
 		cy.contains("Please rate your chat experience").should("be.visible");
-		cy.get('[data-test="rating-input"]').should(
-			"have.attr",
-			"placeholder",
-			"Type something here...",
-		);
+		cy.get('[data-test="rating-input"]').then($input => {
+			const inputId = $input.attr("id");
+			cy.get(`label[for="${inputId}"]`).should("have.text", "Type something here...");
+		});
 	});
 
 	it("submits a rating after clicking the rating button", () => {

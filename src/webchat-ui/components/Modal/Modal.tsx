@@ -79,7 +79,7 @@ const ModalFooter = styled.div`
 	 	width: auto;
 		padding: 0 16px;
 	 }
-	
+
 	@media screen and (max-width: 576px) {
 		flex-direction: column;
 		gap: 12px;
@@ -105,7 +105,7 @@ interface ModalProps {
 	onClose: (state: boolean) => void;
 	title: string;
 	children: React.ReactNode;
-	footer: React.ReactNode;
+	footer?: React.ReactNode;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children }) => {
@@ -188,7 +188,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, footer, children 
 					<ModalBody id="modal-body" className="webchat-modal-body">
 						{children}
 					</ModalBody>
-					<ModalFooter className="webchat-modal-footer">{footer}</ModalFooter>
+					{footer ? (
+						<ModalFooter className="webchat-modal-footer">{footer}</ModalFooter>
+					) : null}
 				</StyledDialog>
 			</CSSTransition>
 		</>
