@@ -6,7 +6,7 @@ import PolicyLink from "./PrimaryLink";
 import { IWebchatSettings } from "../../../common/interfaces/webchat-config";
 import Markdown from "react-markdown";
 import { sanitizeHTML } from "../../../webchat/helper/sanitize";
-import remarkGfm from 'remark-gfm'
+import remarkGfm from "remark-gfm";
 const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	height: "100%",
 	width: "100%",
@@ -79,9 +79,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				ref={privacyNoticeRef}
 			>
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
-					<Markdown remarkPlugins={[remarkGfm]}>
-						{sanitizedText}
-					</Markdown>
+					<Markdown remarkPlugins={[remarkGfm]}>{sanitizedText}</Markdown>
 				</Typography>
 			</PrivacyMessage>
 			<PrivacyActions className="webchat-privacy-notice-actions">
