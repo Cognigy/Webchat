@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import PrimaryButton from "./PrimaryButton";
@@ -70,7 +70,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 			}
 		};
 	}, [isHomeScreenEnabled]);
-	const sanitizedText = sanitizeHTML(text); // Simple HTML tag removal
+	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]); // Simple HTML tag removal
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
 			<PrivacyMessage
