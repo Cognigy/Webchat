@@ -84,9 +84,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 							p: ({ node, ...props }) => (
 								<p {...props} style={{ margin: 0, whiteSpace: "pre-wrap" }} />
 							),
-							a: ({ node, ...props }) => (
-								<a {...props} target="_blank" rel="noopener noreferrer" />
-							),
+							a: ({ node, ...props }) => <a {...props} target="_blank" />,
 						}}
 						remarkPlugins={[remarkGfm]}
 					>
