@@ -1,9 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import PrimaryButton from "./PrimaryButton";
 import PolicyLink from "./PrimaryLink";
 import { IWebchatSettings } from "../../../common/interfaces/webchat-config";
+import Markdown from "react-markdown";
+import { sanitizeHTML } from "../../../webchat/helper/sanitize";
+import remarkGfm from "remark-gfm";
 
 const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	height: "100%",
@@ -22,6 +25,11 @@ const PrivacyMessage = styled.div(({ theme }) => ({
 	":focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
 		outlineOffset: 8,
+	},
+
+	".webchat-privacy-notice-markdown-container > p": {
+		margin: 0,
+		whiteSpace: "pre-wrap",
 	},
 }));
 
@@ -68,7 +76,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 			}
 		};
 	}, [isHomeScreenEnabled]);
-
+	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]);
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
 			<PrivacyMessage
@@ -77,7 +85,17 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				ref={privacyNoticeRef}
 			>
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
-					{text}
+					<Markdown
+						components={{
+							a: ({ node, ...props }) => (
+								<a {...props} target="_blank" rel="noreferrer" />
+							),
+						}}
+						remarkPlugins={[remarkGfm]}
+						className="webchat-privacy-notice-markdown-container"
+					>
+						{sanitizedText}
+					</Markdown>
 				</Typography>
 			</PrivacyMessage>
 			<PrivacyActions className="webchat-privacy-notice-actions">
