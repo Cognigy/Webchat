@@ -70,7 +70,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 			}
 		};
 	}, [isHomeScreenEnabled]);
-	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]); // Simple HTML tag removal
+	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]);
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
 			<PrivacyMessage
@@ -79,7 +79,9 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				ref={privacyNoticeRef}
 			>
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
-					<Markdown remarkPlugins={[remarkGfm]}>{sanitizedText}</Markdown>
+					<Markdown components={{
+						'p': ({ node, ...props }) => <p {...props} style={{ margin: 0, whiteSpace: "pre-wrap" }} />,
+					}} remarkPlugins={[remarkGfm]}>{sanitizedText}</Markdown>
 				</Typography>
 			</PrivacyMessage>
 			<PrivacyActions className="webchat-privacy-notice-actions">
