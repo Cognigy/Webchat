@@ -30,7 +30,7 @@ const PrivacyMessage = styled.div(({ theme }) => ({
 	".webchat-privacy-notice-markdown-container > p": {
 		margin: 0,
 		whiteSpace: "pre-wrap",
-	}
+	},
 }));
 
 const PrivacyActions = styled.div({
@@ -87,11 +87,12 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
 					<Markdown
 						components={{
-							a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer" />,
+							a: ({ node, ...props }) => (
+								<a {...props} target="_blank" rel="noreferrer" />
+							),
 						}}
 						remarkPlugins={[remarkGfm]}
 						className="webchat-privacy-notice-markdown-container"
-
 					>
 						{sanitizedText}
 					</Markdown>

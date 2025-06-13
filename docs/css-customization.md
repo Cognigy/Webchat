@@ -573,8 +573,9 @@ The avatars can be repositioned to appear at the top edge of a message rather th
     background-color: rgb(227, 227, 251);
 }
 ```
+
 - _webchat-privacy-notice-markdown-container_  
-  The markdown container of the privacy text content. 
+  The markdown container of the privacy text content.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-privacy-notice-markdown-container > p {
