@@ -48,6 +48,7 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-teaser-message-button_
 - _webchat-privacy-notice-root_
 - _webchat-privacy-notice-message_
+- _webchat-privacy-notice-markdown-container_
 - _webchat-privacy-notice-actions_
 - _webchat-privacy-notice-accept-button_
 - _webchat-privacy-policy-link_
@@ -565,11 +566,19 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 ```
 
 - _webchat-privacy-notice-message_  
-  The root container for the privacy screen of the webchat.
+  The root container for the privacy text content.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-privacy-notice-message {
     background-color: rgb(227, 227, 251);
+}
+```
+- _webchat-privacy-notice-markdown-container_  
+  The markdown container of the privacy text content. 
+
+```CSS
+[data-cognigy-webchat-root] .webchat-privacy-notice-markdown-container > p {
+    color: rgb(227, 227, 251);
 }
 ```
 
