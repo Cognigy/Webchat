@@ -79,9 +79,19 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				ref={privacyNoticeRef}
 			>
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
-					<Markdown components={{
-						'p': ({ node, ...props }) => <p {...props} style={{ margin: 0, whiteSpace: "pre-wrap" }} />,
-					}} remarkPlugins={[remarkGfm]}>{sanitizedText}</Markdown>
+					<Markdown
+						components={{
+							p: ({ node, ...props }) => (
+								<p {...props} style={{ margin: 0, whiteSpace: "pre-wrap" }} />
+							),
+							a: ({ node, ...props }) => (
+								<a {...props} target="_blank" rel="noopener noreferrer" />
+							),
+						}}
+						remarkPlugins={[remarkGfm]}
+					>
+						{sanitizedText}
+					</Markdown>
 				</Typography>
 			</PrivacyMessage>
 			<PrivacyActions className="webchat-privacy-notice-actions">
