@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import ScrollToBottom, { useScrollToBottom, useSticky } from "react-scroll-to-bottom";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
 
@@ -17,17 +16,6 @@ const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => 
 	height: theme.blockSize,
 	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
 }));
-
-const Scroller = styled(ScrollToBottom)({
-	height: "100% !important",
-	width: "100%",
-	overflowY: "auto" as const,
-	position: "initial",
-
-	"& .hiddenAutoScrollButton": {
-		display: "none",
-	},
-});
 
 const ChatLog = styled.div(({ theme }) => ({
 	paddingBottom: theme.unitSize * 2,
@@ -75,6 +63,7 @@ export function ChatScroller({
 	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
 	const [shouldScrollToLastInput, setShouldScrollToLastInput] = useState(false);
 	const [scrolledToLastInput, setScrolledToLastInput] = useState(false);
+	const [isAtBottom, setIsAtBottom] = useState(true);
 
 	useEffect(() => {
 		if (lastInputId) {
@@ -93,28 +82,53 @@ export function ChatScroller({
 		setIsChatLogFocused(false);
 	};
 
-	const scrollerFn = useCallback(
-		({ maxValue }) => {
-			if (!lastInputId || !scrollBehavior || scrollBehavior === "alwaysScroll")
-				return maxValue;
-
-			const targetElement = document.getElementById(lastInputId);
-			if (!targetElement || !outerRef.current) return maxValue;
-
-			const containerRect = outerRef.current.getBoundingClientRect();
-			const elementRect = targetElement.getBoundingClientRect();
-			const elementTopPosition = elementRect.top - containerRect.top;
-
-			// If last input element is near the top (within threshold), stop scrolling
-			if (shouldScrollToLastInput && elementTopPosition <= 32) {
-				setScrolledToLastInput(true);
-				return 0;
+	// Scroll to last input or scroll to bottom based on scrollBehavior
+	useEffect(() => {
+		const doScroll = (top: number) => {
+			if (outerRef.current) {
+				outerRef.current.scrollTo({ top, behavior: "smooth" });
+				const { scrollTop, scrollHeight, clientHeight } = outerRef.current;
+				setIsAtBottom(scrollHeight - scrollTop - clientHeight < 32);
 			}
+		};
 
-			return maxValue;
-		},
-		[lastInputId, shouldScrollToLastInput, outerRef.current],
-	);
+		if (scrollBehavior === "alwaysScroll" && outerRef.current) {
+			doScroll(outerRef.current.scrollHeight - outerRef.current.clientHeight);
+		} else if (lastInputId) {
+			const targetElement = document.getElementById(lastInputId);
+			if (targetElement && outerRef.current) {
+				doScroll(targetElement.offsetTop - outerRef.current.offsetTop);
+			}
+		}
+	}, [children, scrollBehavior, lastInputId]);
+
+	// Track if user is at bottom
+	useEffect(() => {
+		const handleIsAtBottom = () => {
+			if (!outerRef.current) return;
+			const { scrollTop, scrollHeight, clientHeight } = outerRef.current;
+			setIsAtBottom(scrollHeight - scrollTop - clientHeight < 32);
+		};
+		const ref = outerRef.current;
+		if (ref) {
+			ref.addEventListener("scroll", handleIsAtBottom);
+		}
+		return () => {
+			if (ref) {
+				ref.removeEventListener("scroll", handleIsAtBottom);
+			}
+		};
+	}, [outerRef.current]);
+
+	// Scroll to bottom handler
+	const handleScrollToBottom = () => {
+		if (outerRef.current) {
+			outerRef.current.scrollTo({
+				top: outerRef.current.scrollHeight - outerRef.current.clientHeight,
+				behavior: "smooth",
+			});
+		}
+	};
 
 	// Find if the chat log is overflowing to allow for focus (for keyboard users to scroll)
 	const isChatLogOverflowing = () => {
@@ -126,30 +140,34 @@ export function ChatScroller({
 
 	return (
 		<ChatLogWrapper ref={outerRef} {...restProps} showFocusOutline={isChatLogFocused}>
-			<Scroller followButtonClassName="hiddenAutoScrollButton" scroller={scrollerFn}>
-				<ChatLog
-					ref={innerRef}
-					id="webchatChatHistoryWrapperLiveLogPanel"
-					tabIndex={isChatLogOverflowing() ? 0 : -1}
-					aria-labelledby="webchatChatHistoryHeading"
-					onFocus={handleFocus}
-					onBlur={handleBlur}
+			<ChatLog
+				ref={innerRef}
+				id="webchatChatHistoryWrapperLiveLogPanel"
+				tabIndex={isChatLogOverflowing() ? 0 : -1}
+				aria-labelledby="webchatChatHistoryHeading"
+				onFocus={handleFocus}
+				onBlur={handleBlur}
+			>
+				<ScrollerContent
+					scrolledToLastInput={scrolledToLastInput}
+					setShouldScrollToLastInput={setShouldScrollToLastInput}
+					isAtBottom={isAtBottom}
+					onScrollToBottom={handleScrollToBottom}
 				>
-					<ScrollerContent
-						scrolledToLastInput={scrolledToLastInput}
-						setShouldScrollToLastInput={setShouldScrollToLastInput}
-					>
-						{children}
-					</ScrollerContent>
-				</ChatLog>
-			</Scroller>
+					{children}
+				</ScrollerContent>
+			</ChatLog>
 		</ChatLogWrapper>
 	);
 }
 
-const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastInput }) => {
-	const scrollToBottom = useScrollToBottom();
-	const [sticky] = useSticky();
+const ScrollerContent = ({
+	children,
+	scrolledToLastInput,
+	setShouldScrollToLastInput,
+	isAtBottom,
+	onScrollToBottom,
+}) => {
 	const scrollToBottomText = useSelector(
 		state => state.config.settings.customTranslations?.ariaLabels?.scrollToBottom,
 	);
@@ -158,10 +176,10 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
 
 	useEffect(() => {
-		if (sticky && scrolledToLastInput) {
+		if (isAtBottom && scrolledToLastInput) {
 			setShouldScrollToLastInput(false);
 		}
-	}, [scrolledToLastInput, setShouldScrollToLastInput, sticky]);
+	}, [scrolledToLastInput, setShouldScrollToLastInput, isAtBottom]);
 
 	const [inputHeight, setInputHeight] = useState(0);
 
@@ -193,10 +211,10 @@ const ScrollerContent = ({ children, scrolledToLastInput, setShouldScrollToLastI
 	return (
 		<div>
 			{children}
-			{!sticky && !scrollButtonDisabled && (
+			{!isAtBottom && !scrollButtonDisabled && (
 				<ScrollButton
 					className="webchat-scroll-to-bottom-button"
-					onClick={scrollToBottom}
+					onClick={onScrollToBottom}
 					aria-label={scrollToBottomText ?? "Scroll to the bottom of the chat"}
 					style={{ bottom: `${inputHeight + 50}px` }}
 				>
