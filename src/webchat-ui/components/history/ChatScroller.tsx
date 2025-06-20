@@ -63,7 +63,6 @@ export function ChatScroller({
 	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
 	const [shouldScrollToLastInput, setShouldScrollToLastInput] = useState(false);
 	const [scrolledToLastInput, setScrolledToLastInput] = useState(false);
-	const [isAtBottom, setIsAtBottom] = useState(true);
 
 	useEffect(() => {
 		if (lastInputId) {
@@ -87,8 +86,6 @@ export function ChatScroller({
 		const doScroll = (top: number) => {
 			if (outerRef.current) {
 				outerRef.current.scrollTo({ top, behavior: "smooth" });
-				const { scrollTop, scrollHeight, clientHeight } = outerRef.current;
-				setIsAtBottom(scrollHeight - scrollTop - clientHeight < 32);
 			}
 		};
 
@@ -102,23 +99,7 @@ export function ChatScroller({
 		}
 	}, [children, scrollBehavior, lastInputId]);
 
-	// Track if user is at bottom
-	useEffect(() => {
-		const handleIsAtBottom = () => {
-			if (!outerRef.current) return;
-			const { scrollTop, scrollHeight, clientHeight } = outerRef.current;
-			setIsAtBottom(scrollHeight - scrollTop - clientHeight < 32);
-		};
-		const ref = outerRef.current;
-		if (ref) {
-			ref.addEventListener("scroll", handleIsAtBottom);
-		}
-		return () => {
-			if (ref) {
-				ref.removeEventListener("scroll", handleIsAtBottom);
-			}
-		};
-	}, [outerRef.current]);
+	const isAtBottom = useIsAtBottom(outerRef, 2, 150);
 
 	// Scroll to bottom handler
 	const handleScrollToBottom = () => {
@@ -224,3 +205,46 @@ const ScrollerContent = ({
 		</div>
 	);
 };
+
+function useIsAtBottom(ref: React.RefObject<HTMLDivElement>, threshold = 2, debounceMs = 150) {
+	const [isAtBottom, setIsAtBottom] = useState(true);
+	const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+	useEffect(() => {
+		const check = () => {
+			if (!ref.current) return;
+			const { scrollTop, scrollHeight, clientHeight } = ref.current;
+			setIsAtBottom(scrollHeight - scrollTop - clientHeight <= threshold);
+		};
+
+		const handleScrollOrChange = () => {
+			if (debounceTimer.current) clearTimeout(debounceTimer.current);
+			debounceTimer.current = setTimeout(check, debounceMs);
+		};
+
+		const container = ref.current;
+		if (container) {
+			container.addEventListener("scroll", handleScrollOrChange);
+		}
+
+		const resizeObserver = new window.ResizeObserver(handleScrollOrChange);
+		if (container) resizeObserver.observe(container);
+
+		const mutationObserver = new window.MutationObserver(handleScrollOrChange);
+		if (container) mutationObserver.observe(container, { childList: true, subtree: true });
+
+		// Initial check
+		check();
+
+		return () => {
+			if (container) {
+				container.removeEventListener("scroll", handleScrollOrChange);
+				resizeObserver.disconnect();
+				mutationObserver.disconnect();
+			}
+			if (debounceTimer.current) clearTimeout(debounceTimer.current);
+		};
+	}, [ref, threshold, debounceMs]);
+
+	return isAtBottom;
+}
