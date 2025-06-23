@@ -40,7 +40,7 @@ const useIsAtBottom = (ref: React.RefObject<HTMLDivElement>) => {
 			}
 			if (debounceTimer.current) clearTimeout(debounceTimer.current);
 		};
-	}, [ref, threshold, debounceMs]);
+	}, [ref]);
 
 	return isAtBottom;
 };

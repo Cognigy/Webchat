@@ -62,15 +62,6 @@ export function ChatScroller({
 	const outerRef = useRef<HTMLDivElement>(null);
 
 	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
-	const [shouldScrollToLastInput, setShouldScrollToLastInput] = useState(false);
-	const [scrolledToLastInput, setScrolledToLastInput] = useState(false);
-
-	useEffect(() => {
-		if (lastInputId) {
-			setShouldScrollToLastInput(true);
-			setScrolledToLastInput(false);
-		}
-	}, [lastInputId]);
 
 	const handleFocus = () => {
 		if (innerRef.current === document.activeElement) {
@@ -130,12 +121,7 @@ export function ChatScroller({
 				onFocus={handleFocus}
 				onBlur={handleBlur}
 			>
-				<ScrollerContent
-					scrolledToLastInput={scrolledToLastInput}
-					setShouldScrollToLastInput={setShouldScrollToLastInput}
-					isAtBottom={isAtBottom}
-					onScrollToBottom={handleScrollToBottom}
-				>
+				<ScrollerContent isAtBottom={isAtBottom} onScrollToBottom={handleScrollToBottom}>
 					{children}
 				</ScrollerContent>
 			</ChatLog>
@@ -145,8 +131,6 @@ export function ChatScroller({
 
 const ScrollerContent = ({
 	children,
-	scrolledToLastInput,
-	setShouldScrollToLastInput,
 	isAtBottom,
 	onScrollToBottom,
 }) => {
@@ -156,12 +140,6 @@ const ScrollerContent = ({
 
 	const scrollButtonDisabled =
 		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
-
-	useEffect(() => {
-		if (isAtBottom && scrolledToLastInput) {
-			setShouldScrollToLastInput(false);
-		}
-	}, [scrolledToLastInput, setShouldScrollToLastInput, isAtBottom]);
 
 	const [inputHeight, setInputHeight] = useState(0);
 
