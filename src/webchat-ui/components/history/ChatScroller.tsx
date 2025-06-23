@@ -63,6 +63,8 @@ export function ChatScroller({
 
 	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
 
+	const { isAtBottom, userScrolledUp } = useIsAtBottom(outerRef);
+
 	const handleFocus = () => {
 		if (innerRef.current === document.activeElement) {
 			setIsChatLogFocused(true);
@@ -82,16 +84,16 @@ export function ChatScroller({
 		};
 
 		if (scrollBehavior === "alwaysScroll" && outerRef.current) {
-			doScroll(outerRef.current.scrollHeight - outerRef.current.clientHeight);
+			if (!userScrolledUp) {
+				doScroll(outerRef.current.scrollHeight - outerRef.current.clientHeight);
+			}
 		} else if (lastInputId) {
 			const targetElement = document.getElementById(lastInputId);
 			if (targetElement && outerRef.current) {
 				doScroll(targetElement.offsetTop - outerRef.current.offsetTop);
 			}
 		}
-	}, [children, scrollBehavior, lastInputId]);
-
-	const isAtBottom = useIsAtBottom(outerRef);
+	}, [children, scrollBehavior, lastInputId, userScrolledUp]);
 
 	// Scroll to bottom handler
 	const handleScrollToBottom = () => {
@@ -129,11 +131,7 @@ export function ChatScroller({
 	);
 }
 
-const ScrollerContent = ({
-	children,
-	isAtBottom,
-	onScrollToBottom,
-}) => {
+const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 	const scrollToBottomText = useSelector(
 		state => state.config.settings.customTranslations?.ariaLabels?.scrollToBottom,
 	);

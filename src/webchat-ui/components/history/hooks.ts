@@ -2,47 +2,58 @@ import { useEffect, useRef, useState } from "react";
 
 const useIsAtBottom = (ref: React.RefObject<HTMLDivElement>) => {
 	const [isAtBottom, setIsAtBottom] = useState(true);
+	const [userScrolledUp, setUserScrolledUp] = useState(false);
+	const lastScrollTop = useRef(0);
+	const threshold = 20;
+	const debounceMs = 150;
 	const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-	const threshold = 20; // pixels from the bottom to consider "at bottom"
-	const debounceMs = 150; // milliseconds for debouncing scroll events
 
 	useEffect(() => {
 		const check = () => {
 			if (!ref.current) return;
 			const { scrollTop, scrollHeight, clientHeight } = ref.current;
-			setIsAtBottom(scrollHeight - scrollTop - clientHeight <= threshold);
+			const atBottom = scrollHeight - scrollTop - clientHeight <= threshold;
+
+			setIsAtBottom(atBottom);
+			if (atBottom) {
+				setUserScrolledUp(false); // reset when back at bottom
+			}
 		};
 
-		const handleScrollOrChange = () => {
+		const handleScroll = () => {
+			if (!ref.current) return;
+			const scrollTop = ref.current.scrollTop;
+
+			if (scrollTop < lastScrollTop.current) {
+				setUserScrolledUp(true);
+			}
+			lastScrollTop.current = scrollTop;
+
 			if (debounceTimer.current) clearTimeout(debounceTimer.current);
 			debounceTimer.current = setTimeout(check, debounceMs);
 		};
 
 		const container = ref.current;
-		if (container) {
-			container.addEventListener("scroll", handleScrollOrChange);
-		}
+		if (!container) return;
 
-		const resizeObserver = new window.ResizeObserver(handleScrollOrChange);
-		if (container) resizeObserver.observe(container);
+		container.addEventListener("scroll", handleScroll);
+		const resizeObserver = new ResizeObserver(handleScroll);
+		const mutationObserver = new MutationObserver(handleScroll);
 
-		const mutationObserver = new window.MutationObserver(handleScrollOrChange);
-		if (container) mutationObserver.observe(container, { childList: true, subtree: true });
+		resizeObserver.observe(container);
+		mutationObserver.observe(container, { childList: true, subtree: true });
 
-		// Check if the container is at the bottom and set the state accordingly
 		check();
 
 		return () => {
-			if (container) {
-				container.removeEventListener("scroll", handleScrollOrChange);
-				resizeObserver.disconnect();
-				mutationObserver.disconnect();
-			}
+			container.removeEventListener("scroll", handleScroll);
+			resizeObserver.disconnect();
+			mutationObserver.disconnect();
 			if (debounceTimer.current) clearTimeout(debounceTimer.current);
 		};
 	}, [ref]);
 
-	return isAtBottom;
+	return { isAtBottom, userScrolledUp };
 };
 
 export default useIsAtBottom;
