@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
+import useIsAtBottom from "./hooks";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
@@ -99,7 +100,7 @@ export function ChatScroller({
 		}
 	}, [children, scrollBehavior, lastInputId]);
 
-	const isAtBottom = useIsAtBottom(outerRef, 2, 150);
+	const isAtBottom = useIsAtBottom(outerRef);
 
 	// Scroll to bottom handler
 	const handleScrollToBottom = () => {
@@ -205,46 +206,3 @@ const ScrollerContent = ({
 		</div>
 	);
 };
-
-function useIsAtBottom(ref: React.RefObject<HTMLDivElement>, threshold = 2, debounceMs = 150) {
-	const [isAtBottom, setIsAtBottom] = useState(true);
-	const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-
-	useEffect(() => {
-		const check = () => {
-			if (!ref.current) return;
-			const { scrollTop, scrollHeight, clientHeight } = ref.current;
-			setIsAtBottom(scrollHeight - scrollTop - clientHeight <= threshold);
-		};
-
-		const handleScrollOrChange = () => {
-			if (debounceTimer.current) clearTimeout(debounceTimer.current);
-			debounceTimer.current = setTimeout(check, debounceMs);
-		};
-
-		const container = ref.current;
-		if (container) {
-			container.addEventListener("scroll", handleScrollOrChange);
-		}
-
-		const resizeObserver = new window.ResizeObserver(handleScrollOrChange);
-		if (container) resizeObserver.observe(container);
-
-		const mutationObserver = new window.MutationObserver(handleScrollOrChange);
-		if (container) mutationObserver.observe(container, { childList: true, subtree: true });
-
-		// Initial check
-		check();
-
-		return () => {
-			if (container) {
-				container.removeEventListener("scroll", handleScrollOrChange);
-				resizeObserver.disconnect();
-				mutationObserver.disconnect();
-			}
-			if (debounceTimer.current) clearTimeout(debounceTimer.current);
-		};
-	}, [ref, threshold, debounceMs]);
-
-	return isAtBottom;
-}
