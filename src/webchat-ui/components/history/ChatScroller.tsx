@@ -77,31 +77,32 @@ export function ChatScroller({
 
 	// Scroll to last input or scroll to bottom based on scrollBehavior, only if the user has not scrolled up
 	useEffect(() => {
-		const doScroll = (top: number) => {
-			if (outerRef.current) {
-				outerRef.current.scrollTo({ top, behavior: "smooth" });
-			}
-		};
-
 		if (!userScrolledUp && outerRef.current) {
 			if (scrollBehavior === "alwaysScroll") {
-				doScroll(outerRef.current.scrollHeight - outerRef.current.clientHeight);
+				const scrollOffset = outerRef.current.scrollHeight - outerRef.current.clientHeight;
+				handleScroll(scrollOffset);
 			} else if (lastInputId) {
 				const targetElement = document.getElementById(lastInputId);
 				if (targetElement) {
-					doScroll(targetElement.offsetTop - outerRef.current.offsetTop);
+					const scrollOffset = targetElement.offsetTop - outerRef.current.offsetTop;
+					handleScroll(scrollOffset);
 				}
 			}
 		}
 	}, [children, scrollBehavior, lastInputId]);
 
-	// Scroll to bottom handler
+	// Handle scrolling to a specific position
+	const handleScroll = (top: number) => {
+		if (outerRef.current) {
+			outerRef.current.scrollTo({ top, behavior: "smooth" });
+		}
+	};
+
+	// Handle scrolling to the bottom when the scroll button is clicked
 	const handleScrollToBottom = () => {
 		if (outerRef.current) {
-			outerRef.current.scrollTo({
-				top: outerRef.current.scrollHeight - outerRef.current.clientHeight,
-				behavior: "smooth",
-			});
+			const scrollOffset = outerRef.current?.scrollHeight - outerRef.current?.clientHeight;
+			handleScroll(scrollOffset);
 		}
 	};
 
