@@ -1,18 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 
+const THRESHOLD = 20; // pixels from the bottom to consider "at bottom"
+const DEBOUNCE_MS = 150; // debounce time in milliseconds
+
 const useIsAtBottom = (ref: React.RefObject<HTMLDivElement>) => {
 	const [isAtBottom, setIsAtBottom] = useState(true);
 	const [userScrolledUp, setUserScrolledUp] = useState(false);
 	const lastScrollTop = useRef(0);
-	const threshold = 20;
-	const debounceMs = 150;
 	const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
-		const check = () => {
+		const checkIsAtBottom = () => {
 			if (!ref.current) return;
 			const { scrollTop, scrollHeight, clientHeight } = ref.current;
-			const atBottom = scrollHeight - scrollTop - clientHeight <= threshold;
+			const atBottom = scrollHeight - scrollTop - clientHeight <= THRESHOLD;
 
 			setIsAtBottom(atBottom);
 			if (atBottom) {
@@ -30,7 +31,7 @@ const useIsAtBottom = (ref: React.RefObject<HTMLDivElement>) => {
 			lastScrollTop.current = scrollTop;
 
 			if (debounceTimer.current) clearTimeout(debounceTimer.current);
-			debounceTimer.current = setTimeout(check, debounceMs);
+			debounceTimer.current = setTimeout(checkIsAtBottom, DEBOUNCE_MS);
 		};
 
 		const container = ref.current;
@@ -43,7 +44,7 @@ const useIsAtBottom = (ref: React.RefObject<HTMLDivElement>) => {
 		resizeObserver.observe(container);
 		mutationObserver.observe(container, { childList: true, subtree: true });
 
-		check();
+		checkIsAtBottom();
 
 		return () => {
 			container.removeEventListener("scroll", handleScroll);
