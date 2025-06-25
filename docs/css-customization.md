@@ -172,7 +172,7 @@ The following code snippets are just suggestions so it shows the syntax required
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-title {
 
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 ```
 
@@ -500,7 +500,7 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 ```CSS
 [data-cognigy-webchat-root] .webchat-unread-message-preview-text {
     color: white;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 ```
 
@@ -519,7 +519,7 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-teaser-message-header-title {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: bold;
     color: rgb(5, 5, 131);
 }
@@ -811,7 +811,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-chat-options-action-btns-title {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-family: Arial, Helvetica, sans-serif;
     color: rgb(5, 5, 131);
 }
@@ -841,7 +841,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-rating-widget-title {
-    font-size: 20px;
+    font-size: 1.25rem;
     color: rgb(5, 5, 131);
 }
 ```
@@ -888,7 +888,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-label {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 ```
 
@@ -925,7 +925,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-chat-options-footer-link-text {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-family: Arial, Helvetica, sans-serif !important;
 }
 ```
@@ -1305,7 +1305,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   background: #28c8ef;
   color: hsla(0, 0%, 100%, 0.95);
   font-weight: bold;
-  font-size: 22px;
+  font-size: 1.375rem;
 }
 ```
 
@@ -1385,7 +1385,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-modal-title {
-    font-size: 18px;
+    font-size: 1.125rem;
     color: #333;
     font-weight: bold;
 }
@@ -1466,7 +1466,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-delete-conversation-title {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: bold;
     color: #333;
 }
