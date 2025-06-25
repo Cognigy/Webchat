@@ -26,7 +26,7 @@ const Input = styled.textarea(({ theme }) => ({
 
 	color: theme.black10,
 	fontFamily: "Figtree",
-	fontSize: 14,
+	fontSize: "0.875rem", // 14px
 	fontWeight: 400,
 	lineHeight: "140%",
 

@@ -15,7 +15,7 @@ const Label = styled.label<{ visible: boolean; disabled?: boolean }>(
 		left: 0,
 		top: 0,
 		color: disabled ? theme.black50 : theme.black10,
-		fontSize: 14,
+		fontSize: "0.875rem", // 14px
 		fontWeight: 400,
 		lineHeight: "140%",
 		pointerEvents: "none",

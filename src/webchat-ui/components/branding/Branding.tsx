@@ -49,7 +49,7 @@ const Branding: FC<IBrandingProps> = props => {
 			aria-label={`${watermarkText}. ${ariaLabels?.opensInNewTab ?? "Opens in new tab"}`}
 			id={id ?? "cognigyBrandingLink"}
 		>
-			<Typography variant="copy-medium" component="span" fontSize={10} lineHeight="120%">
+			<Typography variant="copy-medium" component="span" fontSize="0.625rem" lineHeight="120%">
 				{watermark === "custom" && watermarkText ? watermarkText : "Powered by Cognigy.AI"}
 			</Typography>
 		</Link>
