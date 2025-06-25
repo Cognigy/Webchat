@@ -24,7 +24,7 @@ export default styled.button<IColorProps>(({ color, theme }) => {
 		display: "flex",
 		width: "19rem", // 303px
 		height: "2.75rem", // 44px
-		padding: "0.8rem 0", // 11px top/bottom
+		padding: "11px 0",
 		justifyContent: "center",
 		alignItems: "center",
 		flexShrink: 0,
