@@ -12,7 +12,7 @@ import { IMessage } from "../../../../common/interfaces/message";
 const ListItem = styled.div(({ theme }) => ({
 	display: "flex",
 	gap: "12px",
-	height: "69px",
+	height: "4.32rem", // ~69px
 	width: "100%",
 	border: `1px solid ${theme.black80}`,
 	borderRadius: "10px",

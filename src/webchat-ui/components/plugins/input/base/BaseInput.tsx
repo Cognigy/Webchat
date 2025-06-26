@@ -40,7 +40,7 @@ const TextArea = styled(TextareaAutosize)(({ theme }) => ({
 	resize: "none",
 	backgroundColor: "transparent",
 
-	fontSize: 14,
+	fontSize: "0.875rem", // 14px
 	fontStyle: "normal",
 	fontWeight: 400,
 	lineHeight: "140%",

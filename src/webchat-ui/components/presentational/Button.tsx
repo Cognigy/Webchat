@@ -22,9 +22,9 @@ export default styled.button<IColorProps>(({ color, theme }) => {
 
 		borderRadius: 10,
 		display: "flex",
-		width: 303,
-		height: 44,
-		padding: "11px 0px",
+		width: "19rem", // 303px
+		height: "2.75rem", // 44px
+		padding: "11px 0",
 		justifyContent: "center",
 		alignItems: "center",
 		flexShrink: 0,
@@ -33,7 +33,7 @@ export default styled.button<IColorProps>(({ color, theme }) => {
 		color: colors.contrast,
 
 		textTransform: "unset",
-		fontSize: 14,
+		fontSize: "0.875rem", // 14px
 		fontStyle: "normal",
 		fontWeight: 600,
 		lineHeight: "160%",

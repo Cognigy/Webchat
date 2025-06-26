@@ -12,7 +12,6 @@ import { useSelector } from "../../../../webchat/helper/useSelector";
 
 const RatingWidgetRoot = styled.div({
 	width: "100%",
-	height: "310px",
 	display: "flex",
 	flexDirection: "column",
 	padding: "20px 0",

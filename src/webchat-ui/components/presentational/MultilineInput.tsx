@@ -8,7 +8,6 @@ const InputWrapper = styled.div<{ disabled?: boolean }>(({ theme, disabled }) =>
 	border: `1px solid var(--basics-black-60, ${theme.black60})`,
 	background: `var(--Basics-white, ${theme.white})`,
 	width: "100%",
-	height: "100px",
 	padding: 12,
 	"&:focus-within": {
 		borderColor: "transparent",
@@ -26,7 +25,7 @@ const Input = styled.textarea(({ theme }) => ({
 
 	color: theme.black10,
 	fontFamily: "Figtree",
-	fontSize: 14,
+	fontSize: "0.875rem", // 14px
 	fontWeight: 400,
 	lineHeight: "140%",
 
