@@ -1594,15 +1594,15 @@ export class WebchatUI extends React.PureComponent<
 				)}
 				{visibleMessages.map((message, index) => {
 					// Lookahead if there is a user reply
-					const hasReply = visibleMessages
-						.slice(index + 1)
-						.some(
-							message =>
-								message.source === "user" &&
-								!(message?.data?._cognigy as any)?.controlCommands &&
-								!message?.data?.attachments &&
-								!!message?.text?.trim(),
-						);
+					const hasReply = visibleMessages.slice(index + 1).some(message => {
+						const isUser = message.source === "user";
+						const hasText = !!message?.text?.trim();
+						const noControlCommands = !(message?.data?._cognigy as any)
+							?.controlCommands;
+						const hasAttachments = !!message?.data?.attachments;
+
+						return isUser && noControlCommands && (hasText || hasAttachments);
+					});
 
 					return (
 						<Message
