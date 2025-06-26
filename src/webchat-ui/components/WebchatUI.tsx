@@ -1599,7 +1599,8 @@ export class WebchatUI extends React.PureComponent<
 						.some(
 							message =>
 								message.source === "user" &&
-								!(message?.data?._cognigy as any)?.controlCommands,
+								!(message?.data?._cognigy as any)?.controlCommands &&
+								!!message.text,
 						);
 
 					return (
