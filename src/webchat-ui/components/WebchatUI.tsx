@@ -1600,7 +1600,7 @@ export class WebchatUI extends React.PureComponent<
 							message =>
 								message.source === "user" &&
 								!(message?.data?._cognigy as any)?.controlCommands &&
-								!!message.text,
+								!!message.text?.trim(),
 						);
 
 					return (
