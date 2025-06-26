@@ -1593,14 +1593,18 @@ export class WebchatUI extends React.PureComponent<
 					</TopStatusMessage>
 				)}
 				{visibleMessages.map((message, index) => {
-					// Lookahead if there is a user reply
-					const hasReply = visibleMessages
-						.slice(index + 1)
-						.some(
-							message =>
-								message.source === "user" &&
-								!(message?.data?._cognigy as any)?.controlCommands,
-						);
+					// Lookahead if there is a user reply that includes text or attachments
+					const hasReply = visibleMessages.slice(index + 1).some(message => {
+						const isUser = message.source === "user";
+						const hasText = !!message?.text?.trim();
+						const noControlCommands = !(message?.data?._cognigy as any)
+							?.controlCommands;
+						const hasAttachments =
+							Array.isArray(message?.data?.attachments) &&
+							message.data.attachments.length > 0;
+
+						return isUser && noControlCommands && (hasText || hasAttachments);
+					});
 
 					return (
 						<Message
