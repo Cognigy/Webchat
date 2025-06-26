@@ -1599,7 +1599,7 @@ export class WebchatUI extends React.PureComponent<
 						const hasText = !!message?.text?.trim();
 						const noControlCommands = !(message?.data?._cognigy as any)
 							?.controlCommands;
-						const hasAttachments = !!message?.data?.attachments;
+						const hasAttachments = Array.isArray(message?.data?.attachments) && message.data.attachments.length > 0;
 
 						return isUser && noControlCommands && (hasText || hasAttachments);
 					});
