@@ -1593,7 +1593,7 @@ export class WebchatUI extends React.PureComponent<
 					</TopStatusMessage>
 				)}
 				{visibleMessages.map((message, index) => {
-					// Lookahead if there is a user reply
+					// Lookahead if there is a user reply that includes text or attachments
 					const hasReply = visibleMessages.slice(index + 1).some(message => {
 						const isUser = message.source === "user";
 						const hasText = !!message?.text?.trim();
