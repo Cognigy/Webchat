@@ -1,6 +1,4 @@
 import tinycolor from "tinycolor2";
-import { IWebchatConfig } from "../common/interfaces/webchat-config";
-import { Theme } from "@emotion/react";
 
 export interface IWebchatTheme {
 	// Webchat V3 theme colors
@@ -9,6 +7,8 @@ export interface IWebchatTheme {
 	primaryColorHover: string;
 	primaryColorDisabled: string;
 	primaryContrastColor: string;
+	primaryDarkColor: string;
+	primaryLightColor: string;
 
 	// Secondary Colors
 	secondaryColor: string;
@@ -137,10 +137,24 @@ export const getContrastColor = (color: string, theme: IWebchatTheme) => {
 	return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
 };
 
-export const createWebchatTheme = (
-	theme: Partial<IWebchatTheme> = {},
-	customColors?: IWebchatConfig["settings"]["customColors"],
-): IWebchatTheme => {
+// Get a primary color variant that has a contrast ratio of at least 4.5:1 with the given direction (dark or light).
+const getPrimaryColorVariant = (primaryColor: string, direction: "dark" | "light"): string => {
+	let variantColor = primaryColor;
+	let i = 0;
+	while (
+		tinycolor.readability(variantColor, direction === "dark" ? "#fff" : "#000") < 4.5 &&
+		i < 20
+	) {
+		variantColor =
+			direction === "dark"
+				? tinycolor(variantColor).darken(5).toHexString()
+				: tinycolor(variantColor).lighten(5).toHexString();
+		i++;
+	}
+	return variantColor;
+};
+
+export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchatTheme => {
 	const htmlDirection = document?.documentElement?.dir;
 	const bodyDirection = document?.body?.dir;
 	const isRTL = htmlDirection === "rtl" || bodyDirection === "rtl";
@@ -229,6 +243,14 @@ export const createWebchatTheme = (
 	if (!theme.primaryContrastColor)
 		theme.primaryContrastColor = getContrastColor(theme.primaryColor, theme as IWebchatTheme);
 
+	if (!theme.primaryDarkColor) {
+		theme.primaryDarkColor = getPrimaryColorVariant(theme.primaryColor, "dark");
+	}
+
+	if (!theme.primaryLightColor) {
+		theme.primaryLightColor = getPrimaryColorVariant(theme.primaryColor, "light");
+	}
+
 	if (!theme.secondaryColor) theme.secondaryColor = secondaryColor;
 
 	if (!theme.secondaryColorHover)
@@ -238,7 +260,10 @@ export const createWebchatTheme = (
 		theme.secondaryColorDisabled = deriveDisabledColor(theme.secondaryColor);
 
 	if (!theme.secondaryContrastColor)
-		theme.secondaryContrastColor = getContrastColor(theme.secondaryColor, theme as IWebchatTheme);
+		theme.secondaryContrastColor = getContrastColor(
+			theme.secondaryColor,
+			theme as IWebchatTheme,
+		);
 
 	if (!theme.backgroundHome) theme.backgroundHome = backgroundHome;
 

@@ -76,18 +76,18 @@ const HeaderIconsWrapper = styled.div(() => ({
 }));
 
 const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, iconColor }) => ({
-	color: theme.black10,
+	color: getContrastColor(theme.backgroundWebchat, theme),
 	borderRadius: 4,
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColor}`,
 		outlineOffset: 2,
 	},
 	"& svg": {
-		fill: iconColor ? iconColor : theme.black10,
+		fill: iconColor ? iconColor : getContrastColor(theme.backgroundWebchat, theme),
 		width: 16,
 		height: 16,
-		"& path": {
-			fill: iconColor ? iconColor : theme.black10,
+		"& path, & circle": {
+			fill: iconColor ? iconColor : getContrastColor(theme.backgroundWebchat, theme),
 		},
 	},
 	padding: 0,
