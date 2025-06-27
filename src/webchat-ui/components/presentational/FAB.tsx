@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import IconButton from "./IconButton";
+import { getAccessiblePrimaryVariant } from "../../style";
 
 const FAB = styled(IconButton)(({ theme }) => ({
 	display: "flex",
@@ -22,9 +23,9 @@ const FAB = styled(IconButton)(({ theme }) => ({
 	},
 
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryStrongColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
 		outlineOffset: 2,
-		boxShadow: "none",
+		boxShadow: `0 0 0 4px white`,
 	},
 }));
 

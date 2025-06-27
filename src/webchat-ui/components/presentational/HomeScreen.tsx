@@ -13,6 +13,7 @@ import { IWebchatButton } from "@cognigy/socket-client";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
 import { Logo } from "./Header";
 import getKeyboardFocusableElements from "../../utils/find-focusable";
+import { getAccessiblePrimaryVariant } from "../../style";
 
 const HomeScreenRoot = styled.div(({ theme }) => ({
 	display: "flex",
@@ -70,7 +71,7 @@ const FullWidthContainer = styled.div(() => ({
 	width: "calc(100% + 40px)",
 }));
 
-const HomeScreenHeader = styled.div(() => ({
+const HomeScreenHeader = styled.div({
 	display: "flex",
 	flexDirection: "row",
 	alignItems: "center",
@@ -88,7 +89,7 @@ const HomeScreenHeader = styled.div(() => ({
 		width: 28,
 		height: 28,
 	},
-}));
+});
 
 const HomeScreenHeaderIconButton = styled(IconButton)(({ theme }) => ({
 	color: theme.textLight,
@@ -116,12 +117,12 @@ const HomeScreenTitle = styled(Typography)(({ theme }) => ({
 	margin: 0,
 }));
 
-const HomeScreenButtons = styled.div(() => ({
+const HomeScreenButtons = styled.div({
 	marginTop: "auto",
 	"> div": {
 		flexDirection: "column",
 	},
-}));
+});
 
 const HomeScreenActions = styled.div(({ theme }) => ({
 	alignSelf: "flex-end",
@@ -138,7 +139,7 @@ const StartButton = styled(PrimaryButton)(({ theme }) => ({
 	marginBottom: 16,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
 		outlineOffset: 2,
 	},
 }));
@@ -147,7 +148,7 @@ const PrevConversationsButton = styled(SecondaryButton)(({ theme }) => ({
 	marginBottom: 24,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
 		outlineOffset: 2,
 	},
 }));
