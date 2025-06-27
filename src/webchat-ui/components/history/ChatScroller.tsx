@@ -17,8 +17,9 @@ const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => 
 	minHeight: 0,
 	height: theme.blockSize,
 	outline: props.showFocusOutline
-		? `1px auto ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`
+		? `2px auto ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`
 		: "none",
+	outlineOffset: -1,
 }));
 
 const ChatLog = styled.div(({ theme }) => ({
