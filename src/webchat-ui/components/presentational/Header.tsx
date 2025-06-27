@@ -18,7 +18,7 @@ const HeaderBar = styled.div(({ theme }) => ({
 	borderBottom: `1px solid ${theme.black80}`,
 	backgroundColor: theme.backgroundWebchat,
 	position: "relative",
-	color: getContrastColor(theme.backgroundWebchat),
+	color: getContrastColor(theme.backgroundWebchat, theme),
 	display: "flex",
 	flexShrink: 0,
 	fontSize: 18,
