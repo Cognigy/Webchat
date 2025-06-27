@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import { IWebchatSettings } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
+import { getAccessiblePrimaryVariant } from "../../style";
 
 const Link = styled.a(({ theme }) => ({
 	display: "flex",
@@ -17,11 +18,11 @@ const Link = styled.a(({ theme }) => ({
 
 	"&:focus, &:hover": {
 		outline: "none",
-		color: theme.primaryDarkColor,
+		color: getAccessiblePrimaryVariant(theme.primaryColor, theme.white),
 	},
 
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryDarkColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
 		outlineOffset: 2,
 	},
 }));

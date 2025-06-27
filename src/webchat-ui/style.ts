@@ -7,8 +7,6 @@ export interface IWebchatTheme {
 	primaryColorHover: string;
 	primaryColorDisabled: string;
 	primaryContrastColor: string;
-	primaryDarkColor: string;
-	primaryLightColor: string;
 
 	// Secondary Colors
 	secondaryColor: string;
@@ -137,21 +135,37 @@ export const getContrastColor = (color: string, theme: IWebchatTheme) => {
 	return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
 };
 
-// Get a primary color variant that has a contrast ratio of at least 4.5:1 with the given direction (dark or light).
-const getPrimaryColorVariant = (primaryColor: string, direction: "dark" | "light"): string => {
-	let variantColor = primaryColor;
-	let i = 0;
-	while (
-		tinycolor.readability(variantColor, direction === "dark" ? "#fff" : "#000") < 4.5 &&
-		i < 20
-	) {
-		variantColor =
-			direction === "dark"
-				? tinycolor(variantColor).darken(5).toHexString()
-				: tinycolor(variantColor).lighten(5).toHexString();
-		i++;
+
+// Get primary color variant that is accessible against the given background color
+export const getAccessiblePrimaryVariant = (
+	primaryColor: string,
+	backgroundColor: string,
+): string => {
+	let bestVariant = primaryColor;
+	let bestContrast = tinycolor.readability(primaryColor, backgroundColor);
+	// Try darkening
+	let darkVariant = primaryColor;
+	for (let i = 0; i < 20; i++) {
+		darkVariant = tinycolor(darkVariant).darken(5).toHexString();
+		const contrast = tinycolor.readability(darkVariant, backgroundColor);
+		if (contrast >= 4.5) return darkVariant;
+		if (contrast > bestContrast) {
+			bestContrast = contrast;
+			bestVariant = darkVariant;
+		}
 	}
-	return variantColor;
+	// Try lightening
+	let lightVariant = primaryColor;
+	for (let i = 0; i < 20; i++) {
+		lightVariant = tinycolor(lightVariant).lighten(5).toHexString();
+		const contrast = tinycolor.readability(lightVariant, backgroundColor);
+		if (contrast >= 4.5) return lightVariant;
+		if (contrast > bestContrast) {
+			bestContrast = contrast;
+			bestVariant = lightVariant;
+		}
+	}
+	return bestVariant;
 };
 
 export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchatTheme => {
@@ -242,14 +256,6 @@ export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchat
 
 	if (!theme.primaryContrastColor)
 		theme.primaryContrastColor = getContrastColor(theme.primaryColor, theme as IWebchatTheme);
-
-	if (!theme.primaryDarkColor) {
-		theme.primaryDarkColor = getPrimaryColorVariant(theme.primaryColor, "dark");
-	}
-
-	if (!theme.primaryLightColor) {
-		theme.primaryLightColor = getPrimaryColorVariant(theme.primaryColor, "light");
-	}
 
 	if (!theme.secondaryColor) theme.secondaryColor = secondaryColor;
 

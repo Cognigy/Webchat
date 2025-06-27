@@ -14,6 +14,7 @@ import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
 import FloatingLabel from "./FloatingLabel";
 import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
+import { getAccessiblePrimaryVariant } from "../../../../style";
 
 const InputWrapper = styled.div({
 	display: "flex",
@@ -72,13 +73,13 @@ const Button = styled.button(({ theme }) => ({
 		cursor: "default",
 	},
 	"&:not(:disabled):hover": {
-		fill: theme.primaryDarkColor,
+		fill: getAccessiblePrimaryVariant(theme.primaryColor, theme.white),
 	},
 	"&:focus": {
-		fill: theme.primaryDarkColor,
+		fill: getAccessiblePrimaryVariant(theme.primaryColor, theme.white),
 	},
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryDarkColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
 	},
 }));
 

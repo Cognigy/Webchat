@@ -9,7 +9,7 @@ import Notifications from "./Notifications";
 import classnames from "classnames";
 import { Typography } from "@cognigy/chat-components";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
-import { getContrastColor } from "../../style";
+import { getAccessiblePrimaryVariant, getContrastColor } from "../../style";
 import DeleteIcon from "../../assets/bin-16px.svg";
 import { useSelector } from "../../../webchat/helper/useSelector";
 
@@ -79,7 +79,7 @@ const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, ic
 	color: getContrastColor(theme.backgroundWebchat, theme),
 	borderRadius: 4,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.backgroundWebchat)}`,
 		outlineOffset: 2,
 	},
 	"& svg": {
