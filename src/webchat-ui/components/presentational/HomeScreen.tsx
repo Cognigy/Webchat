@@ -13,7 +13,6 @@ import { IWebchatButton } from "@cognigy/socket-client";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
 import { Logo } from "./Header";
 import getKeyboardFocusableElements from "../../utils/find-focusable";
-import { getAccessiblePrimaryVariant } from "../../style";
 
 const HomeScreenRoot = styled.div(({ theme }) => ({
 	display: "flex",
@@ -139,7 +138,7 @@ const StartButton = styled(PrimaryButton)(({ theme }) => ({
 	marginBottom: 16,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));
@@ -148,7 +147,7 @@ const PrevConversationsButton = styled(SecondaryButton)(({ theme }) => ({
 	marginBottom: 24,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));

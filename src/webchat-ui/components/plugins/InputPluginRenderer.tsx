@@ -8,7 +8,7 @@ import {
 import { IMessage } from "../../../common/interfaces/message";
 import Toolbar from "../presentational/Toolbar";
 import styled from "@emotion/styled";
-import { getAccessiblePrimaryVariant, IWebchatTheme } from "../../style";
+import { IWebchatTheme } from "../../style";
 import IconButton from "../presentational/IconButton";
 import Branding from "../branding/Branding";
 import classnames from "classnames";
@@ -56,7 +56,7 @@ const InputRoot = styled.div(({ theme }) => ({
 	},
 
 	"&.webchat-input-text-active": {
-		borderBottomColor: getAccessiblePrimaryVariant(theme.primaryColor, theme.white),
+		borderBottomColor: theme.primaryColorFocus,
 	},
 }));
 

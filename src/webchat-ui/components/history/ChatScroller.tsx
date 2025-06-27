@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import useIsAtBottom from "./hooks";
-import { getAccessiblePrimaryVariant } from "../../style";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
@@ -16,9 +15,7 @@ const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => 
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
-	outline: props.showFocusOutline
-		? `2px auto ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`
-		: "none",
+	outline: props.showFocusOutline ? `2px auto ${theme.primaryColorFocus}` : "none",
 	outlineOffset: -1,
 }));
 
@@ -35,7 +32,7 @@ const ScrollButton = styled("button")(({ theme }) => ({
 	bottom: "110px",
 	left: "50%",
 	transform: "translateX(-50%)",
-	backgroundColor: theme.primaryWeakColor,
+	backgroundColor: theme.primaryColor,
 	color: theme.primaryContrastColor,
 	border: "none",
 	borderRadius: "50%",
@@ -47,7 +44,7 @@ const ScrollButton = styled("button")(({ theme }) => ({
 		backgroundColor: theme.primaryStrongColor,
 	},
 	"&:focus-visible": {
-		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 		boxShadow: `0 0 0 4px white`,
 	},

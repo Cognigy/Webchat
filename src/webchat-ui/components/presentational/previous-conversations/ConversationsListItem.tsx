@@ -8,7 +8,6 @@ import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { PrevConversationsState } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { Typography } from "@cognigy/chat-components";
 import { IMessage } from "../../../../common/interfaces/message";
-import { getAccessiblePrimaryVariant } from "../../../style";
 
 const ListItem = styled.div(({ theme }) => ({
 	display: "flex",
@@ -22,7 +21,7 @@ const ListItem = styled.div(({ theme }) => ({
 	justifyContent: "space-between",
 	alignItems: "center",
 	":focus": {
-		border: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
+		border: `2px solid ${theme.primaryColorFocus}`,
 		outline: "none",
 	},
 }));

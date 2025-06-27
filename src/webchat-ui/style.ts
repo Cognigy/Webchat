@@ -6,6 +6,8 @@ export interface IWebchatTheme {
 	primaryColor: string;
 	primaryColorHover: string;
 	primaryColorDisabled: string;
+	primaryColorFocus: string;
+
 	primaryContrastColor: string;
 
 	// Secondary Colors
@@ -76,14 +78,20 @@ export const transformContrastColor = (color: string) =>
 export const getActionColor = (color: string) =>
 	tinycolor(color).triad()[2].brighten(5).toHslString();
 
+const isLightByContrast = (color: string): boolean => {
+	const contrastWithBlack = tinycolor.readability(color, "#000");
+	const contrastWithWhite = tinycolor.readability(color, "#fff");
+	return contrastWithBlack > contrastWithWhite;
+};
+
 const strong = (color: string) =>
-	(tinycolor(color).isLight()
+	(isLightByContrast(color)
 		? tinycolor(color).lighten()
 		: tinycolor(color).darken()
 	).toHslString();
 
 const weak = (color: string) =>
-	(tinycolor(color).isLight()
+	(isLightByContrast(color)
 		? tinycolor(color).darken()
 		: tinycolor(color).lighten()
 	).toHslString();
@@ -91,7 +99,6 @@ const weak = (color: string) =>
 const getGradient = (color: string) => {
 	const base = tinycolor(color);
 
-	const amount = 12;
 	const left = base.clone().brighten(4);
 	const right = base.clone();
 
@@ -134,7 +141,6 @@ export const getContrastColor = (color: string, theme: IWebchatTheme) => {
 	const blackContrast = tinycolor.readability(color, "#000000");
 	return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
 };
-
 
 // Get primary color variant that is accessible against the given background color
 export const getAccessiblePrimaryVariant = (
@@ -256,6 +262,12 @@ export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchat
 
 	if (!theme.primaryContrastColor)
 		theme.primaryContrastColor = getContrastColor(theme.primaryColor, theme as IWebchatTheme);
+
+	if (!theme.primaryColorFocus)
+		theme.primaryColorFocus = getAccessiblePrimaryVariant(
+			theme.primaryColor,
+			theme.white || "#FFFFFF",
+		);
 
 	if (!theme.secondaryColor) theme.secondaryColor = secondaryColor;
 

@@ -7,7 +7,6 @@ import { PrevConversationsState } from "../../../../webchat/store/previous-conve
 import Branding from "../../branding/Branding";
 import { sortConversationsByFreshness } from "./helpers";
 import getKeyboardFocusableElements from "../../../utils/find-focusable";
-import { getAccessiblePrimaryVariant } from "../../../style";
 
 const ConversationsListRoot = styled.div(({ theme }) => ({
 	height: "100%",
@@ -53,7 +52,7 @@ const StartButton = styled(PrimaryButton)(({ theme }) => ({
 	marginBottom: 20,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.white)}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 	},
 }));
 
