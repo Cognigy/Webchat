@@ -112,12 +112,10 @@ const getGradient = (color: string) => {
  * @param color
  */
 export const deriveHoverColor = (color: string) => {
-	const hslColor = tinycolor(color).toHsl();
-	const lightness = hslColor.l;
-	const hoverLightness = lightness >= 0.5 ? lightness - 0.2 : lightness + 0.2;
-	hslColor.l = hoverLightness;
-
-	return tinycolor(hslColor).toHslString();
+	const hoverLightness = isLightByContrast(color)
+		? tinycolor(color).lighten(10)
+		: tinycolor(color).darken(10);
+	return tinycolor(hoverLightness);
 };
 
 const deriveDisabledColor = (color: string) => {
