@@ -22,7 +22,7 @@ const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 	top: 17,
 	borderRadius: 4,
 	"&:focus": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));

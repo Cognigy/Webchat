@@ -60,7 +60,7 @@ const LinkWrapper = styled.a(({ theme }) => ({
 	},
 
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 

@@ -24,7 +24,7 @@ const FAB = styled(IconButton)(({ theme }) => ({
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
-		boxShadow: `0 0 0 4px white`,
+		boxShadow: `0 0 0 4px ${theme.white}`,
 	},
 }));
 
