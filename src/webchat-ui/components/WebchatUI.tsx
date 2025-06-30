@@ -346,6 +346,13 @@ export class WebchatUI extends React.PureComponent<
 			isThemeChanged = true;
 		}
 
+		if (state.theme.primaryColorFocus) {
+			document.documentElement.style.setProperty(
+				"--webchat-primary-color-focus",
+				state.theme.primaryColorFocus,
+			);
+		}
+
 		if (!!secondaryColor && secondaryColor !== state.theme.secondaryColor) {
 			document.documentElement.style.setProperty("--webchat-secondary-color", secondaryColor);
 
