@@ -112,24 +112,24 @@ const getGradient = (color: string) => {
  * @param color
  */
 export const deriveHoverColor = (color: string) => {
-    const hsl = tinycolor(color).toHsl();
-    // If color is very close to white, darken for hover effect
-    if (hsl.l > 0.92) {
-        hsl.l = Math.max(0, hsl.l - 0.08);
-        return tinycolor(hsl).toHslString();
-    }
-    // If color is very close to black, lighten for hover effect
-    if (hsl.l < 0.08) {
-        hsl.l = Math.min(1, hsl.l + 0.18);
-        return tinycolor(hsl).toHslString();
-    }
-    // Otherwise, lighten a light color, darken a dark color
-    if (isLightByContrast(color)) {
-        hsl.l = Math.min(1, hsl.l + 0.08);
-    } else {
-        hsl.l = Math.max(0, hsl.l - 0.08);
-    }
-    return tinycolor(hsl).toHslString();
+	const hsl = tinycolor(color).toHsl();
+	// If color is very close to white, darken for hover effect
+	if (hsl.l > 0.92) {
+		hsl.l = Math.max(0, hsl.l - 0.08);
+		return tinycolor(hsl).toHslString();
+	}
+	// If color is very close to black, lighten for hover effect
+	if (hsl.l < 0.12) {
+		hsl.l = Math.min(1, hsl.l + 0.18);
+		return tinycolor(hsl).toHslString();
+	}
+	// Otherwise, lighten a light color, darken a dark color
+	if (isLightByContrast(color)) {
+		hsl.l = Math.min(1, hsl.l + 0.08);
+	} else {
+		hsl.l = Math.max(0, hsl.l - 0.08);
+	}
+	return tinycolor(hsl).toHslString();
 };
 
 const deriveDisabledColor = (color: string) => {
