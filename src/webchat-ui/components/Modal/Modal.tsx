@@ -7,47 +7,47 @@ import { Typography } from "@cognigy/chat-components";
 import getKeyboardFocusableElements from "../../utils/find-focusable";
 import { useSelector } from "../../../webchat/helper/useSelector";
 
-const Overlay = styled.div`
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	background: rgba(0, 0, 0, 0.5);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 9999;
-`;
+const Overlay = styled.div({
+	position: "absolute",
+	top: 0,
+	left: 0,
+	bottom: 0,
+	right: 0,
+	background: "rgba(0, 0, 0, 0.5)",
+	display: "flex",
+	justifyContent: "center",
+	alignItems: "center",
+	zIndex: 9999,
+});
 
-const StyledDialog = styled.dialog`
-	padding: 20px;
-	border: none;
-	border-radius: 16px;
-	width: 90%;
-	background-color: ${({ theme }) => theme.white};
-	margin: 20px auto;
-	z-index: 99999;
+const StyledDialog = styled.dialog(({ theme }) => ({
+	padding: 20,
+	border: "none",
+	borderRadius: 16,
+	width: "90%",
+	backgroundColor: theme.white,
+	margin: "20px auto",
+	zIndex: 99999,
 
-	&.fade-enter {
-		opacity: 0;
-	}
-	&.fade-enter-active {
-		opacity: 1;
-		transition: opacity 150ms;
-	}
-`;
+	"&.fade-enter": {
+		opacity: 0,
+	},
+	"&.fade-enter-active": {
+		opacity: 1,
+		transition: "opacity 150ms",
+	},
+}));
 
-const ModalHeader = styled.div`
-	display: flex;
-	align-items: center;
-	position: relative;
+const ModalHeader = styled.div({
+	display: "flex",
+	alignItems: "center",
+	position: "relative",
 
-	> h3 {
-		margin: auto;
-		text-align: center;
-	}
-`;
+	"> h3": {
+		margin: "auto",
+		textAlign: "center",
+	},
+});
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
 	color: theme.black10,
@@ -56,7 +56,7 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 	right: -4,
 
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 	"& svg": {
@@ -67,27 +67,27 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 	padding: 0,
 }));
 
-const ModalBody = styled.div`
-	margin-bottom: 20px;
-`;
+const ModalBody = styled.div({
+	marginBottom: 20,
+});
 
-const ModalFooter = styled.div`
-	display: flex;
-	justify-content: space-between;
-	gap: 12px;
-	> button {
-	 	width: auto;
-		padding: 0 16px;
-	 }
-
-	@media screen and (max-width: 576px) {
-		flex-direction: column;
-		gap: 12px;
-		> button {
-	 		width:100%;
-	 	}
+const ModalFooter = styled.div({
+	display: "flex",
+	justifyContent: "space-between",
+	gap: 12,
+	"> button": {
+		width: "auto",
+		padding: "0 16px",
 	},
-`;
+
+	"@media screen and (max-width: 576px)": {
+		flexDirection: "column",
+		gap: 12,
+		"> button": {
+			width: "100%",
+		},
+	},
+});
 
 const DividerWrapper = styled.div(() => ({
 	padding: "12px 0px",

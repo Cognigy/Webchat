@@ -11,7 +11,7 @@ const InputWrapper = styled.div<{ disabled?: boolean }>(({ theme, disabled }) =>
 	padding: 12,
 	"&:focus-within": {
 		borderColor: "transparent",
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 	},
 	borderColor: disabled ? theme.black80 : theme.black60,
 }));

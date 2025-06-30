@@ -12,7 +12,7 @@ import { ISendMessageOptions } from "../../../webchat/store/messages/message-mid
 import { useMediaQuery } from "react-responsive";
 import { Logo } from "./Header";
 
-const TeaserMessageRoot = styled.div(() => ({
+const TeaserMessageRoot = styled.div({
 	position: "fixed",
 	right: "20px",
 	bottom: "84px",
@@ -21,7 +21,7 @@ const TeaserMessageRoot = styled.div(() => ({
 	flexDirection: "column",
 	alignItems: "flex-end",
 	gap: "16px",
-}));
+});
 
 const TeaserMessageHeader = styled.div(() => ({
 	display: "flex",
@@ -42,7 +42,7 @@ const CloseIconWrapper = styled(IconButton)(({ theme }) => ({
 	marginRight: -4,
 	borderRadius: 4,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 	svg: {
@@ -52,7 +52,7 @@ const CloseIconWrapper = styled(IconButton)(({ theme }) => ({
 	},
 }));
 
-const ButtonContainer = styled.div(() => ({
+const ButtonContainer = styled.div({
 	".webchat-teaser-message-button-container": {
 		display: "flex",
 		width: 315,
@@ -62,7 +62,7 @@ const ButtonContainer = styled.div(() => ({
 		gap: "8px",
 		flexWrap: "wrap",
 	},
-}));
+});
 
 const HeaderLogo = styled(Logo)(() => ({
 	marginInline: 0,
