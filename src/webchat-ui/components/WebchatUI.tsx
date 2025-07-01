@@ -1596,7 +1596,8 @@ export class WebchatUI extends React.PureComponent<
 					// Lookahead if there is a user reply that includes text or attachments
 					const hasReply = visibleMessages.slice(index + 1).some(message => {
 						const isUser = message.source === "user";
-						const hasText = !!message?.text?.trim();
+						const hasText =
+							typeof message.text === "string" && message.text.trim().length > 0;
 						const noControlCommands = !(message?.data?._cognigy as any)
 							?.controlCommands;
 						const hasAttachments =
