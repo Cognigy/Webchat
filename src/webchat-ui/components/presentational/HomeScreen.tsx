@@ -91,23 +91,23 @@ const HomeScreenHeader = styled.div({
 });
 
 const HomeScreenHeaderIconButton = styled(IconButton)(({ theme }) => ({
-	color: theme.primaryContrastColor,
+	color: theme.white,
 	borderRadius: 4,
 	padding: 0,
 	margin: 4,
 	svg: {
-		fill: theme.primaryContrastColor,
+		fill: theme.white,
 		width: 16,
 		height: 16,
 	},
 	"&.active, &:hover": {
-		color: theme.primaryContrastColor,
-		fill: theme.primaryContrastColor,
+		color: theme.white,
+		fill: theme.white,
 	},
 	"&:focus-visible": {
 		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
-		boxShadow: `0 0 0 4px ${theme.primaryContrastColor}`,
+		boxShadow: `0 0 0 4px ${theme.white}`,
 	},
 }));
 
