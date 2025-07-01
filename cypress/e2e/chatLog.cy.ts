@@ -24,6 +24,6 @@ describe("Chat Log", () => {
 
 	it("parent has outline when chat log is focused", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").focus();
-		cy.get(".webchat-chat-history").should("have.css", "outline", "rgb(81, 119, 236) auto 1px");
+		cy.get(".webchat-chat-history").should("have.css", "outline", "rgb(25, 73, 216) auto 2px");
 	});
 });
