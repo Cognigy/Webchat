@@ -81,9 +81,18 @@ export const transformContrastColor = (color: string) =>
 export const getActionColor = (color: string) =>
 	tinycolor(color).triad()[2].brighten(5).toHslString();
 
+const readabilityCache = new Map<
+	string,
+	{ contrastWithBlack: number; contrastWithWhite: number }
+>();
+
 const isLightByContrast = (color: string): boolean => {
-	const contrastWithBlack = tinycolor.readability(color, "#000000");
-	const contrastWithWhite = tinycolor.readability(color, "#FFFFFF");
+	if (!readabilityCache.has(color)) {
+		const contrastWithBlack = tinycolor.readability(color, "#000000");
+		const contrastWithWhite = tinycolor.readability(color, "#FFFFFF");
+		readabilityCache.set(color, { contrastWithBlack, contrastWithWhite });
+	}
+	const { contrastWithBlack, contrastWithWhite } = readabilityCache.get(color)!;
 	return contrastWithBlack > contrastWithWhite;
 };
 
