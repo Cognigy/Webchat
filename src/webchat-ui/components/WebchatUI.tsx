@@ -353,7 +353,7 @@ export class WebchatUI extends React.PureComponent<
 			);
 		}
 
-		if(state.theme.primaryColorHover) {
+		if (state.theme.primaryColorHover) {
 			document.documentElement.style.setProperty(
 				"--webchat-primary-color-hover",
 				state.theme.primaryColorHover,
