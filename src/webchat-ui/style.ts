@@ -71,6 +71,9 @@ export interface IWebchatTheme {
 }
 
 const BLACK_10 = "#1A1A1A";
+const MAX_ITERATIONS = 20;
+const MIN_CONTRAST = 4.5;
+const LIGHTEN_OR_DARKEN_STEP = 5;
 
 export const transformContrastColor = (color: string) =>
 	tinycolor(color).setAlpha(0.95).toHslString();
@@ -79,8 +82,8 @@ export const getActionColor = (color: string) =>
 	tinycolor(color).triad()[2].brighten(5).toHslString();
 
 const isLightByContrast = (color: string): boolean => {
-	const contrastWithBlack = tinycolor.readability(color, "#000");
-	const contrastWithWhite = tinycolor.readability(color, "#fff");
+	const contrastWithBlack = tinycolor.readability(color, "#000000");
+	const contrastWithWhite = tinycolor.readability(color, "#FFFFFF");
 	return contrastWithBlack > contrastWithWhite;
 };
 
@@ -145,7 +148,7 @@ export const getContrastColor = (color: string, theme: IWebchatTheme) => {
 	const textLight = theme.textLight || "#FFFFFF";
 	const contrastLight = tinycolor.readability(color, textLight);
 	const contrastDark = tinycolor.readability(color, textDark);
-	if (contrastLight >= 4.5 || contrastDark >= 4.5) {
+	if (contrastLight >= MIN_CONTRAST || contrastDark >= MIN_CONTRAST) {
 		return contrastLight > contrastDark ? textLight : textDark;
 	}
 	// Fallback to black/white if neither theme colors meets 4.5:1 (minimum for WCAG 2.1 Level AA)
@@ -163,10 +166,10 @@ export const getAccessiblePrimaryVariant = (
 	let bestContrast = tinycolor.readability(primaryColor, backgroundColor);
 	// Try darkening
 	let darkVariant = primaryColor;
-	for (let i = 0; i < 20; i++) {
-		darkVariant = tinycolor(darkVariant).darken(5).toHexString();
+	for (let i = 0; i < MAX_ITERATIONS; i++) {
+		darkVariant = tinycolor(darkVariant).darken(LIGHTEN_OR_DARKEN_STEP).toHexString();
 		const contrast = tinycolor.readability(darkVariant, backgroundColor);
-		if (contrast >= 4.5) return darkVariant;
+		if (contrast >= MIN_CONTRAST) return darkVariant;
 		if (contrast > bestContrast) {
 			bestContrast = contrast;
 			bestVariant = darkVariant;
@@ -174,10 +177,10 @@ export const getAccessiblePrimaryVariant = (
 	}
 	// Try lightening
 	let lightVariant = primaryColor;
-	for (let i = 0; i < 20; i++) {
-		lightVariant = tinycolor(lightVariant).lighten(5).toHexString();
+	for (let i = 0; i < MAX_ITERATIONS; i++) {
+		lightVariant = tinycolor(lightVariant).lighten(LIGHTEN_OR_DARKEN_STEP).toHexString();
 		const contrast = tinycolor.readability(lightVariant, backgroundColor);
-		if (contrast >= 4.5) return lightVariant;
+		if (contrast >= MIN_CONTRAST) return lightVariant;
 		if (contrast > bestContrast) {
 			bestContrast = contrast;
 			bestVariant = lightVariant;
