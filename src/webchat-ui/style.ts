@@ -173,28 +173,31 @@ export const getAccessiblePrimaryVariant = (
 ): string => {
 	let bestVariant = primaryColor;
 	let bestContrast = tinycolor.readability(primaryColor, backgroundColor);
-	// Try darkening
-	let darkVariant = primaryColor;
-	for (let i = 0; i < MAX_ITERATIONS; i++) {
-		darkVariant = tinycolor(darkVariant).darken(LIGHTEN_OR_DARKEN_STEP).toHexString();
-		const contrast = tinycolor.readability(darkVariant, backgroundColor);
-		if (contrast >= MIN_CONTRAST) return darkVariant;
-		if (contrast > bestContrast) {
-			bestContrast = contrast;
-			bestVariant = darkVariant;
+
+	const findBestVariant = (color: string, transform: (c: string) => string): string => {
+		let variant = color;
+		for (let i = 0; i < MAX_ITERATIONS; i++) {
+			variant = transform(variant);
+			const contrast = tinycolor.readability(variant, backgroundColor);
+			if (contrast >= MIN_CONTRAST) return variant;
+			if (contrast > bestContrast) {
+				bestContrast = contrast;
+				bestVariant = variant;
+			}
 		}
-	}
-	// Try lightening
-	let lightVariant = primaryColor;
-	for (let i = 0; i < MAX_ITERATIONS; i++) {
-		lightVariant = tinycolor(lightVariant).lighten(LIGHTEN_OR_DARKEN_STEP).toHexString();
-		const contrast = tinycolor.readability(lightVariant, backgroundColor);
-		if (contrast >= MIN_CONTRAST) return lightVariant;
-		if (contrast > bestContrast) {
-			bestContrast = contrast;
-			bestVariant = lightVariant;
-		}
-	}
+		return bestVariant;
+	};
+
+	// Try to find a darker variant first
+	bestVariant = findBestVariant(primaryColor, c =>
+		tinycolor(c).darken(LIGHTEN_OR_DARKEN_STEP).toHexString(),
+	);
+
+	// If accessible darker variant found, try to find a lighter one
+	bestVariant = findBestVariant(primaryColor, c =>
+		tinycolor(c).lighten(LIGHTEN_OR_DARKEN_STEP).toHexString(),
+	);
+
 	return bestVariant;
 };
 
