@@ -56,7 +56,7 @@ const InputRoot = styled.div(({ theme }) => ({
 	},
 
 	"&.webchat-input-text-active": {
-		borderBottomColor: theme.primaryColor,
+		borderBottomColor: theme.primaryColorFocus,
 	},
 }));
 

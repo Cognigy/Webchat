@@ -15,7 +15,8 @@ const ChatLogWrapper = styled.div<IChatLogWrapperProps>(({ theme }) => props => 
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
-	outline: props.showFocusOutline ? `1px auto ${theme.primaryWeakColor}` : "none",
+	outline: props.showFocusOutline ? `2px auto ${theme.primaryColorFocus}` : "none",
+	outlineOffset: -1,
 }));
 
 const ChatLog = styled.div(({ theme }) => ({
@@ -31,7 +32,7 @@ const ScrollButton = styled("button")(({ theme }) => ({
 	bottom: "110px",
 	left: "50%",
 	transform: "translateX(-50%)",
-	backgroundColor: theme.primaryWeakColor,
+	backgroundColor: theme.primaryColor,
 	color: theme.primaryContrastColor,
 	border: "none",
 	borderRadius: "50%",
@@ -41,6 +42,11 @@ const ScrollButton = styled("button")(({ theme }) => ({
 	boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
 	"&:hover": {
 		backgroundColor: theme.primaryStrongColor,
+	},
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColorFocus}`,
+		outlineOffset: 2,
+		boxShadow: `0 0 0 4px white`,
 	},
 }));
 

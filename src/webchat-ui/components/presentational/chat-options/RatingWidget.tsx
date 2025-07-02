@@ -38,20 +38,20 @@ const RatingButton = styled(IconButton)(({ theme, selected }) => ({
 		height: 16,
 	},
 	"&: focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));
 
 const RatingUpIcon = styled(RatingUp)(({ theme, selected }) => ({
 	path: {
-		fill: selected ? theme.black95 : theme.black10,
+		fill: selected ? theme.primaryContrastColor : theme.black10,
 	},
 }));
 
 const RatingDownIcon = styled(RatingDown)(({ theme, selected }) => ({
 	path: {
-		fill: selected ? theme.black95 : theme.black10,
+		fill: selected ? theme.primaryContrastColor : theme.black10,
 	},
 }));
 
@@ -70,7 +70,7 @@ const SendButton = styled(PrimaryButton)(({ theme }) => ({
 		opacity: 1,
 	},
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));

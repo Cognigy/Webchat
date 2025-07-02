@@ -48,9 +48,12 @@ const ConversationsListActions = styled.div(({ theme }) => ({
 	borderTop: `1px solid var(--basics-black-80, ${theme.black80})`,
 }));
 
-const StartButton = styled(PrimaryButton)(() => ({
+const StartButton = styled(PrimaryButton)(({ theme }) => ({
 	marginBottom: 20,
 	flexGrow: 1,
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColorFocus}`,
+	},
 }));
 
 interface IPrevConversationsListProps {

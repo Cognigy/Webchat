@@ -1,6 +1,4 @@
 import tinycolor from "tinycolor2";
-import { IWebchatConfig } from "../common/interfaces/webchat-config";
-import { Theme } from "@emotion/react";
 
 export interface IWebchatTheme {
 	// Webchat V3 theme colors
@@ -8,6 +6,8 @@ export interface IWebchatTheme {
 	primaryColor: string;
 	primaryColorHover: string;
 	primaryColorDisabled: string;
+	primaryColorFocus: string;
+
 	primaryContrastColor: string;
 
 	// Secondary Colors
@@ -71,24 +71,39 @@ export interface IWebchatTheme {
 }
 
 const BLACK_10 = "#1A1A1A";
+const MAX_ITERATIONS = 20;
+const MIN_CONTRAST = 4.5;
+const LIGHTEN_OR_DARKEN_STEP = 5;
 
 export const transformContrastColor = (color: string) =>
 	tinycolor(color).setAlpha(0.95).toHslString();
 
-export const getContrastColor = (color: string) =>
-	transformContrastColor(tinycolor(color).isLight() ? BLACK_10 : "white");
-
 export const getActionColor = (color: string) =>
 	tinycolor(color).triad()[2].brighten(5).toHslString();
 
+const readabilityCache = new Map<
+	string,
+	{ contrastWithBlack: number; contrastWithWhite: number }
+>();
+
+const isLightByContrast = (color: string): boolean => {
+	if (!readabilityCache.has(color)) {
+		const contrastWithBlack = tinycolor.readability(color, "#000000");
+		const contrastWithWhite = tinycolor.readability(color, "#FFFFFF");
+		readabilityCache.set(color, { contrastWithBlack, contrastWithWhite });
+	}
+	const { contrastWithBlack, contrastWithWhite } = readabilityCache.get(color)!;
+	return contrastWithBlack > contrastWithWhite;
+};
+
 const strong = (color: string) =>
-	(tinycolor(color).isLight()
+	(isLightByContrast(color)
 		? tinycolor(color).lighten()
 		: tinycolor(color).darken()
 	).toHslString();
 
 const weak = (color: string) =>
-	(tinycolor(color).isLight()
+	(isLightByContrast(color)
 		? tinycolor(color).darken()
 		: tinycolor(color).lighten()
 	).toHslString();
@@ -96,7 +111,6 @@ const weak = (color: string) =>
 const getGradient = (color: string) => {
 	const base = tinycolor(color);
 
-	const amount = 12;
 	const left = base.clone().brighten(4);
 	const right = base.clone();
 
@@ -110,16 +124,24 @@ const getGradient = (color: string) => {
  * @param color
  */
 export const deriveHoverColor = (color: string) => {
-	const hslColor = tinycolor(color).toHsl();
-	const lightness = hslColor.l;
-	const hoverLightness = lightness >= 0.5 ? lightness - 0.2 : lightness + 0.2;
-	hslColor.l = hoverLightness;
-
-	return tinycolor(hslColor).toHslString();
-};
-
-export const getTextContrastColor = (background: string, theme: Theme) => {
-	return tinycolor(background).isDark() ? theme.textLight : theme.textDark;
+	const hsl = tinycolor(color).toHsl();
+	// If color is very close to white, darken for hover effect
+	if (hsl.l > 0.92) {
+		hsl.l = Math.max(0, hsl.l - 0.08);
+		return tinycolor(hsl).toHslString();
+	}
+	// If color is very close to black, lighten for hover effect
+	if (hsl.l < 0.12) {
+		hsl.l = Math.min(1, hsl.l + 0.18);
+		return tinycolor(hsl).toHslString();
+	}
+	// Otherwise, lighten a light color, darken a dark color
+	if (isLightByContrast(color)) {
+		hsl.l = Math.min(1, hsl.l + 0.08);
+	} else {
+		hsl.l = Math.max(0, hsl.l - 0.08);
+	}
+	return tinycolor(hsl).toHslString();
 };
 
 const deriveDisabledColor = (color: string) => {
@@ -129,10 +151,57 @@ const deriveDisabledColor = (color: string) => {
 	return tinycolor(hslColor).toHslString();
 };
 
-export const createWebchatTheme = (
-	theme: Partial<IWebchatTheme> = {},
-	customColors?: IWebchatConfig["settings"]["customColors"],
-): IWebchatTheme => {
+// Calculate the best contrast color based on the provided color and the light/dark text colors.
+export const getContrastColor = (color: string, theme: IWebchatTheme) => {
+	const textDark = theme.textDark || "#1A1A1A";
+	const textLight = theme.textLight || "#FFFFFF";
+	const contrastLight = tinycolor.readability(color, textLight);
+	const contrastDark = tinycolor.readability(color, textDark);
+	if (contrastLight >= MIN_CONTRAST || contrastDark >= MIN_CONTRAST) {
+		return contrastLight > contrastDark ? textLight : textDark;
+	}
+	// Fallback to black/white if neither theme colors meets 4.5:1 (minimum for WCAG 2.1 Level AA)
+	const whiteContrast = tinycolor.readability(color, "#FFFFFF");
+	const blackContrast = tinycolor.readability(color, "#000000");
+	return whiteContrast > blackContrast ? "#FFFFFF" : "#000000";
+};
+
+// Get primary color variant that is accessible against the given background color
+export const getAccessiblePrimaryVariant = (
+	primaryColor: string,
+	backgroundColor: string,
+): string => {
+	let bestVariant = primaryColor;
+	let bestContrast = tinycolor.readability(primaryColor, backgroundColor);
+
+	const findBestVariant = (color: string, transform: (c: string) => string): string => {
+		let variant = color;
+		for (let i = 0; i < MAX_ITERATIONS; i++) {
+			variant = transform(variant);
+			const contrast = tinycolor.readability(variant, backgroundColor);
+			if (contrast >= MIN_CONTRAST) return variant;
+			if (contrast > bestContrast) {
+				bestContrast = contrast;
+				bestVariant = variant;
+			}
+		}
+		return bestVariant;
+	};
+
+	// Try to find a darker variant first
+	bestVariant = findBestVariant(primaryColor, c =>
+		tinycolor(c).darken(LIGHTEN_OR_DARKEN_STEP).toHexString(),
+	);
+
+	// If accessible darker variant found, try to find a lighter one
+	bestVariant = findBestVariant(primaryColor, c =>
+		tinycolor(c).lighten(LIGHTEN_OR_DARKEN_STEP).toHexString(),
+	);
+
+	return bestVariant;
+};
+
+export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchatTheme => {
 	const htmlDirection = document?.documentElement?.dir;
 	const bodyDirection = document?.body?.dir;
 	const isRTL = htmlDirection === "rtl" || bodyDirection === "rtl";
@@ -219,7 +288,13 @@ export const createWebchatTheme = (
 		theme.primaryColorDisabled = deriveDisabledColor(theme.primaryColor);
 
 	if (!theme.primaryContrastColor)
-		theme.primaryContrastColor = tinycolor(theme.primaryColor).isLight() ? textDark : textLight;
+		theme.primaryContrastColor = getContrastColor(theme.primaryColor, theme as IWebchatTheme);
+
+	if (!theme.primaryColorFocus)
+		theme.primaryColorFocus = getAccessiblePrimaryVariant(
+			theme.primaryColor,
+			theme.white || "#FFFFFF",
+		);
 
 	if (!theme.secondaryColor) theme.secondaryColor = secondaryColor;
 
@@ -230,9 +305,10 @@ export const createWebchatTheme = (
 		theme.secondaryColorDisabled = deriveDisabledColor(theme.secondaryColor);
 
 	if (!theme.secondaryContrastColor)
-		theme.secondaryContrastColor = tinycolor(theme.secondaryColor).isLight()
-			? textDark
-			: textLight;
+		theme.secondaryContrastColor = getContrastColor(
+			theme.secondaryColor,
+			theme as IWebchatTheme,
+		);
 
 	if (!theme.backgroundHome) theme.backgroundHome = backgroundHome;
 
@@ -308,7 +384,8 @@ export const createWebchatTheme = (
 
 	if (!theme.greyStrongColor) theme.greyStrongColor = strong(theme.greyColor);
 
-	if (!theme.greyContrastColor) theme.greyContrastColor = getContrastColor(theme.greyColor);
+	if (!theme.greyContrastColor)
+		theme.greyContrastColor = getContrastColor(theme.greyColor, theme as IWebchatTheme);
 
 	if (!theme.unitSize) theme.unitSize = 8;
 

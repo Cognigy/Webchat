@@ -70,7 +70,7 @@ const FullWidthContainer = styled.div(() => ({
 	width: "calc(100% + 40px)",
 }));
 
-const HomeScreenHeader = styled.div(() => ({
+const HomeScreenHeader = styled.div({
 	display: "flex",
 	flexDirection: "row",
 	alignItems: "center",
@@ -88,25 +88,26 @@ const HomeScreenHeader = styled.div(() => ({
 		width: 28,
 		height: 28,
 	},
-}));
+});
 
 const HomeScreenHeaderIconButton = styled(IconButton)(({ theme }) => ({
-	color: theme.textLight,
+	color: theme.white,
 	borderRadius: 4,
 	padding: 0,
 	margin: 4,
 	svg: {
-		fill: theme.textLight,
+		fill: theme.white,
 		width: 16,
 		height: 16,
 	},
 	"&.active, &:hover": {
-		color: theme.textLight,
-		fill: theme.textLight,
+		color: theme.white,
+		fill: theme.white,
 	},
 	"&:focus-visible": {
-		outline: `2px solid ${theme.textLight}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
+		boxShadow: `0 0 0 4px ${theme.white}`,
 	},
 }));
 
@@ -116,12 +117,12 @@ const HomeScreenTitle = styled(Typography)(({ theme }) => ({
 	margin: 0,
 }));
 
-const HomeScreenButtons = styled.div(() => ({
+const HomeScreenButtons = styled.div({
 	marginTop: "auto",
 	"> div": {
 		flexDirection: "column",
 	},
-}));
+});
 
 const HomeScreenActions = styled.div(({ theme }) => ({
 	alignSelf: "flex-end",
@@ -138,7 +139,7 @@ const StartButton = styled(PrimaryButton)(({ theme }) => ({
 	marginBottom: 16,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));
@@ -147,7 +148,7 @@ const PrevConversationsButton = styled(SecondaryButton)(({ theme }) => ({
 	marginBottom: 24,
 	flexGrow: 1,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
 	},
 }));

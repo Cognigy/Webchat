@@ -2,12 +2,12 @@ import React from "react";
 import Modal from "./Modal";
 import styled from "@emotion/styled";
 import Button from "../presentational/Button";
-import { getTextContrastColor, deriveHoverColor } from "../../style";
+import { getContrastColor, deriveHoverColor } from "../../style";
 import SecondaryButton from "../presentational/SecondaryButton";
 
 export const DeleteButton = styled(Button)<{ background?: string }>(({ theme, background }) => ({
 	background: background ? background : theme.red30,
-	color: getTextContrastColor(background ? background : theme.red30, theme),
+	color: getContrastColor(background ? background : theme.red30, theme),
 	"&:hover:not(:disabled)": {
 		background: deriveHoverColor(background ? background : theme.red30),
 	},
@@ -15,7 +15,7 @@ export const DeleteButton = styled(Button)<{ background?: string }>(({ theme, ba
 
 const CancelButton = styled(SecondaryButton)<{ background?: string }>(({ theme, background }) => ({
 	background: background ? background : theme.white,
-	color: getTextContrastColor(background ? background : theme.white, theme),
+	color: getContrastColor(background ? background : theme.white, theme),
 	marginRight: "auto",
 }));
 

@@ -9,7 +9,7 @@ import Notifications from "./Notifications";
 import classnames from "classnames";
 import { Typography } from "@cognigy/chat-components";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
-import { getContrastColor } from "../../style";
+import { getAccessiblePrimaryVariant, getContrastColor } from "../../style";
 import DeleteIcon from "../../assets/bin-16px.svg";
 import { useSelector } from "../../../webchat/helper/useSelector";
 
@@ -18,7 +18,7 @@ const HeaderBar = styled.div(({ theme }) => ({
 	borderBottom: `1px solid ${theme.black80}`,
 	backgroundColor: theme.backgroundWebchat,
 	position: "relative",
-	color: getContrastColor(theme.backgroundWebchat),
+	color: getContrastColor(theme.backgroundWebchat, theme),
 	display: "flex",
 	flexShrink: 0,
 	fontSize: 18,
@@ -76,18 +76,18 @@ const HeaderIconsWrapper = styled.div(() => ({
 }));
 
 const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, iconColor }) => ({
-	color: theme.black10,
+	color: getContrastColor(theme.backgroundWebchat, theme),
 	borderRadius: 4,
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.backgroundWebchat)}`,
 		outlineOffset: 2,
 	},
 	"& svg": {
-		fill: iconColor ? iconColor : theme.black10,
+		fill: iconColor ? iconColor : getContrastColor(theme.backgroundWebchat, theme),
 		width: 16,
 		height: 16,
-		"& path": {
-			fill: iconColor ? iconColor : theme.black10,
+		"& path, & circle": {
+			fill: iconColor ? iconColor : getContrastColor(theme.backgroundWebchat, theme),
 		},
 	},
 	padding: 0,

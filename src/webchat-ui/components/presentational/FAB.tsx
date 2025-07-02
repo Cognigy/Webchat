@@ -22,9 +22,9 @@ const FAB = styled(IconButton)(({ theme }) => ({
 	},
 
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryStrongColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 2,
-		boxShadow: "none",
+		boxShadow: `0 0 0 4px ${theme.white}`,
 	},
 }));
 

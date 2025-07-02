@@ -15,7 +15,6 @@ import Input from "./plugins/InputPluginRenderer";
 import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
-import ReactModal from "react-modal";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
@@ -338,7 +337,7 @@ export class WebchatUI extends React.PureComponent<
 			// This is example of how a new theme properties can be added
 			// document.documentElement.style.setProperty('--webchat-background-bot-message', color);
 
-			const primaryContrastColor = getContrastColor(primaryColor);
+			const primaryContrastColor = getContrastColor(primaryColor, state.theme);
 			document.documentElement.style.setProperty(
 				"--webchat-primary-contrast-color",
 				primaryContrastColor,
@@ -347,10 +346,24 @@ export class WebchatUI extends React.PureComponent<
 			isThemeChanged = true;
 		}
 
+		if (state.theme.primaryColorFocus) {
+			document.documentElement.style.setProperty(
+				"--webchat-primary-color-focus",
+				state.theme.primaryColorFocus,
+			);
+		}
+
+		if (state.theme.primaryColorHover) {
+			document.documentElement.style.setProperty(
+				"--webchat-primary-color-hover",
+				state.theme.primaryColorHover,
+			);
+		}
+
 		if (!!secondaryColor && secondaryColor !== state.theme.secondaryColor) {
 			document.documentElement.style.setProperty("--webchat-secondary-color", secondaryColor);
 
-			const secondaryContrastColor = getContrastColor(secondaryColor);
+			const secondaryContrastColor = getContrastColor(secondaryColor, state.theme);
 			document.documentElement.style.setProperty(
 				"--webchat-secondary-contrast-color",
 				secondaryContrastColor,
@@ -374,7 +387,7 @@ export class WebchatUI extends React.PureComponent<
 				"--webchat-background-bot-message",
 				botMessageColor,
 			);
-			const botMessageContrastColor = getContrastColor(botMessageColor);
+			const botMessageContrastColor = getContrastColor(botMessageColor, state.theme);
 			document.documentElement.style.setProperty(
 				"--webchat-bot-message-contrast-color",
 				botMessageContrastColor,
@@ -386,7 +399,7 @@ export class WebchatUI extends React.PureComponent<
 				"--webchat-background-user-message",
 				userMessageColor,
 			);
-			const userMessageContrastColor = getContrastColor(userMessageColor);
+			const userMessageContrastColor = getContrastColor(userMessageColor, state.theme);
 			document.documentElement.style.setProperty(
 				"--webchat-user-message-contrast-color",
 				userMessageContrastColor,
@@ -398,7 +411,10 @@ export class WebchatUI extends React.PureComponent<
 				"--webchat-background-agent-message",
 				overrideAgentMessageColor,
 			);
-			const agentMessageContrastColor = getContrastColor(overrideAgentMessageColor);
+			const agentMessageContrastColor = getContrastColor(
+				overrideAgentMessageColor,
+				state.theme,
+			);
 			document.documentElement.style.setProperty(
 				"--webchat-agent-message-contrast-color",
 				agentMessageContrastColor,

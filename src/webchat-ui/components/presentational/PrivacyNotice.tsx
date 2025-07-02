@@ -23,7 +23,7 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 
 const PrivacyMessage = styled.div(({ theme }) => ({
 	":focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 		outlineOffset: 8,
 	},
 

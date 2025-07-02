@@ -72,13 +72,13 @@ const Button = styled.button(({ theme }) => ({
 		cursor: "default",
 	},
 	"&:not(:disabled):hover": {
-		fill: theme.primaryColor,
+		fill: theme.primaryColorFocus,
 	},
 	"&:focus": {
-		fill: theme.primaryColor,
+		fill: theme.primaryColorFocus,
 	},
 	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColor}`,
+		outline: `2px solid ${theme.primaryColorFocus}`,
 	},
 }));
 

@@ -21,23 +21,23 @@ const ListItem = styled.div(({ theme }) => ({
 	justifyContent: "space-between",
 	alignItems: "center",
 	":focus": {
-		border: `2px solid ${theme.primaryColor}`,
+		border: `2px solid ${theme.primaryColorFocus}`,
 		outline: "none",
 	},
 }));
 
-const Left = styled.div(() => ({
+const Left = styled.div({
 	display: "inline-flex",
 	flexDirection: "row-reverse",
-}));
+});
 
-const Center = styled.div(() => ({
+const Center = styled.div({
 	display: "flex",
 	flexDirection: "column",
 	justifyContent: "space-between",
 	width: "100%",
 	height: "100%",
-}));
+});
 
 const CenterTitle = styled(Typography)(({ theme }) => ({
 	color: theme.black10,

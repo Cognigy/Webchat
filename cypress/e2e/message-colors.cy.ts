@@ -118,7 +118,7 @@ describe("Message Color Variants", () => {
 			cy.get(".webchat-buttons-template-root .chat-bubble").should(
 				"have.css",
 				"color",
-				"rgba(26, 26, 26, 0.95)",
+				"rgb(26, 26, 26)",
 			);
 		});
 
