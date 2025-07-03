@@ -91,8 +91,12 @@ export function ChatScroller({
 			} else if (!userScrolledToBottom && lastInputId) {
 				const targetElement = document.getElementById(lastInputId);
 				if (targetElement) {
-					const scrollOffset = targetElement.offsetTop - outerRef.current.offsetTop;
-					handleScroll(scrollOffset);
+					const targetOffset = targetElement.offsetTop - outerRef.current.offsetTop;
+					const currentScroll = outerRef.current.scrollTop;
+					// Only scroll if the target is below the current scroll position (prevent programmatic scroll up)
+					if (targetOffset > currentScroll) {
+						handleScroll(targetOffset);
+					}
 				}
 			}
 		}
