@@ -69,7 +69,14 @@ export function ChatScroller({
 
 	const [isChatLogFocused, setIsChatLogFocused] = useState(false);
 
+	const [userScrolledToBottom, setUserScrolledToBottom] = useState(false);
+
 	const { isAtBottom, userScrolledUp } = useIsAtBottom(outerRef);
+
+	// Reset scrolled to bottom state when new user input comes in
+	useEffect(() => {
+		setUserScrolledToBottom(false);
+	}, [lastInputId]);
 
 	const handleFocus = () => {
 		if (innerRef.current === document.activeElement) {
@@ -84,14 +91,18 @@ export function ChatScroller({
 	// Scroll to last input or scroll to bottom based on scrollBehavior, only if the user has not scrolled up
 	useEffect(() => {
 		if (!userScrolledUp && outerRef.current) {
-			if (scrollBehavior === "alwaysScroll") {
+			if (scrollBehavior === "alwaysScroll" || userScrolledToBottom) {
 				const scrollOffset = outerRef.current.scrollHeight - outerRef.current.clientHeight;
 				handleScroll(scrollOffset);
-			} else if (lastInputId) {
+			} else if (!userScrolledToBottom && lastInputId) {
 				const targetElement = document.getElementById(lastInputId);
 				if (targetElement) {
-					const scrollOffset = targetElement.offsetTop - outerRef.current.offsetTop;
-					handleScroll(scrollOffset);
+					const targetOffset = targetElement.offsetTop - outerRef.current.offsetTop;
+					const currentScroll = outerRef.current.scrollTop;
+					// Only scroll if the target is below the current scroll position (prevent programmatic scroll up)
+					if (targetOffset > currentScroll) {
+						handleScroll(targetOffset);
+					}
 				}
 			}
 		}
@@ -106,6 +117,7 @@ export function ChatScroller({
 
 	// Handle scrolling to the bottom when the scroll button is clicked
 	const handleScrollToBottom = () => {
+		setUserScrolledToBottom(true);
 		if (outerRef.current) {
 			const scrollOffset = outerRef.current?.scrollHeight - outerRef.current?.clientHeight;
 			handleScroll(scrollOffset);
