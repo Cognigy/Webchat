@@ -162,7 +162,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					newMessageId = generateRandomId();
 				}
 
-				if (!nextAnimatingId && newMessageId) {
+				if (!nextAnimatingId) {
 					nextAnimatingId = newMessageId;
 				}
 
