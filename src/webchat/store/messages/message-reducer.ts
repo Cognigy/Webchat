@@ -157,7 +157,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				const finishReason = getFinishReason(newMessage, newMessageId);
 
-				// When collation is disabled each single chunk of message coming from endpoint is treated a separate message with its own message id
+				// When collation is disabled each single chunk of message coming from endpoint is treated as a separate message with its own message id
 				if (!newMessageId || !isOutputCollationEnabled) {
 					newMessageId = generateRandomId();
 				}
@@ -173,7 +173,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				// If no matching message, create new with array
 				if (messageIndex === -1) {
-
 					if (!state.currentlyAnimatingId) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
@@ -192,11 +191,11 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 								id: newMessageId,
 								animationState: "start",
 								// Finish reason stop means the message is generated and it will start rendering
-								finishReason : isOutputCollationEnabled ? finishReason : "stop",
+								finishReason: isOutputCollationEnabled ? finishReason : "stop",
 							},
 						],
 						visibleOutputMessages,
-						currentlyAnimatingId: nextAnimatingId
+						currentlyAnimatingId: nextAnimatingId,
 					};
 				}
 
