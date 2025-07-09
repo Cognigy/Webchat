@@ -160,7 +160,7 @@ See it in action:
 | scrollingBehavior               | string  | `"alwaysScroll"`                      | Allowed values: `"scrollUntilLastInputAtTop" \| "alwaysScroll"`. Decide how scrolling should behave if scrolled to bottom and a new message comes in.                                               |
 | enableScrollButton              | boolean | `true`                                | If false, hides the scroll-to-bottom button.                                                                                                                                                        |
 
-| disableUserTypingEvent | boolean | `true` | If true, disables sending typing events from user.
+| disableUserTypingEvent | boolean | `false` | If true, disables sending typing events from user.
 
 #### Start Behavior
 
