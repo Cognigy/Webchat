@@ -55,7 +55,7 @@ export const getInitialState = (): ConfigState => ({
 			focusInputAfterPostback: false,
 			enableConnectionStatusIndicator: true,
 			scrollingBehavior: "alwaysScroll",
-			disableUserTypingEvent: true,
+			disableUserTypingEvent: false,
 		},
 		startBehavior: {
 			startBehavior: "none",
