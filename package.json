@@ -7,7 +7,6 @@
 		"Robin Schuster <r.schuster@cognigy.com>"
 	],
 	"license": "SEE LICENSE IN LICENSE",
-	"type": "module",
 	"exports": {
 		"import": "./dist/webchat.js"
 	},
