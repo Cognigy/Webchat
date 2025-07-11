@@ -11,7 +11,8 @@
 		"import": "./dist/webchat.js"
 	},
 	"files": [
-		"dist/webchat.js"
+		"dist/webchat.js",
+		"OSS_LICENSES.txt"
 	],
 	"scripts": {
 		"build": "webpack --config webpack.production.js",
