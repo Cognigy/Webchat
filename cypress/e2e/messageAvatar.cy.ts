@@ -11,7 +11,7 @@ describe("Webchat Header", () => {
 		cy.get(".webchat-header-bar .webchat-header-cognigy-logo").should(
 			"have.attr",
 			"title",
-			"Cognigy AI Logo",
+			"Cognigy.AI Logo",
 		);
 	});
 

@@ -36,7 +36,7 @@ describe("Home Screen", () => {
 			},
 		});
 		cy.openWebchat();
-		cy.get("svg").should("have.attr", "title", "Cognigy AI Logo");
+		cy.get("svg").should("have.attr", "title", "Cognigy.AI Logo");
 	});
 
 	it("has specified logo displayed when configured", () => {
