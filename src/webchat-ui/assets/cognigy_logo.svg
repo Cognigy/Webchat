@@ -1,6 +1,6 @@
-<svg class="MuiSvgIcon-root makeStyles-logoText-164" focusable="false" viewBox="0 0 194 20" aria-hidden="true">
+<svg class="MuiSvgIcon-root makeStyles-logoText-164" focusable="false" viewBox="0 0 194 20" aria-labelledby="cognigyLogoTitle">
 <svg width="194px" height="20px" viewBox="0 0 194 20" version="1.1">
-<title>Cognigy.AI</title>
+<title id="cognigyLogoTitle">Cognigy.AI Logo</title>
 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 <g transform="translate(-108.000000, -272.000000)" fill-rule="nonzero">
 <g transform="translate(108.000000, 272.000000)">
