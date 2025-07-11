@@ -8,11 +8,9 @@ describe("Webchat Header", () => {
 	it("should have CognigyAI logo when 'logoUrl' is not configured", () => {
 		cy.initMockWebchat().openWebchat().startConversation();
 
-		cy.get(".webchat-header-bar .webchat-header-cognigy-logo").should(
-			"have.attr",
-			"title",
-			"Cognigy AI Logo",
-		);
+		cy.get(".webchat-header-bar .webchat-header-cognigy-logo")
+			.find("title")
+			.should("have.text", "Cognigy.AI Logo");
 	});
 
 	it("should have custome logo when 'logoUrl' is configured", () => {
