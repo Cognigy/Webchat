@@ -1,13 +1,19 @@
 {
 	"name": "@cognigy/webchat",
 	"version": "3.25.2",
-	"description": "Webchat Widget for Cognigy.AI",
+	"description": "Webchat for Cognigy.AI",
 	"author": "Cognigy GmbH <info@cognigy.com>",
 	"contributors": [
 		"Robin Schuster <r.schuster@cognigy.com>"
 	],
 	"license": "SEE LICENSE IN LICENSE",
-	"main": "lib/webchat/index.js",
+	"type": "module",
+	"exports": {
+		"import": "./dist/webchat.js"
+	},
+	"files": [
+		"dist/webchat.js"
+	],
 	"scripts": {
 		"build": "webpack --config webpack.production.js",
 		"update-license": "node update-license.js",
@@ -20,6 +26,7 @@
 		"test:cypress": "run-p -r cypress:serve cypress:run",
 		"test:cypress:firefox": "run-p -r cypress:serve cypress:run:firefox",
 		"test": "npm run test:cypress",
+		"prepack": "npm run build",
 		"pretest": "npm run build",
 		"prettier:check": "prettier --check .",
 		"prettier:fix": "prettier --write .",
