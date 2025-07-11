@@ -157,7 +157,8 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				const finishReason = getFinishReason(newMessage, newMessageId);
 
-				if (!newMessageId) {
+				// When collation is disabled each single chunk of message coming from endpoint is treated as a separate message with its own message id
+				if (!newMessageId || !isOutputCollationEnabled) {
 					newMessageId = generateRandomId();
 				}
 
@@ -180,7 +181,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
-
 					return {
 						...state,
 						messageHistory: [
@@ -190,7 +190,8 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 								text: textChunks,
 								id: newMessageId,
 								animationState: "start",
-								finishReason,
+								// Finish reason stop means the message is generated and it will start rendering
+								finishReason: isOutputCollationEnabled ? finishReason : "stop",
 							},
 						],
 						visibleOutputMessages,
