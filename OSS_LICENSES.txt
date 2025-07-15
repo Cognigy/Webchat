@@ -1,4 +1,4 @@
-Created on 11-07-2025 at 13:55:54
+Created on 15-07-2025 at 15:02:10
 
 {
   "@ampproject/remapping@2.3.0": {
@@ -150,7 +150,7 @@ Created on 11-07-2025 at 13:55:54
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.56.0": {
+  "@cognigy/chat-components@0.58.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -162,7 +162,7 @@ Created on 11-07-2025 at 13:55:54
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.26.0": {
+  "@cognigy/webchat@3.27.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
