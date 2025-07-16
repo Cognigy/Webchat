@@ -1,7 +1,7 @@
 import { Store } from "redux";
 import { IMessage } from "../../../common/interfaces/message";
 import { ISendMessageOptions } from "./message-middleware";
-import { setBotAvatarOverrideUrl, setAgentAvatarOverrideUrl, setTyping } from "../ui/ui-reducer";
+import { setBotAvatarNameOverride, setBotAvatarOverrideUrl, setAgentAvatarOverrideUrl, setTyping } from "../ui/ui-reducer";
 import {
 	setCustomRatingCommentText,
 	setCustomRatingTitle,
@@ -34,7 +34,7 @@ export type ReceiveEventAction = ReturnType<typeof receiveEvent>;
 export const createOutputHandler = (store: Store) => output => {
 	// handle custom webchat actions
 	if (output.data && output.data._webchat) {
-		const { agentAvatarOverrideUrl, botAvatarOverrideUrl } = output.data._webchat;
+		const { agentAvatarOverrideUrl, botAvatarOverrideUrl, botAvatarNameOverride } = output.data._webchat;
 
 		if (agentAvatarOverrideUrl !== undefined) {
 			store.dispatch(setAgentAvatarOverrideUrl(agentAvatarOverrideUrl));
@@ -42,6 +42,10 @@ export const createOutputHandler = (store: Store) => output => {
 
 		if (botAvatarOverrideUrl !== undefined) {
 			store.dispatch(setBotAvatarOverrideUrl(botAvatarOverrideUrl));
+		}
+
+		if (botAvatarNameOverride !== undefined) {
+			store.dispatch(setBotAvatarNameOverride(botAvatarNameOverride));
 		}
 	}
 

@@ -11,6 +11,7 @@ export interface UIState {
 	fullscreenMessage: IMessage | undefined;
 	agentAvatarOverrideUrl?: string;
 	botAvatarOverrideUrl?: string;
+	botAvatarNameOverride?: string;
 	isPageVisible: boolean;
 	showHomeScreen: boolean;
 	showPrevConversations: boolean;
@@ -106,6 +107,13 @@ export const setBotAvatarOverrideUrl = (url: string) => ({
 });
 type SetBotAvatarOverrideUrlAction = ReturnType<typeof setBotAvatarOverrideUrl>;
 
+const SET_BOT_AVATAR_NAME_OVERRIDE = "SET_BOT_AVATAR_NAME_OVERRIDE";
+export const setBotAvatarNameOverride = (name: string) => ({
+	type: SET_BOT_AVATAR_NAME_OVERRIDE as "SET_BOT_AVATAR_NAME_OVERRIDE",
+	name,
+});
+type SetBotAvatarNameOverrideAction = ReturnType<typeof setBotAvatarNameOverride>;
+
 const SET_PAGE_VISIBLE = "SET_PAGE_VISIBLE";
 export const setPageVisible = (visible: boolean) => ({
 	type: SET_PAGE_VISIBLE as "SET_PAGE_VISIBLE",
@@ -166,6 +174,7 @@ type UIAction =
 	| SetFullscreenMessageAction
 	| SetAgentAvatarOverrideUrlAction
 	| SetBotAvatarOverrideUrlAction
+	| SetBotAvatarNameOverrideAction
 	| SetPageVisibleAction
 	| SetShowHomeScreenAction
 	| SetShowPrevConversationsAction
@@ -244,6 +253,13 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				botAvatarOverrideUrl: action.url,
+			};
+		}
+
+		case SET_BOT_AVATAR_NAME_OVERRIDE: {
+			return {
+				...state,
+				botAvatarNameOverride: action.name,
 			};
 		}
 
