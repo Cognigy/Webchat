@@ -37,6 +37,9 @@ module.exports = {
 				exclude: /node_modules/,
 				use: {
 					loader: "@svgr/webpack",
+					options: {
+						titleProp: true,
+					},
 				},
 			},
 		],

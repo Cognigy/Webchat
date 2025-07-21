@@ -176,6 +176,7 @@ const Header: FC<HeaderProps> = props => {
 							/>
 						) : (
 							<CognigyAIAvatar
+								title="Cognigy.AI Logo"
 								className={classnames("webchat-header-cognigy-logo")}
 							/>
 						))}

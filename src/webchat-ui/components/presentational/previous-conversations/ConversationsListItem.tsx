@@ -134,13 +134,17 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 					avatars.map((avatar, i) => {
 						if (!avatar)
 							return (
-								<FallBackAvatar key={i} className="webchat-header-cognigy-logo" />
+								<FallBackAvatar
+									title="Cognigy.AI Logo"
+									key={i}
+									className="webchat-header-cognigy-logo"
+								/>
 							);
 
 						return <Avatar key={i} src={avatar} alt="" />;
 					})
 				) : (
-					<FallBackAvatar />
+					<FallBackAvatar title="Cognigy.AI Logo" />
 				)}
 			</Left>
 			<Center>
