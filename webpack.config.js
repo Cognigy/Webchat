@@ -33,9 +33,6 @@ module.exports = {
 				use: ["style-loader", "css-loader"],
 			},
 			{
-				// Get rid off this loader as it is not actively maintained and also produces a security vulnerability
-				// See https://github.com/jhamlet/svg-react-loader/pull/158#issuecomment-2652143150
-				// A workaround for this vulnerability is available until this library is removed (See package.json#overrides)
 				test: /\.svg$/,
 				exclude: /node_modules/,
 				use: {
