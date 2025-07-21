@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import ArrowIcon from "../../../assets/arrow-back-16px.svg";
-import CognigyAIAvatar from "../../../assets/cognigy-ai-avatar-48px.svg";
+import CognigyAIAvatar from "../../../assets/cognigy-ai-avatar-28px.svg";
 import Ellipsis from "../../../assets/ellipsis-4px.svg";
 import { getAvatars, getLastMessagePreview, getParticipants, getRelativeTime } from "./helpers";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";

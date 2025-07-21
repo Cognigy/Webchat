@@ -8,7 +8,7 @@ import MenuIcon from "../../assets/menu-16px.svg";
 import Notifications from "./Notifications";
 import classnames from "classnames";
 import { Typography } from "@cognigy/chat-components";
-import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
+import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-28px.svg";
 import { getAccessiblePrimaryVariant, getContrastColor } from "../../style";
 import DeleteIcon from "../../assets/bin-16px.svg";
 import { useSelector } from "../../../webchat/helper/useSelector";

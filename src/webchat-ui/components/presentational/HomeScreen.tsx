@@ -10,7 +10,7 @@ import Notifications from "./Notifications";
 import { ActionButtons, Typography } from "@cognigy/chat-components";
 import { WebchatUIProps } from "../WebchatUI";
 import { IWebchatButton } from "@cognigy/socket-client";
-import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-48px.svg";
+import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-28px.svg";
 import { Logo } from "./Header";
 import getKeyboardFocusableElements from "../../utils/find-focusable";
 
