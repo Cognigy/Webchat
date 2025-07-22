@@ -17,7 +17,9 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 	const messageHistory = useSelector(state => state.messages.messageHistory);
 	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
-	const isProgressiveRenderingEnabled = useSelector(state => state.config.settings.behavior?.progressiveMessageRendering);
+	const isProgressiveRenderingEnabled = useSelector(
+		state => state.config.settings.behavior?.progressiveMessageRendering,
+	);
 
 	useEffect(() => {
 		if (!messages.length) return;
