@@ -28,13 +28,17 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 
 		if (!unannouncedMessages.length) return;
 
+		const hasAnimationState = (msg: any): msg is { animationState: string } => {
+			return msg && typeof msg.animationState === "string";
+		};
+
 		const timeout = setTimeout(() => {
 			const firstUnannouncedMsg = unannouncedMessages[0]; // Only announce one at a time
 			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
 
 			// Check if this is a streaming message that hasn't finished
 			const isStreamingMessage =
-				"animationState" in firstUnannouncedMsg &&
+				hasAnimationState(firstUnannouncedMsg) &&
 				(firstUnannouncedMsg.animationState === "start" ||
 					firstUnannouncedMsg.animationState === "animating");
 
@@ -53,6 +57,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			const rawText = liveContent[id] || getTextFromDOM(id);
 			const text = cleanUpText(rawText || "A new message");
 
+			console.log(`Announcing message: ${text} (ID: ${id})`);
 			setLiveMessage({ id, text });
 		}, 100);
 
