@@ -31,6 +31,16 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		const timeout = setTimeout(() => {
 			const firstUnannouncedMsg = unannouncedMessages[0]; // Only announce one at a time
 			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
+
+			// Check if this is a streaming message that hasn't finished
+			const isStreamingMessage =
+				"animationState" in firstUnannouncedMsg &&
+				(firstUnannouncedMsg.animationState === "start" ||
+					firstUnannouncedMsg.animationState === "animating");
+
+			// If streaming, don't announce yet
+			if (isStreamingMessage) return;
+
 			announcedIdsRef.current.add(id);
 
 			// Skip announcement if the message is marked as "IGNORE". Done by ChatEvent message component, as it has aria-live="assertive"
