@@ -1,4 +1,5 @@
 import DOMPurify, { Config } from "dompurify";
+import { storeRef } from "../store/store";
 
 export const allowedHtmlTags = [
 	"a",
@@ -227,4 +228,14 @@ const config: Config = {
 	ALLOWED_ATTR: allowedHtmlAttributes,
 };
 
-export const sanitizeHTML = (text: string) => DOMPurify.sanitize(text, config).toString();
+export const sanitizeHTML = (text: string) => {
+	const customAllowedHtmlTags =
+		storeRef?.getState().config.settings.widgetSettings.customAllowedHtmlTags;
+
+	const configToUse =
+		customAllowedHtmlTags && customAllowedHtmlTags.length > 0
+			? { ...config, ALLOWED_TAGS: customAllowedHtmlTags }
+			: config;
+
+	return DOMPurify.sanitize(text, configToUse).toString();
+};
