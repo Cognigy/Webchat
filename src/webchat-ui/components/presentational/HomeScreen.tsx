@@ -230,6 +230,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 					) : (
 						<CognigyAIAvatar
 							className={"webchat-homescreen-header-cognigy-logo"}
+							role="img"
 							title="Cognigy.AI Logo"
 						/>
 					)}

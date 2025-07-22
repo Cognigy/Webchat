@@ -136,6 +136,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 							return (
 								<FallBackAvatar
 									title="Cognigy.AI Logo"
+									role="img"
 									key={i}
 									className="webchat-header-cognigy-logo"
 								/>

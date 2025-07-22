@@ -129,7 +129,7 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 							alt=""
 						/>
 					) : (
-						<CognigyAIAvatar title="Cognigy.AI Logo" />
+						<CognigyAIAvatar title="Cognigy.AI Logo" role="img" />
 					)}
 					<TeaserMessageHeaderContent>
 						<Typography
