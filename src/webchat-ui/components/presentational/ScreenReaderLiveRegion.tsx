@@ -64,7 +64,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		}, 100);
 
 		return () => clearTimeout(timeout);
-	}, [messages, liveContent]);
+	}, [messages, liveContent, isProgressiveRenderingEnabled]);
 
 	return (
 		<div
