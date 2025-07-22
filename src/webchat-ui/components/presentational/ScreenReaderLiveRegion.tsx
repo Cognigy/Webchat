@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
 import getMessagesListWithoutControlCommands from "../../utils/filter-out-control-commands";
+import { IStreamingMessage } from "../../../common/interfaces/message";
 
 interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
@@ -31,8 +32,8 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 
 		if (!unannouncedMessages.length) return;
 
-		const hasAnimationState = (msg: any): msg is { animationState: string } => {
-			return msg && typeof msg.animationState === "string";
+		const isStreamingMessage = (message: unknown): message is IStreamingMessage => {
+			return message !== null && typeof message === "object" && "animationState" in message;
 		};
 
 		const timeout = setTimeout(() => {
@@ -40,13 +41,17 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
 
 			// Check if this is a streaming message that hasn't finished
-			const isStreamingMessage =
-				hasAnimationState(firstUnannouncedMsg) &&
+			const isStreaming =
+				isProgressiveRenderingEnabled &&
+				isStreamingMessage(firstUnannouncedMsg) &&
 				(firstUnannouncedMsg.animationState === "start" ||
 					firstUnannouncedMsg.animationState === "animating");
 
 			// If streaming, don't announce yet
-			if (isStreamingMessage && isProgressiveRenderingEnabled) return;
+			if (isStreaming) {
+				clearTimeout(timeout);
+				return;
+			}
 
 			announcedIdsRef.current.add(id);
 
