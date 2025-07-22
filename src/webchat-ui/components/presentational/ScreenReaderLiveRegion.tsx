@@ -48,10 +48,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 					firstUnannouncedMsg.animationState === "animating");
 
 			// If streaming, don't announce yet
-			if (isStreaming) {
-				clearTimeout(timeout);
-				return;
-			}
+			if (isStreaming) return;
 
 			announcedIdsRef.current.add(id);
 
