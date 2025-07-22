@@ -17,6 +17,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 	const messageHistory = useSelector(state => state.messages.messageHistory);
 	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
+	const isProgressiveRenderingEnabled = useSelector(state => state.config.settings.behavior?.progressiveMessageRendering);
 
 	useEffect(() => {
 		if (!messages.length) return;
@@ -43,7 +44,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 					firstUnannouncedMsg.animationState === "animating");
 
 			// If streaming, don't announce yet
-			if (isStreamingMessage) return;
+			if (isStreamingMessage && isProgressiveRenderingEnabled) return;
 
 			announcedIdsRef.current.add(id);
 
@@ -57,7 +58,6 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			const rawText = liveContent[id] || getTextFromDOM(id);
 			const text = cleanUpText(rawText || "A new message");
 
-			console.log(`Announcing message: ${text} (ID: ${id})`);
 			setLiveMessage({ id, text });
 		}, 100);
 
