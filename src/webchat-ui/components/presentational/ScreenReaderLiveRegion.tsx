@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
 import getMessagesListWithoutControlCommands from "../../utils/filter-out-control-commands";
+import { IStreamingMessage } from "../../../common/interfaces/message";
 
 interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
@@ -17,6 +18,9 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 	const messageHistory = useSelector(state => state.messages.messageHistory);
 	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
+	const isProgressiveRenderingEnabled = useSelector(
+		state => state.config.settings.behavior?.progressiveMessageRendering,
+	);
 
 	useEffect(() => {
 		if (!messages.length) return;
@@ -28,9 +32,24 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 
 		if (!unannouncedMessages.length) return;
 
+		const isStreamingMessage = (message: unknown): message is IStreamingMessage => {
+			return message !== null && typeof message === "object" && "animationState" in message;
+		};
+
 		const timeout = setTimeout(() => {
 			const firstUnannouncedMsg = unannouncedMessages[0]; // Only announce one at a time
 			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
+
+			// Check if this is a streaming message that hasn't finished
+			const isStreaming =
+				isProgressiveRenderingEnabled &&
+				isStreamingMessage(firstUnannouncedMsg) &&
+				(firstUnannouncedMsg.animationState === "start" ||
+					firstUnannouncedMsg.animationState === "animating");
+
+			// If streaming, don't announce yet
+			if (isStreaming) return;
+
 			announcedIdsRef.current.add(id);
 
 			// Skip announcement if the message is marked as "IGNORE". Done by ChatEvent message component, as it has aria-live="assertive"
@@ -47,7 +66,7 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		}, 100);
 
 		return () => clearTimeout(timeout);
-	}, [messages, liveContent]);
+	}, [messages, liveContent, isProgressiveRenderingEnabled]);
 
 	return (
 		<div
