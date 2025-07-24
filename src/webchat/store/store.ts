@@ -22,6 +22,12 @@ import { userTypingMiddleware } from "./typing/middleware";
 
 export type StoreState = StateType<typeof reducer>;
 
+export let storeRef: { getState: () => StoreState } | null = null;
+
+export const setStoreReference = (store: { getState: () => StoreState }) => {
+	storeRef = store;
+};
+
 // creates a store and connects it to a webchat client
 export const createWebchatStore = (
 	webchat: Webchat,
@@ -48,6 +54,8 @@ export const createWebchatStore = (
 			),
 		),
 	);
+
+	setStoreReference(store);
 
 	registerMessageHandler(store, client);
 	registerTypingHandler(store, client);
