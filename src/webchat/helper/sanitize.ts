@@ -232,10 +232,9 @@ export const sanitizeHTML = (text: string) => {
 	const customAllowedHtmlTags =
 		storeRef?.getState().config.settings.widgetSettings.customAllowedHtmlTags;
 
-	const configToUse =
-		customAllowedHtmlTags && customAllowedHtmlTags.length > 0
-			? { ...config, ALLOWED_TAGS: customAllowedHtmlTags }
-			: config;
+	const configToUse = customAllowedHtmlTags
+		? { ...config, ALLOWED_TAGS: customAllowedHtmlTags }
+		: config;
 
 	return DOMPurify.sanitize(text, configToUse).toString();
 };
