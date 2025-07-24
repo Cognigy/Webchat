@@ -12,7 +12,7 @@ import {
 } from "../../../../../webchat/store/input/input-reducer";
 import { addFilesToList } from "../../../../../webchat/store/input/file-input-middleware";
 import { inputContentUpdated } from "../../../../../webchat/store/typing/actions";
-import { throttle } from "lodash";
+import throttle from "lodash/throttle";
 
 export const ConnectedBaseInput = (props: InputComponentProps) => {
 	const sttActive = useSelector((state: StoreState) => state.input.sttActive);
