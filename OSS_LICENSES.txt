@@ -1,4 +1,4 @@
-Created on 15-07-2025 at 15:02:10
+Created on 25-07-2025 at 10:39:54
 
 {
   "@ampproject/remapping@2.3.0": {
@@ -8,7 +8,7 @@ Created on 15-07-2025 at 15:02:10
     "email": "jridgewell@google.com",
     "licenseFile": "node_modules/@ampproject/remapping/LICENSE"
   },
-  "@babel/code-frame@7.26.2": {
+  "@babel/code-frame@7.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -16,7 +16,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/code-frame/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/compat-data@7.26.8": {
+  "@babel/compat-data@7.28.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -32,7 +32,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/core/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/generator@7.26.9": {
+  "@babel/generator@7.28.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -40,7 +40,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/generator/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-compilation-targets@7.26.5": {
+  "@babel/helper-compilation-targets@7.27.2": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -48,7 +48,15 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/helper-compilation-targets/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-module-imports@7.25.9": {
+  "@babel/helper-globals@7.28.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/babel/babel",
+    "publisher": "The Babel Team",
+    "url": "https://babel.dev/team",
+    "licenseFile": "node_modules/@babel/helper-globals/LICENSE",
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+  },
+  "@babel/helper-module-imports@7.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -56,7 +64,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/helper-module-imports/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-module-transforms@7.26.0": {
+  "@babel/helper-module-transforms@7.27.3": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -64,7 +72,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/helper-module-transforms/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-string-parser@7.25.9": {
+  "@babel/helper-string-parser@7.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -72,7 +80,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/helper-string-parser/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-validator-identifier@7.25.9": {
+  "@babel/helper-validator-identifier@7.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -80,7 +88,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/helper-validator-identifier/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-validator-option@7.25.9": {
+  "@babel/helper-validator-option@7.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -88,15 +96,15 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/helper-validator-option/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helpers@7.24.1": {
+  "@babel/helpers@7.27.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
     "url": "https://babel.dev/team",
     "licenseFile": "node_modules/@babel/helpers/LICENSE",
-    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors. Copyright (c) 2014-present, Facebook, Inc. (ONLY ./src/helpers/regenerator* files)"
   },
-  "@babel/parser@7.26.9": {
+  "@babel/parser@7.28.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -104,7 +112,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/parser/LICENSE",
     "copyright": "Copyright (C) 2012-2014 by various contributors (see AUTHORS)"
   },
-  "@babel/runtime-corejs3@7.26.0": {
+  "@babel/runtime-corejs3@7.28.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -112,7 +120,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/runtime-corejs3/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/runtime@7.24.1": {
+  "@babel/runtime@7.27.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -120,7 +128,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/runtime/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/template@7.26.9": {
+  "@babel/template@7.27.2": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -128,7 +136,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/template/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/traverse@7.26.9": {
+  "@babel/traverse@7.28.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -136,7 +144,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@babel/traverse/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/types@7.26.9": {
+  "@babel/types@7.28.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -150,7 +158,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.58.0": {
+  "@cognigy/chat-components@0.59.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -162,7 +170,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.27.0": {
+  "@cognigy/webchat@3.28.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -338,13 +346,13 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@fontsource/figtree/LICENSE",
     "copyright": "Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)"
   },
-  "@jridgewell/gen-mapping@0.3.5": {
+  "@jridgewell/gen-mapping@0.3.12": {
     "licenses": "MIT",
-    "repository": "https://github.com/jridgewell/gen-mapping",
+    "repository": "https://github.com/jridgewell/sourcemaps",
     "publisher": "Justin Ridgewell",
     "email": "justin@ridgewell.name",
     "licenseFile": "node_modules/@jridgewell/gen-mapping/LICENSE",
-    "copyright": "Copyright 2022 Justin Ridgewell <jridgewell@google.com>"
+    "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
   },
   "@jridgewell/resolve-uri@3.1.2": {
     "licenses": "MIT",
@@ -354,28 +362,21 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@jridgewell/resolve-uri/LICENSE",
     "copyright": "Copyright 2019 Justin Ridgewell <jridgewell@google.com>"
   },
-  "@jridgewell/set-array@1.2.1": {
+  "@jridgewell/sourcemap-codec@1.5.4": {
     "licenses": "MIT",
-    "repository": "https://github.com/jridgewell/set-array",
+    "repository": "https://github.com/jridgewell/sourcemaps",
     "publisher": "Justin Ridgewell",
     "email": "justin@ridgewell.name",
-    "licenseFile": "node_modules/@jridgewell/set-array/LICENSE",
-    "copyright": "Copyright 2022 Justin Ridgewell <jridgewell@google.com>"
-  },
-  "@jridgewell/sourcemap-codec@1.4.15": {
-    "licenses": "MIT",
-    "repository": "https://github.com/jridgewell/sourcemap-codec",
-    "publisher": "Rich Harris",
     "licenseFile": "node_modules/@jridgewell/sourcemap-codec/LICENSE",
-    "copyright": "Copyright (c) 2015 Rich Harris"
+    "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
   },
-  "@jridgewell/trace-mapping@0.3.25": {
+  "@jridgewell/trace-mapping@0.3.29": {
     "licenses": "MIT",
-    "repository": "https://github.com/jridgewell/trace-mapping",
+    "repository": "https://github.com/jridgewell/sourcemaps",
     "publisher": "Justin Ridgewell",
     "email": "justin@ridgewell.name",
     "licenseFile": "node_modules/@jridgewell/trace-mapping/LICENSE",
-    "copyright": "Copyright 2022 Justin Ridgewell <justin@ridgewell.name>"
+    "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
   },
   "@reduxjs/toolkit@2.2.7": {
     "licenses": "MIT",
@@ -560,7 +561,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/balanced-match/LICENSE.md",
     "copyright": "Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt;"
   },
-  "brace-expansion@1.1.11": {
+  "brace-expansion@1.1.12": {
     "licenses": "MIT",
     "repository": "https://github.com/juliangruber/brace-expansion",
     "publisher": "Julian Gruber",
@@ -569,13 +570,21 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/brace-expansion/LICENSE",
     "copyright": "Copyright (c) 2013 Julian Gruber <julian@juliangruber.com>"
   },
-  "browserslist@4.24.4": {
+  "browserslist@4.25.1": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/browserslist",
     "publisher": "Andrey Sitnik",
     "email": "andrey@sitnik.ru",
     "licenseFile": "node_modules/browserslist/LICENSE",
     "copyright": "Copyright 2014 Andrey Sitnik <andrey@sitnik.ru> and other contributors"
+  },
+  "call-bind-apply-helpers@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/call-bind-apply-helpers",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/call-bind-apply-helpers/LICENSE",
+    "copyright": "Copyright (c) 2024 Jordan Harband"
   },
   "call-bind@1.0.7": {
     "licenses": "MIT",
@@ -594,7 +603,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/callsites/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "caniuse-lite@1.0.30001700": {
+  "caniuse-lite@1.0.30001727": {
     "licenses": "CC-BY-4.0",
     "repository": "https://github.com/browserslist/caniuse-lite",
     "publisher": "Ben Briggs",
@@ -726,7 +735,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/convert-source-map/LICENSE",
     "copyright": "Copyright 2013 Thorsten Lorenz. . All rights reserved."
   },
-  "core-js-pure@3.40.0": {
+  "core-js-pure@3.44.0": {
     "licenses": "MIT",
     "repository": "https://github.com/zloirock/core-js",
     "publisher": "Denis Pushkarev",
@@ -880,7 +889,15 @@ Created on 15-07-2025 at 15:02:10
     "url": "https://cure53.de/",
     "licenseFile": "node_modules/dompurify/LICENSE"
   },
-  "electron-to-chromium@1.5.101": {
+  "dunder-proto@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/dunder-proto",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/dunder-proto/LICENSE",
+    "copyright": "Copyright (c) 2024 ECMAScript Shims"
+  },
+  "electron-to-chromium@1.5.187": {
     "licenses": "ISC",
     "repository": "https://github.com/kilian/electron-to-chromium",
     "publisher": "Kilian Valkhof",
@@ -913,7 +930,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/error-ex/LICENSE",
     "copyright": "Copyright (c) 2015 JD Ballard"
   },
-  "es-define-property@1.0.0": {
+  "es-define-property@1.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/ljharb/es-define-property",
     "publisher": "Jordan Harband",
@@ -928,6 +945,22 @@ Created on 15-07-2025 at 15:02:10
     "email": "ljharb@gmail.com",
     "licenseFile": "node_modules/es-errors/LICENSE",
     "copyright": "Copyright (c) 2024 Jordan Harband"
+  },
+  "es-object-atoms@1.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-object-atoms",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/es-object-atoms/LICENSE",
+    "copyright": "Copyright (c) 2024 Jordan Harband"
+  },
+  "es-set-tostringtag@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/es-set-tostringtag",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/es-set-tostringtag/LICENSE",
+    "copyright": "Copyright (c) 2022 ECMAScript Shims"
   },
   "escalade@3.2.0": {
     "licenses": "MIT",
@@ -1014,7 +1047,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/follow-redirects/LICENSE",
     "copyright": "Copyright 2014–present Olivier Lalonde <olalonde@gmail.com>, James Talmage <james@talmage.io>, Ruben Verborgh"
   },
-  "form-data@4.0.0": {
+  "form-data@4.0.4": {
     "licenses": "MIT",
     "repository": "https://github.com/form-data/form-data",
     "publisher": "Felix Geisendörfer",
@@ -1048,13 +1081,21 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/gensync/LICENSE",
     "copyright": "Copyright 2018 Logan Smyth <loganfsmyth@gmail.com>"
   },
-  "get-intrinsic@1.2.4": {
+  "get-intrinsic@1.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ljharb/get-intrinsic",
     "publisher": "Jordan Harband",
     "email": "ljharb@gmail.com",
     "licenseFile": "node_modules/get-intrinsic/LICENSE",
     "copyright": "Copyright (c) 2020 Jordan Harband"
+  },
+  "get-proto@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/get-proto",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/get-proto/LICENSE",
+    "copyright": "Copyright (c) 2025 Jordan Harband"
   },
   "glob@7.2.3": {
     "licenses": "ISC",
@@ -1065,15 +1106,6 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/glob/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
-  "globals@11.12.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/sindresorhus/globals",
-    "publisher": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com",
-    "licenseFile": "node_modules/globals/license",
-    "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
-  },
   "goober@2.1.14": {
     "licenses": "MIT",
     "repository": "https://github.com/cristianbote/goober",
@@ -1082,7 +1114,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/goober/LICENSE",
     "copyright": "Copyright (c) 2019 Cristian Bote"
   },
-  "gopd@1.0.1": {
+  "gopd@1.2.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ljharb/gopd",
     "publisher": "Jordan Harband",
@@ -1113,15 +1145,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/has-property-descriptors/LICENSE",
     "copyright": "Copyright (c) 2022 Inspect JS"
   },
-  "has-proto@1.0.3": {
-    "licenses": "MIT",
-    "repository": "https://github.com/inspect-js/has-proto",
-    "publisher": "Jordan Harband",
-    "email": "ljharb@gmail.com",
-    "licenseFile": "node_modules/has-proto/LICENSE",
-    "copyright": "Copyright (c) 2022 Inspect JS"
-  },
-  "has-symbols@1.0.3": {
+  "has-symbols@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/inspect-js/has-symbols",
     "publisher": "Jordan Harband",
@@ -1129,6 +1153,15 @@ Created on 15-07-2025 at 15:02:10
     "url": "http://ljharb.codes",
     "licenseFile": "node_modules/has-symbols/LICENSE",
     "copyright": "Copyright (c) 2016 Jordan Harband"
+  },
+  "has-tostringtag@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/has-tostringtag",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "url": "http://ljharb.codes",
+    "licenseFile": "node_modules/has-tostringtag/LICENSE",
+    "copyright": "Copyright (c) 2021 Inspect JS"
   },
   "hasown@2.0.2": {
     "licenses": "MIT",
@@ -1308,7 +1341,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/is-arrayish/LICENSE",
     "copyright": "Copyright (c) 2015 JD Ballard"
   },
-  "is-core-module@2.13.1": {
+  "is-core-module@2.16.1": {
     "licenses": "MIT",
     "repository": "https://github.com/inspect-js/is-core-module",
     "publisher": "Jordan Harband",
@@ -1445,6 +1478,14 @@ Created on 15-07-2025 at 15:02:10
     "url": "http://iceddev.com/",
     "licenseFile": "node_modules/matchmediaquery/LICENSE",
     "copyright": "Copyright (c) 2017 ncochard"
+  },
+  "math-intrinsics@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/math-intrinsics",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/math-intrinsics/LICENSE",
+    "copyright": "Copyright (c) 2024 ECMAScript Shims"
   },
   "math-random@2.0.1": {
     "licenses": "CC0-1.0",
@@ -2270,14 +2311,6 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/@reduxjs/toolkit/node_modules/redux/LICENSE.md",
     "copyright": "Copyright (c) 2015-present Dan Abramov"
   },
-  "regenerator-runtime@0.14.1": {
-    "licenses": "MIT",
-    "repository": "https://github.com/facebook/regenerator/tree/main/packages/runtime",
-    "publisher": "Ben Newman",
-    "email": "bn@cs.stanford.edu",
-    "licenseFile": "node_modules/regenerator-runtime/LICENSE",
-    "copyright": "Copyright (c) 2014-present, Facebook, Inc."
-  },
   "rehype-raw@7.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/rehypejs/rehype-raw",
@@ -2344,7 +2377,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/resolve-from/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "resolve@1.22.8": {
+  "resolve@1.22.10": {
     "licenses": "MIT",
     "repository": "https://github.com/browserify/resolve",
     "publisher": "James Halliday",
@@ -2671,7 +2704,7 @@ Created on 15-07-2025 at 15:02:10
     "licenseFile": "node_modules/unist-util-visit/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
-  "update-browserslist-db@1.1.2": {
+  "update-browserslist-db@1.1.3": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/update-db",
     "publisher": "Andrey Sitnik",
