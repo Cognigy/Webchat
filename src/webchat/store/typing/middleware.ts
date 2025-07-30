@@ -43,7 +43,7 @@ export const userTypingMiddleware: Middleware<object, StoreState> =
 							store.dispatch(setUserTyping(false));
 							store.dispatch(setShouldSendUserTypingOff(false));
 						}
-					}, 10_000);
+					}, 2_000);
 					store.dispatch(setTypingTimeoutId(timeoutId));
 				}
 				break;
