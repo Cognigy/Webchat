@@ -9,33 +9,34 @@
 		<script src="./webchat.js"></script>
 		<script>
 			initWebchat(
-				"https://endpoint-dev.cognigy.ai/45c4ec61c937e830ecdebfaad977e2ed0bd84001e3b6df736e84560b73506463",
+				"https://endpoint-dev.cognigy.ai/eb95068cb6faddc31e6e261fda70335595070b1a3349fe8e748bf578ff99a841",
 				{
-					// userId: "user1",
-					// sessionId: "session1",
-					// settings: {
-					//     layout: {
-					//         watermark: "default",
-					//         watermarkText: "Some Random Watermark"
-					//     },
-					//     unreadMessages: {
-					//         enableIndicator: true,
-					//         enableBadge: true,
-					//         enablePreview: true,
-					//         enableSound: true
-					//     },
-					//     teaserMessage:{
-					//         showInChat: true,
-					//         teaserMessageDelay: 5000,
-					//         text: "Hi there!"
-					//         },
-					//     startBehavior: {
-					//         getStartedText: ""
-					//     },
-					//     widgetSettings: {
-					//         enableFocusTrap: true,
-					//     }
-					// },
+					userId: "user2",
+					sessionId: "session1",
+					settings: {
+						// layout: {
+						// 	watermark: "default",
+						// 	watermarkText: "Some Random Watermark",
+						// },
+						// unreadMessages: {
+						// 	enableIndicator: true,
+						// 	enableBadge: true,
+						// 	enablePreview: true,
+						// 	enableSound: true,
+						// },
+						// teaserMessage: {
+						// 	showInChat: true,
+						// 	teaserMessageDelay: 5000,
+						// 	text: "Hi there!",
+						// },
+						// startBehavior: {
+						// 	getStartedText: "",
+						// },
+						widgetSettings: {
+							// enableFocusTrap: true,
+							customAllowedHtmlTags: ["strong"],
+						},
+					},
 				},
 			).then(function (webchat) {
 				window.cognigyWebchat = webchat;
