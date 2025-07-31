@@ -38,12 +38,12 @@ export const userTypingMiddleware: Middleware<object, StoreState> =
 					clearTimeout(state.userTyping.typingTimeoutId);
 
 					const timeoutId = setTimeout(() => {
-						// Send "typing_off" after 10 sec if has not been sent at this point
+						// Send "typing_off" after 2 sec if has not been sent at this point
 						if (store.getState().userTyping.shouldSendUserTypingOff) {
 							store.dispatch(setUserTyping(false));
 							store.dispatch(setShouldSendUserTypingOff(false));
 						}
-					}, 10_000);
+					}, 2_000);
 					store.dispatch(setTypingTimeoutId(timeoutId));
 				}
 				break;
