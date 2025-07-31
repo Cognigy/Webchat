@@ -181,7 +181,7 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			disableDefaultReplyCompatiblityMode: false,
 			enableStrictMessengerSync: false,
 
-			disableHtmlInput: false,
+			disableHtmlInput: true,
 			disableInputAutofocus: false,
 			disableRenderURLsAsLinks: false,
 			disableTextInputSanitization: false,

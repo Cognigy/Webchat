@@ -373,7 +373,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | ----------------------------------- | ------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | disableDefaultReplyCompatiblityMode | boolean | `false` | If set to true, the webchat will not try to look for messenger content in data.\_data.\_cognigy. This can lead to issues with structured content in Intent Default Replies. |
 | enableStrictMessengerSync | boolean | `false` | If set to true, will NOT render the message from the "Messenger" tab in the SAY node unless "Use Facebook Channel" is checked in the "Webchat" tab. |
-| disableHtmlInput | boolean | `false` | If true, strips all html tags out from the input of the user. |
+| disableHtmlInput | boolean | `true` | If true, strips all html tags out from the input of the user. |
 | disableInputAutofocus | boolean | `false` | By default, the input will automatically focus when a user opens the widget. If you set this to true, the input will no longer focus when opening the widget. |
 | disableRenderURLsAsLinks | boolean | `false` | If true, disables the automatic replacement of URLs in message elements with clickable HTML link elements. |
 | disableTextInputSanitization | boolean | `false` | By default, text inputs from the user will be sanitized for HTML with scripting. If you set this to true, users can send any kind of HTML text, including script-tags and onload-attributes etc. |
