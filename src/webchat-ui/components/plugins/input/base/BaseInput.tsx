@@ -588,7 +588,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 													spellCheck={false}
 													id="webchatInputMessageInputInTextMode"
 													style={
-														matches ? { fontSize: "16px" } : undefined
+														matches ? { fontSize: "1rem" } : undefined
 													}
 												/>
 											</InputContainer>
