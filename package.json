@@ -7,9 +7,22 @@
 		"Robin Schuster <r.schuster@cognigy.com>"
 	],
 	"license": "SEE LICENSE IN LICENSE",
-	"main": "lib/webchat/index.js",
+	"main": "dist/webchat.js",
+	"module": "dist/webchat.esm.js",
+	"exports": {
+		"import": "./dist/webchat.esm.js",
+		"require": "./dist/webchat.js"
+	},
+	"files": [
+		"./dist/webchat.esm.js",
+		"./dist/webchat.js",
+		"./LICENSE",
+		"OSS_LICENSES.txt"
+	],
 	"scripts": {
-		"build": "webpack --config webpack.production.js",
+		"build": "npm run build:cjs && npm run build:esm",
+		"build:cjs": "webpack --config webpack.production.js",
+		"build:esm": "webpack --config webpack.es.js",
 		"update-license": "node update-license.js",
 		"dev": "webpack-dev-server --config webpack.dev.js --host 0.0.0.0",
 		"cypress:open": "cypress open --e2e --browser chrome",
