@@ -95,5 +95,10 @@ declare namespace Cypress {
 		updateSettings(settings: any): Chainable<any>;
 
 		focusInput(): Chainable<any>;
+
+		/**
+		 * Checks the accessibility compliance of the webchat or its elements.
+		 */
+		checkA11yCompliance(selector?: string): Chainable<void>;
 	}
 }

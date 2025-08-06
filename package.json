@@ -86,6 +86,7 @@
 		"compression-webpack-plugin": "^9.2.0",
 		"css-loader": "^6.5.1",
 		"cypress": "^13.13.0",
+		"cypress-axe": "1.6.0",
 		"cypress-real-events": "^1.13.0",
 		"cypress-wait-until": "^1.7.2",
 		"es-check": "^6.1.1",

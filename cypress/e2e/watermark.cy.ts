@@ -34,6 +34,7 @@ describe("Watermark", () => {
 			"aria-label",
 			"Powered by Cognigy.AI. Opens in new tab",
 		);
+		cy.checkA11yCompliance("#cognigyBrandingLink");
 	});
 
 	it("shouldn't be rendered if disabled by 'watermark: none'", () => {
