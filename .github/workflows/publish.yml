@@ -6,12 +6,12 @@ name: Publish
 on:
     release:
         types: [published]
-    
+
     # manual trigger (for testing)
     workflow_dispatch:
         inputs:
             test_mode:
-                description: 'Test mode (will not actually publish)'
+                description: "Test mode (will not actually publish)"
                 required: false
                 default: false
                 type: boolean
