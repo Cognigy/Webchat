@@ -15,6 +15,7 @@ describe("Privacy Notice", () => {
 		cy.openWebchat();
 		cy.startConversation();
 		cy.get(".webchat-privacy-notice-root").should("be.visible");
+		cy.checkA11yCompliance(".webchat-privacy-notice-root");
 	});
 
 	it("allows title customization", () => {

@@ -26,6 +26,7 @@
 
 import "cypress-wait-until";
 import "cypress-real-events/support";
+import "cypress-axe";
 import { IWebchatSettings } from "../../src/common/interfaces/webchat-config";
 
 Cypress.Commands.add("visitWebchat", () => {
@@ -270,6 +271,47 @@ Cypress.Commands.add("updateSettings", (settings: Partial<IWebchatSettings>) => 
 
 Cypress.Commands.add("focusInput", () => {
 	cy.get(".webchat-input-message-input").focus();
+
+	return cy.then(() => {});
+});
+
+Cypress.Commands.add("checkA11yCompliance", (selector?: string) => {
+	cy.injectAxe();
+
+	const targetElement = selector || "Entire page";
+	cy.task("log", `\nChecking accessibility for: ${targetElement}`);
+
+	cy.checkA11y(
+		selector || null,
+		{
+			runOnly: {
+				type: "tag",
+				values: [
+					"wcag2a",
+					"wcag2aa",
+					"wcag21a",
+					"wcag21aa",
+					"wcag22a",
+					"wcag22aa",
+					"best-practice",
+				],
+			},
+			includedImpacts: ["minor", "moderate", "serious", "critical"],
+		},
+		violations => {
+			if (violations.length > 0) {
+				violations.forEach((violation, index) => {
+					cy.task(
+						"log",
+						`${index + 1}. ${violation.impact} - ${violation.id}: ${violation.description}`,
+					);
+					violation.nodes.forEach(node => {
+						cy.task("log", `   HTML: ${node.html}`);
+					});
+				});
+			}
+		},
+	);
 
 	return cy.then(() => {});
 });
