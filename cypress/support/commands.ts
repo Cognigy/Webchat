@@ -303,7 +303,7 @@ Cypress.Commands.add("checkA11yCompliance", (selector?: string) => {
 				violations.forEach((violation, index) => {
 					cy.task(
 						"log",
-						`${index + 1}. ${violation.impact}- ${violation.id}: ${violation.description}`,
+						`${index + 1}. ${violation.impact} - ${violation.id}: ${violation.description}`,
 					);
 					violation.nodes.forEach(node => {
 						cy.task("log", `   HTML: ${node.html}`);
