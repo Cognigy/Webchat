@@ -17,18 +17,18 @@ jobs:
             - name: Get latest release version
               id: get-version
               run: |
-                if [ -n "${{ github.event.inputs.version_number }}" ]; then
-                  echo "version=${{ github.event.inputs.version_number }}" >> $GITHUB_OUTPUT
-                else
-                  # Get the latest release version using curl and grep
-                  LATEST_VERSION=$(curl -s "https://api.github.com/repos/cognigy/webchat/releases/latest" | grep -o '"tag_name": "[^"]*"' | sed 's/"tag_name": "//' | sed 's/"//' | sed 's/^v//')
-                  if [ -z "$LATEST_VERSION" ]; then
-                    echo "No release version found. LATEST_VERSION=$LATEST_VERSION"
-                    exit 1
+                  if [ -n "${{ github.event.inputs.version_number }}" ]; then
+                    echo "version=${{ github.event.inputs.version_number }}" >> $GITHUB_OUTPUT
+                  else
+                    # Get the latest release version using curl and grep
+                    LATEST_VERSION=$(curl -s "https://api.github.com/repos/cognigy/webchat/releases/latest" | grep -o '"tag_name": "[^"]*"' | sed 's/"tag_name": "//' | sed 's/"//' | sed 's/^v//')
+                    if [ -z "$LATEST_VERSION" ]; then
+                      echo "No release version found. LATEST_VERSION=$LATEST_VERSION"
+                      exit 1
+                    fi
+                    echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+                    echo "Using latest release version: $LATEST_VERSION"
                   fi
-                  echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-                  echo "Using latest release version: $LATEST_VERSION"
-                fi
 
     build:
         needs: get-latest-version
