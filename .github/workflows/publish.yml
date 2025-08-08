@@ -4,17 +4,39 @@ on:
     workflow_dispatch:
         inputs:
             version_number:
-                description: "Version number to publish (e.g., 3.12.0)"
-                required: true
+                description: "Version number to publish (e.g., 3.12.0). Leave empty to use the release with the 'latest' tag."
+                required: false
                 type: string
 
 jobs:
+    get-latest-version:
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.get-version.outputs.version }}
+        steps:
+            - name: Get latest release version
+              id: get-version
+              run: |
+                if [ -n "${{ github.event.inputs.version_number }}" ]; then
+                  echo "version=${{ github.event.inputs.version_number }}" >> $GITHUB_OUTPUT
+                else
+                  # Get the latest release version using curl and grep
+                  LATEST_VERSION=$(curl -s "https://api.github.com/repos/cognigy/webchat/releases/latest" | grep -o '"tag_name": "[^"]*"' | sed 's/"tag_name": "//' | sed 's/"//' | sed 's/^v//')
+                  if [ -z "$LATEST_VERSION" ]; then
+                    echo "No release version found. LATEST_VERSION=$LATEST_VERSION"
+                    exit 1
+                  fi
+                  echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+                  echo "Using latest release version: $LATEST_VERSION"
+                fi
+
     build:
+        needs: get-latest-version
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
               with:
-                  ref: v${{ github.event.inputs.version_number }}
+                  ref: v${{ needs.get-latest-version.outputs.version }}
             - uses: actions/setup-node@v3
               with:
                   node-version: 22.x
@@ -29,12 +51,12 @@ jobs:
                   COMMIT_DISABLED: 1
 
     publish-npm:
-        needs: build
+        needs: [build, get-latest-version]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
               with:
-                  ref: v${{ github.event.inputs.version_number }}
+                  ref: v${{ needs.get-latest-version.outputs.version }}
             - uses: actions/setup-node@v3
               with:
                   node-version: 22.x
