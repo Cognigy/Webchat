@@ -83,6 +83,7 @@ export const getAvatarNameForMessage = (message: IMessage, state: StoreState) =>
 		case "bot":
 		case "engagement":
 			return (
+				state.ui.botAvatarNameOverride ||
 				(state.config.settings.layout.useOtherAgentLogo &&
 					state.config.settings.layout.botAvatarName) ||
 				state.config.settings.layout.title ||
