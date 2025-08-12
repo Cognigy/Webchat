@@ -14,7 +14,7 @@ jobs:
         outputs:
             version: ${{ steps.get-version.outputs.version }}
         steps:
-            - name: Get latest release version
+            - name: Get release version
               id: get-version
               run: |
                   if [ -n "${{ github.event.inputs.version_number }}" ]; then
@@ -44,5 +44,13 @@ jobs:
             - run: git branch # for debugging
             - run: npm ci
             - run: npm test
-            - run: echo "Token exists ${{ secrets.npm_token != '' }}"
-            - run: npm publish --registry=https://registry.npmjs.org/ --token=${{ secrets.npm_token }}
+            - name: Applying auth token
+              run: |
+                echo "create .npmrc file"
+                touch .npmrc
+                echo "registry=https://registry.npmjs.org/" >> .npmrc
+                echo "save-prefix=" >> .npmrc
+                echo "//registry.npmjs.org/:_authToken=${{ secrets.npm_token }}" >> .npmrc
+                echo "npm whoami"
+                npm whoami
+            - run: npm publish
