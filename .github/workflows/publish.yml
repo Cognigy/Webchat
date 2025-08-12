@@ -46,11 +46,11 @@ jobs:
             - run: npm test
             - name: Applying auth token
               run: |
-                echo "create .npmrc file"
-                touch .npmrc
-                echo "registry=https://registry.npmjs.org/" >> .npmrc
-                echo "save-prefix=" >> .npmrc
-                echo "//registry.npmjs.org/:_authToken=${{ secrets.npm_token }}" >> .npmrc
-                echo "npm whoami"
-                npm whoami
+                  echo "create .npmrc file"
+                  touch .npmrc
+                  echo "registry=https://registry.npmjs.org/" >> .npmrc
+                  echo "save-prefix=" >> .npmrc
+                  echo "//registry.npmjs.org/:_authToken=${{ secrets.npm_token }}" >> .npmrc
+                  echo "npm whoami"
+                  npm whoami
             - run: npm publish
