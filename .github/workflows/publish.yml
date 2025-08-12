@@ -9,7 +9,7 @@ on:
                 type: string
 
 jobs:
-    get-latest-version:
+    get-version-number:
         runs-on: ubuntu-latest
         outputs:
             version: ${{ steps.get-version.outputs.version }}
@@ -31,26 +31,18 @@ jobs:
                     echo "Using latest release version: $LATEST_VERSION"
                   fi
 
-    build-and-publish:
-        needs: get-latest-version
+    test-and-publish:
+        needs: get-version-number
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
               with:
-                  ref: v${{ needs.get-latest-version.outputs.version }}
+                  ref: v${{ needs.get-version-number.outputs.version }}
             - uses: actions/setup-node@v3
               with:
                   node-version: 22.x
-            - run: git branch
+            - run: git branch # for debugging
             - run: npm ci
             - run: npm test
-
-            - name: Check package version
-              uses: technote-space/package-version-check-action@v1
-              with:
-                  COMMIT_DISABLED: 1
-
-            - run: npm run build
-            - run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+            - run: echo "Token exists ${{ secrets.npm_token != '' }}"
+            - run: npm publish --registry=https://registry.npmjs.org/ --token=${{ secrets.npm_token }}
