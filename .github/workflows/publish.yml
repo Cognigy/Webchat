@@ -19,6 +19,7 @@ jobs:
               run: |
                   if [ -n "${{ github.event.inputs.version_number }}" ]; then
                     echo "version=${{ github.event.inputs.version_number }}" >> $GITHUB_OUTPUT
+                    echo "Using manual version: ${{ github.event.inputs.version_number }}"
                   else
                     # Get the latest release version using curl and grep
                     LATEST_VERSION=$(curl -s "https://api.github.com/repos/cognigy/webchat/releases/latest" | grep -o '"tag_name": "[^"]*"' | sed 's/"tag_name": "//' | sed 's/"//' | sed 's/^v//')
@@ -30,7 +31,7 @@ jobs:
                     echo "Using latest release version: $LATEST_VERSION"
                   fi
 
-    build:
+    build-and-publish:
         needs: get-latest-version
         runs-on: ubuntu-latest
         steps:
@@ -44,26 +45,12 @@ jobs:
             - run: npm ci
             - run: npm test
 
-            # Use this GitHub Action
             - name: Check package version
               uses: technote-space/package-version-check-action@v1
               with:
                   COMMIT_DISABLED: 1
 
-    publish-npm:
-        needs: [build, get-latest-version]
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                  ref: v${{ needs.get-latest-version.outputs.version }}
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 22.x
-                  registry-url: https://registry.npmjs.org/
-            - run: git branch
-            - run: npm ci
             - run: npm run build
-              # - run: npm publish
+            - run: npm publish
               env:
                   NODE_AUTH_TOKEN: ${{secrets.npm_token}}
