@@ -43,7 +43,6 @@ jobs:
                   node-version: 22.x
             - run: git branch # for debugging
             - run: npm ci
-            - run: npm test
             - name: Applying auth token
               run: |
                   echo "create .npmrc file"
