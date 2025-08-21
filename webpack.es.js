@@ -51,4 +51,10 @@ config.externals = {
 	"react-dom": "react-dom",
 };
 
+config.plugins.push(
+	new webpack.optimize.LimitChunkCountPlugin({
+		maxChunks: 1,
+	}),
+);
+
 module.exports = config;
