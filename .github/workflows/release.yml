@@ -27,9 +27,8 @@ jobs:
               with:
                   draft: true
                   files: |
-                      dist/*.js
-                      dist/*.gz
-                      dist/*.br
+                      dist/webchat.js
+                      dist/webchat.esm.js
                       OSS_LICENSES.txt
                   body: |
                       ### Potentially breaking changes
