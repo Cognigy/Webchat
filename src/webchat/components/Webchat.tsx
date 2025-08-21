@@ -51,7 +51,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		const baseUrl = getEndpointBaseUrl(url);
 		const token = getEndpointUrlToken(url);
 		const socketOptions = {
-			channel: "webchat-client",
+			channel: options?.channel || "webchat3",
 			...options,
 		};
 
