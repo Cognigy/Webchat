@@ -170,7 +170,7 @@ Created on 22-08-2025 at 10:43:58
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.29.0": {
+  "@cognigy/webchat@3.30.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
