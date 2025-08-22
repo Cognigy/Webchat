@@ -5,13 +5,5 @@ export default defineConfig({
 	viewportHeight: 800,
 	e2e: {
 		baseUrl: "http://localhost:8787/",
-		setupNodeEvents(on) {
-			on("task", {
-				log(message) {
-					console.log(message);
-					return null;
-				},
-			});
-		},
 	},
 });
