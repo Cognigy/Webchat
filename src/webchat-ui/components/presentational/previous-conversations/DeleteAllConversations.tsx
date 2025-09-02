@@ -36,9 +36,7 @@ const DeleteAllConversationsModal = (
 		});
 		if (storage) {
 			Object.keys(storage).forEach(key => {
-				if (key.includes(userId) && key.includes(channel)) {
-					storage.removeItem(key);
-				}
+				if (key.includes(userId)) storage.removeItem(key);
 			});
 		}
 		onOpenChange(false, true);
