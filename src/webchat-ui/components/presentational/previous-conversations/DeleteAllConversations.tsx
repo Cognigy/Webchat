@@ -36,7 +36,7 @@ const DeleteAllConversationsModal = (
 		});
 		if (storage) {
 			Object.keys(storage).forEach(key => {
-				if (key.includes(userId) && key.includes(channel)) {
+				if (key.includes(userId) && key.includes("webchat-client")) {
 					storage.removeItem(key);
 				}
 			});
