@@ -33,7 +33,7 @@ interface DeleteConversationProps {
 
 const DeleteConversation = (props: DeleteConversationProps) => {
 	const { config, onDeleteModalStateChange } = props;
-	const { userId, sessionId } = useSelector((state: StoreState) => state.options);
+	const { userId, sessionId, channel } = useSelector((state: StoreState) => state.options);
 	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 	const deleteButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -53,27 +53,12 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 				props.config.settings.embeddingConfiguration?.useSessionStorage ?? false,
 		});
 		if (storage) {
-			Object.keys(storage).forEach(key => {
-				let isDeleted = false;
-				try {
-					const keyAsArray = JSON.parse(key);
-					if (
-						Array.isArray(keyAsArray) &&
-						keyAsArray.includes(userId) &&
-						keyAsArray.includes(sessionId) &&
-						keyAsArray.includes(config.URLToken)
-					) {
-						isDeleted = true;
-						storage.removeItem(key);
-					}
-				} catch (e) {
-					// Dont-care
-				} finally {
-					if (!isDeleted) {
-						if (key.includes(userId) && key.includes(sessionId))
-							storage.removeItem(key);
-					}
-				}
+			Object.keys(storage).forEach(_ => {
+				const key = getOptionsKey(
+					{ channel, userId, sessionId },
+					{ URLToken: props.config.URLToken },
+				);
+				storage.removeItem(key);
 			});
 		}
 		setIsModalOpen(false);
