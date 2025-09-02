@@ -21,7 +21,7 @@ const DeleteAllConversationsModal = (
 	},
 ) => {
 	const { config, onOpenChange, isOpen } = props;
-	const { userId, channel } = useSelector((state: StoreState) => state.options);
+	const { userId } = useSelector((state: StoreState) => state.options);
 	const dispatch = useDispatch();
 
 	const handleConfirmDelete = () => {
@@ -36,7 +36,25 @@ const DeleteAllConversationsModal = (
 		});
 		if (storage) {
 			Object.keys(storage).forEach(key => {
-				if (key.includes(userId)) storage.removeItem(key);
+				let isDeleted = false;
+				try {
+					const keyAsArray = JSON.parse(key);
+					if (
+						Array.isArray(keyAsArray) &&
+						keyAsArray.includes(userId) &&
+						keyAsArray.includes(config.URLToken)
+					) {
+						isDeleted = true;
+						storage.removeItem(key);
+					}
+				} catch (e) {
+					// Dont-care;
+				} finally {
+					if (!isDeleted) {
+						if (key.includes(userId) && key.includes(config.URLToken))
+							storage.removeItem(key);
+					}
+				}
 			});
 		}
 		onOpenChange(false, true);

@@ -54,7 +54,26 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 		});
 		if (storage) {
 			Object.keys(storage).forEach(key => {
-				if (key.includes(userId) && key.includes(sessionId)) storage.removeItem(key);
+				let isDeleted = false;
+				try {
+					const keyAsArray = JSON.parse(key);
+					if (
+						Array.isArray(keyAsArray) &&
+						keyAsArray.includes(userId) &&
+						keyAsArray.includes(sessionId) &&
+						keyAsArray.includes(config.URLToken)
+					) {
+						isDeleted = true;
+						storage.removeItem(key);
+					}
+				} catch (e) {
+					// Dont-care
+				} finally {
+					if (!isDeleted) {
+						if (key.includes(userId) && key.includes(sessionId))
+							storage.removeItem(key);
+					}
+				}
 			});
 		}
 		setIsModalOpen(false);
