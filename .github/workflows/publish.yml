@@ -1,12 +1,8 @@
-name: Publish Pre-Release Version
+name: Publish to NPM (with pre-release tag)
 
 on:
-    workflow_dispatch:
-        inputs:
-            version_number:
-                description: "Version number to publish to NPM(e.g., 3.12.0). Leave empty to use the release with the 'latest' tag."
-                required: false
-                type: string
+    release:
+        types: [published]
 
 jobs:
     get-version-number:
@@ -17,19 +13,13 @@ jobs:
             - name: Get release version
               id: get-version
               run: |
-                  if [ -n "${{ github.event.inputs.version_number }}" ]; then
-                    echo "version=${{ github.event.inputs.version_number }}" >> $GITHUB_OUTPUT
-                    echo "Using manual version: ${{ github.event.inputs.version_number }}"
-                  else
-                    # Get the latest release version using curl and grep
-                    LATEST_VERSION=$(curl -s "https://api.github.com/repos/cognigy/webchat/releases/latest" | grep -o '"tag_name": "[^"]*"' | sed 's/"tag_name": "//' | sed 's/"//' | sed 's/^v//')
-                    if [ -z "$LATEST_VERSION" ]; then
-                      echo "No release version found. LATEST_VERSION=$LATEST_VERSION"
-                      exit 1
-                    fi
-                    echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-                    echo "Using latest release version: $LATEST_VERSION"
+                  RELEASE_VERSION="${GITHUB_REF#refs/tags/v}"
+                  if [ -z "$RELEASE_VERSION" ]; then
+                    echo "No release version found."
+                    exit 1
                   fi
+                  echo "version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
+                  echo "Using release version: $RELEASE_VERSION"
 
     publish:
         needs: get-version-number
