@@ -13,7 +13,8 @@ jobs:
             - name: Get release version
               id: get-version
               run: |
-                  RELEASE_VERSION="${GITHUB_REF#refs/tags/v}"
+                  TAG_NAME="${{ github.event.release.tag_name }}"
+                  RELEASE_VERSION="${TAG_NAME#v}"
                   if [ -z "$RELEASE_VERSION" ]; then
                     echo "No release version found."
                     exit 1
