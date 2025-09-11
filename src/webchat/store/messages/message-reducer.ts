@@ -62,6 +62,15 @@ const getFinishReason = (message: IMessage, messageId?: string) => {
 	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
+// Helper to determine if a message should be set as the currently animating message
+const shouldSetAsAnimating = (
+	nextAnimatingId: string | null,
+	newMessage: IMessage,
+	isEngagementMessageHidden: boolean,
+) => {
+	return !nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden);
+};
+
 // slice of the store state that contains the info about streaming mode and teaserMessage, to avoid circular dependency
 type ConfigState = {
 	settings?: {
@@ -126,7 +135,13 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					if (!state.currentlyAnimatingId) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
-					if (!nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden)) {
+
+					const shouldAnimate = shouldSetAsAnimating(
+						nextAnimatingId,
+						newMessage,
+						isEngagementMessageHidden,
+					);
+					if (shouldAnimate) {
 						nextAnimatingId = isAnimated ? newMessageId : null;
 					}
 
@@ -167,7 +182,12 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					newMessageId = generateRandomId();
 				}
 
-				if (!nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden)) {
+				const shouldAnimate = shouldSetAsAnimating(
+					nextAnimatingId,
+					newMessage,
+					isEngagementMessageHidden,
+				);
+				if (shouldAnimate) {
 					nextAnimatingId = newMessageId;
 				}
 
