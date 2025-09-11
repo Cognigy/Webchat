@@ -62,12 +62,15 @@ const getFinishReason = (message: IMessage, messageId?: string) => {
 	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
-// slice of the store state that contains the info about streaming mode, to avoid circular dependency
+// slice of the store state that contains the info about streaming mode and teaserMessage, to avoid circular dependency
 type ConfigState = {
 	settings?: {
 		behavior?: {
 			collateStreamedOutputs?: boolean;
 			progressiveMessageRendering?: boolean;
+		};
+		teaserMessage?: {
+			showInChat?: boolean;
 		};
 	};
 };
@@ -95,6 +98,8 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					getState().config?.settings?.behavior?.collateStreamedOutputs;
 				const isprogressiveMessageRenderingEnabled =
 					getState().config?.settings?.behavior?.progressiveMessageRendering;
+				const isEngagementMessageHidden =
+					getState().config?.settings?.teaserMessage?.showInChat === false;
 
 				if (
 					(!isOutputCollationEnabled && !isprogressiveMessageRenderingEnabled) ||
@@ -121,7 +126,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					if (!state.currentlyAnimatingId) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
-					if (!nextAnimatingId) {
+					if (!nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden)) {
 						nextAnimatingId = isAnimated ? newMessageId : null;
 					}
 
@@ -162,7 +167,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					newMessageId = generateRandomId();
 				}
 
-				if (!nextAnimatingId) {
+				if (!nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden)) {
 					nextAnimatingId = newMessageId;
 				}
 
