@@ -1,4 +1,4 @@
-Created on 02-09-2025 at 11:38:12
+Created on 17-09-2025 at 11:41:10
 
 {
   "@ampproject/remapping@2.3.0": {
@@ -170,7 +170,7 @@ Created on 02-09-2025 at 11:38:12
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.30.1": {
+  "@cognigy/webchat@3.31.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -586,13 +586,13 @@ Created on 02-09-2025 at 11:38:12
     "licenseFile": "node_modules/call-bind-apply-helpers/LICENSE",
     "copyright": "Copyright (c) 2024 Jordan Harband"
   },
-  "call-bind@1.0.7": {
+  "call-bound@1.0.4": {
     "licenses": "MIT",
-    "repository": "https://github.com/ljharb/call-bind",
+    "repository": "https://github.com/ljharb/call-bound",
     "publisher": "Jordan Harband",
     "email": "ljharb@gmail.com",
-    "licenseFile": "node_modules/call-bind/LICENSE",
-    "copyright": "Copyright (c) 2020 Jordan Harband"
+    "licenseFile": "node_modules/call-bound/LICENSE",
+    "copyright": "Copyright (c) 2024 Jordan Harband"
   },
   "callsites@3.1.0": {
     "licenses": "MIT",
@@ -820,14 +820,6 @@ Created on 02-09-2025 at 11:38:12
     "repository": "https://github.com/TehShrike/deepmerge",
     "licenseFile": "node_modules/deepmerge/license.txt",
     "copyright": "Copyright (c) 2012 James Halliday, Josh Duff, and other contributors"
-  },
-  "define-data-property@1.1.4": {
-    "licenses": "MIT",
-    "repository": "https://github.com/ljharb/define-data-property",
-    "publisher": "Jordan Harband",
-    "email": "ljharb@gmail.com",
-    "licenseFile": "node_modules/define-data-property/LICENSE",
-    "copyright": "Copyright (c) 2023 Jordan Harband"
   },
   "delayed-stream@1.0.0": {
     "licenses": "MIT",
@@ -1136,14 +1128,6 @@ Created on 02-09-2025 at 11:38:12
     "url": "sindresorhus.com",
     "licenseFile": "node_modules/has-flag/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
-  },
-  "has-property-descriptors@1.0.2": {
-    "licenses": "MIT",
-    "repository": "https://github.com/inspect-js/has-property-descriptors",
-    "publisher": "Jordan Harband",
-    "email": "ljharb@gmail.com",
-    "licenseFile": "node_modules/has-property-descriptors/LICENSE",
-    "copyright": "Copyright (c) 2022 Inspect JS"
   },
   "has-symbols@1.1.0": {
     "licenses": "MIT",
@@ -1984,7 +1968,7 @@ Created on 02-09-2025 at 11:38:12
     "licenseFile": "node_modules/object-assign/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "object-inspect@1.13.1": {
+  "object-inspect@1.13.4": {
     "licenses": "MIT",
     "repository": "https://github.com/inspect-js/object-inspect",
     "publisher": "James Halliday",
@@ -2136,7 +2120,7 @@ Created on 02-09-2025 at 11:38:12
     "licenseFile": "node_modules/url/node_modules/punycode/LICENSE-MIT.txt",
     "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>"
   },
-  "qs@6.13.1": {
+  "qs@6.14.0": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/ljharb/qs",
     "licenseFile": "node_modules/qs/LICENSE.md",
@@ -2406,14 +2390,6 @@ Created on 02-09-2025 at 11:38:12
     "licenseFile": "node_modules/semver/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
-  "set-function-length@1.2.2": {
-    "licenses": "MIT",
-    "repository": "https://github.com/ljharb/set-function-length",
-    "publisher": "Jordan Harband",
-    "email": "ljharb@gmail.com",
-    "licenseFile": "node_modules/set-function-length/LICENSE",
-    "copyright": "Copyright (c) Jordan Harband and contributors"
-  },
   "shallow-equal@1.2.1": {
     "licenses": "MIT",
     "repository": "https://github.com/moroshko/shallow-equal",
@@ -2422,7 +2398,31 @@ Created on 02-09-2025 at 11:38:12
     "licenseFile": "node_modules/shallow-equal/LICENSE",
     "copyright": "Copyright © 2016 Misha Moroshko"
   },
-  "side-channel@1.0.6": {
+  "side-channel-list@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel-list",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/side-channel-list/LICENSE",
+    "copyright": "Copyright (c) 2024 Jordan Harband"
+  },
+  "side-channel-map@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel-map",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/side-channel-map/LICENSE",
+    "copyright": "Copyright (c) 2024 Jordan Harband"
+  },
+  "side-channel-weakmap@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel-weakmap",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "licenseFile": "node_modules/side-channel-weakmap/LICENSE",
+    "copyright": "Copyright (c) 2019 Jordan Harband"
+  },
+  "side-channel@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ljharb/side-channel",
     "publisher": "Jordan Harband",
