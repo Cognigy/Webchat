@@ -51,6 +51,19 @@ const defaultEndpointResponse = {
 Cypress.Commands.add(
 	"initMockWebchat",
 	(embeddingOptions = {}, endpointResponse = defaultEndpointResponse) => {
+		let finalOptions = embeddingOptions;
+
+		if (Cypress.env("useProgressiveRendering")) {
+			const customOptions = {
+				bahavior: { progressiveMessageRendering: true },
+			};
+
+			finalOptions = {
+				...embeddingOptions,
+				...customOptions,
+			};
+		}
+
 		cy.intercept("GET", "http://endpoint-mock.cognigy.ai/asdfqwer", endpointResponse);
 
 		return cy
@@ -58,7 +71,7 @@ Cypress.Commands.add(
 			.then(window => {
 				// @ts-ignore
 				return window
-					.initWebchat("http://endpoint-mock.cognigy.ai/asdfqwer", embeddingOptions)
+					.initWebchat("http://endpoint-mock.cognigy.ai/asdfqwer", finalOptions)
 					.then(webchat => {
 						// @ts-ignore
 						window.webchat = webchat;
@@ -113,7 +126,7 @@ Cypress.Commands.add("submitPrivacyScreen", () => {
 
 Cypress.Commands.add(
 	"receiveMessage",
-	(text?: string, data?: Object, source: "bot" | "agent" = "bot") => {
+	(text?: string, data?: object, source: "bot" | "agent" = "bot") => {
 		cy.get("@webchat").then(webchat => {
 			(webchat as any)._handleOutput({
 				id: `fakemessage-${Math.random()}-${Date.now()}`,
@@ -129,7 +142,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
 	"sendMessage",
-	(text?: string, data?: Object, source: "bot" | "agent" | "user" = "user", options = {}) => {
+	(text?: string, data?: object, source: "bot" | "agent" | "user" = "user", options = {}) => {
 		cy.get("@webchat").then(webchat => {
 			(webchat as any).store.dispatch({
 				type: "SEND_MESSAGE",
