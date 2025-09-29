@@ -55,7 +55,7 @@ Cypress.Commands.add(
 
 		if (Cypress.env("useProgressiveRendering")) {
 			const customOptions = {
-				bahavior: { progressiveMessageRendering: true },
+				behavior: { progressiveMessageRendering: true },
 			};
 
 			finalOptions = {
