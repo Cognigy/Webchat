@@ -293,9 +293,7 @@ export class WebchatUI extends React.PureComponent<
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
 
-	defaultChatIcons = [ChatBubbleOutline1,
-		ChatBubbleOutline2,
-		ChatBubbleOutline3];
+	defaultChatIcons = [ChatBubbleOutline1, ChatBubbleOutline2, ChatBubbleOutline3];
 	private unreadTitleIndicatorInterval: ReturnType<typeof setInterval> | null = null;
 	private originalTitle: string = window.document.title;
 	private titleType: "original" | "unread" = "original";
@@ -646,15 +644,6 @@ export class WebchatUI extends React.PureComponent<
 			) {
 				notificationSound.play();
 			}
-
-		if (
-			prevProps?.config?.settings?.layout?.iconAnimationInterval !==
-			this.props?.config?.settings?.layout?.iconAnimationInterval ||
-			prevProps?.config?.settings?.layout?.iconAnimationSpeed !==
-			this.props?.config?.settings?.layout?.iconAnimationSpeed
-		) {
-			this.setupIconAnimationInterval();
-		}
 		}
 
 		if (
@@ -662,6 +651,18 @@ export class WebchatUI extends React.PureComponent<
 			!this.props.config.settings.unreadMessages.enablePreview
 		) {
 			this.setState({ lastUnseenMessageText: "" });
+		}
+
+		// Re-evaluate icon animation interval when related settings change
+		if (
+			prevProps?.config?.settings?.layout?.iconAnimationInterval !==
+				this.props?.config?.settings?.layout?.iconAnimationInterval ||
+			prevProps?.config?.settings?.layout?.iconAnimationSpeed !==
+				this.props?.config?.settings?.layout?.iconAnimationSpeed ||
+			prevProps?.config?.settings?.layout?.iconAnimation !==
+				this.props?.config?.settings?.layout?.iconAnimation
+		) {
+			this.setupIconAnimationInterval();
 		}
 
 		if (!this.hideNotifications) {
@@ -705,22 +706,30 @@ export class WebchatUI extends React.PureComponent<
 		}
 	}
 
-private iconAnimationIntervalHandle: ReturnType<typeof setInterval> | null = null;
+	private iconAnimationIntervalHandle: ReturnType<typeof setInterval> | null = null;
 
-private setupIconAnimationInterval() {
-		if (this.iconAnimationIntervalHandle) clearInterval(this.iconAnimationIntervalHandle);
+	private setupIconAnimationInterval() {
+		if (this.iconAnimationIntervalHandle) {
+			clearInterval(this.iconAnimationIntervalHandle);
+			this.iconAnimationIntervalHandle = null;
+		}
+		const animation = this.props?.config?.settings?.layout?.iconAnimation;
+		// If there is no animation configured, do not start the timer
+		if (!animation || (typeof animation === "string" && animation.trim().length === 0)) {
+			return;
+		}
 		const intervalSec = this.props.config?.settings?.layout?.iconAnimationInterval ?? 4;
 		const intervalMs = Math.max(0, intervalSec) * 1000;
 		if (intervalMs === 0) return;
-			this.iconAnimationIntervalHandle = setInterval(() => {
-				const container = document.querySelector(
-					"#webchatWindowToggleButton .iconAnimationContainer",
-				) as HTMLElement | null;
-				if (!container) return;
-				container.classList.remove("optionActive");
-				void container.offsetWidth; 
-				container.classList.add("optionActive");
-			}, intervalMs);
+		this.iconAnimationIntervalHandle = setInterval(() => {
+			const container = document.querySelector(
+				"#webchatWindowToggleButton .iconAnimationContainer",
+			) as HTMLElement | null;
+			if (!container) return;
+			container.classList.remove("optionActive");
+			void container.offsetWidth;
+			container.classList.add("optionActive");
+		}, intervalMs);
 	}
 
 	/**
@@ -1091,7 +1100,8 @@ private setupIconAnimationInterval() {
 
 			if (typeof iconRef === "string" && iconRef.startsWith("default-")) {
 				const index = Math.max(0, Number(iconRef.replace("default-", "")) - 1);
-				const DefaultIcon = (this.defaultChatIcons[index] ?? ChatIcon) as React.ComponentType<{
+				const DefaultIcon = (this.defaultChatIcons[index] ??
+					ChatIcon) as React.ComponentType<{
 					className?: string;
 					"aria-hidden"?: boolean;
 				}>;
@@ -1255,8 +1265,8 @@ private setupIconAnimationInterval() {
 													type="button"
 													className="webchat-toggle-button-disabled"
 													style={{
-										["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
-									}}
+														["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
+													}}
 													aria-label={getDisabledMessage()}
 													ref={this.chatToggleButtonRef}
 													id="webchatWindowToggleButton"
@@ -1271,13 +1281,13 @@ private setupIconAnimationInterval() {
 												onClick={this.handleFabClick}
 												{...webchatToggleProps}
 												type="button"
-								className={`webchat-toggle-button burst ${config.settings.layout.iconAnimation || ""}`}
+												className={`webchat-toggle-button burst ${config.settings.layout.iconAnimation || ""}`}
 												id="webchatWindowToggleButton"
 												aria-label={openChatAriaLabel()}
 												ref={this.chatToggleButtonRef}
-								style={{
-									["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
-								}}
+												style={{
+													["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
+												}}
 											>
 												{open ? <CollapseIcon /> : getChatIcon()}
 												{config.settings.unreadMessages.enableBadge ? (
