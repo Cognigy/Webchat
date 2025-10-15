@@ -149,6 +149,10 @@ export interface IWebchatSettings {
 		enableGenericHTMLStyling: boolean;
 		disableHtmlContentSanitization: boolean;
 		disableUrlButtonSanitization: boolean;
+		iconUrl?: string;
+		iconAnimation?: string;
+		iconAnimationSpeed?: number;
+		iconAnimationInterval?: number;
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
 		watermarkUrl: string;
