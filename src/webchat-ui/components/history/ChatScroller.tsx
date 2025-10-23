@@ -160,6 +160,32 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 
 	const [inputHeight, setInputHeight] = useState(0);
 
+	const handlePreventWheel = (event: Event) => {
+		event.stopPropagation();
+		event.preventDefault();
+	};
+
+	const handlePreventTouch = (event: Event) => {
+		event.stopPropagation();
+		event.preventDefault();
+	};
+
+	useEffect(() => {
+		const button = document.querySelector('.webchat-scroll-to-bottom-button');
+		if (button) {
+			button.addEventListener('wheel', handlePreventWheel, { passive: false });
+			button.addEventListener('touchmove', handlePreventTouch, { passive: false });
+		}
+
+		return () => {
+			const button = document.querySelector('.webchat-scroll-to-bottom-button');
+			if (button) {
+				button.removeEventListener('wheel', handlePreventWheel);
+				button.removeEventListener('touchmove', handlePreventTouch);
+			}
+		};
+	}, [isAtBottom]);
+
 	useEffect(() => {
 		const observeElement = element => {
 			const resizeObserver = new ResizeObserver(entries => {
