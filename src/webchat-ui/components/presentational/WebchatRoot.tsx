@@ -1,5 +1,6 @@
 import React, { forwardRef, MutableRefObject, useEffect } from "react";
 import styled from "@emotion/styled";
+import { usePreventScrollLeak } from "../../hooks/usePreventScrollLeak";
 
 interface IWebchatRootProps extends React.HTMLAttributes<HTMLDivElement> {
 	chatWindowWidth?: number;
@@ -35,41 +36,17 @@ const StyledWebchatRoot = styled.div<{ chatWindowWidth?: number }>(
 );
 
 const WebchatRoot = forwardRef<HTMLDivElement, IWebchatRootProps>((props, ref) => {
-	const handlePreventScroll = (event: WheelEvent | TouchEvent) => {
-		const target = event.target as HTMLElement;
-		if (!target) return;
-
-		const isScrollable = (el: HTMLElement): boolean => {
-			const hasScrollableContent = el.scrollHeight > el.clientHeight;
-			const isOverflowAuto = getComputedStyle(el).overflowY === "auto";
-			return hasScrollableContent && isOverflowAuto;
-		};
-
-		let element: HTMLElement | null = target;
-
-		while (element && element !== document.body) {
-			if (isScrollable(element)) return;
-			element = element.parentElement;
-		}
-
-		event.stopPropagation();
-		event.preventDefault();
-	};
+	const preventScrollLeak = usePreventScrollLeak();
 
 	useEffect(() => {
 		const element = (ref as MutableRefObject<HTMLDivElement | null>)?.current;
 		if (!element) return;
 
-		element.addEventListener("wheel", handlePreventScroll, { passive: false });
-		element.addEventListener("touchmove", handlePreventScroll, { passive: false });
-
-		return () => {
-			element.removeEventListener("wheel", handlePreventScroll);
-			element.removeEventListener("touchmove", handlePreventScroll);
-		};
-	}, [ref]);
+		return preventScrollLeak(element);
+	}, [ref, preventScrollLeak]);
 
 	return <StyledWebchatRoot ref={ref} {...props} />;
 });
 
 export default WebchatRoot;
+
