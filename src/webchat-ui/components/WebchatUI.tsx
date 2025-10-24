@@ -1096,7 +1096,7 @@ export class WebchatUI extends React.PureComponent<
 			}
 		};
 		const getChatIcon = () => {
-			const iconRef = config.settings.layout.iconUrl ?? "";
+			const iconRef = config.settings.layout.iconUrl ?? "default-1";
 
 			if (typeof iconRef === "string" && iconRef.startsWith("default-")) {
 				const index = Math.max(0, Number(iconRef.replace("default-", "")) - 1);
