@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import useIsAtBottom from "./hooks";
-import usePreventScrollLeak from '../../hooks/usePreventScrollLeak';
+import usePreventScrollLeak from "../../hooks/usePreventScrollLeak";
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
