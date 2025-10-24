@@ -160,10 +160,20 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 		useSelector(state => state.config.settings.behavior.enableScrollButton) === false;
 
 	const [inputHeight, setInputHeight] = useState(0);
+	const scrollButtonRef = useRef<HTMLButtonElement>(null);
+	const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null);
+
+	// Update button element when it becomes available
+	useEffect(() => {
+		if (scrollButtonRef.current) {
+			setButtonElement(scrollButtonRef.current);
+		}
+	}, [!isAtBottom]);
 
 	usePreventScrollLeak({ 
-		buttonSelector: '.webchat-scroll-to-bottom-button',
-		dependencies: [isAtBottom]
+		element: buttonElement,
+		isButton: true,
+		dependencies: [isAtBottom] 
 	});
 
 	useEffect(() => {
@@ -196,6 +206,7 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 			{children}
 			{!isAtBottom && !scrollButtonDisabled && (
 				<ScrollButton
+					ref={scrollButtonRef}
 					className="webchat-scroll-to-bottom-button"
 					onClick={onScrollToBottom}
 					aria-label={scrollToBottomText ?? "Scroll to the bottom of the chat"}

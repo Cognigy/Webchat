@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 
 type PreventScrollOptions = {
-    element?: HTMLElement | null;
-    buttonSelector?: string;
+    element: HTMLElement | null;
+    isButton?: boolean;
     dependencies?: any[];
 };
 
 const usePreventScrollLeak = (props: PreventScrollOptions) => {
-    const { element = null, buttonSelector = '', dependencies = [] } = props;
-
+    const { element, isButton = false, dependencies = [] } = props;
+    
     useEffect(() => {
-        const button = buttonSelector && document.querySelector(buttonSelector);
+        if (!element) return;
 
         const preventScrollLeak = (event: Event) => {
             event.stopPropagation();
@@ -37,20 +37,16 @@ const usePreventScrollLeak = (props: PreventScrollOptions) => {
             preventScrollLeak(event);
         };
 
-        const el = element || button;
+        const handler = isButton ? preventScrollLeak : handlePreventScroll;
 
-        if (el) {
-            el.addEventListener("wheel", button ? preventScrollLeak : handlePreventScroll, { passive: false });
-            el.addEventListener("touchmove", button ? preventScrollLeak : handlePreventScroll, { passive: false });
-        }
+        element.addEventListener("wheel", handler, { passive: false });
+        element.addEventListener("touchmove", handler, { passive: false });
 
         return () => {
-            if (el) {
-                el.removeEventListener("wheel", button ? preventScrollLeak : handlePreventScroll);
-                el.removeEventListener("touchmove", button ? preventScrollLeak : handlePreventScroll);
-            }
+            element.removeEventListener("wheel", handler);
+            element.removeEventListener("touchmove", handler);
         };
-    }, dependencies);
+    }, [element, isButton, ...dependencies]);
 };
 
 export default usePreventScrollLeak;
