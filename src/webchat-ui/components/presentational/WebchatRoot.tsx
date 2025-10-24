@@ -36,8 +36,8 @@ const StyledWebchatRoot = styled.div<{ chatWindowWidth?: number }>(
 );
 
 const WebchatRoot = forwardRef<HTMLDivElement, IWebchatRootProps>((props, ref) => {
-	const element = (ref as MutableRefObject<HTMLDivElement | null>)?.current;
-	usePreventScrollLeak({ element, dependencies: [element] });
+	const element = (ref as MutableRefObject<HTMLDivElement | null>).current;
+	usePreventScrollLeak({ element });
 
 	return <StyledWebchatRoot ref={ref} {...props} />;
 });
