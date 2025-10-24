@@ -170,10 +170,10 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 		}
 	}, [!isAtBottom]);
 
-	usePreventScrollLeak({ 
+	usePreventScrollLeak({
 		element: buttonElement,
 		isButton: true,
-		dependencies: [isAtBottom] 
+		dependencies: [isAtBottom]
 	});
 
 	useEffect(() => {
