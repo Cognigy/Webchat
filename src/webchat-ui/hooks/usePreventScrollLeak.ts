@@ -10,7 +10,9 @@ const usePreventScrollLeak = (props: PreventScrollOptions) => {
     const { element = null, buttonSelector = '', dependencies = [] } = props;
 
     useEffect(() => {
-        const handlePrevent = (event: Event) => {
+        const button = buttonSelector && document.querySelector(buttonSelector);
+
+        const preventScrollLeak = (event: Event) => {
             event.stopPropagation();
             event.preventDefault();
         };
@@ -32,37 +34,20 @@ const usePreventScrollLeak = (props: PreventScrollOptions) => {
                 currentElement = currentElement.parentElement;
             }
 
-            event.stopPropagation();
-            event.preventDefault();
+            preventScrollLeak(event);
         };
 
-        // For root element scroll prevention
-        if (element) {
-            element.addEventListener("wheel", handlePreventScroll, { passive: false });
-            element.addEventListener("touchmove", handlePreventScroll, { passive: false });
-        }
+        const el = element || button;
 
-        // For button scroll prevention
-        if (buttonSelector) {
-            const button = document.querySelector(buttonSelector);
-            if (button) {
-                button.addEventListener('wheel', handlePrevent, { passive: false });
-                button.addEventListener('touchmove', handlePrevent, { passive: false });
-            }
+        if (el) {
+            el.addEventListener("wheel", button ? preventScrollLeak : handlePreventScroll, { passive: false });
+            el.addEventListener("touchmove", button ? preventScrollLeak : handlePreventScroll, { passive: false });
         }
 
         return () => {
-            if (element) {
-                element.removeEventListener("wheel", handlePreventScroll);
-                element.removeEventListener("touchmove", handlePreventScroll);
-            }
-
-            if (buttonSelector) {
-                const button = document.querySelector(buttonSelector);
-                if (button) {
-                    button.removeEventListener('wheel', handlePrevent);
-                    button.removeEventListener('touchmove', handlePrevent);
-                }
+            if (el) {
+                el.removeEventListener("wheel", button ? preventScrollLeak : handlePreventScroll);
+                el.removeEventListener("touchmove", button ? preventScrollLeak : handlePreventScroll);
             }
         };
     }, dependencies);
