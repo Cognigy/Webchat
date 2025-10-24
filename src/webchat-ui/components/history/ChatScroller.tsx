@@ -168,7 +168,7 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 		if (scrollButtonRef.current) {
 			setButtonElement(scrollButtonRef.current);
 		}
-	}, [!isAtBottom]);
+	}, [isAtBottom]);
 
 	usePreventScrollLeak({
 		element: buttonElement,
