@@ -1,13 +1,12 @@
-import { DependencyList, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 type PreventScrollOptions = {
     element: HTMLElement | null;
     isButton?: boolean;
-    dependencies?: DependencyList;
 };
 
 const usePreventScrollLeak = (props: PreventScrollOptions) => {
-    const { element, isButton = false, dependencies = [] } = props;
+    const { element, isButton = false } = props;
 
     const isScrollable = useMemo(() => {
         return (el: HTMLElement): boolean => {
@@ -50,7 +49,7 @@ const usePreventScrollLeak = (props: PreventScrollOptions) => {
             element.removeEventListener("wheel", handler);
             element.removeEventListener("touchmove", handler);
         };
-    }, [element, isButton, isScrollable, ...dependencies]);
+    }, [element, isButton, isScrollable]);
 };
 
 export default usePreventScrollLeak;
