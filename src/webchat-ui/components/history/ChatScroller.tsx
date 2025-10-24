@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import useIsAtBottom from "./hooks";
+import { useButtonScrollPrevention } from '../../hooks/useButtonScrollPrevention';
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
@@ -169,6 +170,8 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 		event.stopPropagation();
 		event.preventDefault();
 	};
+
+	useButtonScrollPrevention('.webchat-scroll-to-bottom-button', [isAtBottom]);
 
 	useEffect(() => {
 		const button = document.querySelector('.webchat-scroll-to-bottom-button');
