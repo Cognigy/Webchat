@@ -1,8 +1,19 @@
-import { useCallback } from 'react';
+import { useEffect } from 'react';
 
-export const usePreventScrollLeak = () => {
-    return useCallback((element: HTMLElement | null) => {
-        if (!element) return;
+type PreventScrollOptions = {
+    element?: HTMLElement | null;
+    buttonSelector?: string;
+    dependencies?: any[];
+};
+
+const usePreventScrollLeak = (props: PreventScrollOptions) => {
+    const { element = null, buttonSelector = '', dependencies = [] } = props;
+
+    useEffect(() => {
+        const handlePrevent = (event: Event) => {
+            event.stopPropagation();
+            event.preventDefault();
+        };
 
         const handlePreventScroll = (event: Event) => {
             const target = event.target as HTMLElement;
@@ -25,12 +36,36 @@ export const usePreventScrollLeak = () => {
             event.preventDefault();
         };
 
-        element.addEventListener("wheel", handlePreventScroll, { passive: false });
-        element.addEventListener("touchmove", handlePreventScroll, { passive: false });
+        // For root element scroll prevention
+        if (element) {
+            element.addEventListener("wheel", handlePreventScroll, { passive: false });
+            element.addEventListener("touchmove", handlePreventScroll, { passive: false });
+        }
+
+        // For button scroll prevention
+        if (buttonSelector) {
+            const button = document.querySelector(buttonSelector);
+            if (button) {
+                button.addEventListener('wheel', handlePrevent, { passive: false });
+                button.addEventListener('touchmove', handlePrevent, { passive: false });
+            }
+        }
 
         return () => {
-            element.removeEventListener("wheel", handlePreventScroll);
-            element.removeEventListener("touchmove", handlePreventScroll);
+            if (element) {
+                element.removeEventListener("wheel", handlePreventScroll);
+                element.removeEventListener("touchmove", handlePreventScroll);
+            }
+
+            if (buttonSelector) {
+                const button = document.querySelector(buttonSelector);
+                if (button) {
+                    button.removeEventListener('wheel', handlePrevent);
+                    button.removeEventListener('touchmove', handlePrevent);
+                }
+            }
         };
-    }, []);
+    }, dependencies);
 };
+
+export default usePreventScrollLeak;

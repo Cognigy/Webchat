@@ -1,6 +1,6 @@
-import React, { forwardRef, MutableRefObject, useEffect } from "react";
+import React, { forwardRef, MutableRefObject } from "react";
 import styled from "@emotion/styled";
-import { usePreventScrollLeak } from "../../hooks/usePreventScrollLeak";
+import usePreventScrollLeak from "../../hooks/usePreventScrollLeak";
 
 interface IWebchatRootProps extends React.HTMLAttributes<HTMLDivElement> {
 	chatWindowWidth?: number;
@@ -36,14 +36,8 @@ const StyledWebchatRoot = styled.div<{ chatWindowWidth?: number }>(
 );
 
 const WebchatRoot = forwardRef<HTMLDivElement, IWebchatRootProps>((props, ref) => {
-	const preventScrollLeak = usePreventScrollLeak();
-
-	useEffect(() => {
-		const element = (ref as MutableRefObject<HTMLDivElement | null>)?.current;
-		if (!element) return;
-
-		return preventScrollLeak(element);
-	}, [ref, preventScrollLeak]);
+	const element = (ref as MutableRefObject<HTMLDivElement | null>)?.current;
+	usePreventScrollLeak({ element, dependencies: [element] });
 
 	return <StyledWebchatRoot ref={ref} {...props} />;
 });

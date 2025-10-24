@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
 import { useSelector } from "../../../webchat/helper/useSelector";
 import useIsAtBottom from "./hooks";
-import { useButtonScrollPrevention } from '../../hooks/useButtonScrollPrevention';
+import usePreventScrollLeak from '../../hooks/usePreventScrollLeak';
 
 interface IChatLogWrapperProps extends React.HTMLProps<HTMLDivElement> {
 	showFocusOutline?: boolean;
@@ -161,33 +161,10 @@ const ScrollerContent = ({ children, isAtBottom, onScrollToBottom }) => {
 
 	const [inputHeight, setInputHeight] = useState(0);
 
-	const handlePreventWheel = (event: Event) => {
-		event.stopPropagation();
-		event.preventDefault();
-	};
-
-	const handlePreventTouch = (event: Event) => {
-		event.stopPropagation();
-		event.preventDefault();
-	};
-
-	useButtonScrollPrevention('.webchat-scroll-to-bottom-button', [isAtBottom]);
-
-	useEffect(() => {
-		const button = document.querySelector('.webchat-scroll-to-bottom-button');
-		if (button) {
-			button.addEventListener('wheel', handlePreventWheel, { passive: false });
-			button.addEventListener('touchmove', handlePreventTouch, { passive: false });
-		}
-
-		return () => {
-			const button = document.querySelector('.webchat-scroll-to-bottom-button');
-			if (button) {
-				button.removeEventListener('wheel', handlePreventWheel);
-				button.removeEventListener('touchmove', handlePreventTouch);
-			}
-		};
-	}, [isAtBottom]);
+	usePreventScrollLeak({ 
+		buttonSelector: '.webchat-scroll-to-bottom-button',
+		dependencies: [isAtBottom]
+	});
 
 	useEffect(() => {
 		const observeElement = element => {
