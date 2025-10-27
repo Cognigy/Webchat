@@ -1151,7 +1151,12 @@ export class WebchatUI extends React.PureComponent<
 							)}s`,
 						}}
 					>
-						<img src={iconRef} alt="" aria-hidden style={{ width: 20, height: 20, display: "inline-block" }} />
+						<img
+							src={iconRef}
+							alt=""
+							aria-hidden
+							style={{ width: 20, height: 20, display: "inline-block" }}
+						/>
 					</span>
 				);
 			}
