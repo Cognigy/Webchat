@@ -1138,6 +1138,24 @@ export class WebchatUI extends React.PureComponent<
 				);
 			}
 
+			const isPngDataUri = /^data:image\/png/i.test(iconRef);
+			const isPngFile = iconRef.trim().toLowerCase().endsWith(".png");
+			if (isPngDataUri || isPngFile) {
+				return (
+					<span
+						className={`iconAnimationContainer ${config.settings.layout.iconAnimation || ""}`}
+						style={{
+							["--icon-burst-duration" as any]: `${Math.max(
+								0.2,
+								1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1),
+							)}s`,
+						}}
+					>
+						<img src={iconRef} alt="" aria-hidden style={{ width: 20, height: 20, display: "inline-block" }} />
+					</span>
+				);
+			}
+
 			return (
 				<span
 					className={`iconAnimationContainer ${config.settings.layout.iconAnimation || ""}`}
