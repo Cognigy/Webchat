@@ -10,40 +10,49 @@ There are several classes that you need to take in consideration if you want to 
 
 - _webchat-root_
 - _webchat_
+- _webchat-toggle-button-root_
 - _webchat-header-bar_
+- _webchat-header-logo-name-container_
 - _webchat-header-logo_
+- _webchat-header-cognigy-logo_
 - _webchat-header-title_
 - _webchat-header-close-button_
-- _webchat-header-rating-button_
+- _webchat-header-back-button_
+- _webchat-header-minimize-button
+- _webchat-header-delete-all-conversations-button_
 - _webchat-chat-history_
 - _webchat-scroll-to-bottom-button_
-- _webchat-message-row_
-- _regular-message_
-- _webchat-avatar_
-- _webchat-message-row + bot_
-- _regular-message + bot_
-- _webchat-avatar + bot_
-- _webchat-message-row + user_
-- _regular-message + user_
-- _webchat-avatar + user_
-- _webchat-chat-typing-indicator_
 - _webchat-input_
+- _webchat-input-message-container_
+- _webchat-input-message-label_
+- _webchat-input-stt-active_
+- _webchat-input-text-active_
 - _webchat-input-menu-form_
-- _webchat-input-button-menu_
 - _webchat-input-message-container_
 - _webchat-input-message-label_
 - _webchat-input-message-input_
+- _webchat-input-persistent-menu-button_
+- _webchat-input-persistent-menu_
+- _webchat-input-persistent-menu-item_
+- _webchat-input-persistent-menu-item-container_
+- _webchat-input-button-speech_
+- _webchat-input-button-speech-active_
+- _webchat-input-button-speech-background_
 - _webchat-input-button-add-attachments_
 - _webchat-input-drag-and-drop-file-text_
 - _webchat-input-button-send_
 - _webchat-input-get-started-button_
 - _webchat-toggle-button_
-- _webchat-unread-message-preview_
+- _webchat-toggle-button-disabled_
 - _webchat-unread-message-badge_
 - _webchat-unread-message-preview-text_
 - _webchat-teaser-message-root_
+- _webchat-teaser-message-bubble_
+- _webchat-teaser-message-header_
 - _webchat-teaser-message-header-title_
 - _webchat-teaser-message-header-logo_
+- _webchat-teaser-message-header-close-button_
+- _webchat-teaser-message-action-buttons_
 - _webchat-teaser-message-button-container_
 - _webchat-teaser-message-button_
 - _webchat-privacy-notice-root_
@@ -55,8 +64,11 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-homescreen-root_
 - _webchat-homescreen-content_
 - _webchat-homescreen-header_
+- _webchat-homescreen-header-logo_
+- _webchat-homescreen-header-cognigy-logo_
 - _webchat-homescreen-close-button_
 - _webchat-homescreen-title_
+- _webchat-homescreen-buttons_
 - _webchat-homescreen-button-container_
 - _webchat-homescreen-button_
 - _webchat-homescreen-actions_
@@ -66,10 +78,12 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-prev-conversations-content_
 - _webchat-prev-conversations-item_
 - _webchat-prev-conversations-send-button_
+- _webchat-prev-conversations-actions_
 - _webchat-chat-options-root_
 - _webchat-chat-options-container_
 - _webchat-chat-options-action-btns-root_
 - _webchat-chat-options-action-btns-title_
+- _webchat-chat-options-action-btns-wrapper_
 - _webchat-chat-options-action-button-container_
 - _webchat-chat-options-action-button_
 - _webchat-rating-widget-root_
@@ -81,12 +95,13 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-rating-widget-comment-input-field-label_
 - _webchat-rating-widget-comment-input-field_
 - _webchat-rating-widget-send-button_
+- _webchat-tts-option-root_
+- _webchat-chat-options-tts-option-label_
+- _webchat-chat-options-tts-option-toggle_
+- _webchat-chat-options-footer_
 - _webchat-chat-options-footer-link_
 - _webchat-chat-options-footer-link-text_
-- _webchat-input-persistent-menu-button_
-- _webchat-input-persistent-menu_
-- _webchat-input-persistent-menu-item_
-- _webchat-input-persistent-menu-item-container_
+- _webchat-chip-conversation-ended_
 - _webchat-modal-root_
 - _webchat-modal-header_
 - _webchat-modal-title_
@@ -103,7 +118,19 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-delete-confirmation-confirm-button_
 - _webchat-delete-conversation-text_
 - _webchat-delete-all-conversation-text_
-- _webchat-header-delete-all-conversations-button_
+- _webchat-queue-updates_
+- _webchat-information-message-root_
+- _webchat-information-message-content_
+- _webchat-message-row_
+- _regular-message_
+- _webchat-avatar_
+- _webchat-message-row + bot_
+- _regular-message + bot_
+- _webchat-avatar + bot_
+- _webchat-message-row + user_
+- _regular-message + user_
+- _webchat-avatar + user_
+- _webchat-chat-typing-indicator_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 
@@ -377,17 +404,6 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 }
 ```
 
-- _webchat-input-button-menu_  
-  The sandwich menu to open the input menu, you can not change the icon but you can customize the position, size and background.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-menu {
-
-    border-radius: 5px;
-    background-color: white;
-}
-```
-
 - _webchat-input-message-container_  
   The container for the message input and its label.
 
@@ -472,15 +488,6 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 [data-cognigy-webchat-root] [data-cognigy-webchat-toggle].webchat-toggle-button {
 
     background-image: none;
-    background-color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-unread-message-preview_  
-  This is the message bubble which is diplayed next to the _webchat-toggle-button_, when the user retreived an unread message from Cognigy.
-
-```CSS
-.webchat-unread-message-preview {
     background-color: rgb(5, 5, 131);
 }
 ```
