@@ -11,6 +11,7 @@ const FAB = styled(IconButton)(({ theme }) => ({
 	backgroundImage: theme.primaryGradient,
 	color: theme.primaryContrastColor,
 	fill: theme.primaryContrastColor,
+	stroke: theme.primaryContrastColor,
 	overflow: "visible",
 	boxShadow: theme.shadow,
 	borderRadius: "50%",
@@ -19,6 +20,7 @@ const FAB = styled(IconButton)(({ theme }) => ({
 	"&.active, &:hover": {
 		backgroundImage: theme.primaryStrongGradient,
 		fill: `${theme.primaryContrastColor} !important`,
+		stroke: `${theme.primaryContrastColor} !important`,
 		color: `${theme.primaryContrastColor} !important`,
 	},
 
