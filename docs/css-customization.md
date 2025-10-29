@@ -150,7 +150,7 @@ An example where we change the color of the Webchat header:
 
 Below are the examples for customizing the Webchat Widget classes. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds. 
 
-For examples of message type customization, see the [Webchat Message Type Customization](#webchat-message-type-customization) section below.
+For examples of message type customization, see the [Webchat Message Type Customization](#webchat-message-types-customization) section below.
 
 ### Webchat Container
 
