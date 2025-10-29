@@ -3,8 +3,7 @@
 In order to enhance the visual design of the Webchat, there is the possibility to apply custom CSS.
 You will have to add the style to your embeded Webchat or just link a CSS file to it.
 
-See it in action:  
-[![Edit CSS Customization](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/css-customization-gv35e?fontsize=14&hidenavigation=1&theme=dark)
+<!-- TODO: Add Working CodeSandbox link here -->
 
 There are several classes that you need to take in consideration if you want to make some changes to the Webchat, the classes '_bot_' and '_user_' are used as helper classes that give us the possibility to customize the messages from the user and the bot separatly. The classes are the following:
 
@@ -1172,8 +1171,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 
 Our Webchat ships with message templates out of the box (Quick replies, Galleries, Media, Lists, etc.) these elements can be also customized to meet design guidelines even more!
 
-See it in action:  
-[![Edit modern-dawn-9ez8r](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/modern-dawn-9ez8r?fontsize=14&hidenavigation=1&theme=dark)
+<!-- TODO: Add Working CodeSandbox link here -->
 
 Here are the classes that you can use to modify it:
 
