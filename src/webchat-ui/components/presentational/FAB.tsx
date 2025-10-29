@@ -20,7 +20,7 @@ const FAB = styled(IconButton)(({ theme }) => ({
 	"&.active, &:hover": {
 		backgroundImage: theme.primaryStrongGradient,
 		fill: `${theme.primaryContrastColor} !important`,
-		stroke: `${theme.primaryContrastColor} !important`,
+		stroke: `${theme.primaryContrastColor}`,
 		color: `${theme.primaryContrastColor} !important`,
 	},
 
