@@ -36,11 +36,11 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-input_
 - _webchat-input-message-container_
 - _webchat-input-message-label_
--! _webchat-input-text-active_
--! _webchat-input-stt-active_
--! _webchat-input-button-speech_
--! _webchat-input-button-speech-active_
--! _webchat-input-button-speech-background_
+- _webchat-input-text-active_
+- _webchat-input-stt-active_
+- _webchat-input-button-speech_
+- _webchat-input-button-speech-active_
+- _webchat-input-button-speech-background_
 - _webchat-input-menu-form_
 - _webchat-input-message-input_
 - _webchat-input-button-add-attachments_
@@ -562,6 +562,63 @@ For examples of message type customization, see the [Webchat Message Type Custom
 
     border-radius: 10px;
     background-color: rgb(0, 123, 255);
+}
+```
+
+- _webchat-input-text-active_  
+  The complete input area at the bottom of the webchat when text input is focused.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input.webchat-input-text-active {
+    border-bottom: 2px solid #0055ff;
+    background-color: #f5faff;
+}
+```
+
+- _webchat-input-stt-active_  
+  The complete input area at the bottom of the webchat when when speech-to-text is active.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input.webchat-input-stt-active {
+    background-color: #eaf6ff;
+    border-bottom: 2px solid #00cc66;
+}
+```
+
+- _webchat-input-button-speech_  
+  The speech-to-text button in the input area. You can style its color or icon.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-speech {
+    background-color: #cfcfcf;
+    border-radius: 50%;
+    border: 2px solid black;
+}
+```
+
+- _webchat-input-button-speech-active_  
+  The speech-to-text button when active.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-speech-active {
+    box-shadow: 0 0 8px #00cc66;
+    border-radius: 50%
+}
+```
+
+- _webchat-input-button-speech-background_  
+  The animating background for the speech-to-text button, when it is active.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-speech-background {
+    background-color: #41cc00;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
 }
 ```
 
