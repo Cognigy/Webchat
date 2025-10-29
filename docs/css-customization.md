@@ -146,9 +146,11 @@ An example where we change the color of the Webchat header:
 }
 ```
 
-## Here are the used classes with an example on how to apply them.
+## Webchat Elements Customization
 
-The following code snippets are just suggestions so it shows the syntax required to acces all classes, the examples shown here are simple design changes so you get the idea how it works. You can change all this properties in any way you want, keep in mind that some components are nested in others and that some properties won't have an effect due to the nature of the Webchat widget
+Below are the examples for customizing the Webchat Widget classes. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds. 
+
+For examples of message type customization, see the [Webchat Message Type Customization](#webchat-message-type-customization) section below.
 
 ### Webchat Container
 
@@ -1167,13 +1169,12 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
-### Webchat Message Types
+## Webchat Message Types Customization
 
-Our Webchat ships with message templates out of the box (Quick replies, Galleries, Media, Lists, etc.) these elements can be also customized to meet design guidelines even more!
+Our Webchat includes built-in message templates such as Quick Replies, Galleries, Media, and Lists, etc. These elements can also be customized further to better match your design guidelines. Below are examples of the classes you can use to modify them.
 
 <!-- TODO: Add Working CodeSandbox link here -->
 
-Here are the classes that you can use to modify it:
 
 ### Quick Replies
 
