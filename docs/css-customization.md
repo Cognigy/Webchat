@@ -5,7 +5,9 @@ You will have to add the style to your embeded Webchat or just link a CSS file t
 
 <!-- TODO: Add Working CodeSandbox link here -->
 
-There are several classes that you need to take in consideration if you want to make some changes to the Webchat, the classes '_bot_' and '_user_' are used as helper classes that give us the possibility to customize the messages from the user and the bot separatly. The classes are the following:
+There are several classes that you need to take in consideration if you want to further customize the Webchat elements or message types.
+
+The classes '_bot_' and '_user_' are used as helper classes that give us the possibility to customize the messages from the user and the bot separatly. The classes are the following:
 
 - _webchat-root_
 - _webchat_
@@ -97,7 +99,6 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-chat-options-footer_
 - _webchat-chat-options-footer-link_
 - _webchat-chat-options-footer-link-text_
--! _webchat-chip-conversation-ended_
 - _webchat-modal-root_
 - _webchat-modal-header_
 - _webchat-modal-title_
@@ -114,9 +115,10 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-delete-confirmation-confirm-button_
 - _webchat-delete-conversation-text_
 - _webchat-delete-all-conversation-text_
--! _webchat-queue-updates_
 -! _webchat-information-message-root_
 -! _webchat-information-message-content_
+-! _webchat-queue-updates_
+-! _webchat-chip-conversation-ended_
 -! _webchat-toggle-button-root_
 - _webchat-message-row_
 - _regular-message_
@@ -137,18 +139,9 @@ If you want to be sure that the custom CSS that you apply will be shown, you wil
 
 This way we asure specificity of the classes in our script.
 
-An example where we change the color of the Webchat header:
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-bar {
-
-    background: rgb(15, 15, 194);
-}
-```
-
 ## Webchat Elements Customization
 
-Below are the examples for customizing the Webchat Widget classes. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds. 
+Below are the examples for customizing the Webchat Widget. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds. 
 
 For examples of message type customization, see the [Webchat Message Type Customization](#webchat-message-types-customization) section below.
 
@@ -1329,6 +1322,28 @@ To change the font-family of the homescreen starter button labels, you need to t
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-all-conversation-text {
     color: #dc3545;
     font-weight: bold;
+}
+```
+
+### Maintenance Mode
+
+- _webchat-information-message-root_
+  The information message container when the webchat is in maintenance mode. You can adjust the position background
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-root {
+    background-color: #c5c5c5;
+    align-items: flex-start;
+}
+```
+
+- _webchat-information-message-content_
+  The information message text and icon container when the webchat is in maintenance mode. You can adjust the alignment of the maintenance icon and text, for example
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-container {
+    flex-direction: row;
+    gap: 30px;
 }
 ```
 
