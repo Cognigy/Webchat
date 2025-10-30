@@ -698,13 +698,15 @@ export class WebchatUI extends React.PureComponent<
 		const intervalMs = Math.max(0, intervalSec) * 1000;
 		if (intervalMs === 0) return;
 		this.iconAnimationIntervalHandle = setInterval(() => {
-			const container = document.querySelector(
-				"#webchatWindowToggleButton .iconAnimationContainer",
-			) as HTMLElement | null;
+			const buttonEl = this.chatToggleButtonRef?.current as HTMLElement | null;
+			if (!buttonEl) return;
+			const container = buttonEl.querySelector(
+				".iconAnimationContainer",
+			) as Element | null;
 			if (!container) return;
 			container.classList.remove("optionActive");
 			// Force reflow to restart animation
-			void container.offsetWidth;
+			void container.getBoundingClientRect();
 			container.classList.add("optionActive");
 		}, intervalMs);
 	}
