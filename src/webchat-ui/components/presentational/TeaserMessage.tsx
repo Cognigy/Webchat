@@ -121,7 +121,7 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 				onClick={handleMessageClick}
 				aria-live="polite"
 			>
-				<TeaserMessageHeader>
+				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
 						<HeaderLogo
 							src={config?.settings?.layout?.logoUrl}

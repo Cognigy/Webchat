@@ -29,7 +29,7 @@ const HeaderBar = styled.div(({ theme }) => ({
 	resize: "vertical",
 	textAlign: "center",
 	zIndex: 3,
-	"& .logoNameContainer": {
+	"& .webchat-header-logo-name-container": {
 		alignItems: "center",
 		display: "flex",
 		flexDirection: "row",
@@ -166,7 +166,7 @@ const Header: FC<HeaderProps> = props => {
 						</HeaderIconButton>
 					</BackButtonWrapper>
 				)}
-				<div className={classnames("logoNameContainer")}>
+				<div className={classnames("webchat-header-logo-name-container")}>
 					{showChatScreen &&
 						(logoUrl ? (
 							<Logo

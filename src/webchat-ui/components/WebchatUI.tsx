@@ -1663,7 +1663,11 @@ export class WebchatUI extends React.PureComponent<
 		return (
 			<>
 				{enableAIAgentNotice !== false && (
-					<TopStatusMessage variant="body-regular" component="div">
+					<TopStatusMessage
+						variant="body-regular"
+						component="div"
+						className="webchat-log-ai-agent-notice-text"
+					>
 						{AIAgentNoticeText || "You're now chatting with an AI Agent."}
 					</TopStatusMessage>
 				)}

@@ -3,49 +3,57 @@
 In order to enhance the visual design of the Webchat, there is the possibility to apply custom CSS.
 You will have to add the style to your embeded Webchat or just link a CSS file to it.
 
-See it in action:  
-[![Edit CSS Customization](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/css-customization-gv35e?fontsize=14&hidenavigation=1&theme=dark)
+<!-- TODO: Add Working CodeSandbox link here -->
 
-There are several classes that you need to take in consideration if you want to make some changes to the Webchat, the classes '_bot_' and '_user_' are used as helper classes that give us the possibility to customize the messages from the user and the bot separatly. The classes are the following:
+There are several classes that you need to take in consideration if you want to further customize the Webchat elements or message types. The classes are the following:
 
 - _webchat-root_
 - _webchat_
+- _webchat-toggle-button_
+- _webchat-toggle-button-disabled_
+- _webchat-unread-message-badge_
+- _webchat-unread-message-preview-text_
+- _webchat-teaser-message-root_
+- _webchat-teaser-message-bubble_
+- _webchat-teaser-message-header_
+- _webchat-teaser-message-header-title_
+- _webchat-teaser-message-header-logo_
+- _webchat-teaser-message-header-close-button_
+- _webchat-teaser-message-action-buttons_
+- _webchat-teaser-message-button-container_
+- _webchat-teaser-message-button_
 - _webchat-header-bar_
+- _webchat-header-logo-name-container_
 - _webchat-header-logo_
+- _webchat-header-cognigy-logo_
 - _webchat-header-title_
 - _webchat-header-close-button_
-- _webchat-header-rating-button_
+- _webchat-header-back-button_
+- _webchat-header-minimize-button_
+- _webchat-header-delete-all-conversations-button_
 - _webchat-chat-history_
 - _webchat-scroll-to-bottom-button_
-- _webchat-message-row_
-- _regular-message_
-- _webchat-avatar_
-- _webchat-message-row + bot_
-- _regular-message + bot_
-- _webchat-avatar + bot_
-- _webchat-message-row + user_
-- _regular-message + user_
-- _webchat-avatar + user_
-- _webchat-chat-typing-indicator_
+- _webchat-log-ai-agent-notice-text_
+- _webchat-queue-updates_
+- _webchat-chip-conversation-ended_
 - _webchat-input_
-- _webchat-input-menu-form_
-- _webchat-input-button-menu_
 - _webchat-input-message-container_
 - _webchat-input-message-label_
+- _webchat-input-text-active_
+- _webchat-input-stt-active_
+- _webchat-input-button-speech_
+- _webchat-input-button-speech-active_
+- _webchat-input-button-speech-background_
+- _webchat-input-menu-form_
 - _webchat-input-message-input_
 - _webchat-input-button-add-attachments_
 - _webchat-input-drag-and-drop-file-text_
 - _webchat-input-button-send_
 - _webchat-input-get-started-button_
-- _webchat-toggle-button_
-- _webchat-unread-message-preview_
-- _webchat-unread-message-badge_
-- _webchat-unread-message-preview-text_
-- _webchat-teaser-message-root_
-- _webchat-teaser-message-header-title_
-- _webchat-teaser-message-header-logo_
-- _webchat-teaser-message-button-container_
-- _webchat-teaser-message-button_
+- _webchat-input-persistent-menu-button_
+- _webchat-input-persistent-menu_
+- _webchat-input-persistent-menu-item_
+- _webchat-input-persistent-menu-item-container_
 - _webchat-privacy-notice-root_
 - _webchat-privacy-notice-message_
 - _webchat-privacy-notice-markdown-container_
@@ -55,8 +63,11 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-homescreen-root_
 - _webchat-homescreen-content_
 - _webchat-homescreen-header_
+- _webchat-homescreen-header-logo_
+- _webchat-homescreen-header-cognigy-logo_
 - _webchat-homescreen-close-button_
 - _webchat-homescreen-title_
+- _webchat-homescreen-buttons_
 - _webchat-homescreen-button-container_
 - _webchat-homescreen-button_
 - _webchat-homescreen-actions_
@@ -66,10 +77,12 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-prev-conversations-content_
 - _webchat-prev-conversations-item_
 - _webchat-prev-conversations-send-button_
+- _webchat-prev-conversations-actions_
 - _webchat-chat-options-root_
 - _webchat-chat-options-container_
 - _webchat-chat-options-action-btns-root_
 - _webchat-chat-options-action-btns-title_
+- _webchat-chat-options-action-btns-wrapper_
 - _webchat-chat-options-action-button-container_
 - _webchat-chat-options-action-button_
 - _webchat-rating-widget-root_
@@ -81,12 +94,21 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-rating-widget-comment-input-field-label_
 - _webchat-rating-widget-comment-input-field_
 - _webchat-rating-widget-send-button_
+- _webchat-tts-option-root_
+- _webchat-chat-options-tts-option-label_
+- _webchat-chat-options-tts-option-toggle_
+- _webchat-chat-options-footer_
 - _webchat-chat-options-footer-link_
 - _webchat-chat-options-footer-link-text_
-- _webchat-input-persistent-menu-button_
-- _webchat-input-persistent-menu_
-- _webchat-input-persistent-menu-item_
-- _webchat-input-persistent-menu-item-container_
+- _webchat-delete-conversation-container_
+- _webchat-delete-conversation-title_
+- _webchat-delete-conversation-button_
+- _webchat-delete-confirmation-cancel-button_
+- _webchat-delete-confirmation-confirm-button_
+- _webchat-delete-conversation-text_
+- _webchat-delete-all-conversation-text_
+- _webchat-information-message-root_
+- _webchat-information-message-content_
 - _webchat-modal-root_
 - _webchat-modal-header_
 - _webchat-modal-title_
@@ -96,14 +118,47 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-modal-divider_
 - _webchat-modal-body_
 - _webchat-modal-footer_
-- _webchat-delete-conversation-container_
-- _webchat-delete-conversation-title_
-- _webchat-delete-conversation-button_
-- _webchat-delete-confirmation-cancel-button_
-- _webchat-delete-confirmation-confirm-button_
-- _webchat-delete-conversation-text_
-- _webchat-delete-all-conversation-text_
-- _webchat-header-delete-all-conversations-button_
+- _webchat-toggle-button-root_
+- _webchat-message-row_
+- _webchat-avatar_
+- _chat-bubble_
+- _webchat-chat-typing-indicator_
+- _webchat-quick-reply-template-root_
+- _webchat-quick-reply-template-replies-container_
+- _webchat-quick-reply-template-button_
+- _webchat-template-button-image_
+- _webchat-buttons-template-root_
+- _webchat-buttons-template-button_
+- _webchat-carousel-template-root_
+- _webchat-carousel-template-frame_
+- _webchat-carousel-template-title_
+- _webchat-carousel-template-content_
+- _webchat-carousel-template-subtitle_
+- _webchat-carousel-template-button_
+- _webchat-media-template-image-container_
+- _webchat-media-template-image_
+- _webchat-media-template-video_
+- _webchat-media-template-audio_
+- _webchat-media-template-files-container_
+- _webchat-media-template-file_
+- _webchat-list-template-root_
+- _webchat-list-template-header_
+- _webchat-list-template-header-content_
+- _webchat-list-template-header-title_
+- _webchat-list-template-header-subtitle_
+- _webchat-list-template-header-button_
+- _webchat-list-template-element_
+- _webchat-list-template-element-title_
+- _webchat-list-template-element-subtitle_
+- _webchat-list-template-element-button_
+- _webchat-list-template-global-button_
+- _adaptivecard-wrapper_
+- _webchat-plugin-date-picker_
+- _webchat-plugin-date-picker-header_
+- _webchat-plugin-date-picker-content_
+- _webchat-plugin-date-picker-footer_
+- _webchat-plugin-date-picker-weekdays_
+- _flatpickr-day.selected_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 
@@ -113,18 +168,13 @@ If you want to be sure that the custom CSS that you apply will be shown, you wil
 
 This way we asure specificity of the classes in our script.
 
-An example where we change the color of the Webchat header:
+## Webchat Elements Customization
 
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-bar {
+Below are the examples for customizing the Webchat Widget. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds.
 
-    background: rgb(15, 15, 194);
-}
-```
+For examples of customizing messages of different types, see the [Webchat Message Customization](#webchat-message-customization) section below.
 
-### Here are the used classes with an example on how to apply them.
-
-The following code snippets are just suggestions so it shows the syntax required to acces all classes, the examples shown here are simple design changes so you get the idea how it works. You can change all this properties in any way you want, keep in mind that some components are nested in others and that some properties won't have an effect due to the nature of the Webchat widget
+### Webchat Container
 
 - _webchat-root_  
   This is the root <div> containingthe webchat, not much to customize here.
@@ -145,6 +195,143 @@ The following code snippets are just suggestions so it shows the syntax required
 }
 ```
 
+### Webchat Toggle
+
+- _webchat-toggle-button_  
+  This is the button to open the Webchat. If you want to modify its background color you have to set the "background-image" to none.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat-toggle].webchat-toggle-button {
+    background-image: none;
+    background-color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-toggle-button-disabled_  
+  This is the disabled state of the button that opens the Webchat. If you want to modify its background color you have to set the "background-image" to none.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat-toggle].webchat-toggle-button-disabled {
+    background-image: none;
+    background-color: rgba(170, 170, 170, 1);
+}
+```
+
+### Webchat Unread and Teaser Message
+
+- _webchat-unread-message-badge_  
+  This is the unread message count which is diplayed next to the _webchat-toggle-button_, when the user retreived an unread message from Cognigy.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-unread-message-badge {
+    background-color: 'white';
+}
+```
+
+- _webchat-unread-message-preview-text_  
+  This is the text in the teaser message and unread message preview bubble. You can change the font, text color, or any other text properties.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-unread-message-preview-text {
+    color: white;
+    font-size: 0.875rem;
+}
+```
+
+- _webchat-teaser-message-root_  
+  The root class for the teaser message, used for customizing the alingnment and position of the teaser message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-root {
+    padding: 10px;
+    right: 10px;
+    bottom: 75px;
+}
+```
+
+- _webchat-teaser-message-root_  
+  The class for the teaser message, used for customizing the look of the teaser message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-bubble {
+    width: 400px;
+    background-color: red;
+}
+```
+
+- _webchat-teaser-message-header_  
+  The header of the teaser message contining the logo, title and the close button.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header {
+    gap: 20px;
+    margin: 10px;
+}
+```
+
+- _webchat-teaser-message-header-title_  
+  The title of the teaser message displayed at the top of the teaser message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header-title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-teaser-message-header-logo_  
+  The logo displayed in the header of the teaser message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header-logo {
+    border: 2px solid rgb(5, 5, 131);
+}
+```
+
+- _webchat-teaser-message-header-close-button_  
+  The close button displayed in the header of the teaser message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header .webchat-teaser-message-header-close-button {
+    border: 2px solid rgb(5, 5, 131);
+}
+```
+
+- _webchat-teaser-message-action-buttons_  
+  This class that is used to adjust the position and alignment of the postback buttons displayed in the teaser message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-action-buttons {
+    border: 2px solid rgb(232 232 245);
+    margin: auto;
+    padding: 20px;
+    border-radius: 15px;
+}
+```
+
+- _webchat-teaser-message-button-container_  
+  This container holds the button(s) displayed in the teaser message. You can adjust the layout and spacing.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-button-container {
+    justify-content: space-between;
+    padding-top: 10px;
+}
+```
+
+- _webchat-teaser-message-button_  
+  This is the button that is displayed below the teaser message bubble and inside _webchat-teaser-message-button-container_.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-button {
+    background-color: rgb(5, 5, 131);
+    color: white;
+}
+```
+
+### Webchat Header Elements
+
 - _webchat-header-bar_  
   The header bar of the Webchat, here you can change color, it also contains other components like the header logo and header title.
 
@@ -155,14 +342,45 @@ The following code snippets are just suggestions so it shows the syntax required
 }
 ```
 
-- _webchat-header-logo_  
-  The logo of the Webchat, it can be changed by editing the URL.
+- _webchat-header-logo-name-container_  
+  The container for the header logo and title, you can modify the spacing and alignment between them.
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-logo {
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-logo-name-container {
+    gap: 25px;
+}
+```
 
-    background-image: url(https://...);
-    margin-left: 10px;
+- _webchat-header-logo_  
+  The custom logo shown in the webchat header of chat log screen. You can customize, for example, its size and border properties.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-logo-name-container .webchat-header-logo {
+    width: 32px;
+    height: 32px;
+    border: 2px solid red;
+}
+```
+
+- _webchat-header-cognigy-logo_  
+  The default Cognigy logo shown in the webchat header of chat log screen, when no custom logo URL is provided. You can customize, for example, its size and border properties.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-logo-name-container .webchat-header-cognigy-logo {
+    width: 32px;
+    height: 32px;
+    border: 2px solid red;
+}
+```
+
+The default Cognigy logo shown in the conversation list items of previous conversation screen, when no custom logo URL is provided. You can customize, for example, its size and border properties.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-prev-conversations-item .webchat-header-cognigy-logo{
+    width: 32px;
+    height: 32px;
+    margin-left: 12px;
+    border: 2px solid red;
 }
 ```
 
@@ -171,199 +389,173 @@ The following code snippets are just suggestions so it shows the syntax required
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-title {
-
     font-size: 1.25rem;
 }
 ```
 
+- _webchat-header-close-button_  
+  The close button shown in the webchat header bar and in the connection lost overlay dialog. You can customize its appearance, size, and hover effects, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-close-button {
+    background-color: red;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-close-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-close-button svg path {
+    fill: black
+}
+```
+
+- _webchat-header-back-button_  
+  The back button shown in the webchat header. You can customize its appearance, size, and icon color, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-back-button {
+    background-color: red;
+    border-radius: 4px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-back-button svg path {
+    width: 20px;
+    height: 20px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-back-button svg path {
+    fill: black;
+}
+```
+
+- _webchat-header-minimize-button_  
+  The minimize button shown in the webchat header. You can customize its appearance, size, and icon color.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-minimize-button {
+    background-color: red;
+    border-radius: 4px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-minimize-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-minimize-button svg path {
+    fill: black;
+}
+```
+
+- _webchat-header-delete-all-conversations-button_  
+  The icon button to delete all conversations in the previous conversations header.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-delete-all-conversations-button {
+    background-color: red;
+    border: 2px solid #666;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-header-delete-all-conversations-button svg path{
+    fill: black;
+}
+```
+
+### Chat Log
+
 - _webchat-chat-history_  
   This is the element where all the messages of the chat are are shown, you could change its color for example.
 
-````CSS
+```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-chat-history {
 
     background-color: rgb(48, 48, 48);
 }
-* *webchat-scroll-to-bottom-button*
-This is the button that appears in the chat area when scrolled up. It can be clicked to scroll to the bottom.
+```
+
+- _webchat-scroll-to-bottom-button_  
+  The button that appears when scrolled up in chat history to scroll to bottom. You can customize its appearance, position, and hover effects.
+
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-scroll-to-bottom-button {
-
-    background-color: rgb(88, 88, 88);
-}
-````
-
-- _webchat-message-row_  
-  The general class for any message in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row {
-
-    padding-right: 10px;
-
+    background-color: red;
+    color: white;
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
 }
 ```
 
-- _regular-message_  
-  The text of the message, you can change the font and style the dialog bubble, this one comes from the regular message plugin that comes shipped with the Webchat!
+- _webchat-log-ai-agent-notice-text_  
+  The notice text shown at the top of the chat log to indicate the user that they are chatiing with AI Agent. You can style its font, color, and background.
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message {
-
-    border:2px solid  white;
-    background: black;
-    color:white;
-    box-shadow: none;
-
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-log-ai-agent-notice-text {
+    background: #eaf6ff;
+    color: #0055ff;
+    font-size: 1rem;
 }
 ```
 
-- _webchat-avatar_  
-  The icon from the avatar that will be show when a message is written or received. You can put the avatar you like by adding a URL to it.
+- _webchat-queue-updates_  
+  The queue updates message shown when the chat is in queue mode. You can style its background, color, spacing, etc.
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar {
-
-    background-image: url(https://***.png);
-    // use flex-basis instead of "width" here!
-    flex-basis: 30px;
-    height: 28px;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-queue-updates {
+    background: #fffced;
+    color: #6b5000;
+    border: 1px solid #ffc400;
+    border-radius: 8px;
 }
 ```
 
-The avatars can be repositioned to appear at the top edge of a message rather than the bottom edge.
+- _webchat-chip-conversation-ended_  
+  The chip shown when the conversation has ended. You can style its background, color, and border. Please note that you need to include the div in the selector to adjust the chip styles.
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar {
-  align-self: flex-start !important;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chip-conversation-ended div {
+    background: #e0e0e0;
+    color: #666;
+    font-size: 0.95rem;
+    padding: 10px;
 }
 ```
 
-- _webchat-message-row + bot_  
-  The classes for the bot message in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.bot {
-
-    padding-right: 10px;
-
-}
-```
-
-- _regular-message + bot_  
-  The text of the message from the bot, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.bot {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
-}
-```
-
-- _webchat-avatar + bot_  
-  The icon from the bot that will be show when a message is received. You can put the avatar you like by adding a URL to it.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.bot {
-
-    background-image: url(https://***.png);
-    width: 30px;
-    height: 28px;
-
-}
-```
-
-- _webchat-message-row + user_  
-  The class for the user message in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user {
-
-    padding-right: 10px;
-
-}
-```
-
-- _regular-message + user_  
-  The text of the message from the user, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.user {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
-}
-```
-
-- _webchat-avatar + user_  
-  The icon from the user that will be show when a message is received. You can put the avatar you like by adding a URL to it.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.user {
-
-    background-image: url(https://***.png);
-    // use flex-basis instead of "width" here!
-    flex-basis: 30px;
-    height: 28px;
-
-}
-```
-
-- _webchat-message-row + agent_  
-  The class for the agent message when using handover in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.agent {
-
-    padding-right: 10px;
-
-}
-```
-
-- _regular-message + agent_  
-  The text of the message from the agent when using handover, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.agent {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
-}
-```
-
-- _webchat-avatar + agent_  
-  The icon from the agent when using handover that will be show when a message is received. You can put the avatar you like by adding a URL to it.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.agent {
-
-    background-image: url(https://***.png);
-    // use flex-basis instead of "width" here!
-    flex-basis: 30px;
-    height: 28px;
-
-}
-```
-
-- _webchat-chat-typing-indicator_  
-  The typing indicator bubble of the message from the bot, you can change the background color.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-typing-indicator {
-
-    background: rgb(5, 5, 131);
-}
-```
+### Webchat Input Fields
 
 - _webchat-input_  
-  The footer of the Webchat, it contains some other components like the text input, menu and buttons.
+  The input at the footer of the Webchat, it contains some other components like the text input, menu and buttons.
   Careful to modify the height here since it will influence the input menu
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input {
-
    background: rgb(5, 5, 131);
+}
+```
+
+- _webchat-input-message-container_  
+  The container for the message input and its label.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-message-container {
+    background: #f8f8f8;
+    padding: 8px 0;
+    border-radius: 8px;
+}
+```
+
+- _webchat-input-message-label_  
+  The floating label for the message input.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-message-label {
+    color:rgb(209, 22, 22);
+    font-style: italic;
+    font-size: 14px;
 }
 ```
 
@@ -377,39 +569,6 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 }
 ```
 
-- _webchat-input-button-menu_  
-  The sandwich menu to open the input menu, you can not change the icon but you can customize the position, size and background.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-menu {
-
-    border-radius: 5px;
-    background-color: white;
-}
-```
-
-- _webchat-input-message-container_  
-  The container for the message input and its label.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-input-message-container {
-    background: #f8f8f8;
-    padding: 8px 0;
-    border-radius: 8px;
-}
-```
-
-- _webchat-input-message-label_  
-  The floating label for the message input.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-input-message-label {
-    color:rgb(209, 22, 22);
-    font-style: italic;
-    font-size: 14px;
-}
-```
-
 - _webchat-input-message-input_  
   The text input where you can write your messages, you can change how the font looks like.
 
@@ -417,6 +576,26 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-message-input {
 
    color: white;
+}
+```
+
+- _webchat-input-button-add-attachments_  
+  The button to open the file attachment section, you can not change the icon but you can customize the position, size and background.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-add-attachments {
+
+    border-radius: 20px;
+    background-color: white;
+}
+```
+
+- _webchat-input-drag-and-drop-file-text_  
+  The text for drag and drop file upload, you can modify the font.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-drag-and-drop-file-text {
+    color: white;
 }
 ```
 
@@ -443,869 +622,60 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 }
 ```
 
-- _webchat-input-button-add-attachments_  
-  The button to open the file attachment section, you can not change the icon but you can customize the position, size and background.
+- _webchat-input-text-active_  
+  The complete input area at the bottom of the webchat when text input is focused.
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-add-attachments {
-
-    border-radius: 20px;
-    background-color: white;
-}
-```
-
-- _webchat-input-drag-and-drop-file-text_  
-  The text for drag and drop file upload, you can modify the font.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-drag-and-drop-file-text {
-
-     color: white;
-
-}
-```
-
-- _webchat-toggle-button_  
-  This is the button to open the Webchat, if you want to modify its color you have to set the "background-image" to none.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat-toggle].webchat-toggle-button {
-
-    background-image: none;
-    background-color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-unread-message-preview_  
-  This is the message bubble which is diplayed next to the _webchat-toggle-button_, when the user retreived an unread message from Cognigy.
-
-```CSS
-.webchat-unread-message-preview {
-    background-color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-unread-message-badge_  
-  This is the unread message count which is diplayed next to the _webchat-toggle-button_, when the user retreived an unread message from Cognigy.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-unread-message-badge {
-    background-color: 'white';
-}
-```
-
-- _webchat-unread-message-preview-text_  
-  This is the text in the teaser message and unread message preview bubble. You can change the font, text color, or any other text properties.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-unread-message-preview-text {
-    color: white;
-    font-size: 0.875rem;
-}
-```
-
-- _webchat-teaser-message-root_  
-  The root class for the teaser message, used for customizing the overall look of the teaser message box.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-root {
-    background-color: rgb(240, 240, 240);
-    padding: 10px;
-}
-```
-
-- _webchat-teaser-message-header-title_  
-  The title of the teaser message displayed at the top of the teaser message bubble.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-header-title {
-    font-size: 1.125rem;
-    font-weight: bold;
-    color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-teaser-message-header-logo_  
-  The logo displayed in the header of the teaser message. You can replace the logo image URL.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-header-logo {
-    border: 2px solid rgb(5, 5, 131);
-}
-```
-
-- _webchat-teaser-message-button-container_  
-  This container holds the button(s) displayed in the teaser message. You can adjust the layout and spacing.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-button-container {
-    justify-content: space-between;
-    padding-top: 10px;
-}
-```
-
-- _webchat-teaser-message-button_  
-  This is the button that is displayed below the teaser message bubble and inside _webchat-teaser-message-button-container_.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-button {
-    background-color: rgb(5, 5, 131);
-    color: white;
-}
-```
-
-- _webchat-privacy-notice-root_  
-  The root container for the privacy screen of the webchat.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-root {
-    border-radius: 20px;
-    border: 2px solid rgb(5, 5, 131);
-    padding: 20px;
-}
-```
-
-- _webchat-privacy-notice-message_  
-  The root container for the privacy text content.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-message {
-    background-color: rgb(227, 227, 251);
-}
-```
-
-- _webchat-privacy-notice-markdown-container_  
-  The markdown container of the privacy text content.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-markdown-container > p {
-    color: rgb(227, 227, 251);
-}
-```
-
-To change the font-family of the privacy notice text, you need to target the _p_ tag inside _webchat-privacy-notice-message_ like the following
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-message p {
-  font-family: Arial, Helvetica, sans-serif;
-}
-```
-
-- _webchat-privacy-notice-actions_  
-  The container for the action items of the privacy screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-actions {
-    background-color: rgb(227, 227, 251);
-    padding: 20px;
-}
-```
-
-- _webchat-privacy-notice-accept-button_  
-  The privacy submit button in the privacy screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-accept-button {
-    background-color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-privacy-policy-link_
-  The privacy policy link in the privacy screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-policy-link {
-   color: rgb(227, 227, 251);
-}
-```
-
-To change the font-family of the privacy policy link text, you need to target the _p_ tag inside _webchat-privacy-policy-link_ like the following
-
-```CSS
-[data-cognigy-webchat-root] .webchat-privacy-policy-link p {
-  font-family: Arial, Helvetica, sans-serif;
-}
-```
-
-- _webchat-homescreen-root_  
-  The root container for the homescreen of the webchat.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-root {
-    border-radius: 20px;
-    border: 2px solid rgb(5, 5, 131);
-    padding: 20px;
-}
-```
-
-- _webchat-homescreen-content_  
-  This is the main content area of the homescreen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-content {
-    background-color: black;
-}
-```
-
-- _webchat-homescreen-header_  
-  The header section of the homescreen, containing the logo and close button.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-header {
-    margin: 10px;
-}
-```
-
-- _webchat-homescreen-close-button_  
-  The close button in the homescreen header.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-close-button {
-    border: 2px solid white !important;
-    padding: 10px !important;
-}
-```
-
-- _webchat-homescreen-title_  
-  The title displayed on the homescreen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-title {
-    font-size: 24px;
-    color: red !important;
-}
-```
-
-- _webchat-homescreen-button-container_  
-  The container for the conversation starter buttons on the homescreen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-button-container {
-    padding: 10px;
-}
-```
-
-- _webchat-homescreen-button_  
-  Individual buttons on the homescreen (like for starting a new conversation).
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-button {
-    background-color: rgb(5, 5, 131) !important;
-    color: black;
-    border-radius: 5px;
-}
-```
-
-To change the font-family of the homescreen starter button labels, you need to target the _span_ tag inside _webchat-homescreen-button_ like the following
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-button span {
-  font-family: Arial, Helvetica, sans-serif;
-}
-```
-
-- _webchat-homescreen-actions_  
-  The container for any actions on the homescreen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-actions {
-    margin-top: 15px;
-}
-```
-
-- _webchat-homescreen-send-button_  
-  The button to send a new message from the homescreen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-send-button {
-    background-color: rgb(5, 5, 131) !important;
-    color: white;
-}
-```
-
-- _webchat-homescreen-previous-conversation-button_  
-  The button to view previous conversations from the homescreen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-previous-conversation-button {
-    background-color: rgb(5, 5, 131) !important;
-}
-```
-
-- _webchat-prev-conversations-root_  
-  The root container for the previous conversations screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-root {
-    padding: 20px;
-}
-```
-
-- _webchat-prev-conversations-content_  
-  The container for the list of previous conversations.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-content {
-    padding: 0px;
-}
-```
-
-- _webchat-prev-conversations-item_  
-  An individual item in the previous conversations list.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-item {
-    background-color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-prev-conversations-send-button_  
-  The button to start a new conversation from the Previous conversations screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-send-button {
-    background-color: rgb(5, 5, 131) !important;
-}
-```
-
-- _webchat-chat-options-root_  
-  The root container for the chat options.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-root {
-    padding: 20px;
-}
-```
-
-- _webchat-chat-options-container_  
-  The container that holds all chat options.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-container {
-    border: 2px solid rgb(5, 5, 131);
-}
-```
-
-- _webchat-chat-options-action-btns-root_  
-  The container for quick reply buttons and its title inside the chat options screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-btns-root {
-    justify-content: space-between;
-    padding: 10px;
-}
-```
-
-- _webchat-chat-options-action-button-container_  
-  The container for the set of quick reply buttons in the chat options screen
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-button-container {
-    justify-content: space-around;
-    padding: 10px;
-}
-```
-
-- _webchat-chat-options-action-btns-title_  
-  The title for the quick reply buttons in the chat options screen
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-btns-title {
-    font-size: 1.125rem;
-    font-family: Arial, Helvetica, sans-serif;
-    color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-chat-options-action-button_  
-  An individual quick reply button in the chat options screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-button {
-    background-color: rgb(5, 5, 131) !important;
-    color: white;
-}
-```
-
-- _webchat-rating-widget-root_  
-  The root container for the rating widget that includes the rating title, thumbs up/down button, text area and submit button.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-root {
-    padding: 20px;
-}
-```
-
-- _webchat-rating-widget-title_  
-  The title of the rating widget.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-title {
-    font-size: 1.25rem;
-    color: rgb(5, 5, 131);
-}
-```
-
-- _webchat-rating-widget-content-container_  
-  The container for the rating widget's thumbs up/down buttons.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-content-container {
-    justify-content: space-between;
-    padding: 10px;
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input.webchat-input-text-active {
+    border-bottom: 2px solid #0055ff;
+    background-color: #f5faff;
 }
 ```
 
-- _webchat-rating-widget-thumbs-up-button_  
-  The thumbs-up button for the rating widget.
+- _webchat-input-stt-active_  
+  The complete input area at the bottom of the webchat when when speech-to-text is active.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-thumbs-up-button {
-    background-color: #00cc66 !important;
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input.webchat-input-stt-active {
+    background-color: #eaf6ff;
+    border-bottom: 2px solid #00cc66;
 }
 ```
 
-- _webchat-rating-widget-thumbs-down-button_  
-  The thumbs-down button for the rating widget.
+- _webchat-input-button-speech_  
+  The speech-to-text button in the input area. You can style its color or icon.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-thumbs-down-button {
-    background-color: #cc0000 !important;
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-speech {
+    background-color: #cfcfcf;
+    border-radius: 50%;
+    border: 2px solid black;
 }
 ```
 
-- _webchat-rating-widget-comment-input-field-container_  
-  The container for comments input field with label in the rating widget.
+- _webchat-input-button-speech-active_  
+  The speech-to-text button when active.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-container {
-  background: #cc0000;
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-speech-active {
+    box-shadow: 0 0 8px #00cc66;
+    border-radius: 50%
 }
 ```
 
-- _webchat-rating-widget-comment-input-field-label_  
-  The label for comments input field in the rating widget.
+- _webchat-input-button-speech-background_  
+  The animating background for the speech-to-text button, when it is active.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-label {
-    font-size: 1.25rem;
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-input-button-speech-background {
+    background-color: #41cc00;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
 }
-```
-
-- _webchat-rating-widget-comment-input-field_  
-  The input field for comments in the rating widget.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field {
-    font-family: Arial, Helvetica, sans-serif !important;
-}
-```
-
-- _webchat-rating-widget-send-button_  
-  The button to send the rating/comment.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-send-button {
-    background-color: rgb(5, 5, 131) !important;
-}
-```
-
-- _webchat-chat-options-footer-link_  
-  The link displayed at the footer of the chat options screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-footer-link {
-    text-decoration: underline !important;
-    padding: 10px;
-}
-```
-
-- _webchat-chat-options-footer-link-text_  
-  The text for the footer link in chat options screen.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-footer-link-text {
-    font-size: 0.875rem;
-    font-family: Arial, Helvetica, sans-serif !important;
-}
-```
-
-## Webchat templates messages customization
-
-Our Webchat ships with message templates out of the box (Quick replies, Buttons, Image Galleries, Media, Lists) these elements can be also customized to meet design guidelines even more!
-
-See it in action:  
-[![Edit modern-dawn-9ez8r](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/modern-dawn-9ez8r?fontsize=14&hidenavigation=1&theme=dark)
-
-Here are the classes that you can use to modify it:
-
-### Quick Replies
-
-- _webchat-quick-reply-template-root_  
-  This class contains the whole Quick Reply element, you can modify its size for example.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-root {
-width: 500px;
-height: 500px;
-}
-
-```
-
-- _webchat-quick-reply-template-header-message_  
-  This is the header message of the Quick Reply.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-header-message {
-  border:2px solid  #fffffe;
-  border-radius: 0;
-  text-align: center;
-  background: #e3f6f5;
-  color: #272343;
-  animation: "Some animation" ;
-}
-
-```
-
-- _webchat-quick-reply-template-replies-container_  
-  This is the element holding all Quick Replies, you can change the way they are shown, e.g. as a column.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container {
-  display: flex;
-  flex-direction: column;
-}
-
-```
-
-- _webchat-quick-reply-template-reply_  
-  This is the style of the single Quick Reply element, all of them will be modified.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-quick-reply-template-reply {
-    animation: "Some animation" ;
-    border-color:#272343;
-    color: #2d334a;
-}
-
-```
-
-- _webchat-template-button-image_  
-  This class modifies the style of the images inside the quick reply buttons. The default border-top-left-radius and border-bottom-left-radius of the images inside the button is 19px. You can override that with the help of this class.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-template-button-image {
-    background-color: black;
-    border-radius: 10px;
-}
-```
-
-### Buttons
-
-- _webchat-buttons-template-root_  
-  This class contains the Buttons element.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-root {
-  border-radius: 0;
-  animation: "Some animation" ;
-}
-
-```
-
-- _webchat-buttons-template-header_  
-  The container and header of the buttons, you can modify the text position and style.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-header {
-  text-align: center;
-  font-weight: bold;
-  background: #e3f6f5;
-}
-
-```
-
-- _webchat-buttons-template-button_  
-  The class of a single button, you can add cool animations when hovering and styling, this will take effect for all buttons in the list.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template .webchat-buttons-template-button {
-    background-color: #fffffe;
-    color: #2d334a;
-}
-
-[data-cognigy-webchat-root] .webchat-buttons-template .webchat-buttons-template-button:hover {
-  animation: "Some animation" 1s ease;
-  animation-iteration-count: 1;
-  font-weight: bold;
-}
-
-```
-
-### Image Gallery
-
-- _webchat-carousel-template-root_  
-  The card element from a Gallery, here you can increase its size for example.
-
-````CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-root {
-  width: 200px;
-}
-
-* *webchat-carousel-template-frame*
-The frame that adds the "card styles" such as background-color or box-shadow.
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-frame {
-  box-shadow: none;
-}
-
-````
-
-- _webchat-carousel-template-content_  
-  The content of the card, you can modify it's height and make it look smaller so you could show more content.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-content {
-  background: #e3f6f5;
-  height: 200px;
-}
-
-```
-
-- _webchat-carousel-template-title_  
-  The title of the card.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-title {
-    color:blue;
-}
-
-```
-
-- _webchat-carousel-template-subtitle_  
-  The subtitle of the card.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-subtitle {
-  color:white;
-}
-```
-
-- _webchat-carousel-template-button_  
-  The Button at the bottom of the card, containing a URL.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-button {
-  color: #272343;
-  background: #ffd803;
-}
-
-[data-cognigy-webchat-root] .webchat-carousel-template-button:hover {
-  background: #cfb000;
-}
-```
-
-### Media
-
-- _webchat-media-template_  
-  The media element can be of three forms: Image, Video or Audio. You can modify its container or put some animations on it
-
-```CSS
-[data-cognigy-webchat-root] .webchat-media-template-image {
-  animation: "Some animation" 1s;
-}
-
-[data-cognigy-webchat-root] .webchat-media-template-video {
-}
-
-[data-cognigy-webchat-root] .webchat-media-template-audio {
-}
-
-[data-cognigy-webchat-root] .webchat-media-template-file {
-}
-
-/* Add styles for the container containing group of file attachments */
-[data-cognigy-webchat-root] .webchat-media-template-files-container {
-}
-
-/* Add styles for the container containing group of image attachments */
-[data-cognigy-webchat-root] .webchat-media-template-image-container {
-}
-
-```
-
-### List
-
-- _webchat-list-template-root_  
-  The container element of the List, you can remove the border-radius that comes with it.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-root {
-  border-radius: 0;
-}
-```
-
-- _webchat-list-template-header_  
-  This is the header element, which is above all other componets of the list.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header {
-  heigth: 200px;
-}
-```
-
-- _webchat-list-template-header-content_  
-  The content of the header, here you can center all elements for example.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-content {
-  text-align: center;
-}
-```
-
-- _webchat-list-template-header-title_  
-  The title of the header element.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-title {
-  color: green;
-}
-```
-
-- _webchat-list-template-header-subtitle_  
-  The subtitle of the header element.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-subtitle {
-  color: green;
-}
-```
-
-- _webchat-list-template-header-button_  
-  This is the button inside the header, it can look better if you add some hovering effects.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-button {
-  background: #ffd803;
-  color: #272343;
-}
-
-[data-cognigy-webchat-root] .webchat-list-template-header-button:hover {
-  background: #cfb000;
-}
-```
-
-- _webchat-list-template-element_  
-  The element that contains a single list element
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element {
-  background: #e3f6f5;
-}
-```
-
-- _webchat-list-template-element-title_  
-  The title of every list element.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element-title {
-  color: yellow;
-}
-```
-
-- _webchat-list-template-element-subtitle_  
-  The subtitle of every list element.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element-subtitle {
-  color: yellow;
-}
-```
-
-- _webchat-list-template-element-button_  
-  This is the button inside every list element, adding some hovering effects or animation can make it look better.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element-button {
-  border-color: #ffd803;
-  background-color: #fffffe;
-  color: #272343;
-}
-
-[data-cognigy-webchat-root] .webchat-list-template-element-button:hover {
-  background-color: #cfb00071;
-}
-```
-
-- _webchat-list-template-global-button_  
-  This is the global button of the list template,you could change, for example, its background color and also add custom hover effects.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-list-template-global-button {
-    background-color: #cfb00071;
-}
-
-[data-cognigy-webchat-root] .webchat-list-template-global-button:hover {
-    background-color: #39801071;
-}
-```
-
-### Date Picker
 
-- _webchat-plugin-date-picker_  
-  The container element of the Date picker plugin, you can make it's font appear bigger.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker {
-  font-size: 125%;
-}
-```
-
-- _webchat-plugin-date-picker-header_  
-  The header of the Date picker plugin, it it possible to change e.g. it's background color.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker-header {
-  background-color: linear-gradient(185deg,#36b96e,#2c6caf);
-}
-```
-
-- _webchat-plugin-date-picker-content_  
-  The content container element of the Date picker plugin, let it glow with an inset shadow.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker-content {
-  box-shadow: 0 0 70px #ff99d7 inset;
-}
-```
-
-- _webchat-plugin-date-picker-footer_  
-  The footer element of the Date picker plugin, give it a custom look with padding.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker-footer {
-  padding: 1em 3em;
-}
-```
-
-- _webchat-plugin-date-picker-weekdays_  
-  The Weekdays of the calendar can be customized with e.g. uppercase labels.
-
-```CSS
-[data-cognigy-webchat-root] .flatpickr-weekday {
-  text-transform: uppercase;
-}
-```
-
-- _webchat-plugin-date-picker-footer_  
-  The look and feel of the selected date can be changed.
-
-```CSS
-[data-cognigy-webchat-root] .flatpickr-day.selected {
-  background: #28c8ef;
-  color: hsla(0, 0%, 100%, 0.95);
-  font-weight: bold;
-  font-size: 1.375rem;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
 }
 ```
 
@@ -1315,7 +685,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   This class is used to style the persistent menu icon. You can customize the size, color, and background.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu-button {
     background-color: #ffffff;
     color: #000000;
     font-size: 16px;
@@ -1326,7 +696,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   This class is used to style the persistent menu container, which includes the title and menu items. You can adjust the layout, background color, and padding.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu {
     background-color: #f9f9f9;
     padding: 15px;
     border-radius: 5px;
@@ -1337,7 +707,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   This class is used to style individual items in the persistent menu. You can customize the background color, font, and padding.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu-item {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu-item {
     background-color: #f0f0f0;
     padding: 10px;
     font-family: Arial, Helvetica, sans-serif;
@@ -1348,7 +718,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   This class is used to style the container that holds the persistent menu items. You can adjust the layout, spacing, and border.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu-item-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu-item-container {
     display: flex;
     flex-direction: column;
     border: 1px solid #ccc;
@@ -1356,106 +726,509 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 }
 ```
 
-### Modal and Delete Conversation
+### Privacy Notice
 
-- _webchat-modal-root_  
-  The root container for modals. You can customize the overall appearance of modal windows.
+- _webchat-privacy-notice-root_  
+  The root container for the privacy screen of the webchat.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-root {
-    background-color: rgba(0, 0, 0, 0.5);
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-root {
+    border-radius: 20px;
+    border: 2px solid rgb(5, 5, 131);
     padding: 20px;
+}
+```
+
+- _webchat-privacy-notice-message_  
+  The root container for the privacy text content.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-message {
+    background-color: rgb(227, 227, 251);
+}
+```
+
+- _webchat-privacy-notice-markdown-container_  
+  The markdown container of the privacy text content.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-markdown-container > p {
+    color: rgb(227, 227, 251);
+}
+```
+
+To change the font-family of the privacy notice text, you need to target the _p_ tag inside _webchat-privacy-notice-message_ like the following
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-message p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+- _webchat-privacy-notice-actions_  
+  The container for the action items of the privacy screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-actions {
+    background-color: rgb(227, 227, 251);
+    padding: 20px;
+}
+```
+
+- _webchat-privacy-notice-accept-button_  
+  The privacy submit button in the privacy screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-accept-button {
+    background-color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-privacy-policy-link_
+  The privacy policy link in the privacy screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-policy-link {
+   color: rgb(227, 227, 251);
+}
+```
+
+To change the font-family of the privacy policy link text, you need to target the _p_ tag inside _webchat-privacy-policy-link_ like the following
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-policy-link p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+### Home Screen
+
+- _webchat-homescreen-root_  
+  The root container for the homescreen of the webchat.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-root {
+    border-radius: 20px;
+    border: 2px solid rgb(5, 5, 131);
+    padding: 20px;
+}
+```
+
+- _webchat-homescreen-content_  
+  This is the main content area of the homescreen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content {
+    background-color: black;
+}
+```
+
+- _webchat-homescreen-header_  
+  The header section of the homescreen, containing the logo and close button.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-header {
+    margin: 10px;
+}
+```
+
+- _webchat-homescreen-header-logo_  
+  The logo shown in the homescreen header when a custom logo URL is provided. You can customize its size, border, and background, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-header-logo {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #0055ff;
+    background-color: #f5faff;
+}
+```
+
+- _webchat-homescreen-header-cognigy-logo_  
+  The default Cognigy logo shown in the homescreen header when no custom logo URL is provided.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-header-cognigy-logo {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #41cc00;
+    background-color: #f8f8f8;
+}
+```
+
+- _webchat-homescreen-buttons_  
+  The container for conversation starter buttons on the homescreen. You can adjust spacing, layout, position, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-buttons {
+    margin-top: 24px;
+    padding: 16px;
+}
+```
+
+- _webchat-homescreen-close-button_  
+  The close button in the homescreen header.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-close-button {
+    border: 2px solid white !important;
+    padding: 10px !important;
+}
+```
+
+- _webchat-homescreen-title_  
+  The title displayed on the homescreen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-title {
+    font-size: 24px;
+    color: red !important;
+}
+```
+
+- _webchat-homescreen-button-container_  
+  The container for the conversation starter buttons on the homescreen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-button-container {
+    padding: 10px;
+}
+```
+
+- _webchat-homescreen-button_  
+  Individual buttons on the homescreen (like for starting a new conversation).
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-button {
+    background-color: rgb(5, 5, 131) !important;
+    color: black;
+    border-radius: 5px;
+}
+```
+
+To change the font-family of the homescreen starter button labels, you need to target the _span_ tag inside _webchat-homescreen-button_ like the following
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-button span {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+- _webchat-homescreen-actions_  
+  The container for any actions on the homescreen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-actions {
+    margin-top: 15px;
+}
+```
+
+- _webchat-homescreen-send-button_  
+  The button to send a new message from the homescreen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-send-button {
+    background-color: rgb(5, 5, 131) !important;
+    color: white;
+}
+```
+
+- _webchat-homescreen-previous-conversation-button_  
+  The button to view previous conversations from the homescreen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-previous-conversation-button {
+    background-color: rgb(5, 5, 131) !important;
+}
+```
+
+### Previous Conversation Screen
+
+- _webchat-prev-conversations-root_  
+  The root container for the previous conversations screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-root {
+    padding: 20px;
+}
+```
+
+- _webchat-prev-conversations-content_  
+  The container for the list of previous conversations.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-content {
+    padding: 0px;
+}
+```
+
+- _webchat-prev-conversations-item_  
+  An individual item in the previous conversations list.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-item {
+    background-color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-prev-conversations-send-button_  
+  The button to start a new conversation from the Previous conversations screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-send-button {
+    background-color: rgb(5, 5, 131) !important;
+}
+```
+
+- _webchat-prev-conversations-actions_  
+  The container for actions at the bottom of the previous conversations screen. You can adjust its background, padding, and layout.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-actions {
+    background: #f5faff;
+    border-top: 2px solid red;
+}
+```
+
+### Chat Options Screen
+
+- _webchat-chat-options-root_  
+  The root container for the chat options.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-root {
+    padding: 20px;
+}
+```
+
+- _webchat-chat-options-container_  
+  The container that holds all chat options.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-container {
+    border: 2px solid rgb(5, 5, 131);
+}
+```
+
+#### Chat Options Postback section
+
+- _webchat-chat-options-action-btns-root_  
+  The container for quick reply buttons and its title inside the chat options screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-btns-root {
+    justify-content: space-between;
+    padding: 10px;
+}
+```
+
+- _webchat-chat-options-action-button-container_  
+  The container for the set of quick reply buttons in the chat options screen
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-button-container {
+    justify-content: space-around;
+    padding: 10px;
+}
+```
+
+- _webchat-chat-options-action-btns-title_  
+  The title for the quick reply buttons in the chat options screen
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-btns-title {
+    font-size: 1.125rem;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-chat-options-action-btns-wrapper_  
+  The wrapper for the postback buttons in the chat options screen. You can adjust layout, spacing, background, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-btns-wrapper {
+    background: #f5faff;
+    padding: 12px;
     border-radius: 8px;
 }
 ```
 
-- _webchat-modal-header_  
-  The header section of modal windows.
+- _webchat-chat-options-action-button_  
+  An individual quick reply button in the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-header {
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-button {
+    background-color: rgb(5, 5, 131) !important;
+    color: white;
 }
 ```
 
-- _webchat-modal-title_  
-  The title text in modal headers.
+#### Rating Widget
+
+Please note that this rating widget is used in rating section of the Chat Options screen and also in the rating screen that displays as a result of Request Rating Flow Node
+
+- _webchat-rating-widget-root_  
+  The root container for the rating widget that includes the rating title, thumbs up/down button, text area and submit button.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-title {
-    font-size: 1.125rem;
-    color: #333;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-root {
+    padding: 20px;
+}
+```
+
+- _webchat-rating-widget-title_  
+  The title of the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-title {
+    font-size: 1.25rem;
+    color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-rating-widget-content-container_  
+  The container for the rating widget's thumbs up/down buttons.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-content-container {
+    justify-content: space-between;
+    padding: 10px;
+}
+```
+
+- _webchat-rating-widget-thumbs-up-button_  
+  The thumbs-up button for the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-thumbs-up-button {
+    background-color: #00cc66 !important;
+}
+```
+
+- _webchat-rating-widget-thumbs-down-button_  
+  The thumbs-down button for the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-thumbs-down-button {
+    background-color: #cc0000 !important;
+}
+```
+
+- _webchat-rating-widget-comment-input-field-container_  
+  The container for comments input field with label in the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-comment-input-field-container {
+  background: #cc0000;
+}
+```
+
+- _webchat-rating-widget-comment-input-field-label_  
+  The label for comments input field in the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-comment-input-field-label {
+    font-size: 1.25rem;
+}
+```
+
+- _webchat-rating-widget-comment-input-field_  
+  The input field for comments in the rating widget.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-comment-input-field {
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+```
+
+- _webchat-rating-widget-send-button_  
+  The button to send the rating/comment.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-send-button {
+    background-color: rgb(5, 5, 131) !important;
+}
+```
+
+#### Chat Options TTS section
+
+- _webchat-tts-option-root_  
+  The container for the Text-to-Speech toggle option in chat options. You can adjust its layout, background, spacing, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-tts-option-root {
+    background: #f5faff;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+```
+
+- _webchat-chat-options-tts-option-label_  
+  The label for the TTS toggle option. You can style its font, color, spacing, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-tts-option-label {
+    font-size: 1rem;
+    color: #0055ff;
     font-weight: bold;
+    margin-right: 12px;
 }
 ```
 
-- _webchat-modal-close-button_  
-  The close button in modal headers.
+- _webchat-chat-options-tts-option-toggle_  
+  The toggle button for TTS option. You can style its size, color, and border.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-close-button {
-    background-color: transparent;
-    border: none;
-    color: #666;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-tts-option-toggle {
+    width: 40px;
+    height: 24px;
+    background: #eaf6ff;
+    border: 2px solid #0055ff;
 }
 ```
 
-- _webchat-modal-close-icon_  
-  The icon within the modal close button.
+### Chat Options Footer
+
+- _webchat-chat-options-footer_  
+  The footer container for the chat options screen. You can style its background, padding, and border.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-close-icon {
-    font-size: 20px;
-    color: #666;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-footer {
+    background: #f5faff;
+    padding: 16px 20px;
+    border-top: 1px solid #e0e0e0;
+    text-align: right;
 }
 ```
 
-- _webchat-modal-divider-wrapper_  
-  The wrapper for modal dividers.
+- _webchat-chat-options-footer-link_  
+  The link displayed at the footer of the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-divider-wrapper {
-    padding: 10px 0;
-}
-```
-
-- _webchat-modal-divider_  
-  The divider line in modals.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-modal-divider {
-    border-top: 1px solid #ddd;
-}
-```
-
-- _webchat-modal-body_  
-  The main content area of modals.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-modal-body {
-    padding: 15px;
-    background-color: white;
-}
-```
-
-- _webchat-modal-footer_  
-  The footer section of modals.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-modal-footer {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-footer-link {
+    text-decoration: underline;
     padding: 10px;
-    background-color: #f5f5f5;
-    border-top: 1px solid #ddd;
 }
 ```
+
+- _webchat-chat-options-footer-link-text_  
+  The text for the footer link in chat options screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-footer-link-text {
+    font-size: 0.875rem;
+    font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+### Delete Conversations Modal
 
 - _webchat-delete-conversation-container_  
   The container for delete conversation in chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-container {
     padding: 20px;
     text-align: center;
 }
@@ -1465,7 +1238,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The title of delete conversation setting in chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-title {
     font-size: 1rem;
     font-weight: bold;
     color: #333;
@@ -1476,7 +1249,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The delete button style inside the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-button {
     padding: 8px 16px;
     margin: 5px;
     border-radius: 4px;
@@ -1487,7 +1260,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The cancel button in delete confirmation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-confirmation-cancel-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-cancel-button {
     background-color: #f5f5f5;
     color: #333;
 }
@@ -1497,7 +1270,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The confirm button in delete confirmation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-confirmation-confirm-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-confirm-button {
     background-color: #dc3545;
     color: white;
 }
@@ -1507,7 +1280,7 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The warning text in delete conversation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-text {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-text {
     color: #666;
     margin: 10px 0;
 }
@@ -1517,19 +1290,684 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The warning text for deleting all conversations in delete dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-all-conversation-text {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-all-conversation-text {
     color: #dc3545;
     font-weight: bold;
 }
 ```
 
-- _webchat-header-delete-all-conversations-button_  
-  The icon button to delete all conversations in the previous conversations header.
+### Maintenance Mode Screen
+
+- _webchat-information-message-root_
+  The information message container when the webchat is in maintenance mode. You can adjust the position background
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-header-delete-all-conversations-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-root {
+    background-color: #c5c5c5;
+    align-items: flex-start;
+}
+```
+
+- _webchat-information-message-content_
+  The information message text and icon container when the webchat is in maintenance mode. You can adjust the alignment of the maintenance icon and text, for example
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-container {
+    flex-direction: row;
+    gap: 30px;
+}
+```
+
+### Generic Modal
+
+- _webchat-modal-root_  
+  The root container for all modals. You can customize the overall appearance of modal windows.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-root {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+}
+```
+
+- _webchat-modal-header_  
+  The header section of all modal windows.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+```
+
+- _webchat-modal-title_  
+  The title text in modal headers.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-title {
+    font-size: 1.125rem;
+    color: #333;
+    font-weight: bold;
+}
+```
+
+- _webchat-modal-close-button_  
+  The close button in modal headers.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-close-button {
     background-color: transparent;
-    color: #666;
     border: none;
+    color: #666;
+}
+```
+
+- _webchat-modal-close-icon_  
+  The icon within the modal close button.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-close-icon {
+    font-size: 20px;
+    color: #666;
+}
+```
+
+- _webchat-modal-divider-wrapper_  
+  The wrapper for modal dividers.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-divider-wrapper {
+    padding: 10px 0;
+}
+```
+
+- _webchat-modal-divider_  
+  The divider line in modals.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-divider {
+    border-top: 1px solid #ddd;
+}
+```
+
+- _webchat-modal-body_  
+  The main content area of modals.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-body {
+    padding: 15px;
+    background-color: white;
+}
+```
+
+- _webchat-modal-footer_  
+  The footer section of modals.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-footer {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+}
+```
+
+### Generic Toggle Field
+
+- _webchat-toggle-button-root_  
+  The root of the reusable toggle switch field in the Webchat screens. (Example, the toggle switch of 'Enable TTS' field in chat-options screen)
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-toggle-button-root {
+    background-color: #000000;
+    height: 25px;
+    width: 50px;
+}
+```
+
+- _webchat-toggle-button-inner-circle_
+  The inner circle of the reusable toggle switch fields in the Webchat screens.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-toggle-button-inner-circle {
+   background-color: aliceblue;
+    width: 15px;
+    height: 15px;
+    margin: 3px;
+}
+```
+
+---
+
+## Webchat Message Customization
+
+Our Webchat includes built-in message templates such as Quick Replies, Galleries, Media, and Lists, etc. These elements can also be customized further to better match your design guidelines. Below are examples of the classes you can use to modify them.
+
+<!-- TODO: Add Working CodeSandbox link here -->
+
+### Generic Message Styling
+
+The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give us the possibility to customize the messages from the different sources distinctly.
+
+- _webchat-message-row_  
+  The message container in the chat log, regardless of the source, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row {
+    padding: 12px;
+    background-color: #e8e8e8;
+    border-radius: 10px;
+}
+```
+
+- _webchat-message-row + bot_  
+  The container in the chat log for bot messages, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.bot {
+    padding: 12px;
+    background-color: #e8e8e8;
+    border-radius: 10px;
+}
+```
+
+- _webchat-message-row + user_  
+  The container in the chat log for user messages, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user {
+    padding: 12px;
+    background-color: #a5a5a5;
+    border-radius: 10px;
+}
+```
+
+- _webchat-message-row + agent_  
+  The container in the chat log for agent messages, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.agent {
+    padding: 12px;
+    background-color: #c2c2c2ff;
+    border-radius: 10px;
+}
+```
+
+- _webchat-avatar_  
+  The avatar that appears in the messahe header for incoming messages.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar {
+    width: 35px;
+    height: 35px;
+    border: 2px solid green;
+}
+```
+
+- _webchat-avatar + bot_  
+  The avatar that appears in the messahe header for only incoming bot messages.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.bot {
+    width: 35px;
+    height: 35px;
+    border: 2px solid black;
+}
+```
+
+- _webchat-avatar + agent_  
+  The avatar that appears in the message header for only incoming agent messages.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.agent {
+    width: 35px;
+    height: 35px;
+    border: 2px solid red;
+}
+```
+
+- _chat-bubble_
+  The text bubbles for messages of type or Text or Quick Reply or similar, regardless of the source.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _chat-bubble + user_
+  The text bubbles for user messages.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user .chat-bubble {
+    background-color: red;
+    width: 500px;
+    font-size: 1rem;
+}
+```
+
+- _chat-bubble + bot_
+  The text bubbles for messages of type or Text or Quick Reply or similar from the bot.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.bot .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _chat-bubble + agent_
+  The text bubbles for messages of type or Text or Quick Reply or similar from an agent.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.agent .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _webchat-chat-typing-indicator_  
+  The typing indicator bubble for incoming messages. you can change the background color, for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-typing-indicator {
+    background: rgb(5, 5, 131);
+}
+```
+
+### Quick Replies
+
+- _webchat-quick-reply-template-root_  
+  This class contains the whole Quick Reply element, including the text bubble and the action buttons.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-root {
+    width: 500px;
+    height: 500px;
+}
+```
+
+To customize the chat bubble of only the quick reply messages, use the _chat-bubble_ selector like below
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-root .chat-bubble {
+    background-color: red;
+    font-size: 2rem;
+}
+```
+
+- _webchat-quick-reply-template-replies-container_  
+  This is the element holding all Quick Replie buttons. You can change the way they are shown, e.g. as a column.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-replies-container {
+  display: flex;
+  flex-direction: column;
+}
+```
+
+- _webchat-quick-reply-template-button_  
+  This is the style of the Quick Reply button element, all of them will be modified.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-replies-container .webchat-quick-reply-template-button {
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+}
+```
+
+- _webchat-template-button-image_  
+  This class modifies the style of the images inside the quick reply buttons. The default border-top-left-radius and border-bottom-left-radius of the images inside the button is 19px. You can override that with the help of this class.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-replies-container .webchat-template-button-image {
+    background-color: black;
+    border-radius: 10px;
+}
+```
+
+### Text with Buttons
+
+- _webchat-buttons-template-root_  
+  The container for the message of type Text with Buttons.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root {
+    width: 500px;
+    height: 500px;
+}
+```
+
+To customize the chat bubble of only the Text with Buttons messages, use the _chat-bubble_ selector like below
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .chat-bubble {
+    background-color: red;
+    font-size: 2rem;
+}
+```
+
+To customize the list of buttons in the Text with Buttons message, use the selector in below example
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root ul {
+    display: flex;
+    flex-direction: column;
+}
+```
+
+- _webchat-buttons-template-button_  
+  The class of a single button inside Text With Buttons action list. The styling will take effect for all buttons in all Text with Buttons action list.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .webchat-buttons-template-button {
+    background-color: #fffffe;
+    color: #2d334a;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .webchat-buttons-template-button:hover {
+    outline: 2px solid black;
+}
+```
+
+### Gallery
+
+- _webchat-carousel-template-root_  
+  The container of the Gallery message content. Here you can adjust its padding, for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-root {
+  padding: 20px;
+}
+```
+
+- _webchat-carousel-template-frame_
+  The individual card inside the Gallery message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-frame {
+  width: 200px;
+}
+```
+
+- _webchat-carousel-template-title_  
+  The title of the card in the Gallery message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-title {
+    color: blue;
+    top: 10px;
+}
+```
+
+- _webchat-carousel-template-content_  
+  The content of the card below the image in a card.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-content {
+    background: #e3f6f5;
+    height: 200px;
+}
+```
+
+- _webchat-carousel-template-subtitle_  
+  The text content of the card, below the gallery image.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-subtitle {
+  color:white;
+}
+```
+
+- _webchat-carousel-template-button_  
+  The Button at the bottom of the card, containing a URL.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-button {
+  color: #272343;
+  background: #ffd803;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-button:hover {
+  background: #cfb000;
+}
+```
+
+### Media
+
+- _webchat-media-template_  
+  The media element can be of three forms: Image, Video or Audio. You can modify its container or put some animations on it
+
+```CSS
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-image-container {
+  padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-image {
+  border-radius: 0;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-video > div {
+  border-radius: 5px;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-audio > div{
+  border: 1px solid red;
+  border-radius: 20%;
+}
+```
+
+### File Attachments
+
+- _webchat-media-template_  
+  Add styles for the container containing group of file attachments
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-files-container {
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+```
+
+- _webchat-media-template-file_
+  Add styles for individual file attachment in the message
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-file {
+  background-color: white;
+  font-size: 1rem;
+}
+```
+
+### List
+
+- _webchat-list-template-root_  
+  The container element of the List, you can remove the border-radius or background, for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-root {
+  border-radius: 0;
+}
+```
+
+- _webchat-list-template-header_  
+  This is the header element, which is above all other componets of the list.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header {
+  heigth: 200px;
+}
+```
+
+- _webchat-list-template-header-content_  
+  The content of the header, here you can center all elements for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-content {
+  text-align: center;
+}
+```
+
+- _webchat-list-template-header-title_  
+  The title of the header element.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-title {
+  color: green;
+}
+```
+
+- _webchat-list-template-header-subtitle_  
+  The subtitle of the header element.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-subtitle {
+  color: green;
+}
+```
+
+- _webchat-list-template-header-button_  
+  This is the button inside the header, it can look better if you add some hovering effects.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-button {
+  background: #ffd803;
+  color: #272343;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-button:hover {
+  background: #cfb000;
+}
+```
+
+- _webchat-list-template-element_  
+  The element that contains a single list element
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element {
+  background: #e3f6f5;
+}
+```
+
+- _webchat-list-template-element-title_  
+  The title of every list element.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-title {
+  color: yellow;
+}
+```
+
+- _webchat-list-template-element-subtitle_  
+  The subtitle of every list element.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-subtitle {
+  color: yellow;
+}
+```
+
+- _webchat-list-template-element-button_  
+  This is the button inside every list element, adding some hovering effects or animation can make it look better.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-button {
+  border-color: #ffd803;
+  background-color: #fffffe;
+  color: #272343;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-button:hover {
+  background-color: #cfb00071;
+}
+```
+
+- _webchat-list-template-global-button_  
+  This is the global button of the list template,you could change, for example, its background color and also add custom hover effects.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-global-button {
+  background-color: #cfb00071;
+}
+
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-global-button:hover {
+  background-color: #39801071;
+}
+```
+
+### Adaptive Cards
+
+- _adaptivecard-wrapper_
+  The container element of Adaptive Card message. You can customize the width, for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .adaptivecard-wrapper {
+  width: 300px;
+}
+```
+
+### Date Picker
+
+- _webchat-plugin-date-picker_  
+  The container element of the Date picker screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker {
+    background-color: #d3d3d3;
+}
+```
+
+- _webchat-plugin-date-picker-header_  
+  The header of the Date picker screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker-header {
+    background-color: linear-gradient(185deg,#36b96e,#2c6caf);
+}
+```
+
+- _webchat-plugin-date-picker-content_  
+  The content container element of the Date picker screen, below the header.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker-content {
+    box-shadow: 0 0 70px #ff99d7 inset;
+}
+```
+
+- _webchat-plugin-date-picker-footer_  
+  The footer element of the Date picker plugin, give it a custom look with padding.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker-footer {
+  padding: 1em 3em;
+}
+```
+
+- _webchat-plugin-date-picker-weekdays_  
+  The Weekdays of the calendar can be customized with e.g. uppercase labels.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .flatpickr-weekday {
+  text-transform: uppercase;
+}
+```
+
+- _webchat-plugin-date-picker-footer_  
+  The look and feel of the selected date can be changed.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .flatpickr-day.selected {
+  background: #28c8ef;
+  color: hsla(0, 0%, 100%, 0.95);
+  font-weight: bold;
+  font-size: 1.375rem;
 }
 ```
