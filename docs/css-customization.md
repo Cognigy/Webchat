@@ -120,17 +120,16 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-modal-footer_
 - _webchat-toggle-button-root_
 - _webchat-message-row_
-- _webchat-message-row + bot_
-- _webchat-message-row + user_
-- _webchat-message-row + agent_
 - _webchat-avatar_
-- _webchat-avatar + bot_
-- _webchat-avatar + agent_
 - _chat-bubble_
-- _chat-bubble_ + bot_
-- _chat-bubble_ + user_
-- _chat-bubble_ + agent_
 - _webchat-chat-typing-indicator_
+- _webchat-quick-reply-template-root_
+- _webchat-quick-reply-template-replies-container_
+- _webchat-quick-reply-template-button_
+- _webchat-template-button-image_
+- _webchat-buttons-template-root_
+- _webchat-buttons-template-button_
+
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 
@@ -1604,44 +1603,50 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 }
 ```
 
-### Buttons
+### Text with Buttons
 
 - _webchat-buttons-template-root_  
-  This class contains the Buttons element.
+  The container for the message of type Text with Buttons.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-buttons-template-root {
-  border-radius: 0;
-  animation: "Some animation" ;
+    width: 500px;
+    height: 500px;
 }
 
 ```
 
-- _webchat-buttons-template-header_  
-  The container and header of the buttons, you can modify the text position and style.
+  To customize the chat bubble of only the Text with Buttons messages, use the _chat-bubble_ selector like below
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-header {
-  text-align: center;
-  font-weight: bold;
-  background: #e3f6f5;
+[data-cognigy-webchat-root] .webchat-buttons-template-root .chat-bubble {
+    background-color: red;
+    font-size: 2rem;
+}
+
+```
+
+  To customize the list of buttons in the Text with Buttons message, use the selector in below example 
+
+```CSS
+[data-cognigy-webchat-root] .webchat-buttons-template-root ul {
+    display: flex;
+    flex-direction: column;
 }
 
 ```
 
 - _webchat-buttons-template-button_  
-  The class of a single button, you can add cool animations when hovering and styling, this will take effect for all buttons in the list.
+  The class of a single button inside Text With Buttons action list. The styling will take effect for all buttons in all Text with Buttons action list.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template .webchat-buttons-template-button {
+[data-cognigy-webchat-root] .webchat-buttons-template-root .webchat-buttons-template-button {
     background-color: #fffffe;
     color: #2d334a;
 }
 
-[data-cognigy-webchat-root] .webchat-buttons-template .webchat-buttons-template-button:hover {
-  animation: "Some animation" 1s ease;
-  animation-iteration-count: 1;
-  font-weight: bold;
+[data-cognigy-webchat-root] .webchat-buttons-template-root .webchat-buttons-template-button:hover {
+    outline: 2px solid black;
 }
 
 ```
@@ -1910,57 +1915,5 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   color: hsla(0, 0%, 100%, 0.95);
   font-weight: bold;
   font-size: 1.375rem;
-}
-```
-
-
-
-
-### LEGACY
-
-- _regular-message_  
-  The text of the message, you can change the font and style the dialog bubble, this one comes from the regular message plugin that comes shipped with the Webchat!
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message {
-
-    border:2px solid  white;
-    background: black;
-    color:white;
-    box-shadow: none;
-
-}
-```
-
-- _regular-message + user_  
-  The text of the message from the user, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.user {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
-}
-```
-
-- _regular-message + agent_  
-  The text of the message from the agent when using handover, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.agent {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
-}
-```
-
-- _regular-message + bot_  
-  The text of the message from the bot, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.bot {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
 }
 ```
