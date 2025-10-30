@@ -1199,7 +1199,7 @@ export class WebchatUI extends React.PureComponent<
 												onClick={this.handleFabClick}
 												{...webchatToggleProps}
 												type="button"
-												className={classNames("webchat-toggle-button burst", config.settings.layout.iconAnimation)}
+												className={classNames("webchat-toggle-button burst", config.settings?.layout?.iconAnimation)}
 												id="webchatWindowToggleButton"
 												aria-label={openChatAriaLabel()}
 												ref={this.chatToggleButtonRef}
