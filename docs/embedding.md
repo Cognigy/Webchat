@@ -118,7 +118,7 @@ See it in action:
 | iconUrl                        | string  | `default-1`                             | Configure launcher icon, set either default-1..3 or a data uri of type svg or png                                                                                                                                                   |
 | iconAnimation                  | string  | `none`                                  | Set icon animation `"pulse" \| "bounce" \| "swing" \| "none"`                                                                                                                                                                       |
 | iconAnimationSpeed             | number  | `1`                                     | Speed at which the animation is being played 1 implies 1x speed and 2 implies double the speed and 0.5 implies half the normal speed. You can use any value from 0.1-5 but sticking to normal, double or half speed is recommended. |
-| iconAnimationInterval          | number  | `1`                                     | Amount of seconds in between each time animation is played                                                                                                                                                                          |
+| iconAnimationInterval          | number  | `5`                                     | Amount of seconds in between each time animation is played                                                                                                                                                                          |
 
 #### Persistent Menu
 

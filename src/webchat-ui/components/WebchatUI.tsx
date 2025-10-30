@@ -693,7 +693,7 @@ export class WebchatUI extends React.PureComponent<
 		if (!animation || (typeof animation === "string" && animation.trim().length === 0)) {
 			return;
 		}
-		const intervalSec = this.props.config?.settings?.layout?.iconAnimationInterval ?? 4;
+		const intervalSec = this.props.config?.settings?.layout?.iconAnimationInterval ?? 5;
 		const intervalMs = Math.max(0, intervalSec) * 1000;
 		if (intervalMs === 0) return;
 		this.iconAnimationIntervalHandle = setInterval(() => {
