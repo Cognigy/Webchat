@@ -35,6 +35,9 @@ The classes '_bot_' and '_user_' are used as helper classes that give us the pos
 - _webchat-header-delete-all-conversations-button_
 - _webchat-chat-history_
 - _webchat-scroll-to-bottom-button_
+- _webchat-log-ai-agent-notice-text_
+- _webchat-queue-updates_
+- _webchat-chip-conversation-ended_
 - _webchat-input_
 - _webchat-input-message-container_
 - _webchat-input-message-label_
@@ -99,6 +102,15 @@ The classes '_bot_' and '_user_' are used as helper classes that give us the pos
 - _webchat-chat-options-footer_
 - _webchat-chat-options-footer-link_
 - _webchat-chat-options-footer-link-text_
+- _webchat-delete-conversation-container_
+- _webchat-delete-conversation-title_
+- _webchat-delete-conversation-button_
+- _webchat-delete-confirmation-cancel-button_
+- _webchat-delete-confirmation-confirm-button_
+- _webchat-delete-conversation-text_
+- _webchat-delete-all-conversation-text_
+- _webchat-information-message-root_
+- _webchat-information-message-content_
 - _webchat-modal-root_
 - _webchat-modal-header_
 - _webchat-modal-title_
@@ -108,18 +120,7 @@ The classes '_bot_' and '_user_' are used as helper classes that give us the pos
 - _webchat-modal-divider_
 - _webchat-modal-body_
 - _webchat-modal-footer_
-- _webchat-delete-conversation-container_
-- _webchat-delete-conversation-title_
-- _webchat-delete-conversation-button_
-- _webchat-delete-confirmation-cancel-button_
-- _webchat-delete-confirmation-confirm-button_
-- _webchat-delete-conversation-text_
-- _webchat-delete-all-conversation-text_
--! _webchat-information-message-root_
--! _webchat-information-message-content_
--! _webchat-queue-updates_
--! _webchat-chip-conversation-ended_
--! _webchat-toggle-button-root_
+- _webchat-toggle-button-root_
 - _webchat-message-row_
 - _regular-message_
 - _webchat-avatar_
@@ -458,6 +459,41 @@ For examples of message type customization, see the [Webchat Message Type Custom
     width: 40px;
     height: 40px;
     font-size: 1.3rem;
+}
+```
+
+- _webchat-log-ai-agent-notice-text_  
+  The notice text shown at the top of the chat log to indicate the user that they are chatiing with AI Agent. You can style its font, color, and background.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-log-ai-agent-notice-text {
+    background: #eaf6ff;
+    color: #0055ff;
+    font-size: 1rem;
+}
+```
+
+- _webchat-queue-updates_  
+  The queue updates message shown when the chat is in queue mode. You can style its background, color, spacing, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-queue-updates {
+    background: #fffced;
+    color: #6b5000;
+    border: 1px solid #ffc400;
+    border-radius: 8px;
+}
+```
+
+- _webchat-chip-conversation-ended_  
+  The chip shown when the conversation has ended. You can style its background, color, and border. Please note that you need to include the div in the selector to adjust the chip styles.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chip-conversation-ended div {
+    background: #e0e0e0;
+    color: #666;
+    font-size: 0.95rem;
+    padding: 10px;
 }
 ```
 
@@ -1156,10 +1192,106 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
+### Delete Conversations Modal
+
+- _webchat-delete-conversation-container_  
+  The container for delete conversation in chat options screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-container {
+    padding: 20px;
+    text-align: center;
+}
+```
+
+- _webchat-delete-conversation-title_  
+  The title of delete conversation setting in chat options screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+```
+
+- _webchat-delete-conversation-button_  
+  The delete button style inside the chat options screen.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-button {
+    padding: 8px 16px;
+    margin: 5px;
+    border-radius: 4px;
+}
+```
+
+- _webchat-delete-confirmation-cancel-button_  
+  The cancel button in delete confirmation dialog.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-cancel-button {
+    background-color: #f5f5f5;
+    color: #333;
+}
+```
+
+- _webchat-delete-confirmation-confirm-button_  
+  The confirm button in delete confirmation dialog.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-confirm-button {
+    background-color: #dc3545;
+    color: white;
+}
+```
+
+- _webchat-delete-conversation-text_  
+  The warning text in delete conversation dialog.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-text {
+    color: #666;
+    margin: 10px 0;
+}
+```
+
+- _webchat-delete-all-conversation-text_  
+  The warning text for deleting all conversations in delete dialog.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-all-conversation-text {
+    color: #dc3545;
+    font-weight: bold;
+}
+```
+
+### Maintenance Mode Screen
+
+- _webchat-information-message-root_
+  The information message container when the webchat is in maintenance mode. You can adjust the position background
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-root {
+    background-color: #c5c5c5;
+    align-items: flex-start;
+}
+```
+
+- _webchat-information-message-content_
+  The information message text and icon container when the webchat is in maintenance mode. You can adjust the alignment of the maintenance icon and text, for example
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-container {
+    flex-direction: row;
+    gap: 30px;
+}
+```
+
 ### Generic Modal
 
 - _webchat-modal-root_  
-  The root container for modals. You can customize the overall appearance of modal windows.
+  The root container for all modals. You can customize the overall appearance of modal windows.
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-root {
@@ -1170,7 +1302,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 ```
 
 - _webchat-modal-header_  
-  The header section of modal windows.
+  The header section of all modal windows.
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-header {
@@ -1251,101 +1383,32 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
-### Delete Conversations Modal
+### Generic Toggle Field
 
-- _webchat-delete-conversation-container_  
-  The container for delete conversation in chat options screen.
+- _webchat-toggle-button-root_  
+  The root of the reusable toggle switch field in the Webchat screens. (Example, the toggle switch of 'Enable TTS' field in chat-options screen)
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-container {
-    padding: 20px;
-    text-align: center;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-toggle-button-root {
+    background-color: #000000;
+    height: 25px;
+    width: 50px;
 }
 ```
 
-- _webchat-delete-conversation-title_  
-  The title of delete conversation setting in chat options screen.
+- _webchat-toggle-button-inner-circle_
+  The inner circle of the reusable toggle switch fields in the Webchat screens. 
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-title {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-toggle-button-inner-circle {
+   background-color: aliceblue;
+    width: 15px;
+    height: 15px;
+    margin: 3px;
 }
 ```
 
-- _webchat-delete-conversation-button_  
-  The delete button style inside the chat options screen.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-button {
-    padding: 8px 16px;
-    margin: 5px;
-    border-radius: 4px;
-}
-```
-
-- _webchat-delete-confirmation-cancel-button_  
-  The cancel button in delete confirmation dialog.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-cancel-button {
-    background-color: #f5f5f5;
-    color: #333;
-}
-```
-
-- _webchat-delete-confirmation-confirm-button_  
-  The confirm button in delete confirmation dialog.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-confirm-button {
-    background-color: #dc3545;
-    color: white;
-}
-```
-
-- _webchat-delete-conversation-text_  
-  The warning text in delete conversation dialog.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-text {
-    color: #666;
-    margin: 10px 0;
-}
-```
-
-- _webchat-delete-all-conversation-text_  
-  The warning text for deleting all conversations in delete dialog.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-all-conversation-text {
-    color: #dc3545;
-    font-weight: bold;
-}
-```
-
-### Maintenance Mode
-
-- _webchat-information-message-root_
-  The information message container when the webchat is in maintenance mode. You can adjust the position background
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-root {
-    background-color: #c5c5c5;
-    align-items: flex-start;
-}
-```
-
-- _webchat-information-message-content_
-  The information message text and icon container when the webchat is in maintenance mode. You can adjust the alignment of the maintenance icon and text, for example
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-information-message-container {
-    flex-direction: row;
-    gap: 30px;
-}
-```
+----------------
 
 ## Webchat Message Types Customization
 
