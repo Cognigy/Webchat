@@ -5,9 +5,7 @@ You will have to add the style to your embeded Webchat or just link a CSS file t
 
 <!-- TODO: Add Working CodeSandbox link here -->
 
-There are several classes that you need to take in consideration if you want to further customize the Webchat elements or message types.
-
-The classes '_bot_' and '_user_' are used as helper classes that give us the possibility to customize the messages from the user and the bot separatly. The classes are the following:
+There are several classes that you need to take in consideration if you want to further customize the Webchat elements or message types. The classes are the following:
 
 - _webchat-root_
 - _webchat_
@@ -122,14 +120,16 @@ The classes '_bot_' and '_user_' are used as helper classes that give us the pos
 - _webchat-modal-footer_
 - _webchat-toggle-button-root_
 - _webchat-message-row_
-- _regular-message_
-- _webchat-avatar_
 - _webchat-message-row + bot_
-- _regular-message + bot_
-- _webchat-avatar + bot_
 - _webchat-message-row + user_
-- _regular-message + user_
-- _webchat-avatar + user_
+- _webchat-message-row + agent_
+- _webchat-avatar_
+- _webchat-avatar + bot_
+- _webchat-avatar + agent_
+- _chat-bubble_
+- _chat-bubble_ + bot_
+- _chat-bubble_ + user_
+- _chat-bubble_ + agent_
 - _webchat-chat-typing-indicator_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
@@ -144,7 +144,7 @@ This way we asure specificity of the classes in our script.
 
 Below are the examples for customizing the Webchat Widget. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds. 
 
-For examples of message type customization, see the [Webchat Message Type Customization](#webchat-message-types-customization) section below.
+For examples of customizing messages of different types, see the [Webchat Message Customization](#webchat-message-customization) section below.
 
 ### Webchat Container
 
@@ -1410,11 +1410,141 @@ To change the font-family of the homescreen starter button labels, you need to t
 
 ----------------
 
-## Webchat Message Types Customization
+## Webchat Message Customization
 
 Our Webchat includes built-in message templates such as Quick Replies, Galleries, Media, and Lists, etc. These elements can also be customized further to better match your design guidelines. Below are examples of the classes you can use to modify them.
 
 <!-- TODO: Add Working CodeSandbox link here -->
+
+### Generic Message Styling
+
+The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give us the possibility to customize the messages from the different sources distinctly.
+
+- _webchat-message-row_  
+  The message container in the chat log, regardless of the source, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row {
+    padding: 12px;
+    background-color: #e8e8e8;
+    border-radius: 10px;
+}
+```
+
+- _webchat-message-row + bot_  
+  The container in the chat log for bot messages, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.bot {
+    padding: 12px;
+    background-color: #e8e8e8;
+    border-radius: 10px;
+}
+```
+
+- _webchat-message-row + user_  
+  The container in the chat log for user messages, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user {
+    padding: 12px;
+    background-color: #a5a5a5;
+    border-radius: 10px;
+}
+```
+
+- _webchat-message-row + agent_  
+  The container in the chat log for agent messages, that includes both the message header (logo, timestamp, source name) and the message bubble.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.agent {
+    padding: 12px;
+    background-color: #c2c2c2ff;
+    border-radius: 10px;
+}
+```
+
+- _webchat-avatar_  
+  The avatar that appears in the messahe header for incoming messages.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar {
+    width: 35px;
+    height: 35px;
+    border: 2px solid green;
+}
+```
+
+- _webchat-avatar + bot_  
+  The avatar that appears in the messahe header for only incoming bot messages.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.bot {
+    width: 35px;
+    height: 35px;
+    border: 2px solid black;
+}
+```
+
+- _webchat-avatar + agent_  
+  The avatar that appears in the message header for only incoming agent messages.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.agent {
+    width: 35px;
+    height: 35px;
+    border: 2px solid red;
+}
+```
+
+- _chat-bubble_
+  The text bubbles for messages of type or Text or Quick Reply or similar, regardless of the source.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _chat-bubble + user_
+  The text bubbles for user messages.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _chat-bubble + bot_
+  The text bubbles for messages of type or Text or Quick Reply or similar from the bot.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.bot .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _chat-bubble + agent_
+  The text bubbles for messages of type or Text or Quick Reply or similar from an agent.
+
+```CSS
+ [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.agent .chat-bubble {
+    background-color: red;
+    width: 500px;
+}
+```
+
+- _webchat-chat-typing-indicator_  
+  The typing indicator bubble for incoming messages. you can change the background color, for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-typing-indicator {
+    background: rgb(5, 5, 131);
+}
+```
 
 
 ### Quick Replies
@@ -1789,16 +1919,8 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 
 
 
-- _webchat-message-row_  
-  The general class for any message in the chat, containing the message and the avatar logo.
 
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row {
-
-    padding-right: 10px;
-
-}
-```
+### LEGACY
 
 - _regular-message_  
   The text of the message, you can change the font and style the dialog bubble, this one comes from the regular message plugin that comes shipped with the Webchat!
@@ -1814,73 +1936,6 @@ The frame that adds the "card styles" such as background-color or box-shadow.
 }
 ```
 
-- _webchat-avatar_  
-  The icon from the avatar that will be show when a message is written or received. You can put the avatar you like by adding a URL to it.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar {
-
-    background-image: url(https://***.png);
-    // use flex-basis instead of "width" here!
-    flex-basis: 30px;
-    height: 28px;
-}
-```
-
-The avatars can be repositioned to appear at the top edge of a message rather than the bottom edge.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar {
-  align-self: flex-start !important;
-}
-```
-
-- _webchat-message-row + bot_  
-  The classes for the bot message in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.bot {
-
-    padding-right: 10px;
-
-}
-```
-
-- _regular-message + bot_  
-  The text of the message from the bot, you can change the font and style the dialog bubble.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.bot {
-
-    background: rgb(5, 5, 131);
-    box-shadow: none;
-}
-```
-
-- _webchat-avatar + bot_  
-  The icon from the bot that will be show when a message is received. You can put the avatar you like by adding a URL to it.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.bot {
-
-    background-image: url(https://***.png);
-    width: 30px;
-    height: 28px;
-
-}
-```
-
-- _webchat-message-row + user_  
-  The class for the user message in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user {
-
-    padding-right: 10px;
-
-}
-```
-
 - _regular-message + user_  
   The text of the message from the user, you can change the font and style the dialog bubble.
 
@@ -1889,31 +1944,6 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 
     background: rgb(5, 5, 131);
     box-shadow: none;
-}
-```
-
-- _webchat-avatar + user_  
-  The icon from the user that will be show when a message is received. You can put the avatar you like by adding a URL to it.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.user {
-
-    background-image: url(https://***.png);
-    // use flex-basis instead of "width" here!
-    flex-basis: 30px;
-    height: 28px;
-
-}
-```
-
-- _webchat-message-row + agent_  
-  The class for the agent message when using handover in the chat, containing the message and the avatar logo.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.agent {
-
-    padding-right: 10px;
-
 }
 ```
 
@@ -1928,26 +1958,13 @@ The avatars can be repositioned to appear at the top edge of a message rather th
 }
 ```
 
-- _webchat-avatar + agent_  
-  The icon from the agent when using handover that will be show when a message is received. You can put the avatar you like by adding a URL to it.
+- _regular-message + bot_  
+  The text of the message from the bot, you can change the font and style the dialog bubble.
 
 ```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-avatar.agent {
-
-    background-image: url(https://***.png);
-    // use flex-basis instead of "width" here!
-    flex-basis: 30px;
-    height: 28px;
-
-}
-```
-
-- _webchat-chat-typing-indicator_  
-  The typing indicator bubble of the message from the bot, you can change the background color.
-
-```CSS
-[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-typing-indicator {
+[data-cognigy-webchat-root] [data-cognigy-webchat].webchat .regular-message.bot {
 
     background: rgb(5, 5, 131);
+    box-shadow: none;
 }
 ```
