@@ -1514,6 +1514,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
  [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-message-row.user .chat-bubble {
     background-color: red;
     width: 500px;
+    font-size: 1rem;
 }
 ```
 
@@ -1550,33 +1551,28 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 ### Quick Replies
 
 - _webchat-quick-reply-template-root_  
-  This class contains the whole Quick Reply element, you can modify its size for example.
+  This class contains the whole Quick Reply element, including the text bubble and the action buttons.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-quick-reply-template-root {
-width: 500px;
-height: 500px;
+    width: 500px;
+    height: 500px;
 }
 
 ```
-
-- _webchat-quick-reply-template-header-message_  
-  This is the header message of the Quick Reply.
+  
+  To customize the chat bubble of only the quick reply messages, use the _chat-bubble_ selector like below
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-header-message {
-  border:2px solid  #fffffe;
-  border-radius: 0;
-  text-align: center;
-  background: #e3f6f5;
-  color: #272343;
-  animation: "Some animation" ;
+[data-cognigy-webchat-root] .webchat-quick-reply-template-root .chat-bubble {
+    background-color: red;
+    font-size: 2rem;
 }
 
 ```
 
 - _webchat-quick-reply-template-replies-container_  
-  This is the element holding all Quick Replies, you can change the way they are shown, e.g. as a column.
+  This is the element holding all Quick Replie buttons. You can change the way they are shown, e.g. as a column.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container {
@@ -1586,14 +1582,14 @@ height: 500px;
 
 ```
 
-- _webchat-quick-reply-template-reply_  
-  This is the style of the single Quick Reply element, all of them will be modified.
+- _webchat-quick-reply-template-button_  
+  This is the style of the Quick Reply button element, all of them will be modified.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-quick-reply-template-reply {
-    animation: "Some animation" ;
-    border-color:#272343;
-    color: #2d334a;
+[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-quick-reply-template-button {
+    color: black;
+    background-color: white;
+    border: 2px solid black;
 }
 
 ```
