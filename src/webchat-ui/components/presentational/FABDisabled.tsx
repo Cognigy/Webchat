@@ -15,6 +15,11 @@ const FABDisabled = styled(IconButton)(({ theme }) => ({
 	boxShadow: theme.shadow,
 	borderRadius: "50%",
 	marginTop: theme.unitSize * 2,
+
+	"&.active, &:hover": {
+		color: `${theme.greyContrastColor} !important`,
+		fill: `${theme.greyContrastColor} !important`,
+	},
 }));
 
 export default FABDisabled;
