@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
 import type { IWebchatConfig } from "../../../common/interfaces/webchat-config";
+import classNames from "classnames";
 
-// Default/fallback chat icon asset
 import ChatIconSvg from "../../assets/baseline-chat-24px.svg";
-
-// Optional built-in default variants (default-1..3)
 import ChatBubbleOutline1 from "../../assets/chat-bubble-outline-1.svg";
 import ChatBubbleOutline2 from "../../assets/chat-bubble-outline-2.svg";
 import ChatBubbleOutline3 from "../../assets/chat-bubble-outline-3.svg";
@@ -39,7 +37,8 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 		0.2,
 		1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1),
 	)}s`;
-
+    const burstDurationStyle = { "--icon-burst-duration": burstDuration } as React.CSSProperties;
+    
 	// Use built-in defaults if string is like "default-1"
 	if (typeof iconRef === "string" && iconRef.startsWith("default-")) {
 		const index = Math.max(0, Number(iconRef.replace("default-", "")) - 1);
@@ -51,9 +50,9 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 		}>;
 		return (
 			<DefaultIcon
-				className={`iconAnimationContainer ${animationClass}`}
+				className={classNames("iconAnimationContainer", animationClass)}
 				aria-hidden
-				style={{ "--icon-burst-duration": burstDuration } as React.CSSProperties}
+				style={burstDurationStyle}
 			/>
 		);
 	}
@@ -66,8 +65,8 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 			<ChatIconMask
 				src={String(iconRef)}
 				aria-hidden
-				className={`iconAnimationContainer ${animationClass}`}
-				style={{ "--icon-burst-duration": burstDuration } as React.CSSProperties}
+				className={classNames("iconAnimationContainer", animationClass)}
+				style={burstDurationStyle}
 			/>
 		);
 	}
@@ -81,14 +80,14 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 				src={String(iconRef)}
 				alt=""
 				aria-hidden
-				className={`iconAnimationContainer ${animationClass}`}
+				className={classNames("iconAnimationContainer", animationClass)}
 				style={
 					{
 						width: 20,
 						height: 20,
 						display: "inline-block",
-						"--icon-burst-duration": burstDuration,
-					} as React.CSSProperties
+						...burstDurationStyle,
+					}
 				}
 			/>
 		);
@@ -98,8 +97,8 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 	return (
 		<ChatIconSvg
 			aria-hidden
-			className={`iconAnimationContainer ${animationClass}`}
-			style={{ "--icon-burst-duration": burstDuration } as React.CSSProperties}
+			className={classNames("iconAnimationContainer", animationClass)}
+			style={burstDurationStyle}
 		/>
 	);
 };

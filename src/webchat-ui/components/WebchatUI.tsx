@@ -71,6 +71,7 @@ import getMessagesListWithoutControlCommands from "../utils/filter-out-control-c
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
+import classNames from "classnames";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -702,6 +703,7 @@ export class WebchatUI extends React.PureComponent<
 			) as HTMLElement | null;
 			if (!container) return;
 			container.classList.remove("optionActive");
+			// Force reflow to restart animation
 			void container.offsetWidth;
 			container.classList.add("optionActive");
 		}, intervalMs);
@@ -1183,9 +1185,6 @@ export class WebchatUI extends React.PureComponent<
 													{...webchatToggleProps}
 													type="button"
 													className="webchat-toggle-button-disabled"
-													style={{
-														["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
-													}}
 													aria-label={getDisabledMessage()}
 													ref={this.chatToggleButtonRef}
 													id="webchatWindowToggleButton"
@@ -1200,13 +1199,13 @@ export class WebchatUI extends React.PureComponent<
 												onClick={this.handleFabClick}
 												{...webchatToggleProps}
 												type="button"
-												className={`webchat-toggle-button burst ${config.settings.layout.iconAnimation || ""}`}
+												className={classNames("webchat-toggle-button burst", config.settings.layout.iconAnimation)}
 												id="webchatWindowToggleButton"
 												aria-label={openChatAriaLabel()}
 												ref={this.chatToggleButtonRef}
 												style={{
-													["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
-												}}
+													"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
+												} as React.CSSProperties}
 											>
 												{open ? (
 													<CollapseIcon />
