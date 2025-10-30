@@ -1057,7 +1057,9 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
-#### Chat Options Rating section
+#### Rating Widget
+
+Please note that this rating widget is used in rating section of the Chat Options screen and also in the rating screen that displays as a result of Request Rating Flow Node
 
 - _webchat-rating-widget-root_  
   The root container for the rating widget that includes the rating title, thumbs up/down button, text area and submit button.
