@@ -1204,7 +1204,7 @@ export class WebchatUI extends React.PureComponent<
 												aria-label={openChatAriaLabel()}
 												ref={this.chatToggleButtonRef}
 												style={{
-													"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
+													"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1))}s`,
 												} as React.CSSProperties}
 											>
 												{open ? (
