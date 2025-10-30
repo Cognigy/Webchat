@@ -141,7 +141,17 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-media-template-audio_
 - _webchat-media-template-files-container_
 - _webchat-media-template-file_
-
+- _webchat-list-template-root_
+- _webchat-list-template-header_
+- _webchat-list-template-header-content_
+- _webchat-list-template-header-title_
+- _webchat-list-template-header-subtitle_
+- _webchat-list-template-header-button_
+- _webchat-list-template-element_
+- _webchat-list-template-element-title_
+- _webchat-list-template-element-subtitle_
+- _webchat-list-template-element-button_
+- _webchat-list-template-global-button_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 
@@ -1773,7 +1783,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 ### List
 
 - _webchat-list-template-root_  
-  The container element of the List, you can remove the border-radius that comes with it.
+  The container element of the List, you can remove the border-radius or background, for example.
 
 ```CSS
 [data-cognigy-webchat-root] .webchat-list-template-root {
