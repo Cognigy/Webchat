@@ -135,6 +135,12 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-carousel-template-content_
 - _webchat-carousel-template-subtitle_
 - _webchat-carousel-template-button_
+- _webchat-media-template-image-container_
+- _webchat-media-template-image_
+- _webchat-media-template-video_
+- _webchat-media-template-audio_
+- _webchat-media-template-files-container_
+- _webchat-media-template-file_
 
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
@@ -1649,7 +1655,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 }
 ```
 
-### Image Gallery
+### Gallery
 
 - _webchat-carousel-template-root_  
   The container of the Gallery message content. Here you can adjust its padding, for example.
@@ -1718,28 +1724,51 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The media element can be of three forms: Image, Video or Audio. You can modify its container or put some animations on it
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-media-template-image {
-  animation: "Some animation" 1s;
-}
 
-[data-cognigy-webchat-root] .webchat-media-template-video {
-}
-
-[data-cognigy-webchat-root] .webchat-media-template-audio {
-}
-
-[data-cognigy-webchat-root] .webchat-media-template-file {
-}
-
-/* Add styles for the container containing group of file attachments */
-[data-cognigy-webchat-root] .webchat-media-template-files-container {
-}
-
-/* Add styles for the container containing group of image attachments */
 [data-cognigy-webchat-root] .webchat-media-template-image-container {
+  padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
 }
 
+[data-cognigy-webchat-root] .webchat-media-template-image {
+  border-radius: 0;
+}
+
+[data-cognigy-webchat-root] .webchat-media-template-video > div {
+  border-radius: 5px;
+}
+
+[data-cognigy-webchat-root] .webchat-media-template-audio > div{
+  border: 1px solid red;
+  border-radius: 20%;
+}
 ```
+
+
+### File Attachments 
+
+- _webchat-media-template_  
+  Add styles for the container containing group of file attachments
+
+```CSS
+[data-cognigy-webchat-root] .webchat-media-template-files-container {
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+```
+
+- _webchat-media-template-file_
+  Add styles for individual file attachment in the message
+
+```CSS
+[data-cognigy-webchat-root] .webchat-media-template-file {
+  background-color: white;
+  font-size: 1rem;
+}
+```
+
 
 ### List
 
