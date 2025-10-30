@@ -16,6 +16,7 @@ export default styled(ResetCSS)<Props>(({ theme, chatWindowWidth }) => {
 		overflow: "hidden",
 		fontSize: 16,
 		fontFamily: theme.fontFamily,
+		overscrollBehavior: "contain",
 
 		"@media screen and (min-width: 576px)": {
 			width: finalWidth,
