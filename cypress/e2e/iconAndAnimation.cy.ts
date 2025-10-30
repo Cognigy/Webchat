@@ -94,5 +94,3 @@ describe("Launcher icon and animation", () => {
 			});
 	});
 });
-
-

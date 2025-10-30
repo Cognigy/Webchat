@@ -82,12 +82,14 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 				alt=""
 				aria-hidden
 				className={`iconAnimationContainer ${animationClass}`}
-				style={{
-					width: 20,
-					height: 20,
-					display: "inline-block",
-					"--icon-burst-duration": burstDuration,
-				} as React.CSSProperties}
+				style={
+					{
+						width: 20,
+						height: 20,
+						display: "inline-block",
+						"--icon-burst-duration": burstDuration,
+					} as React.CSSProperties
+				}
 			/>
 		);
 	}

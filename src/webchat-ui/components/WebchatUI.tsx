@@ -204,7 +204,6 @@ const RegularLayoutRoot = styled.div(() => ({
 	flexDirection: "column",
 }));
 
-
 const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	height: "100%",
 	zIndex: 3,
