@@ -72,7 +72,7 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 	}
 
 	// PNG data URI or file -> render as <img>
-	const isPngDataUri = /^data:image\/png/i.test(String(iconRef));
+	const isPngDataUri = /^data:image\/(png|x-png)/i.test(String(iconRef));
 	const isPngFile = String(iconRef).trim().toLowerCase().endsWith(".png");
 	if (isPngDataUri || isPngFile) {
 		return (
