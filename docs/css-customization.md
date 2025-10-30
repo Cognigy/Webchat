@@ -170,7 +170,7 @@ This way we asure specificity of the classes in our script.
 
 ## Webchat Elements Customization
 
-Below are the examples for customizing the Webchat Widget. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds. 
+Below are the examples for customizing the Webchat Widget. The code snippets illustrate the syntax and basic design changes—you can modify them as needed. Note that some nested components or properties may not take effect due to the Webchat widget’s structure. Always keep accessibility in mind, especially when adjusting colors, fonts, or backgrounds.
 
 For examples of customizing messages of different types, see the [Webchat Message Customization](#webchat-message-customization) section below.
 
@@ -299,7 +299,7 @@ For examples of customizing messages of different types, see the [Webchat Messag
 ```
 
 - _webchat-teaser-message-action-buttons_  
-  This class that is used to adjust the position and alignment of the postback buttons displayed in the teaser message. 
+  This class that is used to adjust the position and alignment of the postback buttons displayed in the teaser message.
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-action-buttons {
@@ -373,7 +373,7 @@ For examples of customizing messages of different types, see the [Webchat Messag
 }
 ```
 
-  The default Cognigy logo shown in the conversation list items of previous conversation screen, when no custom logo URL is provided. You can customize, for example, its size and border properties.
+The default Cognigy logo shown in the conversation list items of previous conversation screen, when no custom logo URL is provided. You can customize, for example, its size and border properties.
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat].webchat .webchat-prev-conversations-item .webchat-header-cognigy-logo{
@@ -845,7 +845,7 @@ To change the font-family of the privacy policy link text, you need to target th
 ```
 
 - _webchat-homescreen-header-cognigy-logo_  
-  The default Cognigy logo shown in the homescreen header when no custom logo URL is provided. 
+  The default Cognigy logo shown in the homescreen header when no custom logo URL is provided.
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-header-cognigy-logo {
@@ -1427,7 +1427,7 @@ Please note that this rating widget is used in rating section of the Chat Option
 ```
 
 - _webchat-toggle-button-inner-circle_
-  The inner circle of the reusable toggle switch fields in the Webchat screens. 
+  The inner circle of the reusable toggle switch fields in the Webchat screens.
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-toggle-button-inner-circle {
@@ -1438,7 +1438,7 @@ Please note that this rating widget is used in rating section of the Chat Option
 }
 ```
 
-----------------
+---
 
 ## Webchat Message Customization
 
@@ -1577,7 +1577,6 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 }
 ```
 
-
 ### Quick Replies
 
 - _webchat-quick-reply-template-root_  
@@ -1589,8 +1588,8 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
     height: 500px;
 }
 ```
-  
-  To customize the chat bubble of only the quick reply messages, use the _chat-bubble_ selector like below
+
+To customize the chat bubble of only the quick reply messages, use the _chat-bubble_ selector like below
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-root .chat-bubble {
@@ -1642,7 +1641,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 }
 ```
 
-  To customize the chat bubble of only the Text with Buttons messages, use the _chat-bubble_ selector like below
+To customize the chat bubble of only the Text with Buttons messages, use the _chat-bubble_ selector like below
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .chat-bubble {
@@ -1651,7 +1650,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 }
 ```
 
-  To customize the list of buttons in the Text with Buttons message, use the selector in below example 
+To customize the list of buttons in the Text with Buttons message, use the selector in below example
 
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root ul {
@@ -1764,8 +1763,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 }
 ```
 
-
-### File Attachments 
+### File Attachments
 
 - _webchat-media-template_  
   Add styles for the container containing group of file attachments
@@ -1787,7 +1785,6 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   font-size: 1rem;
 }
 ```
-
 
 ### List
 
