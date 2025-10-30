@@ -20,7 +20,7 @@ import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
 import FAB from "./presentational/FAB";
 import WebchatWrapper from "./presentational/WebchatWrapper";
-import ChatIcon from "../assets/baseline-chat-24px.svg";
+import ChatIcon from "./presentational/ChatIcon";
 import CollapseIcon from "../assets/collapse-20px.svg";
 import DisconnectOverlay from "./presentational/DisconnectOverlay";
 import { IWebchatConfig } from "../../common/interfaces/webchat-config";
@@ -71,9 +71,6 @@ import getMessagesListWithoutControlCommands from "../utils/filter-out-control-c
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
-import ChatBubbleOutline1 from "../assets/chat-bubble-outline-1.svg";
-import ChatBubbleOutline2 from "../assets/chat-bubble-outline-2.svg";
-import ChatBubbleOutline3 from "../assets/chat-bubble-outline-3.svg";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -207,26 +204,6 @@ const RegularLayoutRoot = styled.div(() => ({
 	flexDirection: "column",
 }));
 
-const ChatIconMask = styled.span<{ src: string }>(({ theme, src }) => {
-	const urlValue = `url("${String(src).replace(/\"/g, '\\"')}")`;
-	return {
-		display: "inline-block",
-		width: 20,
-		height: 20,
-		backgroundColor: theme.primaryContrastColor,
-		WebkitMaskImage: urlValue,
-		maskImage: urlValue,
-		WebkitMaskRepeat: "no-repeat",
-		maskRepeat: "no-repeat",
-		WebkitMaskPosition: "center",
-		maskPosition: "center",
-		WebkitMaskSize: "contain",
-		maskSize: "contain",
-		"&:hover": {
-			color: theme.white,
-		},
-	};
-});
 
 const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	height: "100%",
@@ -293,7 +270,6 @@ export class WebchatUI extends React.PureComponent<
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
 	homeScreenCloseButtonRef: React.RefObject<HTMLButtonElement>;
 
-	defaultChatIcons = [ChatBubbleOutline1, ChatBubbleOutline2, ChatBubbleOutline3];
 	private unreadTitleIndicatorInterval: ReturnType<typeof setInterval> | null = null;
 	private originalTitle: string = window.document.title;
 	private titleType: "original" | "unread" = "original";
@@ -1095,85 +1071,6 @@ export class WebchatUI extends React.PureComponent<
 					return `${unseenMessages.length} ${unreadMessages}`;
 			}
 		};
-		const getChatIcon = () => {
-			const iconRef = config.settings.layout.iconUrl ?? "default-1";
-
-			if (typeof iconRef === "string" && iconRef.startsWith("default-")) {
-				const index = Math.max(0, Number(iconRef.replace("default-", "")) - 1);
-				const DefaultIcon = (this.defaultChatIcons[index] ??
-					ChatIcon) as React.ComponentType<{
-					className?: string;
-					"aria-hidden"?: boolean;
-				}>;
-				return (
-					<span
-						className={`iconAnimationContainer ${config.settings.layout.iconAnimation || ""}`}
-						style={{
-							["--icon-burst-duration" as any]: `${Math.max(
-								0.2,
-								1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1),
-							)}s`,
-						}}
-					>
-						<DefaultIcon aria-hidden />
-					</span>
-				);
-			}
-
-			const isSvgDataUri = /^data:image\/(svg\+xml|svg)/i.test(iconRef);
-			const isSvgFile = iconRef.trim().toLowerCase().endsWith(".svg");
-			if (isSvgDataUri || isSvgFile) {
-				return (
-					<span
-						className={`iconAnimationContainer ${config.settings.layout.iconAnimation || ""}`}
-						style={{
-							["--icon-burst-duration" as any]: `${Math.max(
-								0.2,
-								1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1),
-							)}s`,
-						}}
-					>
-						<ChatIconMask src={iconRef} aria-hidden />
-					</span>
-				);
-			}
-
-			const isPngDataUri = /^data:image\/png/i.test(iconRef);
-			const isPngFile = iconRef.trim().toLowerCase().endsWith(".png");
-			if (isPngDataUri || isPngFile) {
-				return (
-					<span
-						className={`iconAnimationContainer ${config.settings.layout.iconAnimation || ""}`}
-						style={{
-							["--icon-burst-duration" as any]: `${Math.max(
-								0.2,
-								1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1),
-							)}s`,
-						}}
-					>
-						<img
-							src={iconRef}
-							alt=""
-							aria-hidden
-							style={{ width: 20, height: 20, display: "inline-block" }}
-						/>
-					</span>
-				);
-			}
-
-			return (
-				<span
-					className={`iconAnimationContainer ${config.settings.layout.iconAnimation || ""}`}
-					style={{
-						["--icon-burst-duration" as any]: `${
-							1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1)
-						}s`,
-					}}
-				>
-					<ChatIcon aria-hidden />
-				</span>
-			);
-		};
 
 		const getDisabledMessage = () => {
 			if (isDisabled && isDisabledDueToMaintenance(this.props.config.settings)) {
@@ -1295,7 +1192,7 @@ export class WebchatUI extends React.PureComponent<
 													id="webchatWindowToggleButton"
 													disabled
 												>
-													{getChatIcon()}
+													<ChatIcon config={config} />
 												</FABDisabled>
 											</div>
 										) : (
@@ -1312,7 +1209,11 @@ export class WebchatUI extends React.PureComponent<
 													["--icon-burst-duration" as any]: `${Math.max(0.2, 1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1))}s`,
 												}}
 											>
-												{open ? <CollapseIcon /> : getChatIcon()}
+												{open ? (
+													<CollapseIcon />
+												) : (
+													<ChatIcon config={config} />
+												)}
 												{config.settings.unreadMessages.enableBadge ? (
 													<Badge
 														_content={unseenMessages.length}
