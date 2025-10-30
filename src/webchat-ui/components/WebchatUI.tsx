@@ -196,14 +196,16 @@ const HistoryWrapper = styled(History)(({ theme }) => ({
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
+	overscrollBehavior: "contain",
 }));
 
-const RegularLayoutRoot = styled.div(() => ({
+const RegularLayoutRoot = styled.div({
 	position: "relative",
 	height: "100%",
 	display: "flex",
 	flexDirection: "column",
-}));
+	overscrollBehavior: "contain",
+});
 
 const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	height: "100%",

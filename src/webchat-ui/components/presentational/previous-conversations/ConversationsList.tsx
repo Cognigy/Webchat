@@ -31,6 +31,7 @@ const ConversationsList = styled.div(({ theme }) => ({
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
+	overscrollBehavior: "contain",
 	"&:focus": {
 		outline: "none",
 	},
