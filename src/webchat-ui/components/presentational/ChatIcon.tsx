@@ -38,7 +38,6 @@ const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
 		1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1),
 	)}s`;
     const burstDurationStyle = { "--icon-burst-duration": burstDuration } as React.CSSProperties;
-    
 	// Use built-in defaults if string is like "default-1"
 	if (typeof iconRef === "string" && iconRef.startsWith("default-")) {
 		const index = Math.max(0, Number(iconRef.replace("default-", "")) - 1);
