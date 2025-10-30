@@ -33,11 +33,11 @@ export interface ChatIconProps {
 }
 
 const ChatIcon: React.FC<ChatIconProps> = ({ config }) => {
-	const iconRef = config.settings.layout.iconUrl ?? "default-1";
-	const animationClass = config.settings.layout.iconAnimation || "";
+	const iconRef = config.settings?.layout?.iconUrl ?? "default-1";
+	const animationClass = config.settings?.layout?.iconAnimation || "";
 	const burstDuration = `${Math.max(
 		0.2,
-		1 / Math.max(0.1, config.settings.layout.iconAnimationSpeed || 1),
+		1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1),
 	)}s`;
 
 	// Use built-in defaults if string is like "default-1"
