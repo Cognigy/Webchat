@@ -700,9 +700,7 @@ export class WebchatUI extends React.PureComponent<
 		this.iconAnimationIntervalHandle = setInterval(() => {
 			const buttonEl = this.chatToggleButtonRef?.current as HTMLElement | null;
 			if (!buttonEl) return;
-			const container = buttonEl.querySelector(
-				".iconAnimationContainer",
-			) as Element | null;
+			const container = buttonEl.querySelector(".iconAnimationContainer") as Element | null;
 			if (!container) return;
 			container.classList.remove("optionActive");
 			// Force reflow to restart animation
