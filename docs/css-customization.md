@@ -60,11 +60,11 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-homescreen-root_
 - _webchat-homescreen-content_
 - _webchat-homescreen-header_
--! _webchat-homescreen-header-logo_
--! _webchat-homescreen-header-cognigy-logo_
+- _webchat-homescreen-header-logo_
+- _webchat-homescreen-header-cognigy-logo_
 - _webchat-homescreen-close-button_
 - _webchat-homescreen-title_
--! _webchat-homescreen-buttons_
+- _webchat-homescreen-buttons_
 - _webchat-homescreen-button-container_
 - _webchat-homescreen-button_
 - _webchat-homescreen-actions_
@@ -74,12 +74,12 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-prev-conversations-content_
 - _webchat-prev-conversations-item_
 - _webchat-prev-conversations-send-button_
--! _webchat-prev-conversations-actions_
+- _webchat-prev-conversations-actions_
 - _webchat-chat-options-root_
 - _webchat-chat-options-container_
 - _webchat-chat-options-action-btns-root_
 - _webchat-chat-options-action-btns-title_
--! _webchat-chat-options-action-btns-wrapper_
+- _webchat-chat-options-action-btns-wrapper_
 - _webchat-chat-options-action-button-container_
 - _webchat-chat-options-action-button_
 - _webchat-rating-widget-root_
@@ -91,10 +91,10 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-rating-widget-comment-input-field-label_
 - _webchat-rating-widget-comment-input-field_
 - _webchat-rating-widget-send-button_
--! _webchat-tts-option-root_
--! _webchat-chat-options-tts-option-label_
--! _webchat-chat-options-tts-option-toggle_
--! _webchat-chat-options-footer_
+- _webchat-tts-option-root_
+- _webchat-chat-options-tts-option-label_
+- _webchat-chat-options-tts-option-toggle_
+- _webchat-chat-options-footer_
 - _webchat-chat-options-footer-link_
 - _webchat-chat-options-footer-link-text_
 -! _webchat-chip-conversation-ended_
@@ -775,11 +775,45 @@ To change the font-family of the privacy policy link text, you need to target th
 }
 ```
 
+- _webchat-homescreen-header-logo_  
+  The logo shown in the homescreen header when a custom logo URL is provided. You can customize its size, border, and background, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-header-logo {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #0055ff;
+    background-color: #f5faff;
+}
+```
+
+- _webchat-homescreen-header-cognigy-logo_  
+  The default Cognigy logo shown in the homescreen header when no custom logo URL is provided. 
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-header-cognigy-logo {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #41cc00;
+    background-color: #f8f8f8;
+}
+```
+
+- _webchat-homescreen-buttons_  
+  The container for conversation starter buttons on the homescreen. You can adjust spacing, layout, position, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content .webchat-homescreen-buttons {
+    margin-top: 24px;
+    padding: 16px;
+}
+```
+
 - _webchat-homescreen-close-button_  
   The close button in the homescreen header.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-close-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-close-button {
     border: 2px solid white !important;
     padding: 10px !important;
 }
@@ -789,7 +823,7 @@ To change the font-family of the privacy policy link text, you need to target th
   The title displayed on the homescreen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-title {
     font-size: 24px;
     color: red !important;
 }
@@ -799,7 +833,7 @@ To change the font-family of the privacy policy link text, you need to target th
   The container for the conversation starter buttons on the homescreen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-button-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-button-container {
     padding: 10px;
 }
 ```
@@ -808,7 +842,7 @@ To change the font-family of the privacy policy link text, you need to target th
   Individual buttons on the homescreen (like for starting a new conversation).
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-button {
     background-color: rgb(5, 5, 131) !important;
     color: black;
     border-radius: 5px;
@@ -818,7 +852,7 @@ To change the font-family of the privacy policy link text, you need to target th
 To change the font-family of the homescreen starter button labels, you need to target the _span_ tag inside _webchat-homescreen-button_ like the following
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-button span {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-button span {
   font-family: Arial, Helvetica, sans-serif;
 }
 ```
@@ -827,7 +861,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container for any actions on the homescreen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-actions {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-actions {
     margin-top: 15px;
 }
 ```
@@ -836,7 +870,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The button to send a new message from the homescreen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-send-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-send-button {
     background-color: rgb(5, 5, 131) !important;
     color: white;
 }
@@ -846,7 +880,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The button to view previous conversations from the homescreen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-previous-conversation-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-previous-conversation-button {
     background-color: rgb(5, 5, 131) !important;
 }
 ```
@@ -857,7 +891,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The root container for the previous conversations screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-root {
     padding: 20px;
 }
 ```
@@ -866,7 +900,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container for the list of previous conversations.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-content {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-content {
     padding: 0px;
 }
 ```
@@ -875,7 +909,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   An individual item in the previous conversations list.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-item {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-item {
     background-color: rgb(5, 5, 131);
 }
 ```
@@ -884,8 +918,18 @@ To change the font-family of the homescreen starter button labels, you need to t
   The button to start a new conversation from the Previous conversations screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-prev-conversations-send-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-send-button {
     background-color: rgb(5, 5, 131) !important;
+}
+```
+
+- _webchat-prev-conversations-actions_  
+  The container for actions at the bottom of the previous conversations screen. You can adjust its background, padding, and layout.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-prev-conversations-actions {
+    background: #f5faff;
+    border-top: 2px solid red;
 }
 ```
 
@@ -895,7 +939,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The root container for the chat options.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-root {
     padding: 20px;
 }
 ```
@@ -904,16 +948,18 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container that holds all chat options.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-container {
     border: 2px solid rgb(5, 5, 131);
 }
 ```
+
+#### Chat Options Postback section
 
 - _webchat-chat-options-action-btns-root_  
   The container for quick reply buttons and its title inside the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-btns-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-btns-root {
     justify-content: space-between;
     padding: 10px;
 }
@@ -923,7 +969,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container for the set of quick reply buttons in the chat options screen
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-button-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-button-container {
     justify-content: space-around;
     padding: 10px;
 }
@@ -933,10 +979,21 @@ To change the font-family of the homescreen starter button labels, you need to t
   The title for the quick reply buttons in the chat options screen
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-btns-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-btns-title {
     font-size: 1.125rem;
     font-family: Arial, Helvetica, sans-serif;
     color: rgb(5, 5, 131);
+}
+```
+
+- _webchat-chat-options-action-btns-wrapper_  
+  The wrapper for the postback buttons in the chat options screen. You can adjust layout, spacing, background, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-btns-wrapper {
+    background: #f5faff;
+    padding: 12px;
+    border-radius: 8px;
 }
 ```
 
@@ -950,7 +1007,7 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
-#### Rating Widget
+#### Chat Options Rating section
 
 - _webchat-rating-widget-root_  
   The root container for the rating widget that includes the rating title, thumbs up/down button, text area and submit button.
@@ -1035,7 +1092,56 @@ To change the font-family of the homescreen starter button labels, you need to t
 }
 ```
 
-#### Chat Options Footer
+#### Chat Options TTS section
+
+- _webchat-tts-option-root_  
+  The container for the Text-to-Speech toggle option in chat options. You can adjust its layout, background, spacing, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-tts-option-root {
+    background: #f5faff;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+```
+
+- _webchat-chat-options-tts-option-label_  
+  The label for the TTS toggle option. You can style its font, color, spacing, etc.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-tts-option-label {
+    font-size: 1rem;
+    color: #0055ff;
+    font-weight: bold;
+    margin-right: 12px;
+}
+```
+
+- _webchat-chat-options-tts-option-toggle_  
+  The toggle button for TTS option. You can style its size, color, and border.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-tts-option-toggle {
+    width: 40px;
+    height: 24px;
+    background: #eaf6ff;
+    border: 2px solid #0055ff;
+}
+```
+
+### Chat Options Footer
+
+- _webchat-chat-options-footer_  
+  The footer container for the chat options screen. You can style its background, padding, and border.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-footer {
+    background: #f5faff;
+    padding: 16px 20px;
+    border-top: 1px solid #e0e0e0;
+    text-align: right;
+}
+```
 
 - _webchat-chat-options-footer-link_  
   The link displayed at the footer of the chat options screen.
