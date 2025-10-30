@@ -201,7 +201,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This is the unread message count which is diplayed next to the _webchat-toggle-button_, when the user retreived an unread message from Cognigy.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-unread-message-badge {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-unread-message-badge {
     background-color: 'white';
 }
 ```
@@ -210,7 +210,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This is the text in the teaser message and unread message preview bubble. You can change the font, text color, or any other text properties.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-unread-message-preview-text {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-unread-message-preview-text {
     color: white;
     font-size: 0.875rem;
 }
@@ -220,7 +220,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The root class for the teaser message, used for customizing the alingnment and position of the teaser message.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-root {
     padding: 10px;
     right: 10px;
     bottom: 75px;
@@ -231,7 +231,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The class for the teaser message, used for customizing the look of the teaser message bubble.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-bubble {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-bubble {
     width: 400px;
     background-color: red;
 }
@@ -241,7 +241,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The header of the teaser message contining the logo, title and the close button.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-header {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header {
     gap: 20px;
     margin: 10px;
 }
@@ -251,7 +251,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The title of the teaser message displayed at the top of the teaser message bubble.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-header-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header-title {
     font-size: 1.125rem;
     font-weight: bold;
     color: rgb(5, 5, 131);
@@ -262,7 +262,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The logo displayed in the header of the teaser message.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-header-logo {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header-logo {
     border: 2px solid rgb(5, 5, 131);
 }
 ```
@@ -271,7 +271,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The close button displayed in the header of the teaser message.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-header .webchat-teaser-message-header-close-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-header .webchat-teaser-message-header-close-button {
     border: 2px solid rgb(5, 5, 131);
 }
 ```
@@ -280,7 +280,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This class that is used to adjust the position and alignment of the postback buttons displayed in the teaser message. 
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-action-buttons {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-action-buttons {
     border: 2px solid rgb(232 232 245);
     margin: auto;
     padding: 20px;
@@ -292,7 +292,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This container holds the button(s) displayed in the teaser message. You can adjust the layout and spacing.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-button-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-button-container {
     justify-content: space-between;
     padding-top: 10px;
 }
@@ -302,7 +302,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This is the button that is displayed below the teaser message bubble and inside _webchat-teaser-message-button-container_.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-teaser-message-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-teaser-message-button {
     background-color: rgb(5, 5, 131);
     color: white;
 }
@@ -484,7 +484,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The container for the message input and its label.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-message-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-message-container {
     background: #f8f8f8;
     padding: 8px 0;
     border-radius: 8px;
@@ -495,7 +495,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The floating label for the message input.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-message-label {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-message-label {
     color:rgb(209, 22, 22);
     font-style: italic;
     font-size: 14px;
@@ -628,7 +628,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This class is used to style the persistent menu icon. You can customize the size, color, and background.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu-button {
     background-color: #ffffff;
     color: #000000;
     font-size: 16px;
@@ -639,7 +639,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This class is used to style the persistent menu container, which includes the title and menu items. You can adjust the layout, background color, and padding.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu {
     background-color: #f9f9f9;
     padding: 15px;
     border-radius: 5px;
@@ -650,7 +650,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This class is used to style individual items in the persistent menu. You can customize the background color, font, and padding.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu-item {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu-item {
     background-color: #f0f0f0;
     padding: 10px;
     font-family: Arial, Helvetica, sans-serif;
@@ -661,7 +661,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   This class is used to style the container that holds the persistent menu items. You can adjust the layout, spacing, and border.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-input-persistent-menu-item-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-input-persistent-menu-item-container {
     display: flex;
     flex-direction: column;
     border: 1px solid #ccc;
@@ -675,7 +675,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The root container for the privacy screen of the webchat.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-root {
     border-radius: 20px;
     border: 2px solid rgb(5, 5, 131);
     padding: 20px;
@@ -686,7 +686,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The root container for the privacy text content.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-message {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-message {
     background-color: rgb(227, 227, 251);
 }
 ```
@@ -695,7 +695,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
   The markdown container of the privacy text content.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-markdown-container > p {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-markdown-container > p {
     color: rgb(227, 227, 251);
 }
 ```
@@ -703,7 +703,7 @@ For examples of message type customization, see the [Webchat Message Type Custom
 To change the font-family of the privacy notice text, you need to target the _p_ tag inside _webchat-privacy-notice-message_ like the following
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-message p {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-message p {
   font-family: Arial, Helvetica, sans-serif;
 }
 ```
@@ -712,7 +712,7 @@ To change the font-family of the privacy notice text, you need to target the _p_
   The container for the action items of the privacy screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-actions {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-actions {
     background-color: rgb(227, 227, 251);
     padding: 20px;
 }
@@ -722,7 +722,7 @@ To change the font-family of the privacy notice text, you need to target the _p_
   The privacy submit button in the privacy screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-notice-accept-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-notice-accept-button {
     background-color: rgb(5, 5, 131);
 }
 ```
@@ -731,7 +731,7 @@ To change the font-family of the privacy notice text, you need to target the _p_
   The privacy policy link in the privacy screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-policy-link {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-policy-link {
    color: rgb(227, 227, 251);
 }
 ```
@@ -739,7 +739,7 @@ To change the font-family of the privacy notice text, you need to target the _p_
 To change the font-family of the privacy policy link text, you need to target the _p_ tag inside _webchat-privacy-policy-link_ like the following
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-privacy-policy-link p {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-privacy-policy-link p {
   font-family: Arial, Helvetica, sans-serif;
 }
 ```
@@ -750,7 +750,7 @@ To change the font-family of the privacy policy link text, you need to target th
   The root container for the homescreen of the webchat.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-root {
     border-radius: 20px;
     border: 2px solid rgb(5, 5, 131);
     padding: 20px;
@@ -761,7 +761,7 @@ To change the font-family of the privacy policy link text, you need to target th
   This is the main content area of the homescreen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-content {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-content {
     background-color: black;
 }
 ```
@@ -770,7 +770,7 @@ To change the font-family of the privacy policy link text, you need to target th
   The header section of the homescreen, containing the logo and close button.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-homescreen-header {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-homescreen-header {
     margin: 10px;
 }
 ```
@@ -1001,7 +1001,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   An individual quick reply button in the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-action-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-action-button {
     background-color: rgb(5, 5, 131) !important;
     color: white;
 }
@@ -1013,7 +1013,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The root container for the rating widget that includes the rating title, thumbs up/down button, text area and submit button.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-root {
     padding: 20px;
 }
 ```
@@ -1022,7 +1022,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The title of the rating widget.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-title {
     font-size: 1.25rem;
     color: rgb(5, 5, 131);
 }
@@ -1032,7 +1032,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container for the rating widget's thumbs up/down buttons.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-content-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-content-container {
     justify-content: space-between;
     padding: 10px;
 }
@@ -1042,7 +1042,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The thumbs-up button for the rating widget.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-thumbs-up-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-thumbs-up-button {
     background-color: #00cc66 !important;
 }
 ```
@@ -1051,7 +1051,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The thumbs-down button for the rating widget.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-thumbs-down-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-thumbs-down-button {
     background-color: #cc0000 !important;
 }
 ```
@@ -1060,7 +1060,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container for comments input field with label in the rating widget.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-comment-input-field-container {
   background: #cc0000;
 }
 ```
@@ -1069,7 +1069,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The label for comments input field in the rating widget.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field-label {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-comment-input-field-label {
     font-size: 1.25rem;
 }
 ```
@@ -1078,7 +1078,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The input field for comments in the rating widget.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-comment-input-field {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-comment-input-field {
     font-family: Arial, Helvetica, sans-serif !important;
 }
 ```
@@ -1087,7 +1087,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The button to send the rating/comment.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-rating-widget-send-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-rating-widget-send-button {
     background-color: rgb(5, 5, 131) !important;
 }
 ```
@@ -1147,8 +1147,8 @@ To change the font-family of the homescreen starter button labels, you need to t
   The link displayed at the footer of the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-footer-link {
-    text-decoration: underline !important;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-footer-link {
+    text-decoration: underline;
     padding: 10px;
 }
 ```
@@ -1157,9 +1157,9 @@ To change the font-family of the homescreen starter button labels, you need to t
   The text for the footer link in chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-chat-options-footer-link-text {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-chat-options-footer-link-text {
     font-size: 0.875rem;
-    font-family: Arial, Helvetica, sans-serif !important;
+    font-family: Arial, Helvetica, sans-serif;
 }
 ```
 
@@ -1169,7 +1169,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The root container for modals. You can customize the overall appearance of modal windows.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-root {
     background-color: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 8px;
@@ -1180,7 +1180,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The header section of modal windows.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-header {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-header {
     background-color: #f5f5f5;
     padding: 10px;
     border-bottom: 1px solid #ddd;
@@ -1191,7 +1191,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The title text in modal headers.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-title {
     font-size: 1.125rem;
     color: #333;
     font-weight: bold;
@@ -1202,7 +1202,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The close button in modal headers.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-close-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-close-button {
     background-color: transparent;
     border: none;
     color: #666;
@@ -1213,7 +1213,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The icon within the modal close button.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-close-icon {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-close-icon {
     font-size: 20px;
     color: #666;
 }
@@ -1223,7 +1223,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The wrapper for modal dividers.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-divider-wrapper {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-divider-wrapper {
     padding: 10px 0;
 }
 ```
@@ -1232,7 +1232,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The divider line in modals.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-divider {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-divider {
     border-top: 1px solid #ddd;
 }
 ```
@@ -1241,7 +1241,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The main content area of modals.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-body {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-body {
     padding: 15px;
     background-color: white;
 }
@@ -1251,7 +1251,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The footer section of modals.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-modal-footer {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-modal-footer {
     padding: 10px;
     background-color: #f5f5f5;
     border-top: 1px solid #ddd;
@@ -1264,7 +1264,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The container for delete conversation in chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-container {
     padding: 20px;
     text-align: center;
 }
@@ -1274,7 +1274,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The title of delete conversation setting in chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-title {
     font-size: 1rem;
     font-weight: bold;
     color: #333;
@@ -1285,7 +1285,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The delete button style inside the chat options screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-button {
     padding: 8px 16px;
     margin: 5px;
     border-radius: 4px;
@@ -1296,7 +1296,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The cancel button in delete confirmation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-confirmation-cancel-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-cancel-button {
     background-color: #f5f5f5;
     color: #333;
 }
@@ -1306,7 +1306,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The confirm button in delete confirmation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-confirmation-confirm-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-confirmation-confirm-button {
     background-color: #dc3545;
     color: white;
 }
@@ -1316,7 +1316,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The warning text in delete conversation dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-conversation-text {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-conversation-text {
     color: #666;
     margin: 10px 0;
 }
@@ -1326,7 +1326,7 @@ To change the font-family of the homescreen starter button labels, you need to t
   The warning text for deleting all conversations in delete dialog.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-delete-all-conversation-text {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-delete-all-conversation-text {
     color: #dc3545;
     font-weight: bold;
 }
