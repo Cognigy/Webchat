@@ -152,6 +152,13 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-list-template-element-subtitle_
 - _webchat-list-template-element-button_
 - _webchat-list-template-global-button_
+- _adaptivecard-wrapper_
+- _webchat-plugin-date-picker_
+- _webchat-plugin-date-picker-header_
+- _webchat-plugin-date-picker-content_
+- _webchat-plugin-date-picker-footer_
+- _webchat-plugin-date-picker-weekdays_
+- _flatpickr-day.selected_
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
 
@@ -1737,21 +1744,21 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
 
 ```CSS
 
-[data-cognigy-webchat-root] .webchat-media-template-image-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-image-container {
   padding: 20px;
     border: 1px solid black;
     border-radius: 10px;
 }
 
-[data-cognigy-webchat-root] .webchat-media-template-image {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-image {
   border-radius: 0;
 }
 
-[data-cognigy-webchat-root] .webchat-media-template-video > div {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-video > div {
   border-radius: 5px;
 }
 
-[data-cognigy-webchat-root] .webchat-media-template-audio > div{
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-audio > div{
   border: 1px solid red;
   border-radius: 20%;
 }
@@ -1764,10 +1771,10 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   Add styles for the container containing group of file attachments
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-media-template-files-container {
-    padding: 20px;
-    border: 1px solid black;
-    border-radius: 10px;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-files-container {
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
 }
 ```
 
@@ -1775,7 +1782,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   Add styles for individual file attachment in the message
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-media-template-file {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-media-template-file {
   background-color: white;
   font-size: 1rem;
 }
@@ -1788,7 +1795,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The container element of the List, you can remove the border-radius or background, for example.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-root {
   border-radius: 0;
 }
 ```
@@ -1797,7 +1804,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   This is the header element, which is above all other componets of the list.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header {
   heigth: 200px;
 }
 ```
@@ -1806,7 +1813,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The content of the header, here you can center all elements for example.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-content {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-content {
   text-align: center;
 }
 ```
@@ -1815,7 +1822,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The title of the header element.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-title {
   color: green;
 }
 ```
@@ -1824,7 +1831,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The subtitle of the header element.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-subtitle {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-subtitle {
   color: green;
 }
 ```
@@ -1833,12 +1840,12 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   This is the button inside the header, it can look better if you add some hovering effects.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-header-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-button {
   background: #ffd803;
   color: #272343;
 }
 
-[data-cognigy-webchat-root] .webchat-list-template-header-button:hover {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-header-button:hover {
   background: #cfb000;
 }
 ```
@@ -1847,7 +1854,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The element that contains a single list element
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element {
   background: #e3f6f5;
 }
 ```
@@ -1856,7 +1863,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The title of every list element.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element-title {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-title {
   color: yellow;
 }
 ```
@@ -1865,7 +1872,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The subtitle of every list element.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element-subtitle {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-subtitle {
   color: yellow;
 }
 ```
@@ -1874,13 +1881,13 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   This is the button inside every list element, adding some hovering effects or animation can make it look better.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-element-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-button {
   border-color: #ffd803;
   background-color: #fffffe;
   color: #272343;
 }
 
-[data-cognigy-webchat-root] .webchat-list-template-element-button:hover {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-element-button:hover {
   background-color: #cfb00071;
 }
 ```
@@ -1889,41 +1896,52 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   This is the global button of the list template,you could change, for example, its background color and also add custom hover effects.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-list-template-global-button {
-    background-color: #cfb00071;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-global-button {
+  background-color: #cfb00071;
 }
 
-[data-cognigy-webchat-root] .webchat-list-template-global-button:hover {
-    background-color: #39801071;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-list-template-global-button:hover {
+  background-color: #39801071;
+}
+```
+
+### Adaptive Cards
+
+- _adaptivecard-wrapper_
+  The container element of Adaptive Card message. You can customize the width, for example.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .adaptivecard-wrapper {
+  width: 300px;
 }
 ```
 
 ### Date Picker
 
 - _webchat-plugin-date-picker_  
-  The container element of the Date picker plugin, you can make it's font appear bigger.
+  The container element of the Date picker screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker {
-  font-size: 125%;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker {
+    background-color: #d3d3d3;
 }
 ```
 
 - _webchat-plugin-date-picker-header_  
-  The header of the Date picker plugin, it it possible to change e.g. it's background color.
+  The header of the Date picker screen.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker-header {
-  background-color: linear-gradient(185deg,#36b96e,#2c6caf);
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker-header {
+    background-color: linear-gradient(185deg,#36b96e,#2c6caf);
 }
 ```
 
 - _webchat-plugin-date-picker-content_  
-  The content container element of the Date picker plugin, let it glow with an inset shadow.
+  The content container element of the Date picker screen, below the header.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker-content {
-  box-shadow: 0 0 70px #ff99d7 inset;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker-content {
+    box-shadow: 0 0 70px #ff99d7 inset;
 }
 ```
 
@@ -1931,7 +1949,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The footer element of the Date picker plugin, give it a custom look with padding.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-plugin-date-picker-footer {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-plugin-date-picker-footer {
   padding: 1em 3em;
 }
 ```
@@ -1940,7 +1958,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The Weekdays of the calendar can be customized with e.g. uppercase labels.
 
 ```CSS
-[data-cognigy-webchat-root] .flatpickr-weekday {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .flatpickr-weekday {
   text-transform: uppercase;
 }
 ```
@@ -1949,7 +1967,7 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The look and feel of the selected date can be changed.
 
 ```CSS
-[data-cognigy-webchat-root] .flatpickr-day.selected {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .flatpickr-day.selected {
   background: #28c8ef;
   color: hsla(0, 0%, 100%, 0.95);
   font-weight: bold;
