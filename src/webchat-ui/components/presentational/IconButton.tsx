@@ -38,8 +38,8 @@ export default styled.button<IIconButtonProps>(({ theme }) => {
 		transition: createTransition("background-color", "color", "fill"),
 
 		svg: {
-			width: 20,
-			height: 20,
+			width: 25,
+			height: 25,
 		},
 	};
 });
