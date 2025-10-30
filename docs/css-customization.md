@@ -129,6 +129,12 @@ There are several classes that you need to take in consideration if you want to 
 - _webchat-template-button-image_
 - _webchat-buttons-template-root_
 - _webchat-buttons-template-button_
+- _webchat-carousel-template-root_
+- _webchat-carousel-template-frame_
+- _webchat-carousel-template-title_
+- _webchat-carousel-template-content_
+- _webchat-carousel-template-subtitle_
+- _webchat-carousel-template-button_
 
 
 If you want to be sure that the custom CSS that you apply will be shown, you will have to add some other selectors to those classes, for the Webchat we will use the attribute selectors:
@@ -1553,51 +1559,47 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   This class contains the whole Quick Reply element, including the text bubble and the action buttons.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-root {
     width: 500px;
     height: 500px;
 }
-
 ```
   
   To customize the chat bubble of only the quick reply messages, use the _chat-bubble_ selector like below
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-root .chat-bubble {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-root .chat-bubble {
     background-color: red;
     font-size: 2rem;
 }
-
 ```
 
 - _webchat-quick-reply-template-replies-container_  
   This is the element holding all Quick Replie buttons. You can change the way they are shown, e.g. as a column.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-replies-container {
   display: flex;
   flex-direction: column;
 }
-
 ```
 
 - _webchat-quick-reply-template-button_  
   This is the style of the Quick Reply button element, all of them will be modified.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-quick-reply-template-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-replies-container .webchat-quick-reply-template-button {
     color: black;
     background-color: white;
     border: 2px solid black;
 }
-
 ```
 
 - _webchat-template-button-image_  
   This class modifies the style of the images inside the quick reply buttons. The default border-top-left-radius and border-bottom-left-radius of the images inside the button is 19px. You can override that with the help of this class.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-quick-reply-template-replies-container .webchat-template-button-image {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-quick-reply-template-replies-container .webchat-template-button-image {
     background-color: black;
     border-radius: 10px;
 }
@@ -1609,93 +1611,89 @@ The classes '_bot_', '_user_' and '_agent_' are used as helper classes that give
   The container for the message of type Text with Buttons.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-root {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root {
     width: 500px;
     height: 500px;
 }
-
 ```
 
   To customize the chat bubble of only the Text with Buttons messages, use the _chat-bubble_ selector like below
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-root .chat-bubble {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .chat-bubble {
     background-color: red;
     font-size: 2rem;
 }
-
 ```
 
   To customize the list of buttons in the Text with Buttons message, use the selector in below example 
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-root ul {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root ul {
     display: flex;
     flex-direction: column;
 }
-
 ```
 
 - _webchat-buttons-template-button_  
   The class of a single button inside Text With Buttons action list. The styling will take effect for all buttons in all Text with Buttons action list.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-buttons-template-root .webchat-buttons-template-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .webchat-buttons-template-button {
     background-color: #fffffe;
     color: #2d334a;
 }
 
-[data-cognigy-webchat-root] .webchat-buttons-template-root .webchat-buttons-template-button:hover {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-root .webchat-buttons-template-button:hover {
     outline: 2px solid black;
 }
-
 ```
 
 ### Image Gallery
 
 - _webchat-carousel-template-root_  
-  The card element from a Gallery, here you can increase its size for example.
+  The container of the Gallery message content. Here you can adjust its padding, for example.
 
-````CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-root {
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-root {
+  padding: 20px;
+}
+```
+
+- _webchat-carousel-template-frame_
+  The individual card inside the Gallery message.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-frame {
   width: 200px;
 }
-
-* *webchat-carousel-template-frame*
-The frame that adds the "card styles" such as background-color or box-shadow.
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-frame {
-  box-shadow: none;
-}
-
-````
-
-- _webchat-carousel-template-content_  
-  The content of the card, you can modify it's height and make it look smaller so you could show more content.
-
-```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-content {
-  background: #e3f6f5;
-  height: 200px;
-}
-
 ```
 
 - _webchat-carousel-template-title_  
-  The title of the card.
+  The title of the card in the Gallery message.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-title {
-    color:blue;
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-title {
+    color: blue;
+    top: 10px;
 }
+```
 
+- _webchat-carousel-template-content_  
+  The content of the card below the image in a card.
+
+```CSS
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-content {
+    background: #e3f6f5;
+    height: 200px;
+}
 ```
 
 - _webchat-carousel-template-subtitle_  
-  The subtitle of the card.
+  The text content of the card, below the gallery image.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-subtitle {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-subtitle {
   color:white;
 }
 ```
@@ -1704,12 +1702,12 @@ The frame that adds the "card styles" such as background-color or box-shadow.
   The Button at the bottom of the card, containing a URL.
 
 ```CSS
-[data-cognigy-webchat-root] .webchat-carousel-template-button {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-button {
   color: #272343;
   background: #ffd803;
 }
 
-[data-cognigy-webchat-root] .webchat-carousel-template-button:hover {
+[data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-carousel-template-button:hover {
   background: #cfb000;
 }
 ```
