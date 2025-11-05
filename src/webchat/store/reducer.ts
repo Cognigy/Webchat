@@ -76,15 +76,15 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 				return message;
 			});
 			// Build updated visibleOutputMessages including restored bot/engagement messages
-			const restoredVisibleOutputMessages = state.messages.visibleOutputMessages.slice();
+			const updatedVisibleOutputMessages = state.messages.visibleOutputMessages.slice();
 			if (restoredMessages.length) {
 				for (const m of restoredMessages) {
 					if (
 						(m.source === "bot" || m.source === "engagement") &&
 						m.id &&
-						!restoredVisibleOutputMessages.includes(m.id as string)
+						!updatedVisibleOutputMessages.includes(m.id as string)
 					) {
-						restoredVisibleOutputMessages.push(m.id as string);
+						updatedVisibleOutputMessages.push(m.id as string);
 					}
 				}
 			}
@@ -93,7 +93,7 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 					...state,
 					messages: {
 						messageHistory: [...restoredMessages, ...state.messages.messageHistory],
-						visibleOutputMessages: restoredVisibleOutputMessages,
+						visibleOutputMessages: updatedVisibleOutputMessages,
 					},
 					rating: {
 						...state.rating,
