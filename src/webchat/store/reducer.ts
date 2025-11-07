@@ -82,11 +82,11 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 				for (const m of restoredMessages) {
 					if (
 						(m.source === "bot" || m.source === "engagement") &&
-						m.id &&
-						!visibleOutputMessagesSet.has(m.id as string)
+						typeof m.id === "string" &&
+						!visibleOutputMessagesSet.has(m.id)
 					) {
-						restoredVisibleOutputMessages.push(m.id as string);
-						visibleOutputMessagesSet.add(m.id as string);
+						restoredVisibleOutputMessages.push(m.id);
+						visibleOutputMessagesSet.add(m.id);
 					}
 				}
 			}
