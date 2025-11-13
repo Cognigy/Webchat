@@ -49,7 +49,7 @@
 	},
 	"dependencies": {
 		"@braintree/sanitize-url": "^6.0.0",
-		"@cognigy/chat-components": "0.60.0",
+		"@cognigy/chat-components": "0.63.0",
 		"@cognigy/socket-client": "5.0.0-beta.24",
 		"@emotion/cache": "^10.0.29",
 		"@emotion/react": "^11.13.0",
