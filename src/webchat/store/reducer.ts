@@ -78,16 +78,14 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 			// Build updated visibleOutputMessages including restored bot/engagement messages
 			const visibleOutputMessagesSet = new Set(state.messages.visibleOutputMessages);
 			const newIds: string[] = [];
-			if (restoredMessages.length) {
-				for (const m of restoredMessages) {
-					if (
-						(m.source === "bot" || m.source === "engagement") &&
-						typeof m.id === "string" &&
-						!visibleOutputMessagesSet.has(m.id)
-					) {
-						newIds.push(m.id);
-						visibleOutputMessagesSet.add(m.id);
-					}
+			for (const m of restoredMessages) {
+				if (
+					(m.source === "bot" || m.source === "engagement") &&
+					typeof m.id === "string" &&
+					!visibleOutputMessagesSet.has(m.id)
+				) {
+					newIds.push(m.id);
+					visibleOutputMessagesSet.add(m.id);
 				}
 			}
 			const restoredVisibleOutputMessages = [
