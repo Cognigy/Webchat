@@ -90,7 +90,10 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 					}
 				}
 			}
-			const restoredVisibleOutputMessages = [...state.messages.visibleOutputMessages, ...newIds];
+			const restoredVisibleOutputMessages = [
+				...state.messages.visibleOutputMessages,
+				...newIds,
+			];
 			return rootReducer(
 				{
 					...state,
