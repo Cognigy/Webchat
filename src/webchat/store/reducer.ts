@@ -68,7 +68,6 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 				if (
 					(message.source === "bot" || message.source === "engagement") &&
 					"animationState" in message &&
-					message.animationState &&
 					message.animationState !== "done"
 				) {
 					return { ...message, animationState: "done" };
