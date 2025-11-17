@@ -62,12 +62,41 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 				(state.messages.messageHistory.length === 1 &&
 					state.messages.messageHistory[0].source === "engagement");
 			const messages = isEmptyHistory ? action.state.messages : [];
+			// Mark restored bot/engagement messages animationState as done
+
+			const restoredMessages = messages.map(message => {
+				if (
+					(message.source === "bot" || message.source === "engagement") &&
+					"animationState" in message &&
+					message.animationState !== "done"
+				) {
+					return { ...message, animationState: "done" };
+				}
+				return message;
+			});
+			// Build updated visibleOutputMessages including restored bot/engagement messages
+			const visibleOutputMessagesSet = new Set(state.messages.visibleOutputMessages);
+			const newIds: string[] = [];
+			for (const m of restoredMessages) {
+				if (
+					(m.source === "bot" || m.source === "engagement") &&
+					typeof m.id === "string" &&
+					!visibleOutputMessagesSet.has(m.id)
+				) {
+					newIds.push(m.id);
+					visibleOutputMessagesSet.add(m.id);
+				}
+			}
+			const restoredVisibleOutputMessages = [
+				...state.messages.visibleOutputMessages,
+				...newIds,
+			];
 			return rootReducer(
 				{
 					...state,
 					messages: {
-						messageHistory: [...messages, ...state.messages.messageHistory],
-						visibleOutputMessages: state.messages.visibleOutputMessages,
+						messageHistory: [...restoredMessages, ...state.messages.messageHistory],
+						visibleOutputMessages: restoredVisibleOutputMessages,
 					},
 					rating: {
 						...state.rating,

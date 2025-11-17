@@ -8,7 +8,7 @@ describe("xApps Overlay", () => {
 
 	it("opens overlay automatically", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
-			cy.get(".logoNameContainer").contains("XApp Title 1");
+			cy.get(".webchat-header-logo-name-container").contains("XApp Title 1");
 		});
 	});
 
@@ -31,7 +31,7 @@ describe("xApps Overlay", () => {
 					},
 				},
 			});
-			cy.get(".logoNameContainer").contains("XApp Title 2");
+			cy.get(".webchat-header-logo-name-container").contains("XApp Title 2");
 		});
 	});
 
