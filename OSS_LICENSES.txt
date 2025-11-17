@@ -1,4 +1,4 @@
-Created on 17-09-2025 at 11:41:10
+Created on 14-11-2025 at 14:35:45
 
 {
   "@ampproject/remapping@2.3.0": {
@@ -158,7 +158,13 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.60.0": {
+  "@braintree/sanitize-url@7.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/braintree/sanitize-url",
+    "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
+    "copyright": "Copyright (c) 2017 Braintree"
+  },
+  "@cognigy/chat-components@0.63.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -170,7 +176,7 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.31.0": {
+  "@cognigy/webchat@3.33.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -318,33 +324,33 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@floating-ui/core@1.6.9": {
+  "@floating-ui/core@1.7.3": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/core/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@floating-ui/dom@1.6.13": {
+  "@floating-ui/dom@1.7.4": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/dom/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@floating-ui/utils@0.2.9": {
+  "@floating-ui/utils@0.2.10": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/utils/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@fontsource/figtree@5.0.19": {
+  "@fontsource/figtree@5.2.10": {
     "licenses": "OFL-1.1",
     "repository": "https://github.com/fontsource/font-files",
     "publisher": "Google Inc.",
     "licenseFile": "node_modules/@fontsource/figtree/LICENSE",
-    "copyright": "Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)"
+    "copyright": "Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree) Figtree-Italic[wght].ttf: Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)"
   },
   "@jridgewell/gen-mapping@0.3.12": {
     "licenses": "MIT",
@@ -1180,6 +1186,15 @@ Created on 17-09-2025 at 11:41:10
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/hast-util-raw/license",
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
+  },
+  "hast-util-sanitize@5.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/syntax-tree/hast-util-sanitize",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/hast-util-sanitize/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "hast-util-to-jsx-runtime@2.3.2": {
@@ -2139,9 +2154,9 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/react-fast-compare/LICENSE",
     "copyright": "Copyright (c) 2018 Formidable Labs. Copyright (c) 2017 Evgeny Poberezkin"
   },
-  "react-flatpickr@3.10.13": {
+  "react-flatpickr@4.0.11": {
     "licenses": "MIT",
-    "repository": "https://github.com/coderhaoxin/react-flatpickr",
+    "repository": "https://github.com/haoxins/react-flatpickr",
     "publisher": "haoxin",
     "licenseFile": "node_modules/react-flatpickr/LICENSE",
     "copyright": "Copyright (c) 2020 haoxin"
@@ -2229,7 +2244,7 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/react-textarea-autosize/LICENSE",
     "copyright": "Copyright (c) 2013 Andrey Popp"
   },
-  "react-tooltip@5.28.0": {
+  "react-tooltip@5.30.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ReactTooltip/react-tooltip",
     "publisher": "ReactTooltip",
@@ -2304,14 +2319,23 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/rehype-raw/license",
     "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
-  "remark-gfm@4.0.0": {
+  "rehype-sanitize@6.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rehypejs/rehype-sanitize",
+    "publisher": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "https://wooorm.com",
+    "licenseFile": "node_modules/rehype-sanitize/license",
+    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+  },
+  "remark-gfm@4.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/remarkjs/remark-gfm",
     "publisher": "Titus Wormer",
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/remark-gfm/license",
-    "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "remark-parse@11.0.0": {
     "licenses": "MIT",
@@ -2593,7 +2617,7 @@ Created on 17-09-2025 at 11:41:10
     "licenseFile": "node_modules/supports-preserve-symlinks-flag/LICENSE",
     "copyright": "Copyright (c) 2022 Inspect JS"
   },
-  "swiper@11.1.4": {
+  "swiper@12.0.3": {
     "licenses": "MIT",
     "repository": "https://github.com/nolimits4web/Swiper",
     "publisher": "Vladimir Kharlampidi",
