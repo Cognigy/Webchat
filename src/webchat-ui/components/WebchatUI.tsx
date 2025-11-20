@@ -72,6 +72,7 @@ import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 import classNames from "classnames";
+import { handleBodyScrollLock } from "../utils/scrollLock";
 
 export interface WebchatUIProps {
 	currentSession: string;
@@ -196,14 +197,16 @@ const HistoryWrapper = styled(History)(({ theme }) => ({
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
+	overscrollBehavior: "contain",
 }));
 
-const RegularLayoutRoot = styled.div(() => ({
+const RegularLayoutRoot = styled.div({
 	position: "relative",
 	height: "100%",
 	display: "flex",
 	flexDirection: "column",
-}));
+	overscrollBehavior: "contain",
+});
 
 const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	height: "100%",
@@ -212,6 +215,7 @@ const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	flexDirection: "column",
 	backgroundColor: theme.white,
 	overflow: "auto",
+	overscrollBehavior: "contain",
 
 	"&.slide-in-enter": {
 		transform: "translateX(100%)",
@@ -521,6 +525,10 @@ export class WebchatUI extends React.PureComponent<
 			}
 		}
 
+		if (prevProps.open !== this.props.open) {
+			handleBodyScrollLock(this.props.open);
+		}
+
 		if (
 			prevProps.ttsActive !== this.props.ttsActive ||
 			prevProps.inputPlugins !== this.props.inputPlugins ||
@@ -680,6 +688,8 @@ export class WebchatUI extends React.PureComponent<
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
 		}
+
+		handleBodyScrollLock(false);
 	}
 
 	private iconAnimationIntervalHandle: ReturnType<typeof setInterval> | null = null;
