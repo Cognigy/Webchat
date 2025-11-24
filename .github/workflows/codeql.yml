@@ -59,11 +59,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Add any setup steps before running the `github/codeql-action/init` action.
-    # This includes steps like installing compilers or runtimes (`actions/setup-node`
-    # or others). This is typically only required for manual builds.
-    # - name: Setup runtime (example)
-    #   uses: actions/setup-example@v1
+    # Setup Node.js for JavaScript/TypeScript builds
+    - name: Setup Node.js
+      if: matrix.language == 'javascript-typescript'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    # Install dependencies for JavaScript/TypeScript
+    - name: Install dependencies
+      if: matrix.language == 'javascript-typescript'
+      run: npm ci
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -71,6 +78,8 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
+        # Use config file only for JavaScript/TypeScript to limit analysis to ESM build
+        config-file: ${{ matrix.language == 'javascript-typescript' && './.github/codeql-config.yml' || '' }}
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
@@ -78,22 +87,10 @@ jobs:
         # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
 
-    # If the analyze step fails for one of the languages you are analyzing with
-    # "We were unable to automatically build your code", modify the matrix above
-    # to set the build mode to "manual" for that language. Then modify this step
-    # to build your code.
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-    - name: Run manual build steps
-      if: matrix.build-mode == 'manual'
-      shell: bash
-      run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
-        exit 1
+    # Build ESM bundle for JavaScript/TypeScript analysis
+    - name: Build ESM bundle
+      if: matrix.language == 'javascript-typescript'
+      run: npm run build:esm
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

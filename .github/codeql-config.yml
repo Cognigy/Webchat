@@ -1,0 +1,16 @@
+name: "CodeQL Config"
+
+# Only analyze the ESM build output
+paths:
+  - dist/webchat.esm.js
+
+# Ignore everything else
+paths-ignore:
+  - src
+  - node_modules
+  - dist/webchat.js
+  - '**/*.test.js'
+  - '**/*.html'
+  - cypress
+  - docs
+  - architecture-docs
