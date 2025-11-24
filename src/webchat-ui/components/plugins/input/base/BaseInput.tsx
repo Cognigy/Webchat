@@ -39,6 +39,7 @@ const TextArea = styled(TextareaAutosize)(({ theme }) => ({
 	outline: "none",
 	resize: "none",
 	backgroundColor: "transparent",
+	overscrollBehavior: "contain",
 
 	fontSize: "0.875rem", // 14px
 	fontStyle: "normal",

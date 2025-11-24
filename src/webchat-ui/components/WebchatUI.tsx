@@ -525,9 +525,7 @@ export class WebchatUI extends React.PureComponent<
 			}
 		}
 
-		if (prevProps.open !== this.props.open) {
 			handleBodyScrollLock(this.props.open);
-		}
 
 		if (
 			prevProps.ttsActive !== this.props.ttsActive ||
