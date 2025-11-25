@@ -685,8 +685,6 @@ export class WebchatUI extends React.PureComponent<
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
 		}
-
-		handleBodyScrollLock(false);
 	}
 
 	private iconAnimationIntervalHandle: ReturnType<typeof setInterval> | null = null;
