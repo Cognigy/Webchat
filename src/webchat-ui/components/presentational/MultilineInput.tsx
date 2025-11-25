@@ -70,7 +70,7 @@ const MultilineInput = forwardRef<HTMLTextAreaElement, IMultilineInputProps>((pr
 	const { disabled } = props;
 
 	return (
-		<InputWrapper disabled={disabled}>
+		<InputWrapper disabled={disabled} >
 			<MediaQuery maxWidth={575}>
 				{matches => (
 					<InputContainer className={`${className}-container`}>
@@ -88,6 +88,7 @@ const MultilineInput = forwardRef<HTMLTextAreaElement, IMultilineInputProps>((pr
 							ref={ref}
 							className={`${className} ${disabled ? "disabled" : ""}`.trim()}
 							style={matches ? { fontSize: "1rem" } : undefined}
+							data-scrollable
 						/>
 					</InputContainer>
 				)}

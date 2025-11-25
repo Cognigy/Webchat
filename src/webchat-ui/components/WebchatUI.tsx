@@ -1440,6 +1440,7 @@ export class WebchatUI extends React.PureComponent<
 						className="webchat-chat-history"
 						onDragEnter={handleDragEnter}
 						id="webchatChatHistory"
+						data-scrollable
 					>
 						<h3 className="sr-only" id="webchatChatHistoryHeading">
 							{config.settings.customTranslations?.ariaLabels?.chatHistory ??
@@ -1571,7 +1572,7 @@ export class WebchatUI extends React.PureComponent<
 						mountOnEnter
 						unmountOnExit
 					>
-						<RegularLayoutContentWrapper>
+						<RegularLayoutContentWrapper id="webchatRegularLayoutContentWrapper">
 							{getRegularLayoutContent()}
 							<DeleteAllConversationsModal
 								config={config}

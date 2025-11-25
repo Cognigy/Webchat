@@ -77,9 +77,11 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 			}
 		};
 	}, [isHomeScreenEnabled]);
+
 	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]);
+
 	return (
-		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
+		<PrivacyNoticeRoot className="webchat-privacy-notice-root" data-scrollable>
 			<PrivacyMessage
 				className="webchat-privacy-notice-message"
 				tabIndex={-1}
