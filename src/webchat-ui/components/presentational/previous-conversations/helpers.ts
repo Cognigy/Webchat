@@ -30,7 +30,8 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	if (weeksDiff < 4) return weeksDiff === 1 ? "1 week ago" : `${weeksDiff} weeks ago`;
 
 	const monthsDiff = now.diff(messageDate, "months");
-	if (monthsDiff < 12) return monthsDiff === 1 || monthsDiff === 0 ? "1 month ago" : `${monthsDiff} months ago`;
+	if (monthsDiff < 12)
+		return monthsDiff === 1 || monthsDiff === 0 ? "1 month ago" : `${monthsDiff} months ago`;
 
 	const yearsDiff = now.diff(messageMoment, "years");
 	return yearsDiff === 1 || yearsDiff === 0 ? "1 year ago" : `${yearsDiff} years ago`;
