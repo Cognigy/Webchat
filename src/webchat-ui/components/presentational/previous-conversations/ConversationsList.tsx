@@ -115,7 +115,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 			className="webchat-prev-conversations-root"
 			ref={conversationsRootRef}
 		>
-			<ConversationsList className="webchat-prev-conversations-content" data-scrollable>
+			<ConversationsList className="webchat-prev-conversations-content">
 				{sessions.length > 0 &&
 					sessions.map((session, i) => {
 						return (

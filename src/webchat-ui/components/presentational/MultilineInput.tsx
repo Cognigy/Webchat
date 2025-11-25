@@ -88,7 +88,6 @@ const MultilineInput = forwardRef<HTMLTextAreaElement, IMultilineInputProps>((pr
 							ref={ref}
 							className={`${className} ${disabled ? "disabled" : ""}`.trim()}
 							style={matches ? { fontSize: "1rem" } : undefined}
-							data-scrollable
 						/>
 					</InputContainer>
 				)}

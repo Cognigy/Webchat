@@ -66,6 +66,7 @@
 		"react-markdown": "^9.0.3",
 		"react-modal": "^3.16.3",
 		"react-redux": "7.2.8",
+		"react-remove-scroll": "^2.7.1",
 		"react-responsive": "9.0.2",
 		"react-scroll-to-bottom": "4.2.0",
 		"react-textarea-autosize": "8.5.3",
@@ -75,7 +76,6 @@
 		"stylis": "3.5.4",
 		"stylis-rtl": "^1.0.1",
 		"tinycolor2": "1.6.0",
-		"tua-body-scroll-lock": "^1.6.0",
 		"uifx": "^2.0.7",
 		"uuid": "9.0.1"
 	},

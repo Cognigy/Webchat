@@ -591,7 +591,6 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 													style={
 														matches ? { fontSize: "1rem" } : undefined
 													}
-													data-scrollable
 												/>
 											</InputContainer>
 										);

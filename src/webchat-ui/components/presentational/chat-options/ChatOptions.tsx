@@ -103,7 +103,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 	const showDeleteConversation = !!chatOptions.enableDeleteConversation;
 	return (
 		<ChatOptionsRoot className="webchat-chat-options-root" ref={chatOptionsRef}>
-			<ChatOptionsContainer className="webchat-chat-options-container" data-scrollable>
+			<ChatOptionsContainer className="webchat-chat-options-container">
 				{!showOnlyRating && config.settings.chatOptions.quickReplyOptions.enabled && (
 					<>
 						<PostbackButtons
