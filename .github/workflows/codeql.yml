@@ -43,9 +43,7 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - language: actions
-                      build-mode: none
-                    - language: javascript-typescript
+                    - language: typescript
                       build-mode: none
                 # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
                 # Use `c-cpp` to analyze code written in C, C++ or both
@@ -61,7 +59,7 @@ jobs:
 
             # Setup Node.js for JavaScript/TypeScript builds
             - name: Setup Node.js
-              if: matrix.language == 'javascript-typescript'
+              if: matrix.language == 'typescript'
               uses: actions/setup-node@v4
               with:
                   node-version: "22"
@@ -69,12 +67,12 @@ jobs:
 
             # Install dependencies for JavaScript/TypeScript
             - name: Install dependencies
-              if: matrix.language == 'javascript-typescript'
+              if: matrix.language == 'typescript'
               run: npm ci
 
             # Build ESM bundle for JavaScript/TypeScript analysis
             - name: Build ESM bundle
-              if: matrix.language == 'javascript-typescript'
+              if: matrix.language == 'typescript'
               run: npm run build:esm
 
             # Initializes the CodeQL tools for scanning.
@@ -84,7 +82,7 @@ jobs:
                   languages: ${{ matrix.language }}
                   build-mode: ${{ matrix.build-mode }}
                   # Use config file only for JavaScript/TypeScript to limit analysis to ESM build
-                  config-file: ${{ matrix.language == 'javascript-typescript' && '.github/codeql-config.yml' || '' }}
+                  config-file: ${{ matrix.language == 'typescript' && '.github/codeql-config.yml' || '' }}
                   # If you wish to specify custom queries, you can do so here or in a config file.
                   # By default, queries listed here will override any specified in a config file.
                   # Prefix the list here with "+" to use these queries and those in the config file.
