@@ -9,34 +9,27 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	const lastMessage = messages[messages.length - 1];
 	if (!lastMessage?.timestamp) return "";
 
-	moment.relativeTimeThreshold("d", 6);
-	moment.relativeTimeThreshold("w", 4); // we need to enable week Threshold
-	moment.updateLocale("en", {
-		relativeTime: {
-			past: "%s",
-			s: "Today",
-			m: "Today",
-			mm: "Today",
-			h: "Today",
-			hh: "Today",
-			d: "Yesterday",
-			dd: "%d days ago",
-			w: "1 week ago",
-			ww: "%d weeks ago",
-			M: "1 month ago",
-			MM: "%d months ago",
-			y: "years",
-			yy: "years",
-		},
-	});
+	const messageMoment = moment(lastMessage.timestamp);
+	const now = moment();
 
-	const relativeTime = moment(lastMessage.timestamp);
+	if (messageMoment.isSame(now, "day")) return "Today";
 
-	if (relativeTime.fromNow() === "years") {
-		return relativeTime.format("MMMM YYYY");
-	}
+	if (messageMoment.isSame(now.clone().subtract(1, "day"), "day")) return "Yesterday";
 
-	return relativeTime.fromNow();
+	const messageDate = messageMoment.clone().startOf("day");
+	const today = now.clone().startOf("day");
+
+	const daysDiff = today.diff(messageDate, "days");
+	if (daysDiff < 7) return `${daysDiff} days ago`;
+
+	const weeksDiff = Math.floor(daysDiff / 7);
+	if (weeksDiff < 4) return weeksDiff === 1 ? "1 week ago" : `${weeksDiff} weeks ago`;
+
+	const monthsDiff = now.diff(messageDate, "months");
+	if (monthsDiff < 12) return monthsDiff === 1 || monthsDiff === 0 ? "1 month ago" : `${monthsDiff} months ago`;
+
+	const yearsDiff = now.diff(messageMoment, "years");
+	return yearsDiff === 1 || yearsDiff === 0 ? "1 year ago" : `${yearsDiff} years ago`;
 };
 
 export const getLastMessagePreview = (messages: IMessage[]) => {
