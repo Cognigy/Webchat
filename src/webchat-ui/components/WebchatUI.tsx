@@ -1574,7 +1574,7 @@ export class WebchatUI extends React.PureComponent<
 						mountOnEnter
 						unmountOnExit
 					>
-						<RegularLayoutContentWrapper id="webchatRegularLayoutContentWrapper">
+						<RegularLayoutContentWrapper>
 							{getRegularLayoutContent()}
 							<DeleteAllConversationsModal
 								config={config}
