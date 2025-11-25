@@ -5,6 +5,10 @@ import { findReverse } from "../../../utils/find-reverse";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { PrevConversationsState } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 
+/**
+ * Returns a human-readable relative time label for the last message in a conversation.
+ * Uses calendar-based logic for "Today" and "Yesterday", and custom labels for days, weeks, months, and years.
+ */
 export const getRelativeTime = (messages: IMessage[]) => {
 	const lastMessage = messages[messages.length - 1];
 	if (!lastMessage?.timestamp) return "";
