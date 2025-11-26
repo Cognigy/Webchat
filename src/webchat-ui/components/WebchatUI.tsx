@@ -166,6 +166,7 @@ interface WebchatUIState {
 	showDeleteAllConversationsModal: boolean;
 	deleteConversationsModalState: boolean;
 	liveContent?: Record<string, string>;
+	isMobile: boolean;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -264,6 +265,7 @@ export class WebchatUI extends React.PureComponent<
 		showDeleteAllConversationsModal: false,
 		deleteConversationsModalState: false,
 		liveContent: {},
+		isMobile: isMobileViewport(),
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -510,6 +512,8 @@ export class WebchatUI extends React.PureComponent<
 			messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins],
 		});
 		this.setupIconAnimationInterval();
+
+		window.addEventListener("resize", this.handleResize);
 	}
 
 	async componentDidUpdate(prevProps: WebchatUIProps, prevState: WebchatUIState) {
@@ -685,7 +689,16 @@ export class WebchatUI extends React.PureComponent<
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
 		}
+
+		window.removeEventListener("resize", this.handleResize);
 	}
+
+	handleResize = () => {
+		const isMobile = isMobileViewport();
+		if (isMobile !== this.state.isMobile) {
+			this.setState({ isMobile });
+		}
+	};
 
 	private iconAnimationIntervalHandle: ReturnType<typeof setInterval> | null = null;
 
@@ -1020,7 +1033,7 @@ export class WebchatUI extends React.PureComponent<
 			lastInputId,
 			...restProps
 		} = props;
-		const { theme, hadConnection, lastUnseenMessageText, wasOpen } = state;
+		const { theme, hadConnection, lastUnseenMessageText, wasOpen, isMobile } = state;
 
 		const {
 			widgetSettings: { disableToggleButton },
@@ -1124,7 +1137,7 @@ export class WebchatUI extends React.PureComponent<
 				<ThemeProvider theme={theme}>
 					{/* <Global styles={cssReset} /> */}
 					<>
-						<RemoveScroll enabled={open && isMobileViewport()}>
+						<RemoveScroll enabled={open && isMobile}>
 							<WebchatWrapper
 								data-cognigy-webchat-root
 								{...restProps}
