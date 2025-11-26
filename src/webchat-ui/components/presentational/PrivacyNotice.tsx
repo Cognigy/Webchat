@@ -19,6 +19,7 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	alignItems: "center",
 	padding: 20,
 	overflowY: "auto",
+	overscrollBehavior: "contain",
 }));
 
 const PrivacyMessage = styled.div(({ theme }) => ({
@@ -76,7 +77,9 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 			}
 		};
 	}, [isHomeScreenEnabled]);
+
 	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]);
+
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
 			<PrivacyMessage
