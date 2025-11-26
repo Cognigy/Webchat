@@ -15,6 +15,7 @@ import Input from "./plugins/InputPluginRenderer";
 import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
+import { debounce } from "lodash";
 import { RemoveScroll } from "react-remove-scroll";
 
 import "../utils/normalize.css";
@@ -265,7 +266,7 @@ export class WebchatUI extends React.PureComponent<
 		showDeleteAllConversationsModal: false,
 		deleteConversationsModalState: false,
 		liveContent: {},
-		isMobile: isMobileViewport(),
+		isMobile: false,
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -298,6 +299,7 @@ export class WebchatUI extends React.PureComponent<
 		this.homeScreenCloseButtonRef = React.createRef();
 
 		this.handleStartConversation = this.handleStartConversation.bind(this);
+		this.handleResize = debounce(this.handleResize.bind(this), 200);
 	}
 
 	static getDerivedStateFromProps(
@@ -510,6 +512,7 @@ export class WebchatUI extends React.PureComponent<
 		this.setState({
 			inputPlugins: [...(this.props.inputPlugins || []), baseInputPlugin],
 			messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins],
+			isMobile: isMobileViewport(),
 		});
 		this.setupIconAnimationInterval();
 
