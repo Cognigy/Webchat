@@ -1,4 +1,3 @@
-import moment from "moment";
 import { IMessage } from "../../../../common/interfaces/message";
 import getTextFromMessage, { getMessageAttachmentType } from "../../../../webchat/helper/message";
 import { findReverse } from "../../../utils/find-reverse";
@@ -7,35 +6,73 @@ import { PrevConversationsState } from "../../../../webchat/store/previous-conve
 
 /**
  * Returns a human-readable relative time label for the last message in a conversation.
- * Uses calendar-based logic for "Today" and "Yesterday", and custom labels for days, weeks, months, and years.
+ * Uses Intl.RelativeTimeFormat with calendar-based date calculations for accurate relative time display.
  */
 export const getRelativeTime = (messages: IMessage[]) => {
 	const lastMessage = messages[messages.length - 1];
 	if (!lastMessage?.timestamp) return "";
 
-	const messageMoment = moment(lastMessage.timestamp);
-	const now = moment();
+	const messageDate = new Date(lastMessage.timestamp);
+	const now = new Date();
 
-	if (messageMoment.isSame(now, "day")) return "Today";
+	// Helper to get start of day (midnight)
+	const startOfDay = (date: Date) => {
+		const result = new Date(date);
+		result.setHours(0, 0, 0, 0);
+		return result;
+	};
 
-	if (messageMoment.isSame(now.clone().subtract(1, "day"), "day")) return "Yesterday";
+	// Calculate difference in days using calendar dates
+	const messageDayStart = startOfDay(messageDate);
+	const todayStart = startOfDay(now);
+	const daysDiff = Math.floor(
+		(todayStart.getTime() - messageDayStart.getTime()) / (1000 * 60 * 60 * 24),
+	);
 
-	const messageDate = messageMoment.clone().startOf("day");
-	const today = now.clone().startOf("day");
+	// Create RelativeTimeFormat instance (uses browser's preferred locale)
+	const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
-	const daysDiff = today.diff(messageDate, "days");
-	if (daysDiff < 7) return `${daysDiff} days ago`;
+	// Helper to capitalize first letter
+	const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
+	// For today and yesterday (0-1 days ago)
+	if (daysDiff >= 0 && daysDiff <= 1) {
+		return capitalize(rtf.format(-daysDiff, "day"));
+	}
+
+	// For recent days (2-6 days ago)
+	if (daysDiff >= 2 && daysDiff < 7) {
+		return rtf.format(-daysDiff, "day");
+	}
+
+	// For weeks (less than ~4 weeks)
 	const weeksDiff = Math.floor(daysDiff / 7);
-	if (weeksDiff <= 4 && daysDiff < 31)
-		return weeksDiff === 1 ? "1 week ago" : `${weeksDiff} weeks ago`;
+	if (weeksDiff <= 4 && daysDiff < 31) {
+		return rtf.format(-weeksDiff, "week");
+	}
 
-	const monthsDiff = now.diff(messageDate, "months");
-	if (monthsDiff <= 12 && daysDiff < 366)
-		return monthsDiff === 1 ? "1 month ago" : `${monthsDiff} months ago`;
+	// For months (less than a year)
+	const yearsDiff = now.getFullYear() - messageDate.getFullYear();
+	let monthsDiff = yearsDiff * 12 + (now.getMonth() - messageDate.getMonth());
 
-	const yearsDiff = now.diff(messageMoment, "years");
-	return yearsDiff === 1 ? "1 year ago" : `${yearsDiff} years ago`;
+	// Adjust if the day hasn't been reached yet in the current month
+	if (now.getDate() < messageDate.getDate()) {
+		monthsDiff--;
+	}
+
+	// Safeguard: ensure monthsDiff is positive (message is from the past)
+	if (monthsDiff > 0 && monthsDiff < 12) {
+		return rtf.format(-monthsDiff, "month");
+	}
+
+	// For years - calculate based on months to be more accurate
+	const accurateYearsDiff = Math.floor(monthsDiff / 12);
+	if (accurateYearsDiff > 0) {
+		return rtf.format(-accurateYearsDiff, "year");
+	}
+
+	// Fallback for edge cases (shouldn't normally reach here)
+	return rtf.format(-Math.floor(daysDiff / 365), "year");
 };
 
 export const getLastMessagePreview = (messages: IMessage[]) => {
@@ -110,7 +147,8 @@ export const isConversationEnded = (messages: IMessage[]) => {
 	// TODO: get expiration time from the endpoint (pending from coming v3)
 	const EXPIRATION_DAYS_LIMIT = 30;
 	const lastMessageTimestamp = messages[messages.length - 1]?.timestamp || Date.now();
-	const daysDifference = moment().diff(lastMessageTimestamp, "days");
+	const now = Date.now();
+	const daysDifference = Math.floor((now - lastMessageTimestamp) / (1000 * 60 * 60 * 24));
 	if (daysDifference >= EXPIRATION_DAYS_LIMIT) return true;
 	return false;
 };
