@@ -36,12 +36,12 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 	// For today and yesterday (0-1 days ago)
-	if (daysDiff >= 0 && daysDiff < 2) {
+	if (daysDiff >= 0 && daysDiff <= 1) {
 		return capitalize(rtf.format(-daysDiff, "day"));
 	}
 
 	// For recent days (2-6 days ago)
-	if (daysDiff < 7) {
+	if (daysDiff >= 2 && daysDiff < 7) {
 		return rtf.format(-daysDiff, "day");
 	}
 
