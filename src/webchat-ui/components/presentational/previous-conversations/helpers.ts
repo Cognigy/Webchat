@@ -68,13 +68,18 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	}
 
 	// Safeguard: ensure monthsDiff is positive (message is from the past)
-	if (monthsDiff > 0 && monthsDiff < 12) {
+	if (monthsDiff > 0 && monthsDiff <= 12) {
 		return rtf.format(-monthsDiff, "month");
 	}
 
 	// For years - calculate based on months to be more accurate
 	const accurateYearsDiff = Math.floor(monthsDiff / 12);
-	return rtf.format(-accurateYearsDiff, "year");
+	if (accurateYearsDiff > 0) {
+		return rtf.format(-accurateYearsDiff, "year");
+	}
+
+	// Fallback for edge cases (shouldn't normally reach here)
+	return rtf.format(-Math.floor(daysDiff / 365), "year");
 };
 
 export const getLastMessagePreview = (messages: IMessage[]) => {
