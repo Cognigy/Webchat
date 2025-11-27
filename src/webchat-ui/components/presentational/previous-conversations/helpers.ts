@@ -47,8 +47,8 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	// Create RelativeTimeFormat instance without specifying locale (uses browser's preferred locale)
 	const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
-	// For recent days (less than a week)
-	if (daysDiff < 7) {
+	// For recent days (2-6 days ago)
+	if (daysDiff > 1 && daysDiff < 7) {
 		return rtf.format(-daysDiff, "day");
 	}
 
