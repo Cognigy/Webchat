@@ -68,7 +68,7 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	}
 
 	// Safeguard: ensure monthsDiff is positive (message is from the past)
-	if (monthsDiff > 0 && monthsDiff <= 12) {
+	if (monthsDiff > 0 && monthsDiff < 12) {
 		return rtf.format(-monthsDiff, "month");
 	}
 
