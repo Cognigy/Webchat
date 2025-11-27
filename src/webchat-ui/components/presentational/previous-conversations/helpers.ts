@@ -6,8 +6,7 @@ import { PrevConversationsState } from "../../../../webchat/store/previous-conve
 
 /**
  * Returns a human-readable relative time label for the last message in a conversation.
- * Uses calendar-based logic for "Today" and "Yesterday", and Intl.RelativeTimeFormat for other time periods.
- * The browser's preferred locale is automatically used for formatting.
+ * Uses Intl.RelativeTimeFormat with calendar-based date calculations for accurate relative time display.
  */
 export const getRelativeTime = (messages: IMessage[]) => {
 	const lastMessage = messages[messages.length - 1];
@@ -23,32 +22,26 @@ export const getRelativeTime = (messages: IMessage[]) => {
 		return result;
 	};
 
-	// Check if message is from today
+	// Calculate difference in days using calendar dates
 	const messageDayStart = startOfDay(messageDate);
 	const todayStart = startOfDay(now);
-
-	if (messageDayStart.getTime() === todayStart.getTime()) {
-		return "Today";
-	}
-
-	// Check if message is from yesterday
-	const yesterdayStart = new Date(todayStart);
-	yesterdayStart.setDate(yesterdayStart.getDate() - 1);
-
-	if (messageDayStart.getTime() === yesterdayStart.getTime()) {
-		return "Yesterday";
-	}
-
-	// Calculate difference in days
 	const daysDiff = Math.floor(
 		(todayStart.getTime() - messageDayStart.getTime()) / (1000 * 60 * 60 * 24),
 	);
 
-	// Create RelativeTimeFormat instance without specifying locale (uses browser's preferred locale)
-	const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+	// Create RelativeTimeFormat instance with English locale
+	const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+	// Helper to capitalize first letter
+	const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+	// For today and yesterday (0-1 days ago)
+	if (daysDiff >= 0 && daysDiff < 2) {
+		return capitalize(rtf.format(-daysDiff, "day"));
+	}
 
 	// For recent days (2-6 days ago)
-	if (daysDiff > 1 && daysDiff < 7) {
+	if (daysDiff < 7) {
 		return rtf.format(-daysDiff, "day");
 	}
 
