@@ -121,6 +121,12 @@ describe("Previous Conversations", () => {
 	});
 
 	describe("Relative Time Display", () => {
+		/**
+		 * Helper function to set up a conversation with a specific timestamp in localStorage
+		 * @param timestamp - Unix timestamp in milliseconds for the message
+		 * @param sessionId - Unique session identifier for the conversation
+		 * @returns Local options object containing userId, sessionId, and channel
+		 */
 		const setupConversationWithTimestamp = (timestamp: number, sessionId: string) => {
 			const localOptions = {
 				userId: `user-time-test`,
@@ -256,6 +262,7 @@ describe("Previous Conversations", () => {
 
 		it("should display month-based time for messages from 2 months ago", () => {
 			cy.session("time-2months", () => {
+				// Approximately 2 months ago (60 days)
 				const twoMonthsAgo = Date.now() - 60 * 24 * 60 * 60 * 1000;
 				const localOptions = setupConversationWithTimestamp(
 					twoMonthsAgo,
@@ -277,6 +284,7 @@ describe("Previous Conversations", () => {
 
 		it("should display year-based time for messages from over a year ago", () => {
 			cy.session("time-1year", () => {
+				// More than 1 year ago (400 days to ensure it's clearly over a year)
 				const oneYearAgo = Date.now() - 400 * 24 * 60 * 60 * 1000;
 				const localOptions = setupConversationWithTimestamp(oneYearAgo, "session-1year");
 
