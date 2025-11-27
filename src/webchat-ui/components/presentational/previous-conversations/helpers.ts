@@ -29,8 +29,8 @@ export const getRelativeTime = (messages: IMessage[]) => {
 		(todayStart.getTime() - messageDayStart.getTime()) / (1000 * 60 * 60 * 24),
 	);
 
-	// Create RelativeTimeFormat instance with English locale
-	const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+	// Create RelativeTimeFormat instance (uses browser's preferred locale)
+	const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
 	// Helper to capitalize first letter
 	const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
