@@ -351,5 +351,233 @@ describe("Previous Conversations", () => {
 					});
 			});
 		});
+
+		describe("Boundary conditions", () => {
+			it("should display correct format for 3 weeks ago", () => {
+				cy.session("time-3weeks", () => {
+					const threeWeeksAgo = Date.now() - 21 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						threeWeeksAgo,
+						"session-3weeks",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"week",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 4 weeks ago", () => {
+				cy.session("time-4weeks", () => {
+					const fourWeeksAgo = Date.now() - 28 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						fourWeeksAgo,
+						"session-4weeks",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"week",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 5 weeks ago (boundary to months)", () => {
+				cy.session("time-5weeks", () => {
+					const fiveWeeksAgo = Date.now() - 35 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						fiveWeeksAgo,
+						"session-5weeks",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should display as month-based time since it's > 31 days
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"month",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 29 days ago", () => {
+				cy.session("time-29days", () => {
+					const twentyNineDaysAgo = Date.now() - 29 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						twentyNineDaysAgo,
+						"session-29days",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should still display as weeks since daysDiff < 31
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"week",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 30 days ago", () => {
+				cy.session("time-30days", () => {
+					const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						thirtyDaysAgo,
+						"session-30days",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should still display as weeks since daysDiff < 31
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"week",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 31 days ago (boundary to months)", () => {
+				cy.session("time-31days", () => {
+					const thirtyOneDaysAgo = Date.now() - 31 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						thirtyOneDaysAgo,
+						"session-31days",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should display as month-based time since daysDiff >= 31
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"month",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 11 months ago", () => {
+				cy.session("time-11months", () => {
+					// Approximately 11 months ago (335 days)
+					const elevenMonthsAgo = Date.now() - 335 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						elevenMonthsAgo,
+						"session-11months",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should display as months since it's < 12 months
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"month",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 12 months ago (boundary to years)", () => {
+				cy.session("time-12months", () => {
+					// Approximately 12 months ago (365 days)
+					const twelveMonthsAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						twelveMonthsAgo,
+						"session-12months",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should display as years since monthsDiff >= 12
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"year",
+							);
+						});
+				});
+			});
+
+			it("should display correct format for 13 months ago", () => {
+				cy.session("time-13months", () => {
+					// Approximately 13 months ago (395 days)
+					const thirteenMonthsAgo = Date.now() - 395 * 24 * 60 * 60 * 1000;
+					const localOptions = setupConversationWithTimestamp(
+						thirteenMonthsAgo,
+						"session-13months",
+					);
+
+					cy.visitWebchat();
+					cy.initWebchat(localOptions).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-content").should("exist");
+					cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+					cy.get(".webchat-prev-conversations-item")
+						.first()
+						.within(() => {
+							// Should display as years since monthsDiff >= 12
+							cy.get(".webchat-prev-conversations-time").should(
+								"contain.text",
+								"year",
+							);
+						});
+				});
+			});
+		});
 	});
 });
