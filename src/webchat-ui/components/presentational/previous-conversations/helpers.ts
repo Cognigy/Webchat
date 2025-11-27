@@ -60,14 +60,20 @@ export const getRelativeTime = (messages: IMessage[]) => {
 
 	// For months (less than a year)
 	const yearsDiff = now.getFullYear() - messageDate.getFullYear();
-	const monthsDiff = yearsDiff * 12 + (now.getMonth() - messageDate.getMonth());
+	let monthsDiff = yearsDiff * 12 + (now.getMonth() - messageDate.getMonth());
+
+	// Adjust if the day hasn't been reached yet in the current month
+	if (now.getDate() < messageDate.getDate()) {
+		monthsDiff--;
+	}
 
 	if (monthsDiff < 12) {
 		return rtf.format(-monthsDiff, "month");
 	}
 
-	// For years
-	return rtf.format(-yearsDiff, "year");
+	// For years - calculate based on months to be more accurate
+	const accurateYearsDiff = Math.floor(monthsDiff / 12);
+	return rtf.format(-accurateYearsDiff, "year");
 };
 
 export const getLastMessagePreview = (messages: IMessage[]) => {
