@@ -72,7 +72,7 @@ export const getRelativeTime = (messages: IMessage[]) => {
 	}
 
 	// Fallback for edge cases (shouldn't normally reach here)
-	return rtf.format(-Math.floor(daysDiff / 365), "year");
+	return rtf.format(-Math.floor(monthsDiff / 12), "year");
 };
 
 export const getLastMessagePreview = (messages: IMessage[]) => {
