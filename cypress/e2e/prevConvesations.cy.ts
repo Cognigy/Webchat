@@ -308,12 +308,20 @@ describe("Previous Conversations", () => {
 		it("should display multiple conversations with different timestamps in order", () => {
 			cy.session("time-multiple", () => {
 				const now = Date.now();
-				const yesterday = now - 24 * 60 * 60 * 1000;
-				const threeDaysAgo = now - 3 * 24 * 60 * 60 * 1000;
+				const today = new Date();
+				today.setHours(0, 0, 0, 0);
+				const yesterday = new Date(today);
+				yesterday.setDate(today.getDate() - 1);
+				const threeDaysAgo = new Date(today);
+				threeDaysAgo.setDate(today.getDate() - 3);
+
+				// Use timestamps for setupConversationWithTimestamp
+				const yesterdayTs = yesterday.getTime();
+				const threeDaysAgoTs = threeDaysAgo.getTime();
 
 				setupConversationWithTimestamp(now, "session-multi-1");
-				setupConversationWithTimestamp(yesterday, "session-multi-2");
-				setupConversationWithTimestamp(threeDaysAgo, "session-multi-3");
+				setupConversationWithTimestamp(yesterdayTs, "session-multi-2");
+				setupConversationWithTimestamp(threeDaysAgoTs, "session-multi-3");
 
 				const localOptions = {
 					userId: `user-time-test`,
