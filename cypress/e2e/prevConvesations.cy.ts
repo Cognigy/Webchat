@@ -202,7 +202,11 @@ describe("Previous Conversations", () => {
 
 		it("should display 'Yesterday' for messages from yesterday", () => {
 			cy.session("time-yesterday", () => {
-				const yesterday = Date.now() - 24 * 60 * 60 * 1000;
+				const now = new Date();
+				const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+				const yesterdayMidnight = new Date(todayMidnight);
+				yesterdayMidnight.setDate(todayMidnight.getDate() - 1);
+				const yesterday = yesterdayMidnight.getTime();
 				const localOptions = setupConversationWithTimestamp(yesterday, "session-yesterday");
 
 				cy.visitWebchat();
