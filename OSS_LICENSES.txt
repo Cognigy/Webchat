@@ -1,4 +1,4 @@
-Created on 01-12-2025 at 10:44:02
+Created on 01-12-2025 at 10:46:13
 
 {
   "@babel/code-frame@7.27.1": {
@@ -157,7 +157,7 @@ Created on 01-12-2025 at 10:44:02
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.63.0": {
+  "@cognigy/chat-components@0.64.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -169,7 +169,7 @@ Created on 01-12-2025 at 10:44:02
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.34.0": {
+  "@cognigy/webchat@3.33.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -1202,15 +1202,6 @@ Created on 01-12-2025 at 10:44:02
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/hast-util-raw/license",
-    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
-  },
-  "hast-util-sanitize@5.0.2": {
-    "licenses": "MIT",
-    "repository": "https://github.com/syntax-tree/hast-util-sanitize",
-    "publisher": "Titus Wormer",
-    "email": "tituswormer@gmail.com",
-    "url": "https://wooorm.com",
-    "licenseFile": "node_modules/hast-util-sanitize/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "hast-util-to-jsx-runtime@2.3.6": {
@@ -2350,15 +2341,6 @@ Created on 01-12-2025 at 10:44:02
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/rehype-raw/license",
-    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
-  },
-  "rehype-sanitize@6.0.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/rehypejs/rehype-sanitize",
-    "publisher": "Titus Wormer",
-    "email": "tituswormer@gmail.com",
-    "url": "https://wooorm.com",
-    "licenseFile": "node_modules/rehype-sanitize/license",
     "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
   "remark-gfm@4.0.1": {
