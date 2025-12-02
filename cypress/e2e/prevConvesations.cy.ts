@@ -367,9 +367,12 @@ describe("Previous Conversations", () => {
 		describe("Boundary conditions", () => {
 			it("should display correct format for 3 weeks ago", () => {
 				cy.session("time-3weeks", () => {
-					const threeWeeksAgo = Date.now() - 21 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const threeWeeksAgo = new Date(today);
+					threeWeeksAgo.setDate(today.getDate() - 21);
 					const localOptions = setupConversationWithTimestamp(
-						threeWeeksAgo,
+						threeWeeksAgo.getTime(),
 						"session-3weeks",
 					);
 
@@ -391,9 +394,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 4 weeks ago", () => {
 				cy.session("time-4weeks", () => {
-					const fourWeeksAgo = Date.now() - 28 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const fourWeeksAgo = new Date(today);
+					fourWeeksAgo.setDate(today.getDate() - 28);
 					const localOptions = setupConversationWithTimestamp(
-						fourWeeksAgo,
+						fourWeeksAgo.getTime(),
 						"session-4weeks",
 					);
 
@@ -415,9 +421,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 5 weeks ago (boundary to months)", () => {
 				cy.session("time-5weeks", () => {
-					const fiveWeeksAgo = Date.now() - 35 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const fiveWeeksAgo = new Date(today);
+					fiveWeeksAgo.setDate(today.getDate() - 35);
 					const localOptions = setupConversationWithTimestamp(
-						fiveWeeksAgo,
+						fiveWeeksAgo.getTime(),
 						"session-5weeks",
 					);
 
@@ -440,9 +449,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 29 days ago", () => {
 				cy.session("time-29days", () => {
-					const twentyNineDaysAgo = Date.now() - 29 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const twentyNineDaysAgo = new Date(today);
+					twentyNineDaysAgo.setDate(today.getDate() - 29);
 					const localOptions = setupConversationWithTimestamp(
-						twentyNineDaysAgo,
+						twentyNineDaysAgo.getTime(),
 						"session-29days",
 					);
 
@@ -465,9 +477,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 30 days ago", () => {
 				cy.session("time-30days", () => {
-					const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const thirtyDaysAgo = new Date(today);
+					thirtyDaysAgo.setDate(today.getDate() - 30);
 					const localOptions = setupConversationWithTimestamp(
-						thirtyDaysAgo,
+						thirtyDaysAgo.getTime(),
 						"session-30days",
 					);
 
@@ -490,9 +505,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 31 days ago (boundary to months)", () => {
 				cy.session("time-31days", () => {
-					const thirtyOneDaysAgo = Date.now() - 31 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const thirtyOneDaysAgo = new Date(today);
+					thirtyOneDaysAgo.setDate(today.getDate() - 31);
 					const localOptions = setupConversationWithTimestamp(
-						thirtyOneDaysAgo,
+						thirtyOneDaysAgo.getTime(),
 						"session-31days",
 					);
 
@@ -515,10 +533,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 11 months ago", () => {
 				cy.session("time-11months", () => {
-					// Approximately 11 months ago (335 days)
-					const elevenMonthsAgo = Date.now() - 335 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const elevenMonthsAgo = new Date(today);
+					elevenMonthsAgo.setMonth(today.getMonth() - 11);
 					const localOptions = setupConversationWithTimestamp(
-						elevenMonthsAgo,
+						elevenMonthsAgo.getTime(),
 						"session-11months",
 					);
 
@@ -541,10 +561,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 12 months ago (boundary to years)", () => {
 				cy.session("time-12months", () => {
-					// Approximately 12 months ago (365 days)
-					const twelveMonthsAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const twelveMonthsAgo = new Date(today);
+					twelveMonthsAgo.setMonth(today.getMonth() - 12);
 					const localOptions = setupConversationWithTimestamp(
-						twelveMonthsAgo,
+						twelveMonthsAgo.getTime(),
 						"session-12months",
 					);
 
@@ -567,10 +589,12 @@ describe("Previous Conversations", () => {
 
 			it("should display correct format for 13 months ago", () => {
 				cy.session("time-13months", () => {
-					// Approximately 13 months ago (395 days)
-					const thirteenMonthsAgo = Date.now() - 395 * 24 * 60 * 60 * 1000;
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+					const thirteenMonthsAgo = new Date(today);
+					thirteenMonthsAgo.setMonth(today.getMonth() - 13);
 					const localOptions = setupConversationWithTimestamp(
-						thirteenMonthsAgo,
+						thirteenMonthsAgo.getTime(),
 						"session-13months",
 					);
 
