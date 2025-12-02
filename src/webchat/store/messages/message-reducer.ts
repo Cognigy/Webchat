@@ -1,6 +1,6 @@
 import { IMessage, IStreamingMessage, IUserMessage } from "../../../common/interfaces/message";
 import { IMessageEvent } from "../../../common/interfaces/event";
-import { generateRandomId, isAnimatedRichBotMessage } from "./helper";
+import { generateRandomId, isAnimatedRichBotMessage, isOnlyEscapeSequencesArray } from "./helper";
 
 export interface MessageState {
 	messageHistory: (IMessage | IMessageEvent)[];
@@ -206,6 +206,12 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
+
+					// If all chunks are escape sequences, ignore this message
+					if (isOnlyEscapeSequencesArray(textChunks)) {
+						return state;
+					}
+
 					return {
 						...state,
 						messageHistory: [
