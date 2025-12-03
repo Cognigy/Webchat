@@ -24,7 +24,7 @@ export function isAnimatedRichBotMessage(message: IStreamingMessage): boolean {
 	return isAnimatedMsg;
 }
 
-const ESCAPE_SEQUENCE_REGEX = /^(?:[\n\t\r\f\b\v\s])+$/u;
+const ESCAPE_SEQUENCE_REGEX = /^\s+$/u;
 
 /**
  * Checks if a string consists only of whitespace or escape sequences.
