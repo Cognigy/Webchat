@@ -34,11 +34,3 @@ const ESCAPE_SEQUENCE_REGEX = /^(?:[\n\t\r\f\b\v\s])+$/u;
 export function isTextOnlyEscapeSequence(text: unknown): boolean {
 	return typeof text === "string" && ESCAPE_SEQUENCE_REGEX.test(text);
 }
-
-// Utility to check if a message text is only escape sequences (spaces, tabs, newlines)
-export const isOnlyEscapeSequencesArray = (text: any[]) => {
-	if (Array.isArray(text)) {
-		return text.every(isTextOnlyEscapeSequence);
-	}
-	return false;
-};
