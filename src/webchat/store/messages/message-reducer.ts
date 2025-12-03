@@ -62,13 +62,22 @@ const getFinishReason = (message: IMessage, messageId?: string) => {
 	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
+// Helper to determine if a message is a plugin message
+const isPluginMessage = (message: IMessage) => {
+	return !!message.data?._plugin;
+};
+
 // Helper to determine if a message should be set as the currently animating message
 const shouldSetAsAnimating = (
 	nextAnimatingId: string | null,
 	newMessage: IMessage,
 	isEngagementMessageHidden: boolean,
 ) => {
-	return !nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden);
+	return (
+		!nextAnimatingId &&
+		!(newMessage.source === "engagement" && isEngagementMessageHidden) &&
+		!isPluginMessage(newMessage)
+	);
 };
 
 // slice of the store state that contains the info about streaming mode and teaserMessage, to avoid circular dependency
@@ -128,11 +137,14 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				// Check if the message is an animated bot message (e.g. Text with Quick Replies) and set the animationState accordingly
 				// if there is a messageId, it means the message was a streaming message that was finished and will be handled further below
 				if (!newMessage.text && !newMessageId) {
-					const isAnimated = isAnimatedRichBotMessage(newMessage as IStreamingMessage);
+					const isAnimated =
+						isAnimatedRichBotMessage(newMessage as IStreamingMessage) &&
+						!isPluginMessage(newMessage);
 
 					const newMessageId = generateRandomId();
 
-					if (!state.currentlyAnimatingId) {
+					// Plugin messages should always be visible
+					if (!state.currentlyAnimatingId || isPluginMessage(newMessage)) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
 
@@ -198,7 +210,8 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				// If no matching message, create new with array
 				if (messageIndex === -1) {
-					if (!state.currentlyAnimatingId) {
+					// Plugin messages should always be visible
+					if (!state.currentlyAnimatingId || isPluginMessage(newMessage)) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
 
@@ -206,6 +219,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
+
 					return {
 						...state,
 						messageHistory: [
@@ -297,6 +311,12 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 							(message.source === "bot" || message.source === "engagement") &&
 							"id" in message
 						) {
+							// Plugin messages should always be visible immediately
+							if (isPluginMessage(message)) {
+								visibleMessagesSet.add(message.id as string);
+								continue;
+							}
+
 							visibleMessagesSet.add(message.id as string);
 
 							// If we find a message that should be animated (state is "start")
