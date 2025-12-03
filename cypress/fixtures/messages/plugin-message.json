@@ -1,14 +1,14 @@
 {
-  "text": "",
-  "data": {
-    "_plugin": {
-      "type": "google-maps",
-      "center": {
-        "lat": 51.259823489,
-        "lng": 6.23432432
-      },
-      "zoom": 12,
-      "apikey": ""
-    }
-  }
+	"text": "",
+	"data": {
+		"_plugin": {
+			"type": "google-maps",
+			"center": {
+				"lat": 51.259823489,
+				"lng": 6.23432432
+			},
+			"zoom": 12,
+			"apikey": ""
+		}
+	}
 }
