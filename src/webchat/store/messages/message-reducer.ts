@@ -192,7 +192,10 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 				}
 
 				// If no matching message and the message has no text or message just has escape sequences, we discard the message
-				if (messageIndex === -1 && (!newMessage.text || isTextOnlyEscapeSequence(newMessage.text))) {
+				if (
+					messageIndex === -1 &&
+					(!newMessage.text || isTextOnlyEscapeSequence(newMessage.text))
+				) {
 					return state;
 				}
 
@@ -206,7 +209,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
-
 
 					return {
 						...state,
