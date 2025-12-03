@@ -141,7 +141,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 					const newMessageId = generateRandomId();
 
-					// Plugin messages should always be visible
 					if (!state.currentlyAnimatingId) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
@@ -208,7 +207,6 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 
 				// If no matching message, create new with array
 				if (messageIndex === -1) {
-					// Plugin messages should always be visible
 					if (!state.currentlyAnimatingId) {
 						visibleOutputMessages.push(newMessageId as string);
 					}
