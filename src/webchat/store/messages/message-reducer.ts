@@ -1,6 +1,6 @@
 import { IMessage, IStreamingMessage, IUserMessage } from "../../../common/interfaces/message";
 import { IMessageEvent } from "../../../common/interfaces/event";
-import { generateRandomId, isAnimatedRichBotMessage } from "./helper";
+import { generateRandomId, isAnimatedRichBotMessage, isTextOnlyEscapeSequence } from "./helper";
 
 export interface MessageState {
 	messageHistory: (IMessage | IMessageEvent)[];
@@ -191,8 +191,11 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					nextAnimatingId = newMessageId;
 				}
 
-				// If no matching message and the message has no text, we discard the message
-				if (messageIndex === -1 && !newMessage.text) {
+				// If no matching message and the message has no text or message just has escape sequences, we discard the message
+				if (
+					messageIndex === -1 &&
+					(!newMessage.text || isTextOnlyEscapeSequence(newMessage.text))
+				) {
 					return state;
 				}
 
@@ -206,6 +209,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
+
 					return {
 						...state,
 						messageHistory: [
