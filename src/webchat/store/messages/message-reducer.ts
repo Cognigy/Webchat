@@ -62,13 +62,22 @@ const getFinishReason = (message: IMessage, messageId?: string) => {
 	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
+// Helper to determine if a message is a plugin message
+const isPluginMessage = (message: IMessage) => {
+	return !!message.data?._plugin;
+};
+
 // Helper to determine if a message should be set as the currently animating message
 const shouldSetAsAnimating = (
 	nextAnimatingId: string | null,
 	newMessage: IMessage,
 	isEngagementMessageHidden: boolean,
 ) => {
-	return !nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden);
+	return (
+		!nextAnimatingId &&
+		!(newMessage.source === "engagement" && isEngagementMessageHidden) &&
+		!isPluginMessage(newMessage)
+	);
 };
 
 // slice of the store state that contains the info about streaming mode and teaserMessage, to avoid circular dependency
