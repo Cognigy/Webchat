@@ -1,4 +1,4 @@
-Created on 15-12-2025 at 10:19:38
+Created on 15-12-2025 at 15:58:30
 
 {
   "@babel/code-frame@7.27.1": {
@@ -157,7 +157,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.64.0": {
+  "@cognigy/chat-components@0.65.0": {
     "licenses": "MIT*",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
@@ -373,7 +373,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/@jridgewell/trace-mapping/LICENSE",
     "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
   },
-  "@reduxjs/toolkit@2.10.1": {
+  "@reduxjs/toolkit@2.11.2": {
     "licenses": "MIT",
     "repository": "https://github.com/reduxjs/redux-toolkit",
     "publisher": "Mark Erikson",
@@ -451,7 +451,7 @@ Created on 15-12-2025 at 10:19:38
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react-redux/LICENSE"
   },
-  "@types/react@18.3.26": {
+  "@types/react@18.3.27": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react/LICENSE"
@@ -570,7 +570,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/balanced-match/LICENSE.md",
     "copyright": "Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt;"
   },
-  "baseline-browser-mapping@2.8.28": {
+  "baseline-browser-mapping@2.9.7": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/web-platform-dx/baseline-browser-mapping",
     "licenseFile": "node_modules/baseline-browser-mapping/LICENSE.txt"
@@ -584,7 +584,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/brace-expansion/LICENSE",
     "copyright": "Copyright (c) 2013 Julian Gruber <julian@juliangruber.com>"
   },
-  "browserslist@4.28.0": {
+  "browserslist@4.28.1": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/browserslist",
     "publisher": "Andrey Sitnik",
@@ -617,7 +617,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/callsites/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "caniuse-lite@1.0.30001755": {
+  "caniuse-lite@1.0.30001760": {
     "licenses": "CC-BY-4.0",
     "repository": "https://github.com/browserslist/caniuse-lite",
     "publisher": "Ben Briggs",
@@ -749,7 +749,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/convert-source-map/LICENSE",
     "copyright": "Copyright 2013 Thorsten Lorenz. . All rights reserved."
   },
-  "core-js-pure@3.46.0": {
+  "core-js-pure@3.47.0": {
     "licenses": "MIT",
     "repository": "https://github.com/zloirock/core-js",
     "publisher": "Denis Pushkarev",
@@ -788,7 +788,7 @@ Created on 15-12-2025 at 10:19:38
     "url": "http://www.trevorparscal.com/",
     "licenseFile": "node_modules/cssjanus/LICENSE.txt"
   },
-  "csstype@3.2.2": {
+  "csstype@3.2.3": {
     "licenses": "MIT",
     "repository": "https://github.com/frenic/csstype",
     "publisher": "Fredrik Nicol",
@@ -911,7 +911,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/dunder-proto/LICENSE",
     "copyright": "Copyright (c) 2024 ECMAScript Shims"
   },
-  "electron-to-chromium@1.5.254": {
+  "electron-to-chromium@1.5.267": {
     "licenses": "ISC",
     "repository": "https://github.com/kilian/electron-to-chromium",
     "publisher": "Kilian Valkhof",
@@ -1213,14 +1213,14 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/hast-util-to-jsx-runtime/license",
     "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
-  "hast-util-to-parse5@8.0.0": {
+  "hast-util-to-parse5@8.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/hast-util-to-parse5",
     "publisher": "Titus Wormer",
     "email": "tituswormer@gmail.com",
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/hast-util-to-parse5/license",
-    "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
+    "copyright": "Copyright (c) Titus Wormer <tituswormer@gmail.com>"
   },
   "hast-util-whitespace@3.0.0": {
     "licenses": "MIT",
@@ -1283,7 +1283,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/hyphenate-style-name/LICENSE",
     "copyright": "Copyright (c) 2015, Espen Hovlandsdal. All rights reserved."
   },
-  "immer@10.2.0": {
+  "immer@11.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/immerjs/immer",
     "publisher": "Michel Weststrate",
@@ -1607,7 +1607,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/mdast-util-phrasing/license",
     "copyright": "Copyright (c) 2017 Titus Wormer <tituswormer@gmail.com>. Copyright (c) 2017 Victor Felder <victor@draft.li>"
   },
-  "mdast-util-to-hast@13.2.0": {
+  "mdast-util-to-hast@13.2.1": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/mdast-util-to-hast",
     "publisher": "Titus Wormer",
@@ -2115,15 +2115,6 @@ Created on 15-12-2025 at 10:19:38
     "repository": "https://github.com/facebook/prop-types",
     "licenseFile": "node_modules/prop-types/LICENSE",
     "copyright": "Copyright (c) 2013-present, Facebook, Inc."
-  },
-  "property-information@6.5.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/wooorm/property-information",
-    "publisher": "Titus Wormer",
-    "email": "tituswormer@gmail.com",
-    "url": "https://wooorm.com",
-    "licenseFile": "node_modules/hast-util-to-parse5/node_modules/property-information/license",
-    "copyright": "Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>"
   },
   "property-information@7.1.0": {
     "licenses": "MIT",
@@ -2751,7 +2742,7 @@ Created on 15-12-2025 at 10:19:38
     "licenseFile": "node_modules/unist-util-visit/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
-  "update-browserslist-db@1.1.4": {
+  "update-browserslist-db@1.2.2": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/update-db",
     "publisher": "Andrey Sitnik",
