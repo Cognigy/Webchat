@@ -95,7 +95,7 @@ describe("Progressive Rendering with Plugin Messages", () => {
 		cy.contains("After plugin 3").should("be.visible");
 	});
 
-	it.skip("should render multiple plugin messages correctly with progressive rendering", () => {
+	it("should render multiple plugin messages correctly with progressive rendering", () => {
 		// Send first message
 		cy.receiveMessage("First message");
 		cy.contains("First message").should("be.visible");
@@ -132,7 +132,7 @@ describe("Progressive Rendering with Plugin Messages", () => {
 			cy.contains("Between plugins").should("exist");
 			cy.contains("Last message").should("exist");
 			// Verify both plugin instances are rendered
-			cy.get('a[href*="google.com/maps"]').should("have.length", 2);
+			cy.get('[aria-label="Map"]').should("have.length", 2);
 		});
 	});
 
