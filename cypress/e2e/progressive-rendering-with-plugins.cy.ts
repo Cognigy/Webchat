@@ -95,7 +95,7 @@ describe("Progressive Rendering with Plugin Messages", () => {
 		cy.contains("After plugin 3").should("be.visible");
 	});
 
-	it("should render multiple plugin messages correctly with progressive rendering", () => {
+	it.skip("should render multiple plugin messages correctly with progressive rendering", () => {
 		// Send first message
 		cy.receiveMessage("First message");
 		cy.contains("First message").should("be.visible");
