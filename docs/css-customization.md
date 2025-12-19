@@ -1654,7 +1654,6 @@ To customize the chat bubble of only the Text with Buttons messages, use the _ch
 - _webchat-buttons-template-replies-container_  
   The class to customize the list of buttons in the Text with Buttons message. You can change the way they are displayed, e.g. as a column.
 
-
 ```CSS
 [data-cognigy-webchat-root] [data-cognigy-webchat] .webchat-buttons-template-replies-container {
     display: flex;
