@@ -57,6 +57,7 @@ interface IChatOptionsProps {
 	onDeleteModalStateChange: (open: boolean) => void;
 }
 
+// This component is used to render both the Chat Options screen and the Rating screen. In the rating screen (screen opened as a result of request rating node), only the rating widget is displayed.
 export const ChatOptions = (props: IChatOptionsProps) => {
 	const {
 		config,
@@ -91,46 +92,61 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 	return (
 		<ChatOptionsRoot className="webchat-chat-options-root">
 			<ChatOptionsContainer className="webchat-chat-options-container">
-				{!showOnlyRating && config.settings.chatOptions.quickReplyOptions.enabled && (
-					<>
-						<PostbackButtons
-							config={config}
-							onSendActionButtonMessage={onSendActionButtonMessage}
-							onEmitAnalytics={onEmitAnalytics}
-						/>
-						<DividerWrapper>
-							<Divider />
-						</DividerWrapper>
-					</>
-				)}
-				{config.settings.chatOptions.showTTSToggle && (
-					<>
-						<TTSOption onToggle={handleToggleTTS} config={config} />
-						<DividerWrapper>
-							<Divider />
-						</DividerWrapper>
-					</>
-				)}
-				{showRating && (
-					<>
-						<RatingWidget
-							ratingTitleText={ratingTitleText}
-							ratingCommentText={ratingCommentText}
-							onSendRating={onSendRating}
-							showRatingStatus={showOnlyRating}
-							ratingEventBannerText={ratingEventBannerText}
-							buttonText={ratingSubmitButtonText}
-						/>
-						<DividerWrapper>
-							<Divider />
-						</DividerWrapper>
-					</>
-				)}
-				{showDeleteConversation && (
-					<DeleteConversation
-						onDeleteModalStateChange={onDeleteModalStateChange}
-						config={config}
+				{showOnlyRating ? (
+					// Rating Screen
+					<RatingWidget
+						ratingTitleText={ratingTitleText}
+						ratingCommentText={ratingCommentText}
+						onSendRating={onSendRating}
+						showRatingStatus={showOnlyRating}
+						ratingEventBannerText={ratingEventBannerText}
+						buttonText={ratingSubmitButtonText}
 					/>
+				) : (
+					// Chat Options Screen
+					<>
+						{config.settings.chatOptions.quickReplyOptions.enabled && (
+							<>
+								<PostbackButtons
+									config={config}
+									onSendActionButtonMessage={onSendActionButtonMessage}
+									onEmitAnalytics={onEmitAnalytics}
+								/>
+								<DividerWrapper>
+									<Divider />
+								</DividerWrapper>
+							</>
+						)}
+						{config.settings.chatOptions.showTTSToggle && (
+							<>
+								<TTSOption onToggle={handleToggleTTS} config={config} />
+								<DividerWrapper>
+									<Divider />
+								</DividerWrapper>
+							</>
+						)}
+						{showRating && (
+							<>
+								<RatingWidget
+									ratingTitleText={ratingTitleText}
+									ratingCommentText={ratingCommentText}
+									onSendRating={onSendRating}
+									showRatingStatus={showOnlyRating}
+									ratingEventBannerText={ratingEventBannerText}
+									buttonText={ratingSubmitButtonText}
+								/>
+								<DividerWrapper>
+									<Divider />
+								</DividerWrapper>
+							</>
+						)}
+						{showDeleteConversation && (
+							<DeleteConversation
+								onDeleteModalStateChange={onDeleteModalStateChange}
+								config={config}
+							/>
+						)}
+					</>
 				)}
 			</ChatOptionsContainer>
 			{chatOptions.footer.enabled && chatOptions.footer.items[0] && (
