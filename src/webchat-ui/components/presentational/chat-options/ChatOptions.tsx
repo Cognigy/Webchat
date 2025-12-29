@@ -57,7 +57,10 @@ interface IChatOptionsProps {
 	onDeleteModalStateChange: (open: boolean) => void;
 }
 
-// This component is used to render both the Chat Options screen and the Rating screen. In the rating screen (screen opened as a result of request rating node), only the rating widget is displayed.
+/**
+ * This component renders both the Chat Options screen and the Rating screen.
+ * On the rating screen (opened as a result of a request rating node), only the rating widget is displayed.
+ */
 export const ChatOptions = (props: IChatOptionsProps) => {
 	const {
 		config,
