@@ -101,7 +101,7 @@ export const Logo = styled.img(() => ({
 	marginInline: 8,
 }));
 
-const HeaderText = styled.span(({ theme }) => ({
+const HeaderText = styled(Typography)(({ theme }) => ({
 	"&:focus-visible": {
 		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.backgroundWebchat)}`,
 		outlineOffset: 2,
@@ -163,8 +163,7 @@ const Header: FC<HeaderProps> = props => {
 	useEffect(() => {
 		if (autoFocusScreenTitle) {
 			const timeoutId = setTimeout(() => {
-				const headerTitle = document.getElementById("webchatHeaderTitleLabel");
-				console.log("headerTitle", headerTitle);
+				const headerTitle = document.getElementById("webchatHeaderTitle");
 				headerTitle?.focus();
 			}, 200);
 
@@ -203,16 +202,15 @@ const Header: FC<HeaderProps> = props => {
 								className={classnames("webchat-header-cognigy-logo")}
 							/>
 						))}
-					<Typography
+					<HeaderText
 						variant="h2-semibold"
 						id="webchatHeaderTitle"
 						className="webchat-header-title"
 						margin={0}
+						tabIndex={-1}
 					>
-						<HeaderText tabIndex={-1} id="webchatHeaderTitleLabel">
-							{title}
-						</HeaderText>
-					</Typography>
+						{title}
+					</HeaderText>
 				</div>
 				<HeaderIconsWrapper>
 					{rest.isDeleteAllConversationsButtonVisible && (
