@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { useSelector, useDispatch } from "react-redux";
 import { StoreState } from "../../../../webchat/store/store";
@@ -8,7 +8,6 @@ import { RatingWidget } from "./RatingWidget";
 import { PostbackButtons } from "./PostbackButtons";
 import { WebchatUIProps } from "../../WebchatUI";
 import { ChatOptionsFooter } from "./ChatOptionsFooter";
-import getKeyboardFocusableElements from "../../../utils/find-focusable";
 import TTSOption from "./TTSOption";
 import DeleteConversation from "./DeleteConversation";
 
@@ -75,22 +74,11 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 	const { settings } = config;
 	const { chatOptions } = settings;
 
-	const chatOptionsRef = useRef<HTMLDivElement>(null);
-
 	const ratingEnabled = chatOptions.rating.enabled;
 	const showRating =
 		ratingEnabled === "always" ||
 		(ratingEnabled === "once" && !hasGivenRating) ||
 		showOnlyRating;
-
-	useEffect(() => {
-		if (chatOptionsRef?.current) {
-			const { firstFocusable } = getKeyboardFocusableElements(chatOptionsRef?.current);
-			if (firstFocusable) {
-				firstFocusable.focus();
-			}
-		}
-	}, []);
 
 	const ttsEnabled = useSelector((state: StoreState) => state.ui.ttsActive);
 	const dispatch = useDispatch();
@@ -101,7 +89,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 
 	const showDeleteConversation = !!chatOptions.enableDeleteConversation;
 	return (
-		<ChatOptionsRoot className="webchat-chat-options-root" ref={chatOptionsRef}>
+		<ChatOptionsRoot className="webchat-chat-options-root">
 			<ChatOptionsContainer className="webchat-chat-options-container">
 				{!showOnlyRating && config.settings.chatOptions.quickReplyOptions.enabled && (
 					<>

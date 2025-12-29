@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import styled from "@emotion/styled";
 import IconButton from "./IconButton";
 import CloseIcon from "../../assets/close-16px.svg";
@@ -101,6 +101,13 @@ export const Logo = styled.img(() => ({
 	marginInline: 8,
 }));
 
+const HeaderText = styled.span(({ theme }) => ({
+	"&:focus-visible": {
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.backgroundWebchat)}`,
+		outlineOffset: 2,
+	},
+}));
+
 interface HeaderProps {
 	title: string;
 	logoUrl?: string;
@@ -118,6 +125,7 @@ interface HeaderProps {
 	hideBackButton?: boolean;
 	deleteIconColor?: string;
 	showChatScreen?: boolean;
+	autoFocusScreenTitle?: boolean;
 }
 
 const Header: FC<HeaderProps> = props => {
@@ -134,6 +142,7 @@ const Header: FC<HeaderProps> = props => {
 		isChatOptionsButtonVisible,
 		hideBackButton,
 		showChatScreen,
+		autoFocusScreenTitle,
 		onDeleteAllConversations,
 		...rest
 	} = props;
@@ -150,6 +159,19 @@ const Header: FC<HeaderProps> = props => {
 	const handleMenuClick = () => {
 		onSetShowChatOptionsScreen?.(true);
 	};
+
+	useEffect(() => {
+		if (autoFocusScreenTitle) {
+			const timeoutId = setTimeout(() => {
+				const headerTitle = document.getElementById("webchatHeaderTitleLabel");
+				console.log("headerTitle", headerTitle);
+				headerTitle?.focus();
+			}, 200);
+
+			return () => clearTimeout(timeoutId);
+		}
+	}, [autoFocusScreenTitle]);
+
 	return (
 		<>
 			<HeaderBar {...rest} className="webchat-header-bar">
@@ -187,7 +209,9 @@ const Header: FC<HeaderProps> = props => {
 						className="webchat-header-title"
 						margin={0}
 					>
-						{title}
+						<HeaderText tabIndex={-1} id="webchatHeaderTitleLabel">
+							{title}
+						</HeaderText>
 					</Typography>
 				</div>
 				<HeaderIconsWrapper>
