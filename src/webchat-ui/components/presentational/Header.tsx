@@ -164,7 +164,6 @@ const Header: FC<HeaderProps> = props => {
 		if (autoFocusScreenTitle) {
 			const timeoutId = setTimeout(() => {
 				const headerTitle = document.getElementById("webchatHeaderTitleLabel");
-				console.log("headerTitle", headerTitle);
 				headerTitle?.focus();
 			}, 200);
 
