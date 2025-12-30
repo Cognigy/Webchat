@@ -294,7 +294,6 @@ describe("Chat Options Screen", () => {
 		cy.get(".webchat-chat-options-footer").should("not.exist");
 	});
 
-	
 	it("focuses chat options title when opened", () => {
 		cy.initMockWebchat({
 			settings: {

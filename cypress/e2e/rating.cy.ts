@@ -249,7 +249,7 @@ describe("Rating", () => {
 		);
 
 		// Rating widget should be visible
-		cy.get(".webchat-rating-widget-root").should("exist");		
+		cy.get(".webchat-rating-widget-root").should("exist");
 
 		// Other chat options should NOT be visible
 		cy.get(".webchat-postback-buttons").should("not.exist");
@@ -292,9 +292,6 @@ describe("Rating", () => {
 		cy.get('[data-test="rating-input"]').then($input => {
 			const inputId = $input.attr("id");
 			cy.get(`label[for="${inputId}"]`).should("have.text", "Please share your thoughts");
-		});		
+		});
 	});
-
 });
-
-	
