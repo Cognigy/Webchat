@@ -149,6 +149,7 @@ const Header: FC<HeaderProps> = props => {
 
 	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
 	const settings = useSelector(state => state.config.settings);
+	const headerTextRef = React.useRef<HTMLHeadingElement>(null);
 
 	const handleCloseClick = () => {
 		onClose?.();
@@ -163,7 +164,7 @@ const Header: FC<HeaderProps> = props => {
 	useEffect(() => {
 		if (autoFocusScreenTitle) {
 			const timeoutId = setTimeout(() => {
-				const headerTitle = document.getElementById("webchatHeaderTitle");
+				const headerTitle = headerTextRef.current;
 				headerTitle?.focus();
 			}, 200);
 
@@ -203,6 +204,7 @@ const Header: FC<HeaderProps> = props => {
 							/>
 						))}
 					<HeaderText
+						ref={headerTextRef}
 						variant="h2-semibold"
 						id="webchatHeaderTitle"
 						className="webchat-header-title"
