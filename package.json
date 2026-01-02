@@ -67,7 +67,7 @@
 		"react-hot-toast": "^2.4.1",
 		"react-markdown": "^9.0.3",
 		"react-modal": "^3.16.3",
-		"react-redux": "7.2.8",
+		"react-redux": "7.2.9",
 		"react-responsive": "9.0.2",
 		"react-scroll-to-bottom": "4.2.0",
 		"react-textarea-autosize": "8.5.9",
