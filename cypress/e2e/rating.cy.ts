@@ -208,4 +208,90 @@ describe("Rating", () => {
 
 		cy.get('[data-test="rating-input"]').should("not.exist");
 	});
+
+	it("displays only rating widget when request rating arrives, hiding other chat options", () => {
+		cy.initMockWebchat({
+			settings: {
+				chatOptions: {
+					enabled: true,
+					quickReplyOptions: {
+						enabled: true,
+						quickReplies: [
+							{
+								type: "postback",
+								title: "Quick Reply Test",
+								payload: "quick-reply-test",
+							},
+						],
+					},
+					showTTSToggle: true,
+					enableDeleteConversation: true,
+					rating: {
+						enabled: "always",
+					},
+				},
+			},
+		});
+		cy.openWebchat().startConversation();
+
+		cy.receiveMessage(
+			"",
+			{
+				_plugin: {
+					type: "request-rating",
+					data: {
+						ratingTitleText: "How was your experience?",
+						ratingCommentText: "Please share your thoughts",
+					},
+				},
+			},
+			"bot",
+		);
+
+		// Rating widget should be visible
+		cy.get(".webchat-rating-widget-root").should("exist");
+
+		// Other chat options should NOT be visible
+		cy.get(".webchat-postback-buttons").should("not.exist");
+		cy.get(".webchat-tts-option-root").should("not.exist");
+		cy.get(".webchat-delete-conversation-container").should("not.exist");
+	});
+
+	it("overrides chat options config, when request rating arrives", () => {
+		cy.initMockWebchat({
+			settings: {
+				chatOptions: {
+					enabled: true,
+					rating: {
+						enabled: "always",
+						title: "Feedback",
+						commentPlaceholder: "Type something here...",
+					},
+				},
+			},
+		});
+		cy.openWebchat().startConversation();
+
+		cy.receiveMessage(
+			"",
+			{
+				_plugin: {
+					type: "request-rating",
+					data: {
+						ratingTitleText: "How was your experience?",
+						ratingCommentText: "Please share your thoughts",
+					},
+				},
+			},
+			"bot",
+		);
+
+		// Request Rating node config should override chat options config
+		cy.get(".webchat-rating-widget-root").should("exist");
+		cy.contains("How was your experience?").should("be.visible");
+		cy.get('[data-test="rating-input"]').then($input => {
+			const inputId = $input.attr("id");
+			cy.get(`label[for="${inputId}"]`).should("have.text", "Please share your thoughts");
+		});
+	});
 });

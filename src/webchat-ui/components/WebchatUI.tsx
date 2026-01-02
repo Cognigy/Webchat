@@ -1494,6 +1494,8 @@ export class WebchatUI extends React.PureComponent<
 			Object.keys(this.props.prevConversations).length
 		);
 
+		const autoFocusScreenTitle = !showChatScreen && !showHomeScreen;
+
 		return (
 			<RegularLayoutRoot>
 				{!isXAppOverlayOpen && (
@@ -1533,6 +1535,7 @@ export class WebchatUI extends React.PureComponent<
 								chatToggleButtonRef={this.chatToggleButtonRef}
 								hideBackButton={hideBackButton}
 								showChatScreen={showChatScreen}
+								autoFocusScreenTitle={autoFocusScreenTitle}
 								deleteIconColor={
 									config.settings.customColors?.deleteAllConversationIconColor
 								}
