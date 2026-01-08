@@ -155,7 +155,9 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 				<CenterMeta variant="title2-regular" component="div">
 					<MetaNames>{getParticipants(messages, config)}</MetaNames>
 					<Ellipsis />
-					<MetaTime>{getRelativeTime(messages)}</MetaTime>
+					<MetaTime className="webchat-prev-conversations-time">
+						{getRelativeTime(messages)}
+					</MetaTime>
 				</CenterMeta>
 			</Center>
 			<Right>

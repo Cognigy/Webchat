@@ -9,7 +9,7 @@ import ChatBubbleOutline2 from "../../assets/chat-bubble-outline-2.svg";
 import ChatBubbleOutline3 from "../../assets/chat-bubble-outline-3.svg";
 
 const ChatIconMask = styled.span<{ src: string }>(({ theme, src }) => {
-	const urlValue = `url("${String(src).replace(/\"/g, '\\"')}")`;
+	const urlValue = `url("${String(src).replace(/\\/g, "\\\\").replace(/"/g, '\\"')}")`;
 	return {
 		display: "inline-block",
 		width: 20,

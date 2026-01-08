@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { useSelector, useDispatch } from "react-redux";
 import { StoreState } from "../../../../webchat/store/store";
@@ -8,7 +8,6 @@ import { RatingWidget } from "./RatingWidget";
 import { PostbackButtons } from "./PostbackButtons";
 import { WebchatUIProps } from "../../WebchatUI";
 import { ChatOptionsFooter } from "./ChatOptionsFooter";
-import getKeyboardFocusableElements from "../../../utils/find-focusable";
 import TTSOption from "./TTSOption";
 import DeleteConversation from "./DeleteConversation";
 
@@ -59,6 +58,10 @@ interface IChatOptionsProps {
 	onDeleteModalStateChange: (open: boolean) => void;
 }
 
+/**
+ * This component renders both the Chat Options screen and the Rating screen.
+ * On the rating screen (opened as a result of a request rating node), only the rating widget is displayed.
+ */
 export const ChatOptions = (props: IChatOptionsProps) => {
 	const {
 		config,
@@ -76,22 +79,11 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 	const { settings } = config;
 	const { chatOptions } = settings;
 
-	const chatOptionsRef = useRef<HTMLDivElement>(null);
-
 	const ratingEnabled = chatOptions.rating.enabled;
 	const showRating =
 		ratingEnabled === "always" ||
 		(ratingEnabled === "once" && !hasGivenRating) ||
 		showOnlyRating;
-
-	useEffect(() => {
-		if (chatOptionsRef?.current) {
-			const { firstFocusable } = getKeyboardFocusableElements(chatOptionsRef?.current);
-			if (firstFocusable) {
-				firstFocusable.focus();
-			}
-		}
-	}, []);
 
 	const ttsEnabled = useSelector((state: StoreState) => state.ui.ttsActive);
 	const dispatch = useDispatch();
@@ -102,48 +94,63 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 
 	const showDeleteConversation = !!chatOptions.enableDeleteConversation;
 	return (
-		<ChatOptionsRoot className="webchat-chat-options-root" ref={chatOptionsRef}>
+		<ChatOptionsRoot className="webchat-chat-options-root">
 			<ChatOptionsContainer className="webchat-chat-options-container">
-				{!showOnlyRating && config.settings.chatOptions.quickReplyOptions.enabled && (
-					<>
-						<PostbackButtons
-							config={config}
-							onSendActionButtonMessage={onSendActionButtonMessage}
-							onEmitAnalytics={onEmitAnalytics}
-						/>
-						<DividerWrapper>
-							<Divider />
-						</DividerWrapper>
-					</>
-				)}
-				{config.settings.chatOptions.showTTSToggle && (
-					<>
-						<TTSOption onToggle={handleToggleTTS} config={config} />
-						<DividerWrapper>
-							<Divider />
-						</DividerWrapper>
-					</>
-				)}
-				{showRating && (
-					<>
-						<RatingWidget
-							ratingTitleText={ratingTitleText}
-							ratingCommentText={ratingCommentText}
-							onSendRating={onSendRating}
-							showRatingStatus={showOnlyRating}
-							ratingEventBannerText={ratingEventBannerText}
-							buttonText={ratingSubmitButtonText}
-						/>
-						<DividerWrapper>
-							<Divider />
-						</DividerWrapper>
-					</>
-				)}
-				{showDeleteConversation && (
-					<DeleteConversation
-						onDeleteModalStateChange={onDeleteModalStateChange}
-						config={config}
+				{showOnlyRating ? (
+					// Rating Screen
+					<RatingWidget
+						ratingTitleText={ratingTitleText}
+						ratingCommentText={ratingCommentText}
+						onSendRating={onSendRating}
+						showRatingStatus={showOnlyRating}
+						ratingEventBannerText={ratingEventBannerText}
+						buttonText={ratingSubmitButtonText}
 					/>
+				) : (
+					// Chat Options Screen
+					<>
+						{config.settings.chatOptions.quickReplyOptions.enabled && (
+							<>
+								<PostbackButtons
+									config={config}
+									onSendActionButtonMessage={onSendActionButtonMessage}
+									onEmitAnalytics={onEmitAnalytics}
+								/>
+								<DividerWrapper>
+									<Divider />
+								</DividerWrapper>
+							</>
+						)}
+						{config.settings.chatOptions.showTTSToggle && (
+							<>
+								<TTSOption onToggle={handleToggleTTS} config={config} />
+								<DividerWrapper>
+									<Divider />
+								</DividerWrapper>
+							</>
+						)}
+						{showRating && (
+							<>
+								<RatingWidget
+									ratingTitleText={ratingTitleText}
+									ratingCommentText={ratingCommentText}
+									onSendRating={onSendRating}
+									showRatingStatus={showOnlyRating}
+									ratingEventBannerText={ratingEventBannerText}
+									buttonText={ratingSubmitButtonText}
+								/>
+								<DividerWrapper>
+									<Divider />
+								</DividerWrapper>
+							</>
+						)}
+						{showDeleteConversation && (
+							<DeleteConversation
+								onDeleteModalStateChange={onDeleteModalStateChange}
+								config={config}
+							/>
+						)}
+					</>
 				)}
 			</ChatOptionsContainer>
 			{chatOptions.footer.enabled && chatOptions.footer.items[0] && (

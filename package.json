@@ -1,6 +1,6 @@
 {
 	"name": "@cognigy/webchat",
-	"version": "3.33.0",
+	"version": "3.36.0",
 	"description": "Webchat for Cognigy.AI",
 	"author": "Cognigy GmbH <info@cognigy.com>",
 	"contributors": [
@@ -45,11 +45,13 @@
 		"tsc:check": "tsc --noEmit",
 		"lint": "eslint src/",
 		"deps:check": "npx -y depcheck",
-		"deps:analyze": "npx -y webpack-bundle-analyzer stats.json dist"
+		"deps:analyze": "npx -y webpack-bundle-analyzer stats.json dist",
+		"codeql:scan:src": "codeql database create --overwrite codeql-db --language=javascript --source-root=. --codescanning-config=codeql-config.yml && codeql database analyze codeql-db codeql/javascript-queries --format=sarifv2.1.0 --output=codeql-results-src.sarif --threads=0",
+		"codeql:scan:dist": "npm run build && codeql database create --overwrite codeql-db --language=javascript --source-root=dist && codeql database analyze codeql-db codeql/javascript-queries --format=sarifv2.1.0 --output=codeql-results-dist.sarif --threads=0"
 	},
 	"dependencies": {
 		"@braintree/sanitize-url": "^6.0.0",
-		"@cognigy/chat-components": "0.63.0",
+		"@cognigy/chat-components": "0.66.0",
 		"@cognigy/socket-client": "5.0.0-beta.24",
 		"@emotion/cache": "^10.0.29",
 		"@emotion/react": "^11.13.0",

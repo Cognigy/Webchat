@@ -1,6 +1,6 @@
 import { IMessage, IStreamingMessage, IUserMessage } from "../../../common/interfaces/message";
 import { IMessageEvent } from "../../../common/interfaces/event";
-import { generateRandomId, isAnimatedRichBotMessage } from "./helper";
+import { generateRandomId, isAnimatedRichBotMessage, isTextOnlyEscapeSequence } from "./helper";
 
 export interface MessageState {
 	messageHistory: (IMessage | IMessageEvent)[];
@@ -62,13 +62,22 @@ const getFinishReason = (message: IMessage, messageId?: string) => {
 	return messageId ? (message.data?._cognigy as CognigyData)?._finishReason : "stop";
 };
 
+// Helper to determine if a message is a plugin message
+const isPluginMessage = (message: IMessage) => {
+	return !!message.data?._plugin;
+};
+
 // Helper to determine if a message should be set as the currently animating message
 const shouldSetAsAnimating = (
 	nextAnimatingId: string | null,
 	newMessage: IMessage,
 	isEngagementMessageHidden: boolean,
 ) => {
-	return !nextAnimatingId && !(newMessage.source === "engagement" && isEngagementMessageHidden);
+	return (
+		!nextAnimatingId &&
+		!(newMessage.source === "engagement" && isEngagementMessageHidden) &&
+		!isPluginMessage(newMessage)
+	);
 };
 
 // slice of the store state that contains the info about streaming mode and teaserMessage, to avoid circular dependency
@@ -191,8 +200,11 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					nextAnimatingId = newMessageId;
 				}
 
-				// If no matching message and the message has no text, we discard the message
-				if (messageIndex === -1 && !newMessage.text) {
+				// If no matching message and the message has no text or message just has escape sequences, we discard the message
+				if (
+					messageIndex === -1 &&
+					(!newMessage.text || isTextOnlyEscapeSequence(newMessage.text))
+				) {
 					return state;
 				}
 
@@ -206,6 +218,7 @@ export const createMessageReducer = (getState: () => { config: ConfigState }) =>
 					const textChunks = (newMessage.text as string)
 						.split(/(\n)/)
 						.filter(chunk => chunk.length > 0);
+
 					return {
 						...state,
 						messageHistory: [
