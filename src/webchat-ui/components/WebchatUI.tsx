@@ -16,7 +16,7 @@ import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
 import { debounce } from "lodash";
-import { RemoveScroll } from "react-remove-scroll";
+import { RemoveScroll } from "react-remove-scroll/UI";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
@@ -1140,7 +1140,8 @@ export class WebchatUI extends React.PureComponent<
 				<ThemeProvider theme={theme}>
 					{/* <Global styles={cssReset} /> */}
 					<>
-						<RemoveScroll enabled={open && isMobile}>
+						{/* @ts-expect-error - react-remove-scroll typings require `children` even though JSX children are provided correctly */}
+						<RemoveScroll enabled={open && isMobile} allowPinchZoom={true}>
 							<WebchatWrapper
 								data-cognigy-webchat-root
 								{...restProps}
