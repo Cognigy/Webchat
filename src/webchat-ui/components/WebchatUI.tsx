@@ -696,12 +696,12 @@ export class WebchatUI extends React.PureComponent<
 		window.removeEventListener("resize", this.handleResize);
 	}
 
-	handleResize = () => {
+	handleResize() {
 		const isMobile = isMobileViewport();
 		if (isMobile !== this.state.isMobile) {
 			this.setState({ isMobile });
 		}
-	};
+	}
 
 	private iconAnimationIntervalHandle: ReturnType<typeof setInterval> | null = null;
 
