@@ -16,7 +16,7 @@ import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
 import { debounce } from "lodash";
-import { RemoveScroll } from "react-remove-scroll/UI";
+import { RemoveScroll } from "react-remove-scroll";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
