@@ -1,4 +1,4 @@
-Created on 02-01-2026 at 15:06:48
+Created on 12-01-2026 at 10:59:06
 
 {
   "@babel/code-frame@7.27.1": {
@@ -169,7 +169,7 @@ Created on 02-01-2026 at 15:06:48
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.36.0": {
+  "@cognigy/webchat@3.37.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -869,6 +869,13 @@ Created on 02-01-2026 at 15:06:48
     "licenseFile": "node_modules/detect-browser/LICENSE",
     "copyright": "Copyright (c) 2019 Damon Oehlman <damon.oehlman@gmail.com>"
   },
+  "detect-node-es@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thekashey/detect-node",
+    "publisher": "Ilya Kantor",
+    "licenseFile": "node_modules/detect-node-es/LICENSE",
+    "copyright": "Copyright (c) 2017 Ilya Kantor"
+  },
   "devlop@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/wooorm/devlop",
@@ -1102,6 +1109,14 @@ Created on 02-01-2026 at 15:06:48
     "email": "ljharb@gmail.com",
     "licenseFile": "node_modules/get-intrinsic/LICENSE",
     "copyright": "Copyright (c) 2020 Jordan Harband"
+  },
+  "get-nonce@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/get-nonce",
+    "publisher": "Anton Korzunov",
+    "email": "thekashey@gmail.com",
+    "licenseFile": "node_modules/get-nonce/LICENSE",
+    "copyright": "Copyright (c) 2020 Anton Korzunov"
   },
   "get-proto@1.0.1": {
     "licenses": "MIT",
@@ -2232,6 +2247,21 @@ Created on 02-01-2026 at 15:06:48
     "licenseFile": "node_modules/react-redux/LICENSE.md",
     "copyright": "Copyright (c) 2015-present Dan Abramov"
   },
+  "react-remove-scroll-bar@2.3.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/react-remove-scroll-bar",
+    "publisher": "Anton Korzunov",
+    "email": "thekashey@gmail.com",
+    "licenseFile": "node_modules/react-remove-scroll-bar/README.md"
+  },
+  "react-remove-scroll@2.7.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/react-remove-scroll",
+    "publisher": "Anton Korzunov",
+    "email": "thekashey@gmail.com",
+    "licenseFile": "node_modules/react-remove-scroll/LICENSE",
+    "copyright": "Copyright (c) 2017 Anton Korzunov"
+  },
   "react-responsive@9.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/contra/react-responsive",
@@ -2249,6 +2279,14 @@ Created on 02-01-2026 at 15:06:48
     "url": "http://compulim.info/",
     "licenseFile": "node_modules/react-scroll-to-bottom/LICENSE",
     "copyright": "Copyright (c) 2020 William Wong"
+  },
+  "react-style-singleton@2.2.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/react-style-singleton",
+    "publisher": "Anton Korzunov",
+    "url": "thekashey@gmail.com",
+    "licenseFile": "node_modules/react-style-singleton/LICENSE",
+    "copyright": "Copyright (c) 2017 Anton Korzunov"
   },
   "react-textarea-autosize@8.5.9": {
     "licenses": "MIT",
@@ -2757,6 +2795,14 @@ Created on 02-01-2026 at 15:06:48
     "licenseFile": "node_modules/url/LICENSE",
     "copyright": "Copyright 2014 Joyent, Inc. and other Node contributors."
   },
+  "use-callback-ref@1.3.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/use-callback-ref",
+    "publisher": "theKashey",
+    "email": "thekashey@gmail.com",
+    "licenseFile": "node_modules/use-callback-ref/LICENSE",
+    "copyright": "Copyright (c) 2017 Anton Korzunov"
+  },
   "use-composed-ref@1.4.0": {
     "licenses": "MIT",
     "repository": "https://github.com/Andarist/use-composed-ref",
@@ -2773,6 +2819,14 @@ Created on 02-01-2026 at 15:06:48
     "repository": "https://github.com/Andarist/use-latest",
     "licenseFile": "node_modules/use-latest/LICENSE",
     "copyright": "Copyright (c) Andarist"
+  },
+  "use-sidecar@1.1.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/use-sidecar",
+    "publisher": "theKashey",
+    "email": "thekashey@gmail.com",
+    "licenseFile": "node_modules/use-sidecar/LICENSE",
+    "copyright": "Copyright (c) 2017 Anton Korzunov"
   },
   "util-extend@1.0.3": {
     "licenses": "MIT",
