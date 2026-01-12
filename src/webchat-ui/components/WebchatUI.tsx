@@ -15,6 +15,8 @@ import Input from "./plugins/InputPluginRenderer";
 import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
+import { debounce } from "lodash";
+import { RemoveScroll } from "react-remove-scroll";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
@@ -68,6 +70,7 @@ import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
 import speechOutput from "./plugins/speech-output";
 import getMessagesListWithoutControlCommands from "../utils/filter-out-control-commands";
+import { isMobileViewport } from "../utils/isMobile";
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
@@ -164,6 +167,7 @@ interface WebchatUIState {
 	showDeleteAllConversationsModal: boolean;
 	deleteConversationsModalState: boolean;
 	liveContent?: Record<string, string>;
+	isMobile: boolean;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -196,14 +200,16 @@ const HistoryWrapper = styled(History)(({ theme }) => ({
 	flexGrow: 1,
 	minHeight: 0,
 	height: theme.blockSize,
+	overscrollBehavior: "contain",
 }));
 
-const RegularLayoutRoot = styled.div(() => ({
+const RegularLayoutRoot = styled.div({
 	position: "relative",
 	height: "100%",
 	display: "flex",
 	flexDirection: "column",
-}));
+	overscrollBehavior: "contain",
+});
 
 const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	height: "100%",
@@ -212,6 +218,7 @@ const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
 	flexDirection: "column",
 	backgroundColor: theme.white,
 	overflow: "auto",
+	overscrollBehavior: "contain",
 
 	"&.slide-in-enter": {
 		transform: "translateX(100%)",
@@ -259,6 +266,7 @@ export class WebchatUI extends React.PureComponent<
 		showDeleteAllConversationsModal: false,
 		deleteConversationsModalState: false,
 		liveContent: {},
+		isMobile: false,
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -291,6 +299,7 @@ export class WebchatUI extends React.PureComponent<
 		this.homeScreenCloseButtonRef = React.createRef();
 
 		this.handleStartConversation = this.handleStartConversation.bind(this);
+		this.handleResize = debounce(this.handleResize.bind(this), 200);
 	}
 
 	static getDerivedStateFromProps(
@@ -503,8 +512,11 @@ export class WebchatUI extends React.PureComponent<
 		this.setState({
 			inputPlugins: [...(this.props.inputPlugins || []), baseInputPlugin],
 			messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins],
+			isMobile: isMobileViewport(),
 		});
 		this.setupIconAnimationInterval();
+
+		window.addEventListener("resize", this.handleResize);
 	}
 
 	async componentDidUpdate(prevProps: WebchatUIProps, prevState: WebchatUIState) {
@@ -679,6 +691,15 @@ export class WebchatUI extends React.PureComponent<
 		if (this.iconAnimationIntervalHandle) {
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
+		}
+
+		window.removeEventListener("resize", this.handleResize);
+	}
+
+	handleResize() {
+		const isMobile = isMobileViewport();
+		if (isMobile !== this.state.isMobile) {
+			this.setState({ isMobile });
 		}
 	}
 
@@ -1015,7 +1036,7 @@ export class WebchatUI extends React.PureComponent<
 			lastInputId,
 			...restProps
 		} = props;
-		const { theme, hadConnection, lastUnseenMessageText, wasOpen } = state;
+		const { theme, hadConnection, lastUnseenMessageText, wasOpen, isMobile } = state;
 
 		const {
 			widgetSettings: { disableToggleButton },
@@ -1119,121 +1140,126 @@ export class WebchatUI extends React.PureComponent<
 				<ThemeProvider theme={theme}>
 					{/* <Global styles={cssReset} /> */}
 					<>
-						<WebchatWrapper
-							data-cognigy-webchat-root
-							{...restProps}
-							className="webchat-root"
-							aria-label={chatRegionAriaLabel}
-							role="region"
-							onKeyDown={this.handleKeydown}
-						>
-							<CacheProvider value={styleCache}>
-								{open &&
-									(!this.props.config.settings.embeddingConfiguration
-										.awaitEndpointConfig ||
-										(this.props.config.settings.embeddingConfiguration
-											.awaitEndpointConfig &&
-											this.props.config.isConfigLoaded)) && (
-										<WebchatRoot
-											data-cognigy-webchat
-											{...webchatRootProps}
-											className="webchat"
-											id="webchatWindow"
-											ref={this.webchatWindowRef}
-											chatWindowWidth={
-												this.props.config.settings.layout.chatWindowWidth
-											}
-										>
-											{!fullscreenMessage
-												? this.renderRegularLayout(isInforming)
-												: this.renderFullscreenMessageLayout()}
-											<DisconnectOverlay
-												isOpen={showDisconnectOverlay}
-												onConnect={onConnect}
-												isPermanent={!!reconnectionLimit}
-												onClose={handleClose}
-												config={config}
-											/>
-										</WebchatRoot>
-									)}
-								{!disableToggleButton && (
-									<div>
-										{
-											// Show the message teaser if there is a last bot message and the webchat is closed
-											lastUnseenMessageText && !open && (
-												<TeaserMessage
-													messageText={lastUnseenMessageText}
-													onClick={this.openConversationFromTeaser}
-													config={config}
-													onEmitAnalytics={onEmitAnalytics}
-													onSendActionButtonMessage={
-														this.handleSendActionButtonMessageFromTeaser
-													}
-													onHideTeaserMessage={onHideTeaserMessage}
-													wasOpen={wasOpen}
-												/>
-											)
-										}
-										{isDisabled ? (
-											<div
-												title={getDisabledMessage()}
-												tabIndex={-1}
-												aria-disabled
-											>
-												<FABDisabled
-													data-cognigy-webchat-toggle
-													{...webchatToggleProps}
-													type="button"
-													className="webchat-toggle-button-disabled"
-													aria-label={getDisabledMessage()}
-													ref={this.chatToggleButtonRef}
-													id="webchatWindowToggleButton"
-													disabled
-												>
-													<ChatIcon config={config} />
-												</FABDisabled>
-											</div>
-										) : (
-											<FAB
-												data-cognigy-webchat-toggle
-												onClick={this.handleFabClick}
-												{...webchatToggleProps}
-												type="button"
-												className={classNames(
-													"webchat-toggle-button burst",
-													config.settings?.layout?.iconAnimation,
-												)}
-												id="webchatWindowToggleButton"
-												aria-label={openChatAriaLabel()}
-												ref={this.chatToggleButtonRef}
-												style={
-													{
-														"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1))}s`,
-													} as React.CSSProperties
+						{/* @ts-expect-error - react-remove-scroll typings require `children` even though JSX children are provided correctly */}
+						<RemoveScroll enabled={open && isMobile} allowPinchZoom={true}>
+							<WebchatWrapper
+								data-cognigy-webchat-root
+								{...restProps}
+								className="webchat-root"
+								aria-label={chatRegionAriaLabel}
+								role="region"
+								onKeyDown={this.handleKeydown}
+							>
+								<CacheProvider value={styleCache}>
+									{open &&
+										(!this.props.config.settings.embeddingConfiguration
+											.awaitEndpointConfig ||
+											(this.props.config.settings.embeddingConfiguration
+												.awaitEndpointConfig &&
+												this.props.config.isConfigLoaded)) && (
+											<WebchatRoot
+												data-cognigy-webchat
+												{...webchatRootProps}
+												className="webchat"
+												id="webchatWindow"
+												ref={this.webchatWindowRef}
+												chatWindowWidth={
+													this.props.config.settings.layout
+														.chatWindowWidth
 												}
 											>
-												{open ? (
-													<CollapseIcon />
-												) : (
-													<ChatIcon config={config} />
-												)}
-												{config.settings.unreadMessages.enableBadge ? (
-													<Badge
-														_content={unseenMessages.length}
-														className="webchat-unread-message-badge"
-														aria-label={`${unseenMessages.length} ${
-															config.settings.customTranslations
-																?.ariaLabels?.unreadMessages ??
-															"unread messages"
-														}`}
-													/>
-												) : null}
-											</FAB>
+												{!fullscreenMessage
+													? this.renderRegularLayout(isInforming)
+													: this.renderFullscreenMessageLayout()}
+												<DisconnectOverlay
+													isOpen={showDisconnectOverlay}
+													onConnect={onConnect}
+													isPermanent={!!reconnectionLimit}
+													onClose={handleClose}
+													config={config}
+												/>
+											</WebchatRoot>
 										)}
-									</div>
-								)}
-							</CacheProvider>
-						</WebchatWrapper>
+									{!disableToggleButton && (
+										<div>
+											{
+												// Show the message teaser if there is a last bot message and the webchat is closed
+												lastUnseenMessageText && !open && (
+													<TeaserMessage
+														messageText={lastUnseenMessageText}
+														onClick={this.openConversationFromTeaser}
+														config={config}
+														onEmitAnalytics={onEmitAnalytics}
+														onSendActionButtonMessage={
+															this
+																.handleSendActionButtonMessageFromTeaser
+														}
+														onHideTeaserMessage={onHideTeaserMessage}
+														wasOpen={wasOpen}
+													/>
+												)
+											}
+											{isDisabled ? (
+												<div
+													title={getDisabledMessage()}
+													tabIndex={-1}
+													aria-disabled
+												>
+													<FABDisabled
+														data-cognigy-webchat-toggle
+														{...webchatToggleProps}
+														type="button"
+														className="webchat-toggle-button-disabled"
+														aria-label={getDisabledMessage()}
+														ref={this.chatToggleButtonRef}
+														id="webchatWindowToggleButton"
+														disabled
+													>
+														<ChatIcon config={config} />
+													</FABDisabled>
+												</div>
+											) : (
+												<FAB
+													data-cognigy-webchat-toggle
+													onClick={this.handleFabClick}
+													{...webchatToggleProps}
+													type="button"
+													className={classNames(
+														"webchat-toggle-button burst",
+														config.settings?.layout?.iconAnimation,
+													)}
+													id="webchatWindowToggleButton"
+													aria-label={openChatAriaLabel()}
+													ref={this.chatToggleButtonRef}
+													style={
+														{
+															"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1))}s`,
+														} as React.CSSProperties
+													}
+												>
+													{open ? (
+														<CollapseIcon />
+													) : (
+														<ChatIcon config={config} />
+													)}
+													{config.settings.unreadMessages.enableBadge ? (
+														<Badge
+															_content={unseenMessages.length}
+															className="webchat-unread-message-badge"
+															aria-label={`${unseenMessages.length} ${
+																config.settings.customTranslations
+																	?.ariaLabels?.unreadMessages ??
+																"unread messages"
+															}`}
+														/>
+													) : null}
+												</FAB>
+											)}
+										</div>
+									)}
+								</CacheProvider>
+							</WebchatWrapper>
+						</RemoveScroll>
 					</>
 				</ThemeProvider>
 			</>

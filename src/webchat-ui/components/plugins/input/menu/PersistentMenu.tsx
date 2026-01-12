@@ -15,6 +15,7 @@ const PersistentMenuContainer = styled.div(({ theme }) => ({
 	flexGrow: 1,
 	maxHeight: theme.blockSize * 3,
 	overflowY: "auto",
+	overscrollBehavior: "contain",
 	paddingBottom: theme.unitSize,
 	"&:focus": {
 		outline: "none",

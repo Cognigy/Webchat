@@ -19,6 +19,7 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	alignItems: "center",
 	padding: 20,
 	overflowY: "auto",
+	overscrollBehavior: "contain",
 }));
 
 const PrivacyMessage = styled.div(({ theme }) => ({
