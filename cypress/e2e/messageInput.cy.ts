@@ -29,4 +29,14 @@ describe("Webchat Message Input", () => {
 				cy.get(`#${inputId}`).should("have.value", "Hi");
 			});
 	});
+
+	it("message input should have enterkeyhint attribute set to send", () => {
+		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
+
+		cy.contains("label", "Type something here…")
+			.invoke("attr", "for")
+			.then(inputId => {
+				cy.get(`#${inputId}`).should("have.attr", "enterkeyhint", "send");
+			});
+	});
 });
