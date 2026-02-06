@@ -586,6 +586,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 													autoComplete={
 														disableInputAutocomplete ? "off" : undefined
 													}
+													enterKeyHint="send"
 													spellCheck={false}
 													id="webchatInputMessageInputInTextMode"
 													style={
