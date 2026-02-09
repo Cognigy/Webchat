@@ -1,6 +1,6 @@
 {
 	"name": "@cognigy/webchat",
-	"version": "3.37.0",
+	"version": "3.38.0",
 	"description": "Webchat for Cognigy.AI",
 	"author": "Cognigy GmbH <info@cognigy.com>",
 	"contributors": [
@@ -12,6 +12,9 @@
 	"exports": {
 		"import": "./dist/webchat.esm.js",
 		"require": "./dist/webchat.js"
+	},
+	"repository": {
+		"url": "https://github.com/Cognigy/Webchat"
 	},
 	"files": [
 		"./dist/webchat.esm.js",
@@ -51,7 +54,7 @@
 	},
 	"dependencies": {
 		"@braintree/sanitize-url": "^6.0.0",
-		"@cognigy/chat-components": "0.66.0",
+		"@cognigy/chat-components": "0.67.0",
 		"@cognigy/socket-client": "5.0.0-beta.25",
 		"@emotion/cache": "^10.0.29",
 		"@emotion/react": "^11.13.0",
