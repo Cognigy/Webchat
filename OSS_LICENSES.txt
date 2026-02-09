@@ -1,4 +1,4 @@
-Created on 12-01-2026 at 10:59:06
+Created on 09-02-2026 at 10:52:17
 
 {
   "@babel/code-frame@7.27.1": {
@@ -157,19 +157,20 @@ Created on 12-01-2026 at 10:59:06
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.66.0": {
+  "@cognigy/chat-components@0.67.0": {
     "licenses": "MIT*",
+    "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
     "copyright": "Copyright (c) 2024 Cognigy GmbH"
   },
-  "@cognigy/socket-client@5.0.0-beta.24": {
+  "@cognigy/socket-client@5.0.0-beta.25": {
     "licenses": "MIT*",
     "publisher": "Robin Schuster",
     "email": "r.schuster@cognigy.com",
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.37.0": {
+  "@cognigy/webchat@3.38.0": {
     "licenses": "MIT*",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
@@ -2157,7 +2158,7 @@ Created on 12-01-2026 at 10:59:06
     "licenseFile": "node_modules/url/node_modules/punycode/LICENSE-MIT.txt",
     "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>"
   },
-  "qs@6.14.0": {
+  "qs@6.14.1": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/ljharb/qs",
     "licenseFile": "node_modules/qs/LICENSE.md",
