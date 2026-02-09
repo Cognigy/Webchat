@@ -13,6 +13,9 @@
 		"import": "./dist/webchat.esm.js",
 		"require": "./dist/webchat.js"
 	},
+	"repository": {
+		"url": "https://github.com/Cognigy/Webchat"
+	},
 	"files": [
 		"./dist/webchat.esm.js",
 		"./dist/webchat.js",
