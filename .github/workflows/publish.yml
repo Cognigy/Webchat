@@ -4,6 +4,10 @@ on:
     release:
         types: [published]
 
+permissions:
+    id-token: write # Required for npm trusted publishing (OIDC)
+    contents: read
+
 jobs:
     get-version-number:
         runs-on: ubuntu-latest
@@ -31,16 +35,8 @@ jobs:
                   ref: v${{ needs.get-version-number.outputs.version }}
             - uses: actions/setup-node@v3
               with:
-                  node-version: 22.x
+                  node-version: 24.x
+                  registry-url: https://registry.npmjs.org/
             - run: git branch # for debugging
             - run: npm ci
-            - name: Applying auth token
-              run: |
-                  echo "create .npmrc file"
-                  touch .npmrc
-                  echo "registry=https://registry.npmjs.org/" >> .npmrc
-                  echo "save-prefix=" >> .npmrc
-                  echo "//registry.npmjs.org/:_authToken=${{ secrets.npm_token }}" >> .npmrc
-                  echo "npm whoami"
-                  npm whoami
             - run: npm publish --tag pre-release
