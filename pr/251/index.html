@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Webchat PR Preview</title>
+		<style>
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+					sans-serif;
+				background: #f0f2f5;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+
+			.banner {
+				width: 100%;
+				background: #1a1a2e;
+				color: #e0e0e0;
+				padding: 12px 24px;
+				font-size: 13px;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+			.banner strong {
+				color: #fff;
+			}
+			.banner a {
+				color: #7eb8ff;
+			}
+			.banner .pill {
+				background: #2d2d4a;
+				border-radius: 12px;
+				padding: 2px 10px;
+				font-family: monospace;
+				font-size: 12px;
+				color: #c3c3ff;
+			}
+
+			.config-panel {
+				background: #fff;
+				border: 1px solid #ddd;
+				border-radius: 8px;
+				margin: 24px auto;
+				padding: 20px 24px;
+				max-width: 640px;
+				width: 90%;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+			}
+			.config-panel h2 {
+				font-size: 16px;
+				margin-bottom: 12px;
+				color: #333;
+			}
+			.config-panel label {
+				display: block;
+				font-size: 13px;
+				color: #555;
+				margin-bottom: 4px;
+			}
+			.config-panel input[type="text"],
+			.config-panel textarea {
+				width: 100%;
+				padding: 8px 10px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-family: monospace;
+				font-size: 13px;
+				margin-bottom: 12px;
+			}
+			.config-panel textarea {
+				min-height: 100px;
+				resize: vertical;
+			}
+			.config-panel button {
+				background: #0066ff;
+				color: #fff;
+				border: none;
+				border-radius: 4px;
+				padding: 8px 20px;
+				font-size: 14px;
+				cursor: pointer;
+			}
+			.config-panel button:hover {
+				background: #0052cc;
+			}
+			.config-panel .hint {
+				font-size: 11px;
+				color: #888;
+				margin-top: -8px;
+				margin-bottom: 12px;
+			}
+
+			.status {
+				margin-top: 8px;
+				padding: 8px 12px;
+				border-radius: 4px;
+				font-size: 13px;
+				display: none;
+			}
+			.status.success {
+				display: block;
+				background: #e6f9e6;
+				color: #1a7a1a;
+			}
+			.status.error {
+				display: block;
+				background: #fce8e8;
+				color: #a31515;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="banner">
+			<strong>Webchat PR Preview</strong>
+			<span class="pill" id="pr-info"><!-- filled by JS --></span>
+			<span class="pill" id="commit-info"><!-- filled by JS --></span>
+			<span>|</span>
+			<span>Endpoint: <code id="active-endpoint" style="color: #7eff7e">&#8212;</code></span>
+		</div>
+
+		<div class="config-panel">
+			<h2>Endpoint Configuration</h2>
+
+			<label for="endpoint-url">Endpoint Config URL</label>
+			<input
+				type="text"
+				id="endpoint-url"
+				placeholder="https://endpoint-trial.cognigy.ai/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+			/>
+			<p class="hint">
+				The Cognigy.AI Endpoint URL. Can also be set via
+				<code>?endpoint=&hellip;</code> query parameter.
+			</p>
+
+			<label for="webchat-options">Webchat Options (JSON, optional)</label>
+			<textarea
+				id="webchat-options"
+				placeholder='{
+  "settings": {
+    "layout": { "title": "Preview Bot" },
+    "colors": { "primaryColor": "#0066ff" }
+  }
+}'
+			></textarea>
+			<p class="hint">
+				Optional <code>initWebchat()</code> options object. Merged with defaults. Can also
+				be set via <code>?options=&hellip;</code> (URL-encoded JSON) query parameter.
+			</p>
+
+			<button onclick="launchWebchat()">Launch Webchat</button>
+			<div class="status" id="status"></div>
+		</div>
+
+		<!-- Webchat bundle - path is relative; webchat.js will be copied alongside this file -->
+		<script src="./webchat.js"></script>
+		<script>
+			(function () {
+				// --- Parse build-time and URL parameters ---
+
+				var params = new URLSearchParams(window.location.search);
+
+				// Build-time placeholders (replaced by the CI workflow via sed)
+				var BUILD_ENDPOINT = "https://endpoint-dev.cognigy.ai/c8a9f574597668ced9a5f47b8350dfc65f51cd20f8b51c14108c887f78e5ed4d";
+				var BUILD_PR_NUMBER = "251";
+				var BUILD_COMMIT_SHA = "5ba4946f13f63606e1edba33c998b4e394e50bc3";
+				var BUILD_OPTIONS = "";
+
+				// Display PR metadata
+				var prInfo = document.getElementById("pr-info");
+				var commitInfo = document.getElementById("commit-info");
+				if (
+					BUILD_PR_NUMBER &&
+					BUILD_PR_NUMBER !== "" &&
+					!BUILD_PR_NUMBER.startsWith("%%")
+				) {
+					prInfo.textContent = "PR #" + BUILD_PR_NUMBER;
+				}
+				if (
+					BUILD_COMMIT_SHA &&
+					BUILD_COMMIT_SHA !== "" &&
+					!BUILD_COMMIT_SHA.startsWith("%%")
+				) {
+					commitInfo.textContent = BUILD_COMMIT_SHA.substring(0, 7);
+				}
+
+				// --- Resolve endpoint URL: query param > build-time > empty ---
+
+				var endpointUrl =
+					params.get("endpoint") ||
+					(BUILD_ENDPOINT && !BUILD_ENDPOINT.startsWith("%%") ? BUILD_ENDPOINT : "") ||
+					"";
+
+				// --- Resolve options: query param > build-time > empty ---
+
+				var optionsJson = params.get("options") || "";
+				if (!optionsJson && BUILD_OPTIONS && !BUILD_OPTIONS.startsWith("%%")) {
+					try {
+						optionsJson = BUILD_OPTIONS;
+					} catch (e) {
+						/* ignore */
+					}
+				}
+
+				// Pre-fill the form
+				document.getElementById("endpoint-url").value = endpointUrl;
+				if (optionsJson) {
+					try {
+						document.getElementById("webchat-options").value = JSON.stringify(
+							JSON.parse(optionsJson),
+							null,
+							2,
+						);
+					} catch (e) {
+						document.getElementById("webchat-options").value = optionsJson;
+					}
+				}
+
+				// Auto-launch if endpoint is provided via URL/build config
+				if (endpointUrl) {
+					// Small delay so the page renders first
+					setTimeout(function () {
+						launchWebchat();
+					}, 300);
+				}
+			})();
+
+			var webchatInstance = null;
+
+			function launchWebchat() {
+				var statusEl = document.getElementById("status");
+				statusEl.className = "status";
+				statusEl.style.display = "none";
+
+				var endpointUrl = document.getElementById("endpoint-url").value.trim();
+				if (!endpointUrl) {
+					statusEl.className = "status error";
+					statusEl.textContent = "Please provide an Endpoint Config URL.";
+					return;
+				}
+
+				var options = {};
+				var optionsRaw = document.getElementById("webchat-options").value.trim();
+				if (optionsRaw) {
+					try {
+						options = JSON.parse(optionsRaw);
+					} catch (e) {
+						statusEl.className = "status error";
+						statusEl.textContent = "Invalid JSON in Webchat Options: " + e.message;
+						return;
+					}
+				}
+
+				// Update active endpoint display
+				document.getElementById("active-endpoint").textContent = endpointUrl;
+
+				// If webchat is already initialized, reload the page with the new config
+				// (only one webchat instance per page is supported)
+				if (webchatInstance) {
+					var newUrl = new URL(window.location.href);
+					newUrl.searchParams.set("endpoint", endpointUrl);
+					if (optionsRaw) {
+						newUrl.searchParams.set("options", JSON.stringify(options));
+					}
+					window.location.href = newUrl.toString();
+					return;
+				}
+
+				statusEl.className = "status success";
+				statusEl.textContent = "Initializing webchat\u2026";
+
+				window
+					.initWebchat(endpointUrl, options)
+					.then(function (instance) {
+						webchatInstance = instance;
+						statusEl.className = "status success";
+						statusEl.textContent = "Webchat initialized successfully.";
+					})
+					.catch(function (err) {
+						statusEl.className = "status error";
+						statusEl.textContent =
+							"Failed to initialize webchat: " + (err.message || err);
+					});
+			}
+		</script>
+	</body>
+</html>
