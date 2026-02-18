@@ -1,0 +1,192 @@
+# Deploys a live preview of the Webchat for every PR to GitHub Pages.
+#
+# Each PR gets its own subdirectory:  https://<org>.github.io/Webchat/pr/<PR_NUMBER>/
+# The preview uses the Webchat-Testing app (https://github.com/Cognigy/Webchat-Testing)
+# patched with a PR banner and the PR's webchat.js build pre-selected.
+#
+# Endpoint configuration priority (highest to lowest):
+#   1. Runtime: change the endpoint field on the preview page
+#   2. Build-time from PR description: <!-- WEBCHAT_ENDPOINT: https://... -->
+#   3. Build-time repo variable:       vars.PREVIEW_ENDPOINT_URL
+#
+# Required setup:
+#   - Enable GitHub Pages on the `gh-pages` branch (root /)
+#   - Set repository secret  GH_PAT  with a PAT that has read access to Cognigy/Webchat-Testing
+#     (classic PAT with `repo` scope, or fine-grained PAT with Contents:read on Webchat-Testing)
+#   - (Optional) Set repository variable  PREVIEW_ENDPOINT_URL  with a default endpoint
+
+name: PR Preview Deploy
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+# Only allow one deploy per PR at a time; cancel in-progress runs for the same PR
+concurrency:
+    group: preview-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+permissions:
+    contents: write
+    deployments: write
+
+jobs:
+    deploy-preview:
+        runs-on: ubuntu-latest
+        if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+
+        environment:
+            name: pr-preview-${{ github.event.pull_request.number }}
+            url: ${{ steps.pages-url.outputs.url }}
+
+        env:
+            PR_NUMBER: ${{ github.event.pull_request.number }}
+            COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
+        steps:
+            # ── 1. Build webchat ────────────────────────────────────────────────
+            - name: Checkout PR branch
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build webchat bundle
+              run: npm run build:umd
+
+            # ── 2. Resolve endpoint config ─────────────────────────────────────
+            - name: Extract endpoint config from PR description
+              id: pr-config
+              env:
+                  PR_BODY: ${{ github.event.pull_request.body }}
+              run: |
+                  # Extract from:  <!-- WEBCHAT_ENDPOINT: https://... -->
+                  ENDPOINT=$(echo "$PR_BODY" | grep -oP '<!--\s*WEBCHAT_ENDPOINT:\s*\K[^\s]+(?=\s*-->)' || true)
+                  echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
+
+            - name: Resolve final endpoint URL
+              id: resolve
+              run: |
+                  # Priority: PR description > repo variable > empty
+                  ENDPOINT="${{ steps.pr-config.outputs.endpoint }}"
+                  if [ -z "$ENDPOINT" ]; then
+                    ENDPOINT="${{ vars.PREVIEW_ENDPOINT_URL }}"
+                  fi
+                  echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
+
+            # ── 3. Build preview app (Webchat-Testing) ─────────────────────────
+            - name: Verify GH_PAT secret is configured
+              env:
+                  HAS_TOKEN: ${{ secrets.GH_PAT != '' }}
+              run: |
+                  if [ "$HAS_TOKEN" != "true" ]; then
+                    echo "::error::Repository secret GH_PAT is not set. This token is required to clone the private Cognigy/Webchat-Testing repo."
+                    echo "::error::Create a PAT with read access to Cognigy/Webchat-Testing and add it as a repository secret named GH_PAT."
+                    exit 1
+                  fi
+
+            - name: Clone Webchat-Testing
+              uses: actions/checkout@v4
+              with:
+                  repository: Cognigy/Webchat-Testing
+                  path: _testing
+                  token: ${{ secrets.GH_PAT }}
+
+            - name: Compute Pages preview URL
+              id: pages-url
+              env:
+                  ENDPOINT_URL: ${{ steps.resolve.outputs.endpoint }}
+              run: |
+                  REPO="${{ github.repository }}"
+                  OWNER="${REPO%%/*}"
+                  REPO_NAME="${REPO##*/}"
+                  echo "url=https://${OWNER}.github.io/${REPO_NAME}/pr/${PR_NUMBER}/" >> "$GITHUB_OUTPUT"
+
+            - name: Patch Webchat-Testing for PR preview
+              env:
+                  ENDPOINT_URL: ${{ steps.resolve.outputs.endpoint }}
+              run: |
+                  BASE_PATH="/$(echo '${{ github.repository }}' | cut -d/ -f2)/pr/${PR_NUMBER}/"
+                  python3 .github/preview/patch_testing_app.py \
+                    _testing \
+                    "${PR_NUMBER}" \
+                    "${COMMIT_SHA}" \
+                    "${ENDPOINT_URL}" \
+                    "${BASE_PATH}"
+
+            - name: Install Webchat-Testing dependencies
+              run: |
+                  cd _testing
+                  npm ci
+
+            - name: Build Webchat-Testing
+              run: |
+                  cd _testing
+                  npx vite build
+
+            - name: Assemble preview artifacts
+              run: |
+                  STAGING="_preview_staging"
+                  mkdir -p "${STAGING}"
+
+                  # Copy the Vite build output
+                  cp -r _testing/dist/* "${STAGING}/"
+
+                  # Copy the PR's webchat bundle alongside the app
+                  cp dist/webchat.js "${STAGING}/webchat.js"
+
+                  echo "::group::Preview staging contents"
+                  ls -la "${STAGING}"
+                  echo "::endgroup::"
+
+            # ── 4. Deploy to gh-pages ───────────────────────────────────────────
+            - name: Deploy to gh-pages branch
+              run: |
+                  STAGING="_preview_staging"
+
+                  # Stash the built preview files outside the repo working tree
+                  TMPDIR=$(mktemp -d)
+                  cp -r "${STAGING}"/* "${TMPDIR}/"
+
+                  # Configure git identity
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+                  # Switch to gh-pages (fetch existing or create orphan, handling concurrent initialization)
+                  if git fetch origin gh-pages --depth=1 2>/dev/null; then
+                    # Remote gh-pages exists; use it
+                    git checkout gh-pages
+                  else
+                    # No remote gh-pages detected; initialize an orphan branch
+                    git checkout --orphan gh-pages
+                    git rm -rf . 2>/dev/null || true
+                    echo "# Webchat PR Previews" > README.md
+                    touch .nojekyll
+                    git add README.md .nojekyll
+                    git commit -m "chore: initialize gh-pages for PR previews"
+
+                    # Try to publish the initial gh-pages branch; if another job
+                    # created it concurrently, fall back to the remote version.
+                    if ! git push origin gh-pages; then
+                      git fetch origin gh-pages --depth=1
+                      git checkout gh-pages
+                      git reset --hard origin/gh-pages
+                    fi
+                  fi
+
+                  # Clear old version of this PR and copy fresh build
+                  rm -rf "pr/${PR_NUMBER}"
+                  mkdir -p "pr/${PR_NUMBER}"
+                  cp -r "${TMPDIR}"/* "pr/${PR_NUMBER}/"
+
+                  git add "pr/${PR_NUMBER}"
+                  git diff --cached --quiet && echo "No changes to deploy" || {
+                    git commit -m "deploy: preview for PR #${PR_NUMBER} (${COMMIT_SHA:0:7})"
+                    git push origin gh-pages
+                  }
