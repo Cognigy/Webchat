@@ -68,7 +68,13 @@ jobs:
                   OPTIONS=$(echo "$PR_BODY" | grep -oP '<!--\s*WEBCHAT_OPTIONS:\s*\K.+(?=\s*-->)' | head -1 || true)
 
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
-                  echo "options=${OPTIONS}" >> "$GITHUB_OUTPUT"
+
+                  # Use heredoc for OPTIONS since JSON may contain newlines and special chars
+                  {
+                    echo "options<<OPTS_EOF"
+                    echo "$OPTIONS"
+                    echo "OPTS_EOF"
+                  } >> "$GITHUB_OUTPUT"
 
             - name: Resolve final endpoint URL and options
               id: resolve
@@ -85,7 +91,13 @@ jobs:
                   fi
 
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
-                  echo "options=${OPTIONS}" >> "$GITHUB_OUTPUT"
+
+                  # Use heredoc for OPTIONS since JSON may contain newlines and special chars
+                  {
+                    echo "options<<OPTS_EOF"
+                    echo "$OPTIONS"
+                    echo "OPTS_EOF"
+                  } >> "$GITHUB_OUTPUT"
 
             # ── 3. Prepare preview artifacts ────────────────────────────────────
             - name: Prepare preview site
@@ -102,25 +114,33 @@ jobs:
                   # Copy and hydrate the preview HTML template
                   cp .github/preview/index.html "${STAGING}/index.html"
 
-                  python3 -c "
+                  python3 << 'PYEOF'
                   import os
 
-                  path = '${STAGING}/index.html'
+                  path = "_preview_staging/index.html"
                   with open(path) as f:
                       content = f.read()
 
-                  replacements = {
-                      '%%PR_NUMBER%%':       os.environ.get('PR_NUMBER', ''),
-                      '%%COMMIT_SHA%%':      os.environ.get('COMMIT_SHA', ''),
-                      '%%ENDPOINT_URL%%':    os.environ.get('ENDPOINT_URL', ''),
-                      '%%WEBCHAT_OPTIONS%%': os.environ.get('WEBCHAT_OPTIONS', ''),
-                  }
-                  for placeholder, value in replacements.items():
-                      content = content.replace(placeholder, value)
+                  # Simple string replacements for scalar values
+                  content = content.replace('%%PR_NUMBER%%',  os.environ.get('PR_NUMBER', ''))
+                  content = content.replace('%%COMMIT_SHA%%', os.environ.get('COMMIT_SHA', ''))
+                  content = content.replace('%%ENDPOINT_URL%%', os.environ.get('ENDPOINT_URL', ''))
+
+                  # OPTIONS is JSON — escape it so it is a valid JS string literal
+                  # inside single quotes (backslashes, single quotes, newlines)
+                  opts = os.environ.get('WEBCHAT_OPTIONS', '')
+                  escaped = (
+                      opts
+                      .replace('\\', '\\\\')
+                      .replace("'", "\\'")
+                      .replace('\n', '\\n')
+                      .replace('\r', '\\r')
+                  )
+                  content = content.replace('%%WEBCHAT_OPTIONS%%', escaped)
 
                   with open(path, 'w') as f:
                       f.write(content)
-                  "
+                  PYEOF
 
                   echo "::group::Preview staging contents"
                   ls -la "${STAGING}"
