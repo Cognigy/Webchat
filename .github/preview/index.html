@@ -274,6 +274,8 @@
 					newUrl.searchParams.set("endpoint", endpointUrl);
 					if (optionsRaw) {
 						newUrl.searchParams.set("options", JSON.stringify(options));
+					} else {
+						newUrl.searchParams.delete("options");
 					}
 					window.location.href = newUrl.toString();
 					return;
