@@ -171,7 +171,7 @@
 			preventing injection even if values contain </script> or quotes.
 		-->
 		<script id="build-config" type="application/json">
-			{"prNumber": "251", "commitSha": "2aa8522d2cb48f45ae9a8d76e856dfd4eb971cbe", "endpoint": "https://endpoint-dev.cognigy.ai/c8a9f574597668ced9a5f47b8350dfc65f51cd20f8b51c14108c887f78e5ed4d", "options": ""}
+			{"prNumber": "251", "commitSha": "5e5b362375a0c254e777401d2b0b59bec9371d7b", "endpoint": "https://endpoint-dev.cognigy.ai/c8a9f574597668ced9a5f47b8350dfc65f51cd20f8b51c14108c887f78e5ed4d", "options": ""}
 		</script>
 
 		<!-- Webchat bundle - path is relative; webchat.js will be copied alongside this file -->
@@ -274,6 +274,8 @@
 					newUrl.searchParams.set("endpoint", endpointUrl);
 					if (optionsRaw) {
 						newUrl.searchParams.set("options", JSON.stringify(options));
+					} else {
+						newUrl.searchParams.delete("options");
 					}
 					window.location.href = newUrl.toString();
 					return;
