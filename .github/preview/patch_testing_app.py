@@ -6,15 +6,15 @@ Usage:
     python3 patch_testing_app.py <testing_dir> <pr_number> <commit_sha> <endpoint_url> <base_path>
 
 Modifications:
-  - App.jsx: Adds PR info banner, inserts a "PR Build" option at the top of the
-    release dropdown (pre-selected), pre-fills endpoint from build config,
-    prevents release-load from overriding the PR build selection.
+  - App.jsx: Inserts a "PR Build" option at the top of the release dropdown
+    (pre-selected), shows "Pull Request" label when PR build is selected,
+    pre-fills endpoint from build config, prevents release-load from
+    overriding the PR build selection.
   - vite.config.js: Sets the `base` path for correct asset loading on gh-pages.
-  - index.css: Adds styles for the PR banner.
 """
 
-import sys
 import pathlib
+import sys
 
 
 def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
@@ -61,17 +61,32 @@ def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
   }, [releases]);'''
     )
 
-    # 5. Add the PR banner after <div className="ui">
-    banner = (
-        '<div className="pr-banner">\n'
-        '          <strong>PR Preview</strong>\n'
-        '          <span className="pr-pill">PR #{PR_CONFIG.prNumber}</span>\n'
-        '          <span className="pr-pill">{PR_CONFIG.commitSha?.substring(0, 7)}</span>\n'
-        '        </div>\n        '
-    )
+    # 5. Make the version selector label dynamic: "Pull Request" when PR build
+    #    is selected, "Release" otherwise.  Also update the href to link to the
+    #    PR page instead of the GitHub release page.
     content = content.replace(
-        '<div className="ui">',
-        '<div className="ui">\n        ' + banner
+        '''href={
+              releases?.find(
+                (release) =>
+                  release?.assets?.[2]?.browser_download_url ===
+                  selectedRelease,
+              )?.html_url
+            }
+          >
+            Release
+          </a>''',
+        '''href={
+              selectedRelease === PR_CONFIG.localBuildUrl
+                ? `https://github.com/Cognigy/Webchat/pull/${PR_CONFIG.prNumber}`
+                : releases?.find(
+                    (release) =>
+                      release?.assets?.[2]?.browser_download_url ===
+                      selectedRelease,
+                  )?.html_url
+            }
+          >
+            {selectedRelease === PR_CONFIG.localBuildUrl ? "Pull Request" : "Release"}
+          </a>'''
     )
 
     # 6. Add local PR build option at top of release <select>
@@ -105,39 +120,6 @@ def patch_vite_config(config_path, base_path):
     print(f"  Patched {config_path}")
 
 
-def patch_css(css_path):
-    banner_css = """\
-/* --- PR Preview Banner --- */
-.pr-banner {
-    width: 100%;
-    background: #1a1a2e;
-    color: #e0e0e0;
-    padding: 10px 24px;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    position: sticky;
-    top: 0;
-    z-index: 9999;
-}
-.pr-banner strong { color: #fff; }
-.pr-pill {
-    background: #2d2d4a;
-    border-radius: 12px;
-    padding: 2px 10px;
-    font-family: monospace;
-    font-size: 12px;
-    color: #c3c3ff;
-}
-
-"""
-    content = css_path.read_text()
-    css_path.write_text(banner_css + content)
-    print(f"  Patched {css_path}")
-
-
 if __name__ == "__main__":
     if len(sys.argv) < 6:
         print("Usage: patch_testing_app.py <dir> <pr> <sha> <endpoint> <base>")
@@ -146,5 +128,4 @@ if __name__ == "__main__":
     d = pathlib.Path(sys.argv[1])
     patch_app_jsx(d / "src" / "App.jsx", sys.argv[2], sys.argv[3], sys.argv[4])
     patch_vite_config(d / "vite.config.js", sys.argv[5])
-    patch_css(d / "src" / "index.css")
     print("Done!")
