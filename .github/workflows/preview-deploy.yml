@@ -114,29 +114,26 @@ jobs:
                   # Copy and hydrate the preview HTML template
                   cp .github/preview/index.html "${STAGING}/index.html"
 
+                  # Inject build-time config as a safe JSON data block.
+                  # Using json.dumps handles all escaping (quotes, backslashes,
+                  # </script>, newlines, etc.) — no injection risk.
                   python3 << 'PYEOF'
-                  import os
+                  import os, json
 
                   path = "_preview_staging/index.html"
                   with open(path) as f:
                       content = f.read()
 
-                  # Simple string replacements for scalar values
-                  content = content.replace('%%PR_NUMBER%%',  os.environ.get('PR_NUMBER', ''))
-                  content = content.replace('%%COMMIT_SHA%%', os.environ.get('COMMIT_SHA', ''))
-                  content = content.replace('%%ENDPOINT_URL%%', os.environ.get('ENDPOINT_URL', ''))
+                  config = {
+                      "prNumber":  os.environ.get("PR_NUMBER", ""),
+                      "commitSha": os.environ.get("COMMIT_SHA", ""),
+                      "endpoint":  os.environ.get("ENDPOINT_URL", ""),
+                      "options":   os.environ.get("WEBCHAT_OPTIONS", ""),
+                  }
 
-                  # OPTIONS is JSON — escape it so it is a valid JS string literal
-                  # inside single quotes (backslashes, single quotes, newlines)
-                  opts = os.environ.get('WEBCHAT_OPTIONS', '')
-                  escaped = (
-                      opts
-                      .replace('\\', '\\\\')
-                      .replace("'", "\\'")
-                      .replace('\n', '\\n')
-                      .replace('\r', '\\r')
-                  )
-                  content = content.replace('%%WEBCHAT_OPTIONS%%', escaped)
+                  # json.dumps produces a safe string with all special chars escaped
+                  config_json = json.dumps(config, ensure_ascii=True)
+                  content = content.replace("%%BUILD_CONFIG_JSON%%", config_json)
 
                   with open(path, 'w') as f:
                       f.write(content)
