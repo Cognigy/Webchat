@@ -20,7 +20,6 @@ name: PR Preview Deploy
 on:
     pull_request:
         types: [opened, synchronize, reopened]
-    workflow_dispatch:
 
 # Only allow one deploy per PR at a time; cancel in-progress runs for the same PR
 concurrency:
@@ -159,16 +158,27 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
-                  # Switch to gh-pages (fetch existing or create orphan)
-                  git fetch origin gh-pages --depth=1 2>/dev/null && \
-                    git checkout gh-pages || {
-                      git checkout --orphan gh-pages
-                      git rm -rf . 2>/dev/null || true
-                      echo "# Webchat PR Previews" > README.md
-                      touch .nojekyll
-                      git add README.md .nojekyll
-                      git commit -m "chore: initialize gh-pages for PR previews"
-                    }
+                  # Switch to gh-pages (fetch existing or create orphan, handling concurrent initialization)
+                  if git fetch origin gh-pages --depth=1 2>/dev/null; then
+                    # Remote gh-pages exists; use it
+                    git checkout gh-pages
+                  else
+                    # No remote gh-pages detected; initialize an orphan branch
+                    git checkout --orphan gh-pages
+                    git rm -rf . 2>/dev/null || true
+                    echo "# Webchat PR Previews" > README.md
+                    touch .nojekyll
+                    git add README.md .nojekyll
+                    git commit -m "chore: initialize gh-pages for PR previews"
+
+                    # Try to publish the initial gh-pages branch; if another job
+                    # created it concurrently, fall back to the remote version.
+                    if ! git push origin gh-pages; then
+                      git fetch origin gh-pages --depth=1
+                      git checkout gh-pages
+                      git reset --hard origin/gh-pages
+                    fi
+                  fi
 
                   # Clear old version of this PR and copy fresh build
                   rm -rf "pr/${PR_NUMBER}"

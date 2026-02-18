@@ -37,6 +37,11 @@ def expect_replace(content, old, new, *, label="", count=1):
 
 
 def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
+    if not pr_number.isdigit():
+        raise RuntimeError(
+            f"Invalid pr_number: {pr_number!r} — expected a numeric string."
+        )
+
     content = app_path.read_text()
 
     # 1. Add PR_CONFIG constant after the imports.
@@ -51,9 +56,19 @@ def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
         '  localBuildUrl: "./webchat.js",\n'
         '};\n'
     )
-    import_end = content.rfind("import ")
-    import_end = content.index("\n", content.index(";", import_end)) + 1
-    content = content[:import_end] + pr_config + content[import_end:]
+    # Find the last import statement using line-based search, which is more
+    # robust than assuming imports end with semicolons (some formatters omit them).
+    lines = content.splitlines(keepends=True)
+    last_import_idx = -1
+    for idx, line in enumerate(lines):
+        if line.lstrip().startswith("import "):
+            last_import_idx = idx
+    if last_import_idx == -1:
+        raise RuntimeError(
+            "Patch failed (insert PR_CONFIG): no import statements found in App.jsx."
+        )
+    lines.insert(last_import_idx + 1, pr_config)
+    content = "".join(lines)
 
     # 2. Namespace localStorage keys for endpoint and settings so that
     #    different PR previews (all on the same origin) don't share state.
