@@ -11,8 +11,7 @@ on:
 
 permissions:
     contents: write
-    pull-requests: write
-    issues: write
+    deployments: write
 
 jobs:
     cleanup-preview:
@@ -54,36 +53,37 @@ jobs:
                   git commit -m "cleanup: remove preview for PR #${PR_NUMBER}"
                   git push origin gh-pages
 
-            - name: Update PR comment
-              if: steps.checkout.outcome == 'success'
+            - name: Deactivate and remove deployment environment
               uses: actions/github-script@v7
               with:
                   script: |
-                      const prNumber = Number(process.env.PR_NUMBER);
                       const repo = context.repo;
-                      const marker = '<!-- webchat-preview-bot -->';
+                      const envName = `pr-preview-${process.env.PR_NUMBER}`;
 
-                      const { data: comments } = await github.rest.issues.listComments({
-                        ...repo,
-                        issue_number: prNumber,
-                        per_page: 100,
-                      });
+                      // List all deployments for this environment and mark them inactive
+                      try {
+                        const { data: deployments } = await github.rest.repos.listDeployments({
+                          ...repo,
+                          environment: envName,
+                          per_page: 100,
+                        });
 
-                      const existing = comments.find(c => c.body && c.body.includes(marker));
-                      if (!existing) return;
+                        for (const deployment of deployments) {
+                          await github.rest.repos.createDeploymentStatus({
+                            ...repo,
+                            deployment_id: deployment.id,
+                            state: 'inactive',
+                          });
+                        }
 
-                      const merged = context.payload.pull_request.merged;
-                      const action = merged ? 'merged' : 'closed';
+                        // Delete the environment itself
+                        await github.rest.repos.deleteAnEnvironment({
+                          ...repo,
+                          environment_name: envName,
+                        });
 
-                      const body = [
-                        marker,
-                        `### :wastebasket: Webchat Preview Removed`,
-                        '',
-                        `The preview deployment for this PR has been cleaned up (PR ${action}).`,
-                      ].join('\n');
-
-                      await github.rest.issues.updateComment({
-                        ...repo,
-                        comment_id: existing.id,
-                        body,
-                      });
+                        core.info(`Deactivated ${deployments.length} deployment(s) and deleted environment "${envName}"`);
+                      } catch (err) {
+                        // Environment may not exist (e.g. deploy never ran) — that's fine
+                        core.warning(`Could not clean up environment "${envName}": ${err.message}`);
+                      }
