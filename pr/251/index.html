@@ -165,55 +165,55 @@
 			<div class="status" id="status"></div>
 		</div>
 
+		<!--
+			Build-time config is injected here as a JSON data block by the CI workflow.
+			Using type="application/json" ensures the content is never executed as script,
+			preventing injection even if values contain </script> or quotes.
+		-->
+		<script id="build-config" type="application/json">
+			{"prNumber": "251", "commitSha": "2aa8522d2cb48f45ae9a8d76e856dfd4eb971cbe", "endpoint": "https://endpoint-dev.cognigy.ai/c8a9f574597668ced9a5f47b8350dfc65f51cd20f8b51c14108c887f78e5ed4d", "options": ""}
+		</script>
+
 		<!-- Webchat bundle - path is relative; webchat.js will be copied alongside this file -->
 		<script src="./webchat.js"></script>
 		<script>
 			(function () {
-				// --- Parse build-time and URL parameters ---
+				// --- Parse build-time config from the JSON data block ---
+
+				var buildConfig = {};
+				try {
+					var configEl = document.getElementById("build-config");
+					if (configEl) {
+						buildConfig = JSON.parse(configEl.textContent);
+					}
+				} catch (e) {
+					/* build config could not be parsed — fall back to defaults */
+				}
+
+				var BUILD_ENDPOINT = buildConfig.endpoint || "";
+				var BUILD_PR_NUMBER = buildConfig.prNumber || "";
+				var BUILD_COMMIT_SHA = buildConfig.commitSha || "";
+				var BUILD_OPTIONS = buildConfig.options || "";
 
 				var params = new URLSearchParams(window.location.search);
-
-				// Build-time placeholders (replaced by the CI workflow using an inline Python script)
-				var BUILD_ENDPOINT = "https://endpoint-dev.cognigy.ai/c8a9f574597668ced9a5f47b8350dfc65f51cd20f8b51c14108c887f78e5ed4d";
-				var BUILD_PR_NUMBER = "251";
-				var BUILD_COMMIT_SHA = "d5800eb65fe6deccfcbe81ecbc21a903c09e0654";
-				var BUILD_OPTIONS = '';
 
 				// Display PR metadata
 				var prInfo = document.getElementById("pr-info");
 				var commitInfo = document.getElementById("commit-info");
-				if (
-					BUILD_PR_NUMBER &&
-					BUILD_PR_NUMBER !== "" &&
-					!BUILD_PR_NUMBER.startsWith("%%")
-				) {
+				if (BUILD_PR_NUMBER) {
 					prInfo.textContent = "PR #" + BUILD_PR_NUMBER;
 				}
-				if (
-					BUILD_COMMIT_SHA &&
-					BUILD_COMMIT_SHA !== "" &&
-					!BUILD_COMMIT_SHA.startsWith("%%")
-				) {
+				if (BUILD_COMMIT_SHA) {
 					commitInfo.textContent = BUILD_COMMIT_SHA.substring(0, 7);
 				}
 
 				// --- Resolve endpoint URL: query param > build-time > empty ---
 
-				var endpointUrl =
-					params.get("endpoint") ||
-					(BUILD_ENDPOINT && !BUILD_ENDPOINT.startsWith("%%") ? BUILD_ENDPOINT : "") ||
-					"";
+				var endpointUrl = params.get("endpoint") || BUILD_ENDPOINT || "";
 
 				// --- Resolve options: query param > build-time > empty ---
 
-				var optionsJson = params.get("options") || "";
-				if (!optionsJson && BUILD_OPTIONS && !BUILD_OPTIONS.startsWith("%%")) {
-					try {
-						optionsJson = BUILD_OPTIONS;
-					} catch (e) {
-						/* ignore */
-					}
-				}
+				var optionsJson = params.get("options") || BUILD_OPTIONS || "";
 
 				// Pre-fill the form
 				document.getElementById("endpoint-url").value = endpointUrl;
