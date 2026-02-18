@@ -9,7 +9,8 @@ Modifications:
   - App.jsx: Inserts a "PR Build" option at the top of the release dropdown
     (pre-selected), shows "Pull Request" label when PR build is selected,
     pre-fills endpoint from build config, prevents release-load from
-    overriding the PR build selection.
+    overriding the PR build selection, namespaces endpoint and settings
+    localStorage keys per-PR to avoid cross-PR bleed.
   - vite.config.js: Sets the `base` path for correct asset loading on gh-pages.
 """
 
@@ -34,19 +35,30 @@ def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
     import_end = content.index("\n", content.index(";", import_end)) + 1
     content = content[:import_end] + pr_config + content[import_end:]
 
-    # 2. Replace the default endpoint with PR_CONFIG.endpoint
+    # 2. Namespace localStorage keys for endpoint and settings so that
+    #    different PR previews (all on the same origin) don't share state.
+    content = content.replace(
+        'useLocalStorageState("testing-endpoint")',
+        f'useLocalStorageState("testing-endpoint-pr-{pr_number}")'
+    )
+    content = content.replace(
+        'useLocalStorageState("testing-settings")',
+        f'useLocalStorageState("testing-settings-pr-{pr_number}")'
+    )
+
+    # 3. Replace the default endpoint with PR_CONFIG.endpoint
     content = content.replace(
         'endpoint = "https://endpoint-dev.cognigy.ai/45c4ec61c937e830ecdebfaad977e2ed0bd84001e3b6df736e84560b73506463"',
         'endpoint = PR_CONFIG.endpoint || "https://endpoint-dev.cognigy.ai/45c4ec61c937e830ecdebfaad977e2ed0bd84001e3b6df736e84560b73506463"'
     )
 
-    # 3. Default selectedRelease to local build
+    # 4. Default selectedRelease to local build
     content = content.replace(
         'const [selectedRelease, setSelectedRelease] = useState("");',
         'const [selectedRelease, setSelectedRelease] = useState(PR_CONFIG.localBuildUrl);'
     )
 
-    # 4. Prevent the releases-load useEffect from overriding PR build selection
+    # 5. Prevent the releases-load useEffect from overriding PR build selection
     content = content.replace(
         '''  useEffect(() => {
     if (releases?.length > 0) {
@@ -61,7 +73,7 @@ def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
   }, [releases]);'''
     )
 
-    # 5. Make the version selector label dynamic: "Pull Request" when PR build
+    # 6. Make the version selector label dynamic: "Pull Request" when PR build
     #    is selected, "Release" otherwise.  Also update the href to link to the
     #    PR page instead of the GitHub release page.
     content = content.replace(
@@ -89,7 +101,7 @@ def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
           </a>'''
     )
 
-    # 6. Add local PR build option at top of release <select>
+    # 7. Add local PR build option at top of release <select>
     pr_option = (
         '<option value={PR_CONFIG.localBuildUrl}>\n'
         '                PR #{PR_CONFIG.prNumber} Build ({PR_CONFIG.commitSha?.substring(0, 7)})\n'
@@ -100,7 +112,7 @@ def patch_app_jsx(app_path, pr_number, commit_sha, endpoint_url):
         pr_option + '{releases.map((release)'
     )
 
-    # 7. Replace the title
+    # 8. Replace the title
     content = content.replace(
         '<h1>Webchat Release Testing</h1>',
         '<h1>Webchat PR Preview</h1>'
