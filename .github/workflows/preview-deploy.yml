@@ -1,17 +1,17 @@
 # Deploys a live preview of the Webchat for every PR to GitHub Pages.
 #
 # Each PR gets its own subdirectory:  https://<org>.github.io/Webchat/pr/<PR_NUMBER>/
+# The preview uses the Webchat-Testing app (https://github.com/Cognigy/Webchat-Testing)
+# patched with a PR banner and the PR's webchat.js build pre-selected.
 #
 # Endpoint configuration priority (highest to lowest):
-#   1. Runtime query parameter:        ?endpoint=<url>&options=<json>
+#   1. Runtime: change the endpoint field on the preview page
 #   2. Build-time from PR description: <!-- WEBCHAT_ENDPOINT: https://... -->
 #   3. Build-time repo variable:       vars.PREVIEW_ENDPOINT_URL
-#   4. Manual entry on the preview page UI
 #
 # Required setup:
 #   - Enable GitHub Pages on the `gh-pages` branch (root /)
 #   - (Optional) Set repository variable  PREVIEW_ENDPOINT_URL  with a default endpoint
-#   - (Optional) Set repository variable  PREVIEW_WEBCHAT_OPTIONS  with default JSON options
 
 name: PR Preview Deploy
 
@@ -42,7 +42,7 @@ jobs:
             COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
 
         steps:
-            # ── 1. Build ────────────────────────────────────────────────────────
+            # ── 1. Build webchat ────────────────────────────────────────────────
             - name: Checkout PR branch
               uses: actions/checkout@v4
 
@@ -66,43 +66,22 @@ jobs:
               run: |
                   # Extract from:  <!-- WEBCHAT_ENDPOINT: https://... -->
                   ENDPOINT=$(echo "$PR_BODY" | grep -oP '<!--\s*WEBCHAT_ENDPOINT:\s*\K[^\s]+(?=\s*-->)' || true)
-
-                  # Extract from:  <!-- WEBCHAT_OPTIONS: {...} -->
-                  OPTIONS=$(echo "$PR_BODY" | grep -oP '<!--\s*WEBCHAT_OPTIONS:\s*\K.+(?=\s*-->)' | head -1 || true)
-
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
 
-                  # Use heredoc for OPTIONS since JSON may contain newlines and special chars
-                  {
-                    echo "options<<OPTS_EOF"
-                    echo "$OPTIONS"
-                    echo "OPTS_EOF"
-                  } >> "$GITHUB_OUTPUT"
-
-            - name: Resolve final endpoint URL and options
+            - name: Resolve final endpoint URL
               id: resolve
               run: |
-                  # Priority: PR description > repo variable > empty (user enters at runtime)
+                  # Priority: PR description > repo variable > empty
                   ENDPOINT="${{ steps.pr-config.outputs.endpoint }}"
                   if [ -z "$ENDPOINT" ]; then
                     ENDPOINT="${{ vars.PREVIEW_ENDPOINT_URL }}"
                   fi
-
-                  OPTIONS="${{ steps.pr-config.outputs.options }}"
-                  if [ -z "$OPTIONS" ]; then
-                    OPTIONS="${{ vars.PREVIEW_WEBCHAT_OPTIONS }}"
-                  fi
-
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
 
-                  # Use heredoc for OPTIONS since JSON may contain newlines and special chars
-                  {
-                    echo "options<<OPTS_EOF"
-                    echo "$OPTIONS"
-                    echo "OPTS_EOF"
-                  } >> "$GITHUB_OUTPUT"
+            # ── 3. Build preview app (Webchat-Testing) ─────────────────────────
+            - name: Clone Webchat-Testing
+              run: git clone --depth=1 https://github.com/Cognigy/Webchat-Testing.git _testing
 
-            # ── 3. Compute the preview URL ──────────────────────────────────────
             - name: Compute Pages preview URL
               id: pages-url
               env:
@@ -111,69 +90,53 @@ jobs:
                   REPO="${{ github.repository }}"
                   OWNER="${REPO%%/*}"
                   REPO_NAME="${REPO##*/}"
-                  BASE_URL="https://${OWNER}.github.io/${REPO_NAME}/pr/${PR_NUMBER}/"
+                  echo "url=https://${OWNER}.github.io/${REPO_NAME}/pr/${PR_NUMBER}/" >> "$GITHUB_OUTPUT"
 
-                  if [ -n "$ENDPOINT_URL" ]; then
-                    ENCODED=$(python3 -c "import urllib.parse, os; print(urllib.parse.quote(os.environ['ENDPOINT_URL'], safe=''))")
-                    FULL_URL="${BASE_URL}?endpoint=${ENCODED}"
-                  else
-                    FULL_URL="${BASE_URL}"
-                  fi
-
-                  echo "url=${FULL_URL}" >> "$GITHUB_OUTPUT"
-
-            # ── 4. Prepare preview artifacts ────────────────────────────────────
-            - name: Prepare preview site
+            - name: Patch Webchat-Testing for PR preview
               env:
                   ENDPOINT_URL: ${{ steps.resolve.outputs.endpoint }}
-                  WEBCHAT_OPTIONS: ${{ steps.resolve.outputs.options }}
+              run: |
+                  BASE_PATH="/$(echo '${{ github.repository }}' | cut -d/ -f2)/pr/${PR_NUMBER}/"
+                  python3 .github/preview/patch_testing_app.py \
+                    _testing \
+                    "${PR_NUMBER}" \
+                    "${COMMIT_SHA}" \
+                    "${ENDPOINT_URL}" \
+                    "${BASE_PATH}"
+
+            - name: Install Webchat-Testing dependencies
+              run: |
+                  cd _testing
+                  npm ci
+
+            - name: Build Webchat-Testing
+              run: |
+                  cd _testing
+                  npx vite build
+
+            - name: Assemble preview artifacts
               run: |
                   STAGING="_preview_staging"
                   mkdir -p "${STAGING}"
 
-                  # Copy webchat bundle
+                  # Copy the Vite build output
+                  cp -r _testing/dist/* "${STAGING}/"
+
+                  # Copy the PR's webchat bundle alongside the app
                   cp dist/webchat.js "${STAGING}/webchat.js"
-
-                  # Copy and hydrate the preview HTML template
-                  cp .github/preview/index.html "${STAGING}/index.html"
-
-                  # Inject build-time config as a safe JSON data block.
-                  # Using json.dumps handles all escaping (quotes, backslashes,
-                  # </script>, newlines, etc.) — no injection risk.
-                  python3 << 'PYEOF'
-                  import os, json
-
-                  path = "_preview_staging/index.html"
-                  with open(path) as f:
-                      content = f.read()
-
-                  config = {
-                      "prNumber":  os.environ.get("PR_NUMBER", ""),
-                      "commitSha": os.environ.get("COMMIT_SHA", ""),
-                      "endpoint":  os.environ.get("ENDPOINT_URL", ""),
-                      "options":   os.environ.get("WEBCHAT_OPTIONS", ""),
-                  }
-
-                  # json.dumps produces a safe string with all special chars escaped
-                  config_json = json.dumps(config, ensure_ascii=True)
-                  content = content.replace("%%BUILD_CONFIG_JSON%%", config_json)
-
-                  with open(path, 'w') as f:
-                      f.write(content)
-                  PYEOF
 
                   echo "::group::Preview staging contents"
                   ls -la "${STAGING}"
                   echo "::endgroup::"
 
-            # ── 5. Deploy to gh-pages ───────────────────────────────────────────
+            # ── 4. Deploy to gh-pages ───────────────────────────────────────────
             - name: Deploy to gh-pages branch
               run: |
                   STAGING="_preview_staging"
 
                   # Stash the built preview files outside the repo working tree
                   TMPDIR=$(mktemp -d)
-                  cp "${STAGING}"/* "${TMPDIR}/"
+                  cp -r "${STAGING}"/* "${TMPDIR}/"
 
                   # Configure git identity
                   git config user.name "github-actions[bot]"
@@ -193,8 +156,7 @@ jobs:
                   # Clear old version of this PR and copy fresh build
                   rm -rf "pr/${PR_NUMBER}"
                   mkdir -p "pr/${PR_NUMBER}"
-                  cp "${TMPDIR}/webchat.js"  "pr/${PR_NUMBER}/webchat.js"
-                  cp "${TMPDIR}/index.html"  "pr/${PR_NUMBER}/index.html"
+                  cp -r "${TMPDIR}"/* "pr/${PR_NUMBER}/"
 
                   git add "pr/${PR_NUMBER}"
                   git diff --cached --quiet && echo "No changes to deploy" || {
