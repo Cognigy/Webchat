@@ -11,6 +11,8 @@
 #
 # Required setup:
 #   - Enable GitHub Pages on the `gh-pages` branch (root /)
+#   - Set repository secret  GH_PAT  with a PAT that has read access to Cognigy/Webchat-Testing
+#     (classic PAT with `repo` scope, or fine-grained PAT with Contents:read on Webchat-Testing)
 #   - (Optional) Set repository variable  PREVIEW_ENDPOINT_URL  with a default endpoint
 
 name: PR Preview Deploy
@@ -18,6 +20,7 @@ name: PR Preview Deploy
 on:
     pull_request:
         types: [opened, synchronize, reopened]
+    workflow_dispatch:
 
 # Only allow one deploy per PR at a time; cancel in-progress runs for the same PR
 concurrency:
@@ -79,8 +82,22 @@ jobs:
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
 
             # ── 3. Build preview app (Webchat-Testing) ─────────────────────────
+            - name: Verify GH_PAT secret is configured
+              env:
+                  HAS_TOKEN: ${{ secrets.GH_PAT != '' }}
+              run: |
+                  if [ "$HAS_TOKEN" != "true" ]; then
+                    echo "::error::Repository secret GH_PAT is not set. This token is required to clone the private Cognigy/Webchat-Testing repo."
+                    echo "::error::Create a PAT with read access to Cognigy/Webchat-Testing and add it as a repository secret named GH_PAT."
+                    exit 1
+                  fi
+
             - name: Clone Webchat-Testing
-              run: git clone --depth=1 https://github.com/Cognigy/Webchat-Testing.git _testing
+              uses: actions/checkout@v4
+              with:
+                  repository: Cognigy/Webchat-Testing
+                  path: _testing
+                  token: ${{ secrets.GH_PAT }}
 
             - name: Compute Pages preview URL
               id: pages-url
