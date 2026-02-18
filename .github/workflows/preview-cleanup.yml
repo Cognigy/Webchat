@@ -84,6 +84,12 @@ jobs:
 
                         core.info(`Deactivated ${deployments.length} deployment(s) and deleted environment "${envName}"`);
                       } catch (err) {
-                        // Environment may not exist (e.g. deploy never ran) — that's fine
-                        core.warning(`Could not clean up environment "${envName}": ${err.message}`);
+                        if (err && err.status === 404) {
+                          // Environment was never created (e.g. preview deploy never ran) — benign
+                          core.info(`Environment "${envName}" not found, nothing to clean up.`);
+                        } else {
+                          // Unexpected error — surface it so repeated failures don't go unnoticed
+                          const message = err && err.message ? err.message : String(err);
+                          core.warning(`Could not clean up environment "${envName}": ${message}`);
+                        }
                       }
