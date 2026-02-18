@@ -1,0 +1,231 @@
+# Deploys a live preview of the Webchat for every PR to GitHub Pages.
+#
+# Each PR gets its own subdirectory:  https://<org>.github.io/Webchat/pr/<PR_NUMBER>/
+#
+# Endpoint configuration priority (highest to lowest):
+#   1. Runtime query parameter:        ?endpoint=<url>&options=<json>
+#   2. Build-time from PR description: <!-- WEBCHAT_ENDPOINT: https://... -->
+#   3. Build-time repo variable:       vars.PREVIEW_ENDPOINT_URL
+#   4. Manual entry on the preview page UI
+#
+# Required setup:
+#   - Enable GitHub Pages on the `gh-pages` branch (root /)
+#   - (Optional) Set repository variable  PREVIEW_ENDPOINT_URL  with a default endpoint
+#   - (Optional) Set repository variable  PREVIEW_WEBCHAT_OPTIONS  with default JSON options
+
+name: PR Preview Deploy
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+# Only allow one deploy per PR at a time; cancel in-progress runs for the same PR
+concurrency:
+    group: preview-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+permissions:
+    contents: write
+    pull-requests: write
+
+jobs:
+    deploy-preview:
+        runs-on: ubuntu-latest
+        if: github.event.pull_request.draft == false
+
+        env:
+            PR_NUMBER: ${{ github.event.pull_request.number }}
+            COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
+        steps:
+            # ── 1. Build ────────────────────────────────────────────────────────
+            - name: Checkout PR branch
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build webchat bundle
+              run: npm run build:umd
+
+            # ── 2. Resolve endpoint config ─────────────────────────────────────
+            - name: Extract endpoint config from PR description
+              id: pr-config
+              env:
+                  PR_BODY: ${{ github.event.pull_request.body }}
+              run: |
+                  # Extract from:  <!-- WEBCHAT_ENDPOINT: https://... -->
+                  ENDPOINT=$(echo "$PR_BODY" | grep -oP '<!--\s*WEBCHAT_ENDPOINT:\s*\K[^\s]+(?=\s*-->)' || true)
+
+                  # Extract from:  <!-- WEBCHAT_OPTIONS: {...} -->
+                  OPTIONS=$(echo "$PR_BODY" | grep -oP '<!--\s*WEBCHAT_OPTIONS:\s*\K.+(?=\s*-->)' | head -1 || true)
+
+                  echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
+                  echo "options=${OPTIONS}" >> "$GITHUB_OUTPUT"
+
+            - name: Resolve final endpoint URL and options
+              id: resolve
+              run: |
+                  # Priority: PR description > repo variable > empty (user enters at runtime)
+                  ENDPOINT="${{ steps.pr-config.outputs.endpoint }}"
+                  if [ -z "$ENDPOINT" ]; then
+                    ENDPOINT="${{ vars.PREVIEW_ENDPOINT_URL }}"
+                  fi
+
+                  OPTIONS="${{ steps.pr-config.outputs.options }}"
+                  if [ -z "$OPTIONS" ]; then
+                    OPTIONS="${{ vars.PREVIEW_WEBCHAT_OPTIONS }}"
+                  fi
+
+                  echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
+                  echo "options=${OPTIONS}" >> "$GITHUB_OUTPUT"
+
+            # ── 3. Prepare preview artifacts ────────────────────────────────────
+            - name: Prepare preview site
+              env:
+                  ENDPOINT_URL: ${{ steps.resolve.outputs.endpoint }}
+                  WEBCHAT_OPTIONS: ${{ steps.resolve.outputs.options }}
+              run: |
+                  STAGING="_preview_staging"
+                  mkdir -p "${STAGING}"
+
+                  # Copy webchat bundle
+                  cp dist/webchat.js "${STAGING}/webchat.js"
+
+                  # Copy and hydrate the preview HTML template
+                  cp .github/preview/index.html "${STAGING}/index.html"
+
+                  python3 -c "
+                  import os
+
+                  path = '${STAGING}/index.html'
+                  with open(path) as f:
+                      content = f.read()
+
+                  replacements = {
+                      '%%PR_NUMBER%%':       os.environ.get('PR_NUMBER', ''),
+                      '%%COMMIT_SHA%%':      os.environ.get('COMMIT_SHA', ''),
+                      '%%ENDPOINT_URL%%':    os.environ.get('ENDPOINT_URL', ''),
+                      '%%WEBCHAT_OPTIONS%%': os.environ.get('WEBCHAT_OPTIONS', ''),
+                  }
+                  for placeholder, value in replacements.items():
+                      content = content.replace(placeholder, value)
+
+                  with open(path, 'w') as f:
+                      f.write(content)
+                  "
+
+                  echo "::group::Preview staging contents"
+                  ls -la "${STAGING}"
+                  echo "::endgroup::"
+
+            # ── 4. Deploy to gh-pages ───────────────────────────────────────────
+            - name: Deploy to gh-pages branch
+              run: |
+                  STAGING="_preview_staging"
+
+                  # Stash the built preview files outside the repo working tree
+                  TMPDIR=$(mktemp -d)
+                  cp "${STAGING}"/* "${TMPDIR}/"
+
+                  # Configure git identity
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+                  # Switch to gh-pages (fetch existing or create orphan)
+                  git fetch origin gh-pages --depth=1 2>/dev/null && \
+                    git checkout gh-pages || {
+                      git checkout --orphan gh-pages
+                      git rm -rf . 2>/dev/null || true
+                      echo "# Webchat PR Previews" > README.md
+                      touch .nojekyll
+                      git add README.md .nojekyll
+                      git commit -m "chore: initialize gh-pages for PR previews"
+                    }
+
+                  # Clear old version of this PR and copy fresh build
+                  rm -rf "pr/${PR_NUMBER}"
+                  mkdir -p "pr/${PR_NUMBER}"
+                  cp "${TMPDIR}/webchat.js"  "pr/${PR_NUMBER}/webchat.js"
+                  cp "${TMPDIR}/index.html"  "pr/${PR_NUMBER}/index.html"
+
+                  git add "pr/${PR_NUMBER}"
+                  git diff --cached --quiet && echo "No changes to deploy" || {
+                    git commit -m "deploy: preview for PR #${PR_NUMBER} (${COMMIT_SHA:0:7})"
+                    git push origin gh-pages
+                  }
+
+            # ── 5. Post / update PR comment ─────────────────────────────────────
+            - name: Post preview URL comment on PR
+              uses: actions/github-script@v7
+              env:
+                  ENDPOINT_URL: ${{ steps.resolve.outputs.endpoint }}
+              with:
+                  script: |
+                      const prNumber = process.env.PR_NUMBER;
+                      const endpoint = process.env.ENDPOINT_URL;
+                      const sha = process.env.COMMIT_SHA.substring(0, 7);
+                      const repo = context.repo;
+
+                      const pagesBase = `https://${repo.owner}.github.io/${repo.repo}`;
+                      const previewUrl = `${pagesBase}/pr/${prNumber}/`;
+                      const previewLink = endpoint
+                        ? `${previewUrl}?endpoint=${encodeURIComponent(endpoint)}`
+                        : previewUrl;
+
+                      const marker = '<!-- webchat-preview-bot -->';
+                      const body = [
+                        marker,
+                        `### :rocket: Webchat Preview Deployed`,
+                        '',
+                        `| | |`,
+                        `|---|---|`,
+                        `| **Preview** | [Open Preview](${previewLink}) |`,
+                        `| **Commit** | \`${sha}\` |`,
+                        endpoint
+                          ? `| **Endpoint** | \`${endpoint}\` |`
+                          : `| **Endpoint** | _Not configured — enter on the preview page_ |`,
+                        '',
+                        '<details><summary>How to configure the endpoint</summary>',
+                        '',
+                        'You can configure the endpoint in several ways (highest priority first):',
+                        '',
+                        '1. **URL query parameter** — append `?endpoint=<url>` to the preview link',
+                        '2. **PR description** — add a hidden HTML comment to your PR body:',
+                        '   ```',
+                        '   <!-- WEBCHAT_ENDPOINT: https://endpoint-trial.cognigy.ai/your-token-here -->',
+                        '   <!-- WEBCHAT_OPTIONS: {"settings":{"layout":{"title":"My Bot"}}} -->',
+                        '   ```',
+                        '3. **Repository variable** — set `PREVIEW_ENDPOINT_URL` in repo Settings > Variables',
+                        '4. **Preview page form** — paste the endpoint URL directly on the preview page',
+                        '',
+                        '</details>',
+                      ].join('\n');
+
+                      // Update existing comment or create a new one
+                      const { data: comments } = await github.rest.issues.listComments({
+                        ...repo,
+                        issue_number: Number(prNumber),
+                        per_page: 100,
+                      });
+                      const existing = comments.find(c => c.body && c.body.includes(marker));
+
+                      if (existing) {
+                        await github.rest.issues.updateComment({
+                          ...repo,
+                          comment_id: existing.id,
+                          body,
+                        });
+                      } else {
+                        await github.rest.issues.createComment({
+                          ...repo,
+                          issue_number: Number(prNumber),
+                          body,
+                        });
+                      }
