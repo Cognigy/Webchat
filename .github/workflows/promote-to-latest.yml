@@ -10,7 +10,7 @@ on:
 
 permissions:
     contents: write
-    id-token: write
+    id-token: write # Required for npm trusted publishing (OIDC)
 
 jobs:
     promote-to-latest:
@@ -99,8 +99,6 @@ jobs:
                   echo "✅ GitHub release marked as latest!"
 
             - name: Mark npm package as latest
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
                   echo "🚀 Marking @cognigy/webchat@${{ steps.extract-version.outputs.version }} as latest on npm..."
                   npm dist-tag add @cognigy/webchat@${{ steps.extract-version.outputs.version }} latest
