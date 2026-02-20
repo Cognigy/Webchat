@@ -94,12 +94,22 @@ export function ChatScroller({
 	// Scroll to last input or scroll to bottom based on scrollBehavior, only if the user has not scrolled up.
 	// Exception: always scroll to bottom when the user just sent a new message (e.g. adaptive card click),
 	// even if they had scrolled up before — the user's own message should always be visible.
+	// Introduce a minimal delay so the new message DOM is present before computing scroll height.
 	useEffect(() => {
 		const isNewUserMessage = lastInputId !== prevLastInputId.current;
 		prevLastInputId.current = lastInputId;
 
-		if ((!userScrolledUp || isNewUserMessage) && outerRef.current) {
-			if (scrollBehavior === "alwaysScroll" || userScrolledToBottom || isNewUserMessage) {
+		if (isNewUserMessage && outerRef.current) {
+			setTimeout(() => {
+				if (!outerRef.current) return;
+				const scrollOffset = outerRef.current.scrollHeight - outerRef.current.clientHeight;
+				handleScroll(scrollOffset);
+			}, 0);
+			return;
+		}
+
+		if (!userScrolledUp && outerRef.current) {
+			if (scrollBehavior === "alwaysScroll" || userScrolledToBottom) {
 				const scrollOffset = outerRef.current.scrollHeight - outerRef.current.clientHeight;
 				handleScroll(scrollOffset);
 			} else if (!userScrolledToBottom && lastInputId) {
