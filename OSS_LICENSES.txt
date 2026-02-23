@@ -1,7 +1,7 @@
-Created on 09-02-2026 at 10:52:17
+Created on 23-02-2026 at 11:26:19
 
 {
-  "@babel/code-frame@7.27.1": {
+  "@babel/code-frame@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -9,7 +9,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/code-frame/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/compat-data@7.28.5": {
+  "@babel/compat-data@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -17,7 +17,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/compat-data/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/core@7.28.5": {
+  "@babel/core@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -25,7 +25,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/core/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/generator@7.28.5": {
+  "@babel/generator@7.29.1": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -33,7 +33,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/generator/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-compilation-targets@7.27.2": {
+  "@babel/helper-compilation-targets@7.28.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -49,7 +49,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/helper-globals/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-module-imports@7.27.1": {
+  "@babel/helper-module-imports@7.28.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -57,7 +57,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/helper-module-imports/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helper-module-transforms@7.28.3": {
+  "@babel/helper-module-transforms@7.28.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -89,7 +89,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/helper-validator-option/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/helpers@7.28.4": {
+  "@babel/helpers@7.28.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -97,7 +97,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/helpers/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors. Copyright (c) 2014-present, Facebook, Inc. (ONLY ./src/helpers/regenerator* files)"
   },
-  "@babel/parser@7.28.5": {
+  "@babel/parser@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -105,7 +105,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/parser/LICENSE",
     "copyright": "Copyright (C) 2012-2014 by various contributors (see AUTHORS)"
   },
-  "@babel/runtime-corejs3@7.28.4": {
+  "@babel/runtime-corejs3@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -113,7 +113,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/runtime-corejs3/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/runtime@7.28.4": {
+  "@babel/runtime@7.28.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -121,7 +121,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/runtime/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/template@7.27.2": {
+  "@babel/template@7.28.6": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -129,7 +129,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/template/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/traverse@7.28.5": {
+  "@babel/traverse@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -137,7 +137,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@babel/traverse/LICENSE",
     "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
   },
-  "@babel/types@7.28.5": {
+  "@babel/types@7.29.0": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel",
     "publisher": "The Babel Team",
@@ -151,7 +151,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@braintree/sanitize-url@7.1.1": {
+  "@braintree/sanitize-url@7.1.2": {
     "licenses": "MIT",
     "repository": "https://github.com/braintree/sanitize-url",
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
@@ -170,8 +170,9 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.38.0": {
+  "@cognigy/webchat@3.39.0": {
     "licenses": "MIT*",
+    "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
     "email": "info@cognigy.com",
     "licenseFile": "LICENSE",
@@ -306,14 +307,14 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@emotion/react/node_modules/@emotion/weak-memoize/LICENSE",
     "copyright": "Copyright (c) Emotion team and other contributors"
   },
-  "@floating-ui/core@1.7.3": {
+  "@floating-ui/core@1.7.4": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
     "licenseFile": "node_modules/@floating-ui/core/LICENSE",
     "copyright": "Copyright (c) 2021-present Floating UI contributors"
   },
-  "@floating-ui/dom@1.7.4": {
+  "@floating-ui/dom@1.7.5": {
     "licenses": "MIT",
     "repository": "https://github.com/floating-ui/floating-ui",
     "publisher": "atomiks",
@@ -388,7 +389,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/@socket.io/component-emitter/LICENSE",
     "copyright": "Copyright (c) 2014 Component contributors <dev@component.io>"
   },
-  "@standard-schema/spec@1.0.0": {
+  "@standard-schema/spec@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/standard-schema/standard-schema",
     "publisher": "Colin McDonnell",
@@ -452,7 +453,7 @@ Created on 09-02-2026 at 10:52:17
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react-redux/LICENSE"
   },
-  "@types/react@18.3.27": {
+  "@types/react@18.3.28": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react/LICENSE"
@@ -539,7 +540,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/autolinker/LICENSE",
     "copyright": "Copyright (c) 2014 Gregory Jacobs (http://greg-jacobs.com)"
   },
-  "axios@1.12.2": {
+  "axios@1.13.5": {
     "licenses": "MIT",
     "repository": "https://github.com/axios/axios",
     "publisher": "Matt Zabriskie",
@@ -571,7 +572,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/balanced-match/LICENSE.md",
     "copyright": "Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt;"
   },
-  "baseline-browser-mapping@2.9.7": {
+  "baseline-browser-mapping@2.9.19": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/web-platform-dx/baseline-browser-mapping",
     "licenseFile": "node_modules/baseline-browser-mapping/LICENSE.txt"
@@ -618,7 +619,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/callsites/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "caniuse-lite@1.0.30001760": {
+  "caniuse-lite@1.0.30001769": {
     "licenses": "CC-BY-4.0",
     "repository": "https://github.com/browserslist/caniuse-lite",
     "publisher": "Ben Briggs",
@@ -750,14 +751,14 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/convert-source-map/LICENSE",
     "copyright": "Copyright 2013 Thorsten Lorenz. . All rights reserved."
   },
-  "core-js-pure@3.47.0": {
+  "core-js-pure@3.48.0": {
     "licenses": "MIT",
     "repository": "https://github.com/zloirock/core-js",
     "publisher": "Denis Pushkarev",
     "email": "zloirock@zloirock.ru",
     "url": "http://zloirock.ru",
     "licenseFile": "node_modules/core-js-pure/LICENSE",
-    "copyright": "Copyright (c) 2014-2025 Denis Pushkarev, 2025 CoreJS Company"
+    "copyright": "Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru). Copyright (c) 2025–2026 CoreJS Company (core-js.io)"
   },
   "core-js@3.18.3": {
     "licenses": "MIT",
@@ -829,7 +830,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/debuglog/LICENSE",
     "copyright": "Copyright Joyent, Inc. and other Node contributors. All rights reserved."
   },
-  "decode-named-character-reference@1.2.0": {
+  "decode-named-character-reference@1.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/wooorm/decode-named-character-reference",
     "publisher": "Titus Wormer",
@@ -919,7 +920,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/dunder-proto/LICENSE",
     "copyright": "Copyright (c) 2024 ECMAScript Shims"
   },
-  "electron-to-chromium@1.5.267": {
+  "electron-to-chromium@1.5.286": {
     "licenses": "ISC",
     "repository": "https://github.com/kilian/electron-to-chromium",
     "publisher": "Kilian Valkhof",
@@ -1299,7 +1300,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/hyphenate-style-name/LICENSE",
     "copyright": "Copyright (c) 2015, Espen Hovlandsdal. All rights reserved."
   },
-  "immer@11.0.1": {
+  "immer@11.1.3": {
     "licenses": "MIT",
     "repository": "https://github.com/immerjs/immer",
     "publisher": "Michel Weststrate",
@@ -1450,7 +1451,7 @@ Created on 09-02-2026 at 10:52:17
     "repository": "https://github.com/eldargab/load-script",
     "licenseFile": "node_modules/load-script/Readme.md"
   },
-  "lodash@4.17.21": {
+  "lodash@4.17.23": {
     "licenses": "MIT",
     "repository": "https://github.com/lodash/lodash",
     "publisher": "John-David Dalton",
@@ -2255,7 +2256,7 @@ Created on 09-02-2026 at 10:52:17
     "email": "thekashey@gmail.com",
     "licenseFile": "node_modules/react-remove-scroll-bar/README.md"
   },
-  "react-remove-scroll@2.7.1": {
+  "react-remove-scroll@2.7.2": {
     "licenses": "MIT",
     "repository": "https://github.com/theKashey/react-remove-scroll",
     "publisher": "Anton Korzunov",
@@ -2523,11 +2524,11 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/socket.io-client/LICENSE",
     "copyright": "Copyright (c) 2014 Guillermo Rauch"
   },
-  "socket.io-parser@4.2.4": {
+  "socket.io-parser@4.2.5": {
     "licenses": "MIT",
-    "repository": "https://github.com/socketio/socket.io-parser",
+    "repository": "https://github.com/socketio/socket.io",
     "licenseFile": "node_modules/socket.io-parser/LICENSE",
-    "copyright": "Copyright (c) 2014 Guillermo Rauch <guillermo@learnboost.com>"
+    "copyright": "Copyright (c) 2014-present Guillermo Rauch and Socket.IO contributors"
   },
   "source-map@0.5.7": {
     "licenses": "BSD-3-Clause",
@@ -2670,7 +2671,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/supports-preserve-symlinks-flag/LICENSE",
     "copyright": "Copyright (c) 2022 Inspect JS"
   },
-  "swiper@12.0.3": {
+  "swiper@12.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/nolimits4web/Swiper",
     "publisher": "Vladimir Kharlampidi",
@@ -2772,7 +2773,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/unist-util-visit-parents/license",
     "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
-  "unist-util-visit@5.0.0": {
+  "unist-util-visit@5.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/unist-util-visit",
     "publisher": "Titus Wormer",
@@ -2781,7 +2782,7 @@ Created on 09-02-2026 at 10:52:17
     "licenseFile": "node_modules/unist-util-visit/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
-  "update-browserslist-db@1.2.2": {
+  "update-browserslist-db@1.2.3": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/update-db",
     "publisher": "Andrey Sitnik",
