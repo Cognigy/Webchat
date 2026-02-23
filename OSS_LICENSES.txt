@@ -1,4 +1,4 @@
-Created on 23-02-2026 at 11:26:19
+Created on 23-02-2026 at 11:48:22
 
 {
   "@babel/code-frame@7.29.0": {
@@ -157,7 +157,7 @@ Created on 23-02-2026 at 11:26:19
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.67.0": {
+  "@cognigy/chat-components@0.68.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
