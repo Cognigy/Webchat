@@ -40,6 +40,7 @@ describe("File Attachement", () => {
 				},
 			},
 		});
+		cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
 		cy.openWebchat().startConversation();
 		cy.get("input[type=file]").selectFile(
 			{
@@ -61,6 +62,7 @@ describe("File Attachement", () => {
 				},
 			},
 		});
+		cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
 		cy.openWebchat().startConversation();
 		cy.get("input[type=file]").selectFile(
 			{
@@ -82,6 +84,7 @@ describe("File Attachement", () => {
 				},
 			},
 		});
+		cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
 		cy.openWebchat().startConversation();
 		cy.get("input[type=file]").selectFile(
 			[
@@ -138,6 +141,7 @@ describe("File Attachement", () => {
 				},
 			},
 		});
+		cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
 		cy.openWebchat().startConversation();
 		cy.get("input[type=file]").selectFile(
 			{
