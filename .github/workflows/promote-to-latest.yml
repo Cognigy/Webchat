@@ -62,7 +62,7 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🔍 Checking if release ${{ steps.extract-version.outputs.tag }} exists..."
-                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,isDraft,isPrerelease 2>/dev/null)
+                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,isDraft 2>/dev/null)
                   if [ $? -ne 0 ] || [ -z "$RELEASE_JSON" ]; then
                     echo ""
                     echo "::error::Release '${{ steps.extract-version.outputs.tag }}' not found!"
@@ -72,15 +72,11 @@ jobs:
 
                   echo "$RELEASE_JSON"
 
-                  # Check if it's a draft or prerelease
+                  # Check if it's a draft
                   IS_DRAFT=$(echo "$RELEASE_JSON" | jq -r '.isDraft')
-                  IS_PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.isPrerelease')
 
                   if [ "$IS_DRAFT" = "true" ]; then
                     echo "::error::Cannot promote a draft release. Please publish the release first."
-                    exit 1
-                  elif [ "$IS_PRERELEASE" = "true" ]; then
-                    echo "::error::Cannot promote a prerelease. Please promote a fully published release instead."
                     exit 1
                   fi
 
