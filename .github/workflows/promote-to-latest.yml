@@ -28,9 +28,24 @@ jobs:
               id: extract-version
               run: |
                   TAG_NAME="${{ github.event.inputs.release_tag }}"
+
+                  # Validate tag format: allow vX.Y.Z or X.Y.Z with optional prerelease suffix
+                  if ! [[ "$TAG_NAME" =~ ^v?[0-9]+(\.[0-9]+)*(-[0-9A-Za-z.-]+)?$ ]]; then
+                    echo "::error::Invalid release_tag '$TAG_NAME'. Expected format like 'v3.38.0'."
+                    exit 1
+                  fi
+
                   VERSION="${TAG_NAME#v}"
-                  echo "version=$VERSION" >> $GITHUB_OUTPUT
-                  echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
+                  {
+                    echo "version<<EOF"
+                    echo "$VERSION"
+                    echo "EOF"
+                    echo "tag<<EOF"
+                    echo "$TAG_NAME"
+                    echo "EOF"
+                  } >> "$GITHUB_OUTPUT"
+
                   echo "Promoting version: $VERSION (tag: $TAG_NAME)"
 
             - name: List available releases
@@ -47,19 +62,25 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🔍 Checking if release ${{ steps.extract-version.outputs.tag }} exists..."
-                  if ! gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,isDraft,isPrerelease 2>/dev/null; then
+                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,isDraft,isPrerelease 2>/dev/null)
+                  if [ $? -ne 0 ] || [ -z "$RELEASE_JSON" ]; then
                     echo ""
                     echo "::error::Release '${{ steps.extract-version.outputs.tag }}' not found!"
                     echo "Please check the available releases listed above and ensure you entered the correct tag."
                     exit 1
                   fi
 
+                  echo "$RELEASE_JSON"
+
                   # Check if it's a draft or prerelease
-                  IS_DRAFT=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json isDraft -q '.isDraft')
-                  IS_PRERELEASE=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json isPrerelease -q '.isPrerelease')
+                  IS_DRAFT=$(echo "$RELEASE_JSON" | jq -r '.isDraft')
+                  IS_PRERELEASE=$(echo "$RELEASE_JSON" | jq -r '.isPrerelease')
 
                   if [ "$IS_DRAFT" = "true" ]; then
                     echo "::error::Cannot promote a draft release. Please publish the release first."
+                    exit 1
+                  elif [ "$IS_PRERELEASE" = "true" ]; then
+                    echo "::error::Cannot promote a prerelease. Please promote a fully published release instead."
                     exit 1
                   fi
 
