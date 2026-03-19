@@ -15,9 +15,6 @@ jobs:
     promote-to-latest:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
@@ -29,9 +26,9 @@ jobs:
               run: |
                   TAG_NAME="${{ github.event.inputs.release_tag }}"
 
-                  # Validate tag format: allow vX.Y.Z or X.Y.Z with optional prerelease suffix
-                  if ! [[ "$TAG_NAME" =~ ^v?[0-9]+(\.[0-9]+)*(-[0-9A-Za-z.-]+)?$ ]]; then
-                    echo "::error::Invalid release_tag '$TAG_NAME'. Expected format like 'v3.38.0'."
+                  # Validate tag format: must be vX.Y.Z or X.Y.Z (semver) with optional prerelease suffix
+                  if ! [[ "$TAG_NAME" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+                    echo "::error::Invalid release_tag '$TAG_NAME'. Expected semver format like 'v3.38.0'."
                     exit 1
                   fi
 
@@ -100,7 +97,7 @@ jobs:
                   echo "📊 Current state before promotion:"
                   echo ""
                   echo "GitHub latest release:"
-                  gh release list --exclude-drafts --limit 5 | head -5
+                  gh release list --exclude-drafts --limit 5
                   echo ""
                   echo "npm dist-tags:"
                   npm view @cognigy/webchat dist-tags
