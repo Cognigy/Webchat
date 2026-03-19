@@ -1,0 +1,95 @@
+# Removes the preview deployment from gh-pages when a PR is closed or merged.
+#
+# Counterpart to preview-deploy.yml — keeps the gh-pages branch clean
+# by removing subdirectories for PRs that no longer need a preview.
+
+name: PR Preview Cleanup
+
+on:
+    pull_request:
+        types: [closed]
+
+permissions:
+    contents: write
+    deployments: write
+
+jobs:
+    cleanup-preview:
+        runs-on: ubuntu-latest
+        if: github.event.pull_request.head.repo.full_name == github.repository
+
+        env:
+            PR_NUMBER: ${{ github.event.pull_request.number }}
+
+        steps:
+            - name: Checkout gh-pages branch
+              uses: actions/checkout@v4
+              with:
+                  ref: gh-pages
+                  fetch-depth: 1
+              # If gh-pages doesn't exist yet, there's nothing to clean up
+              continue-on-error: true
+              id: checkout
+
+            - name: Remove preview directory
+              if: steps.checkout.outcome == 'success'
+              run: |
+                  if [ ! -d "pr/${PR_NUMBER}" ]; then
+                    echo "No preview directory found for PR #${PR_NUMBER}, nothing to clean up."
+                    exit 0
+                  fi
+
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+                  rm -rf "pr/${PR_NUMBER}"
+                  git add -A "pr/${PR_NUMBER}"
+
+                  git diff --cached --quiet && {
+                    echo "No changes to commit."
+                    exit 0
+                  }
+
+                  git commit -m "cleanup: remove preview for PR #${PR_NUMBER}"
+                  git push origin gh-pages
+
+            - name: Deactivate and remove deployment environment
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const repo = context.repo;
+                      const envName = `pr-preview-${process.env.PR_NUMBER}`;
+
+                      // List all deployments for this environment and mark them inactive
+                      try {
+                        const { data: deployments } = await github.rest.repos.listDeployments({
+                          ...repo,
+                          environment: envName,
+                          per_page: 100,
+                        });
+
+                        for (const deployment of deployments) {
+                          await github.rest.repos.createDeploymentStatus({
+                            ...repo,
+                            deployment_id: deployment.id,
+                            state: 'inactive',
+                          });
+                        }
+
+                        // Delete the environment itself
+                        await github.rest.repos.deleteAnEnvironment({
+                          ...repo,
+                          environment_name: envName,
+                        });
+
+                        core.info(`Deactivated ${deployments.length} deployment(s) and deleted environment "${envName}"`);
+                      } catch (err) {
+                        if (err && err.status === 404) {
+                          // Environment was never created (e.g. preview deploy never ran) — benign
+                          core.info(`Environment "${envName}" not found, nothing to clean up.`);
+                        } else {
+                          // Unexpected error — surface it so repeated failures don't go unnoticed
+                          const message = err && err.message ? err.message : String(err);
+                          core.warning(`Could not clean up environment "${envName}": ${message}`);
+                        }
+                      }
