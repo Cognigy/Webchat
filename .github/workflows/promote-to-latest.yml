@@ -10,7 +10,6 @@ on:
 
 permissions:
     contents: write
-    id-token: write # Required for npm trusted publishing (OIDC)
 
 jobs:
     promote-to-latest:
@@ -98,7 +97,12 @@ jobs:
                   gh release edit "${{ steps.extract-version.outputs.tag }}" --latest
                   echo "✅ GitHub release marked as latest!"
 
+            # NPM_TOKEN is a granular access token that expires every 90 days.
+            # Rotate it at https://www.npmjs.com/settings/tokens and update the
+            # repository secret at https://github.com/Cognigy/Webchat/settings/secrets/actions
             - name: Mark npm package as latest
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
                   echo "🚀 Marking @cognigy/webchat@${{ steps.extract-version.outputs.version }} as latest on npm..."
                   npm dist-tag add @cognigy/webchat@${{ steps.extract-version.outputs.version }} latest
