@@ -50,7 +50,7 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🔍 Checking if release ${{ steps.extract-version.outputs.tag }} exists..."
-                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,isLatest,isDraft 2>/dev/null)
+                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,isDraft 2>/dev/null)
                   if [ $? -ne 0 ] || [ -z "$RELEASE_JSON" ]; then
                     echo ""
                     echo "::error::Release '${{ steps.extract-version.outputs.tag }}' not found!"
@@ -112,7 +112,7 @@ jobs:
                   echo "🏷️  Tag: ${{ steps.extract-version.outputs.tag }}"
                   echo ""
                   echo "GitHub Release Status:"
-                  gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,isLatest,publishedAt
+                  gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,publishedAt
                   echo ""
                   echo "npm Package Tags:"
                   npm view @cognigy/webchat dist-tags
