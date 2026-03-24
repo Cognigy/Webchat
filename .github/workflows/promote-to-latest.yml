@@ -51,7 +51,7 @@ jobs:
               run: |
                   echo "📋 Available published releases (most recent first):"
                   echo ""
-                  gh release list --exclude-drafts --exclude-pre-releases --limit 20
+                  gh release list -R "${{ github.repository }}" --exclude-drafts --exclude-pre-releases --limit 20
                   echo ""
 
             - name: Verify release exists on GitHub
@@ -59,7 +59,7 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🔍 Checking if release ${{ steps.extract-version.outputs.tag }} exists..."
-                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,isDraft 2>/dev/null)
+                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,isLatest,isDraft 2>/dev/null)
                   if [ $? -ne 0 ] || [ -z "$RELEASE_JSON" ]; then
                     echo ""
                     echo "::error::Release '${{ steps.extract-version.outputs.tag }}' not found!"
@@ -97,7 +97,7 @@ jobs:
                   echo "📊 Current state before promotion:"
                   echo ""
                   echo "GitHub latest release:"
-                  gh release list --exclude-drafts --limit 5
+                  gh release list -R "${{ github.repository }}" --exclude-drafts --limit 5
                   echo ""
                   echo "npm dist-tags:"
                   npm view @cognigy/webchat dist-tags
@@ -108,7 +108,7 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🚀 Marking ${{ steps.extract-version.outputs.tag }} as latest release on GitHub..."
-                  gh release edit "${{ steps.extract-version.outputs.tag }}" --latest
+                  gh release edit "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --latest
                   echo "✅ GitHub release marked as latest!"
 
             # NPM_TOKEN is a granular access token that expires every 90 days.
@@ -135,7 +135,7 @@ jobs:
                   echo "🏷️  Tag: ${{ steps.extract-version.outputs.tag }}"
                   echo ""
                   echo "GitHub Release Status:"
-                  gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,publishedAt
+                  gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,isLatest,publishedAt
                   echo ""
                   echo "npm Package Tags:"
                   npm view @cognigy/webchat dist-tags
