@@ -97,8 +97,17 @@ jobs:
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
-                  echo "🚀 Marking @cognigy/webchat@${{ steps.extract-version.outputs.version }} as latest on npm..."
-                  npm dist-tag add @cognigy/webchat@${{ steps.extract-version.outputs.version }} latest
+                  VERSION="${{ steps.extract-version.outputs.version }}"
+                  echo "🚀 Marking @cognigy/webchat@$VERSION as latest on npm..."
+                  npm dist-tag add @cognigy/webchat@$VERSION latest
+
+                  # Remove pre-release tag if it points to this version
+                  PRE_RELEASE_VERSION=$(npm view @cognigy/webchat dist-tags.pre-release 2>/dev/null || true)
+                  if [ "$PRE_RELEASE_VERSION" = "$VERSION" ]; then
+                    echo "🧹 Removing pre-release dist-tag (was pointing to $VERSION)..."
+                    npm dist-tag rm @cognigy/webchat pre-release
+                  fi
+
                   echo "✅ npm package marked as latest!"
 
             - name: Verify promotion succeeded
