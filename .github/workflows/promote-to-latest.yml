@@ -4,8 +4,8 @@ on:
     workflow_dispatch:
         inputs:
             release_tag:
-                description: "Release tag to promote (e.g., v3.38.0). Leave empty to list available releases."
-                required: false
+                description: "Release tag to promote (e.g., v3.38.0)"
+                required: true
                 type: string
 
 permissions:
@@ -21,31 +21,7 @@ jobs:
                   node-version: 24.x
                   registry-url: https://registry.npmjs.org/
 
-            - name: List available releases
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  echo "📋 Available releases (most recent first):"
-                  echo ""
-                  gh release list -R "${{ github.repository }}" --exclude-drafts --limit 20
-                  echo ""
-                  echo "npm dist-tags:"
-                  npm view @cognigy/webchat dist-tags
-                  echo ""
-
-            - name: Check if release tag was provided
-              id: check-input
-              run: |
-                  TAG_NAME="${{ github.event.inputs.release_tag }}"
-                  if [ -z "$TAG_NAME" ]; then
-                    echo "ℹ️ No release tag provided — listing mode only."
-                    echo "skip=true" >> "$GITHUB_OUTPUT"
-                  else
-                    echo "skip=false" >> "$GITHUB_OUTPUT"
-                  fi
-
             - name: Extract version from tag
-              if: steps.check-input.outputs.skip == 'false'
               id: extract-version
               run: |
                   TAG_NAME="${{ github.event.inputs.release_tag }}"
@@ -70,7 +46,6 @@ jobs:
                   echo "Promoting version: $VERSION (tag: $TAG_NAME)"
 
             - name: Verify release exists on GitHub
-              if: steps.check-input.outputs.skip == 'false'
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
@@ -79,7 +54,6 @@ jobs:
                   if [ $? -ne 0 ] || [ -z "$RELEASE_JSON" ]; then
                     echo ""
                     echo "::error::Release '${{ steps.extract-version.outputs.tag }}' not found!"
-                    echo "Please check the available releases listed above and ensure you entered the correct tag."
                     exit 1
                   fi
 
@@ -96,7 +70,6 @@ jobs:
                   echo "✅ Release found and is published!"
 
             - name: Verify package version exists on npm
-              if: steps.check-input.outputs.skip == 'false'
               run: |
                   echo "🔍 Checking if @cognigy/webchat@${{ steps.extract-version.outputs.version }} exists on npm..."
                   if ! npm view @cognigy/webchat@${{ steps.extract-version.outputs.version }} version 2>/dev/null; then
@@ -108,7 +81,6 @@ jobs:
                   echo "✅ Package version found on npm!"
 
             - name: Mark GitHub release as latest
-              if: steps.check-input.outputs.skip == 'false'
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
@@ -120,7 +92,6 @@ jobs:
             # Rotate it at https://www.npmjs.com/settings/tokens and update the
             # repository secret at https://github.com/Cognigy/Webchat/settings/secrets/actions
             - name: Mark npm package as latest
-              if: steps.check-input.outputs.skip == 'false'
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
@@ -129,7 +100,6 @@ jobs:
                   echo "✅ npm package marked as latest!"
 
             - name: Verify promotion succeeded
-              if: steps.check-input.outputs.skip == 'false'
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
