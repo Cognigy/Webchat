@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             release_tag:
-                description: "Release tag to promote (e.g., v3.38.0). Run workflow to see available releases."
+                description: "Release tag to promote (e.g., v3.38.0)"
                 required: true
                 type: string
 
@@ -14,6 +14,8 @@ permissions:
 jobs:
     promote-to-latest:
         runs-on: ubuntu-latest
+        env:
+            FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         steps:
             - name: Setup Node.js
               uses: actions/setup-node@v4
@@ -45,25 +47,15 @@ jobs:
 
                   echo "Promoting version: $VERSION (tag: $TAG_NAME)"
 
-            - name: List available releases
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  echo "📋 Available published releases (most recent first):"
-                  echo ""
-                  gh release list --exclude-drafts --exclude-pre-releases --limit 20
-                  echo ""
-
             - name: Verify release exists on GitHub
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🔍 Checking if release ${{ steps.extract-version.outputs.tag }} exists..."
-                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,isDraft 2>/dev/null)
-                  if [ $? -ne 0 ] || [ -z "$RELEASE_JSON" ]; then
+                  RELEASE_JSON=$(gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,isDraft 2>/dev/null || true)
+                  if [ -z "$RELEASE_JSON" ]; then
                     echo ""
                     echo "::error::Release '${{ steps.extract-version.outputs.tag }}' not found!"
-                    echo "Please check the available releases listed above and ensure you entered the correct tag."
                     exit 1
                   fi
 
@@ -90,25 +82,12 @@ jobs:
                   fi
                   echo "✅ Package version found on npm!"
 
-            - name: Show current state
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  echo "📊 Current state before promotion:"
-                  echo ""
-                  echo "GitHub latest release:"
-                  gh release list --exclude-drafts --limit 5
-                  echo ""
-                  echo "npm dist-tags:"
-                  npm view @cognigy/webchat dist-tags
-                  echo ""
-
             - name: Mark GitHub release as latest
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   echo "🚀 Marking ${{ steps.extract-version.outputs.tag }} as latest release on GitHub..."
-                  gh release edit "${{ steps.extract-version.outputs.tag }}" --latest
+                  gh release edit "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --latest
                   echo "✅ GitHub release marked as latest!"
 
             # NPM_TOKEN is a granular access token that expires every 90 days.
@@ -118,8 +97,17 @@ jobs:
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
-                  echo "🚀 Marking @cognigy/webchat@${{ steps.extract-version.outputs.version }} as latest on npm..."
-                  npm dist-tag add @cognigy/webchat@${{ steps.extract-version.outputs.version }} latest
+                  VERSION="${{ steps.extract-version.outputs.version }}"
+                  echo "🚀 Marking @cognigy/webchat@$VERSION as latest on npm..."
+                  npm dist-tag add @cognigy/webchat@$VERSION latest
+
+                  # Remove pre-release tag if it points to this version
+                  PRE_RELEASE_VERSION=$(npm view @cognigy/webchat dist-tags.pre-release 2>/dev/null || true)
+                  if [ "$PRE_RELEASE_VERSION" = "$VERSION" ]; then
+                    echo "🧹 Removing pre-release dist-tag (was pointing to $VERSION)..."
+                    npm dist-tag rm @cognigy/webchat pre-release
+                  fi
+
                   echo "✅ npm package marked as latest!"
 
             - name: Verify promotion succeeded
@@ -135,7 +123,7 @@ jobs:
                   echo "🏷️  Tag: ${{ steps.extract-version.outputs.tag }}"
                   echo ""
                   echo "GitHub Release Status:"
-                  gh release view "${{ steps.extract-version.outputs.tag }}" --json tagName,isLatest,publishedAt
+                  gh release view "${{ steps.extract-version.outputs.tag }}" -R "${{ github.repository }}" --json tagName,publishedAt
                   echo ""
                   echo "npm Package Tags:"
                   npm view @cognigy/webchat dist-tags
