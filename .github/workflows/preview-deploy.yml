@@ -19,7 +19,7 @@ name: PR Preview Deploy
 
 on:
     pull_request:
-        types: [opened, synchronize, reopened]
+        types: [opened, synchronize, reopened, ready_for_review]
 
 # Only allow one deploy per PR at a time; cancel in-progress runs for the same PR
 concurrency:
