@@ -127,7 +127,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 			this.store.dispatch(showChatScreen());
 		}
 
-		this.store.dispatch(toggleOpen());
+		this.store.dispatch(setOpen(true));
 	};
 
 	open = async () => {
