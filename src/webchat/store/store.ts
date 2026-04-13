@@ -13,7 +13,7 @@ import { Webchat } from "../components/Webchat";
 import { IWebchatSettings } from "../../common/interfaces/webchat-config";
 import { uiMiddleware } from "./ui/ui-middleware";
 import { registerUiHandler } from "./ui/ui-handler";
-import { composeWithDevTools } from "@redux-devtools/extension/lib/cjs/logOnlyInProduction";
+import { composeWithDevToolsLogOnlyInProduction } from "@redux-devtools/extension";
 import { createAutoInjectMiddleware } from "./autoinject/autoinject-middleware";
 import { createInputCollationMiddleware } from "./input-collation/input-collation-middleware";
 import { createPrevConversationsMiddleware } from "./previous-conversations/previous-conversations-middleware";
@@ -38,7 +38,7 @@ export const createWebchatStore = (
 
 	const store = createStore(
 		reducer,
-		composeWithDevTools(
+		composeWithDevToolsLogOnlyInProduction(
 			applyMiddleware(
 				createAnalyticsMiddleware(webchat),
 				createConnectionMiddleware(client),
