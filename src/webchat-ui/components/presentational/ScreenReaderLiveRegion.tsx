@@ -60,9 +60,14 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 
 			// Use live content if available, otherwise extract from DOM
 			const rawText = liveContent[id] || getTextFromDOM(id);
-			const text = cleanUpText(rawText || "A new message");
+			const text = cleanUpText(rawText || "");
 
-			setLiveMessage({ id, text });
+			// Only announce if we have meaningful content, otherwise stay silent
+			if (text.trim()) {
+				setLiveMessage({ id, text });
+			} else {
+				setLiveMessage(null); // Stay silent for empty/data-only messages
+			}
 		}, 100);
 
 		return () => clearTimeout(timeout);

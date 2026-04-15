@@ -90,5 +90,5 @@ export const getTextFromDOM = (id: string): string => {
 	const messageElement = document.querySelector(`[data-message-id="${id}"]`);
 	return messageElement
 		? extractTextForScreenReader(messageElement as HTMLElement)
-		: "A new message";
+		: ""; // Return empty string for silence instead of "A new message"
 };
