@@ -84,11 +84,15 @@ export const extractTextForScreenReader = (root: HTMLElement): string => {
  * - Using the extractTextForScreenReader function to get the text content
  *
  * @param id - The message ID to extract text for
- * @returns The extracted text or a default message if not found
+ * @returns An object with the extracted text and whether the element exists
  */
-export const getTextFromDOM = (id: string): string => {
+export const getTextFromDOM = (id: string): { text: string; elementExists: boolean } => {
 	const messageElement = document.querySelector(`[data-message-id="${id}"]`);
-	return messageElement
-		? extractTextForScreenReader(messageElement as HTMLElement)
-		: ""; // Return empty string for silence instead of "A new message"
+	if (!messageElement) {
+		return { text: "", elementExists: false }; // Element doesn't exist - data-only message
+	}
+
+	const extractedText = extractTextForScreenReader(messageElement as HTMLElement);
+	return { text: extractedText, elementExists: true }; // Element exists
 };
+
