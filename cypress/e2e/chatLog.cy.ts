@@ -26,4 +26,8 @@ describe("Chat Log", () => {
 		cy.get("#webchatChatHistoryWrapperLiveLogPanel").focus();
 		cy.get(".webchat-chat-history").should("have.css", "outline", "rgb(59, 103, 233) auto 2px");
 	});
+
+	it("chat log panel has region role", () => {
+		cy.get("#webchatChatHistoryWrapperLiveLogPanel").should("have.attr", "role", "region");
+	});
 });
