@@ -155,6 +155,7 @@ export function ChatScroller({
 			<ChatLog
 				ref={innerRef}
 				id="webchatChatHistoryWrapperLiveLogPanel"
+				role="region"
 				tabIndex={isChatLogOverflowing() ? 0 : -1}
 				aria-labelledby="webchatChatHistoryHeading"
 				onFocus={handleFocus}
