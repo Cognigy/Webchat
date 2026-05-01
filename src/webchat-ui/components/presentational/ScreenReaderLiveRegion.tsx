@@ -59,10 +59,27 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 			}
 
 			// Use live content if available, otherwise extract from DOM
-			const rawText = liveContent[id] || getTextFromDOM(id);
-			const text = cleanUpText(rawText || "A new message");
+			let text = "";
+			if (liveContent[id]) {
+				text = cleanUpText(liveContent[id]);
+			} else {
+				const domResult = getTextFromDOM(id);
+				if (domResult.elementExists) {
+					// Element exists in DOM but may have no accessible text
+					// For visible elements without text (like images), provide a generic announcement
+					text = cleanUpText(domResult.text || "A new message");
+				} else {
+					// Element doesn't exist - this is a data-only message that shouldn't be announced
+					text = "";
+				}
+			}
 
-			setLiveMessage({ id, text });
+			// Only announce if we have meaningful content
+			if (text.trim()) {
+				setLiveMessage({ id, text });
+			} else {
+				setLiveMessage(null); // Stay silent for data-only messages
+			}
 		}, 100);
 
 		return () => clearTimeout(timeout);
