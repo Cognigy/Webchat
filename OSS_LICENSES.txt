@@ -1,4 +1,4 @@
-Created on 29-04-2026 at 14:28:20
+Created on 15-05-2026 at 14:00:08
 
 {
   "@babel/code-frame@7.29.0": {
@@ -170,7 +170,7 @@ Created on 29-04-2026 at 14:28:20
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.42.0": {
+  "@cognigy/webchat@3.43.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -528,7 +528,7 @@ Created on 29-04-2026 at 14:28:20
     "licenseFile": "node_modules/autolinker/LICENSE",
     "copyright": "Copyright (c) 2014 Gregory Jacobs (http://greg-jacobs.com)"
   },
-  "axios@1.15.0": {
+  "axios@1.15.2": {
     "licenses": "MIT",
     "repository": "https://github.com/axios/axios",
     "publisher": "Matt Zabriskie",
