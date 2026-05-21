@@ -125,7 +125,7 @@ See it in action:
 
 ## Update Webchat Settings
 
-It is possible to update the Webchat settings at runtime using the `updateSettings` function.
+It is possible to update the Webchat settings at runtime using the `webchat.updateSettings(...)` method.
 It will receive an object as a parameter, which will update all provided settings while leaving the remaining settings untouched.  
 
 > [!NOTE]
