@@ -49,7 +49,7 @@ document.getElementById("my-close-button").addEventListener("click", () => {
 });
 
 // Toggle the Webchat widget open and closed state with a single button
-document.getElementById("my-chat-button").addEventListener("click", () => {
+document.getElementById("my-toggle-button").addEventListener("click", () => {
     webchat.toggle();
 });
 ```
