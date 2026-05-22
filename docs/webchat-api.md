@@ -35,7 +35,7 @@ To open or close the Webchat widget from your website once it is loaded, use the
 
 - `webchat.open()` — opens the Webchat widget. Use this method to open the Webchat widget, for example, when a user clicks a custom button on your website. Note that if the Webchat widget is already open, calling this method will close it.
 - `webchat.close()` — closes the Webchat widget. Use this method to close the Webchat widget, for example, after a conversation is completed.
-- `webchat.toggle()` — toggles the Webchat widget between open and closed states. For example, if you have a **Chat with us** button on your website, clicking it once opens the Webchat widget and clicking it again closes it.
+- `webchat.toggle()` — toggles the Webchat widget between open and closed states. For example, if your website has a **Chat with us** button, clicking it once opens the Webchat widget and clicking it again closes it.
 
 ```javascript
 // Open the Webchat widget when a user clicks a custom button on your website
