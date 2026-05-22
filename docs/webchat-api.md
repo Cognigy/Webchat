@@ -126,7 +126,7 @@ See it in action:
 ## Update Webchat Settings
 
 To update the Webchat settings at runtime, use the `webchat.updateSettings(...)` method.
-It will receive an object as a parameter, which will update all provided settings while leaving the remaining settings untouched.
+This method receives a settings object as a parameter and updates the settings provided in the object while leaving the remaining settings unchanged.
 
 > [!NOTE]
 > Only a subset of settings is safe to update at runtime. For further information, refer to the [Endpoint Settings](./embedding.md#endpoint-settings).
