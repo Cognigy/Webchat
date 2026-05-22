@@ -1,6 +1,6 @@
 # Webchat API
 
-The `initWebchat()` method resolves a `webchat` object as soon as a connection is established, which can be used to access the Webchat's API.
+The `initWebchat()` method resolves a `webchat` object as soon as a connection is established. You can use this object to access the Webchat's API.
 
 For modern browsers, you can access it like this:
 
