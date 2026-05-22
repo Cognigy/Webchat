@@ -40,17 +40,17 @@ To open or close the Webchat widget from your website once it is loaded, use the
 ```javascript
 // Open the Webchat widget when a user clicks a custom button on your website
 document.getElementById("my-chat-button").addEventListener("click", () => {
-    webchat.open();
+	webchat.open();
 });
 
 // Close the Webchat widget after a conversation is completed
 document.getElementById("my-close-button").addEventListener("click", () => {
-    webchat.close();
+	webchat.close();
 });
 
 // Toggle the Webchat widget open and closed state with a single button
 document.getElementById("my-toggle-button").addEventListener("click", () => {
-    webchat.toggle();
+	webchat.toggle();
 });
 ```
 
@@ -126,7 +126,7 @@ See it in action:
 ## Update Webchat Settings
 
 It is possible to update the Webchat settings at runtime using the `webchat.updateSettings(...)` method.
-It will receive an object as a parameter, which will update all provided settings while leaving the remaining settings untouched.  
+It will receive an object as a parameter, which will update all provided settings while leaving the remaining settings untouched.
 
 > [!NOTE]
 > Only a subset of settings is safe to update at runtime. For further information, refer to the [Endpoint Settings](./embedding.md#endpoint-settings).
