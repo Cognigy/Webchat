@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "../../../webchat/helper/useSelector";
-import {
-	cleanUpText,
-	getTextFromDOM,
-	messageElementExists,
-} from "../../utils/live-region-announcement";
+import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
 import getMessagesListWithoutControlCommands from "../../utils/filter-out-control-commands";
 import { IStreamingMessage } from "../../../common/interfaces/message";
 
@@ -63,9 +59,15 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 					continue;
 				}
 
+				// Prefer chat-components' live content; otherwise read the DOM.
+				// getTextFromDOM returns null when no <article data-message-id>
+				// node exists, which is the signal for a not-rendered message.
+				const liveText = liveContent[id];
+				const domText = liveText ? null : getTextFromDOM(id);
+
 				// "Rendered" iff chat-components produced live content for it,
 				// or an <article data-message-id> node exists in the DOM.
-				const isRendered = Boolean(liveContent[id]) || messageElementExists(id);
+				const isRendered = Boolean(liveText) || domText !== null;
 
 				// Data-only / unsupported message: not in the chat log UI.
 				// Skip WITHOUT marking announced so it can still be announced
@@ -75,9 +77,9 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 				}
 
 				// Rendered: announce exactly one message per effect run.
+				// Fall back to "A new message" for rendered-but-textless nodes.
 				announcedIdsRef.current.add(id);
-				const rawText = liveContent[id] || getTextFromDOM(id);
-				const text = cleanUpText(rawText || "A new message");
+				const text = cleanUpText(liveText || domText || "A new message");
 				setLiveMessage({ id, text });
 				return;
 			}

@@ -83,24 +83,15 @@ export const extractTextForScreenReader = (root: HTMLElement): string => {
  * - Querying the DOM for the element with the specified ID
  * - Using the extractTextForScreenReader function to get the text content
  *
- * @param id - The message ID to extract text for
- * @returns The extracted text or a default message if not found
- */
-export const getTextFromDOM = (id: string): string => {
-	const messageElement = document.querySelector(`[data-message-id="${id}"]`);
-	return messageElement
-		? extractTextForScreenReader(messageElement as HTMLElement)
-		: "A new message";
-};
-
-/**
- * Returns true if a message is actually rendered in the chat log DOM.
  * The <article data-message-id="..."> node only exists when chat-components'
  * Message matcher matched at least one plugin. Data-only / unsupported
- * messages produce no DOM node, so this returns false for them.
+ * messages produce no DOM node, so callers can use a `null` return to tell a
+ * not-rendered message apart from a rendered-but-textless one.
  *
- * @param id - The message ID (e.g. "webchatMessageId-<timestamp>")
+ * @param id - The message ID to extract text for
+ * @returns The extracted text, or `null` if no element exists for the id
  */
-export const messageElementExists = (id: string): boolean => {
-	return document.querySelector(`[data-message-id="${id}"]`) !== null;
+export const getTextFromDOM = (id: string): string | null => {
+	const messageElement = document.querySelector(`[data-message-id="${id}"]`);
+	return messageElement ? extractTextForScreenReader(messageElement as HTMLElement) : null;
 };
