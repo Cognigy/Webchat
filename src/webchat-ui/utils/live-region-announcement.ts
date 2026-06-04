@@ -92,3 +92,15 @@ export const getTextFromDOM = (id: string): string => {
 		? extractTextForScreenReader(messageElement as HTMLElement)
 		: "A new message";
 };
+
+/**
+ * Returns true if a message is actually rendered in the chat log DOM.
+ * The <article data-message-id="..."> node only exists when chat-components'
+ * Message matcher matched at least one plugin. Data-only / unsupported
+ * messages produce no DOM node, so this returns false for them.
+ *
+ * @param id - The message ID (e.g. "webchatMessageId-<timestamp>")
+ */
+export const messageElementExists = (id: string): boolean => {
+	return document.querySelector(`[data-message-id="${id}"]`) !== null;
+};
