@@ -427,6 +427,14 @@ export interface IWebchatSettings {
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
 		disableTeaserMarkdownRemoval: boolean;
+		/**
+		 * CSS selectors for host-page elements that must stay scrollable while the
+		 * webchat holds the mobile scroll lock (open fullscreen on a mobile-sized
+		 * viewport). Use this to keep your own overlays — e.g. a cookie-consent
+		 * banner — usable. Common consent managers (OneTrust, Cookiebot,
+		 * Usercentrics, Didomi) are always allowed; these selectors are added on top.
+		 */
+		scrollLockAllowSelectors: string[];
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

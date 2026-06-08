@@ -383,6 +383,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | disableTextInputSanitization | boolean | `false` | By default, text inputs from the user will be sanitized for HTML with scripting. If you set this to true, users can send any kind of HTML text, including script-tags and onload-attributes etc. |
 | disableToggleButton | boolean | `false` | Disable the Webchat Toggle Button |
 | disableTeaserMarkdownRemoval | boolean | `false` | Disable the automatic removal of Markdown in the Teaser Message. |
+| scrollLockAllowSelectors | string[] | `[]` | CSS selectors for host-page elements that must stay scrollable while the webchat holds the mobile scroll lock (open fullscreen on a mobile-sized viewport). Use this to keep your own overlays — e.g. a cookie-consent banner — usable. Common consent managers (OneTrust, Cookiebot, Usercentrics, Didomi) are always allowed; these selectors are added on top. |
 | enableAutoFocus | boolean | `false` | If true, focus will be automatically moved to the first focusable element within the latest incoming message. Ths focus will only be moved when the focus is currently on an element within the chat log. |
 | enableInjectionWithoutEmptyHistory | boolean | `false` | If true, will not prevent the auto-inject start behavior from being triggered if the history is not empty |
 | enableFocusTrap | boolean | `false` | If true, elements outside the chat window will not be focusable during keyboard navigation when the chat window is open |
@@ -836,6 +837,7 @@ interface IWebchatSettings {
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
 		disableTeaserMarkdownRemoval: boolean;
+		scrollLockAllowSelectors: string[];
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

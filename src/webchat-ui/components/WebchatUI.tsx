@@ -16,7 +16,7 @@ import baseInputPlugin from "./plugins/input/base";
 import { InputPlugin } from "../../common/interfaces/input-plugin";
 import stylisRTL from "stylis-rtl";
 import { debounce } from "lodash";
-import { RemoveScroll } from "react-remove-scroll";
+import { MobileScrollLock } from "./functional/MobileScrollLock";
 
 import "../utils/normalize.css";
 import { MessageSender } from "../interfaces";
@@ -1039,7 +1039,7 @@ export class WebchatUI extends React.PureComponent<
 		const { theme, hadConnection, lastUnseenMessageText, wasOpen, isMobile } = state;
 
 		const {
-			widgetSettings: { disableToggleButton },
+			widgetSettings: { disableToggleButton, scrollLockAllowSelectors },
 			behavior: { enableConnectionStatusIndicator },
 		} = config.settings;
 
@@ -1140,8 +1140,10 @@ export class WebchatUI extends React.PureComponent<
 				<ThemeProvider theme={theme}>
 					{/* <Global styles={cssReset} /> */}
 					<>
-						{/* @ts-expect-error - react-remove-scroll typings require `children` even though JSX children are provided correctly */}
-						<RemoveScroll enabled={open && isMobile} allowPinchZoom={true}>
+						<MobileScrollLock
+							enabled={open && isMobile}
+							allowSelectors={scrollLockAllowSelectors}
+						>
 							<WebchatWrapper
 								data-cognigy-webchat-root
 								{...restProps}
@@ -1259,7 +1261,7 @@ export class WebchatUI extends React.PureComponent<
 									)}
 								</CacheProvider>
 							</WebchatWrapper>
-						</RemoveScroll>
+						</MobileScrollLock>
 					</>
 				</ThemeProvider>
 			</>
