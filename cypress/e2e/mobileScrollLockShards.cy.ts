@@ -20,29 +20,25 @@ const injectScroller = (doc: Document, id: string) => {
 	return el;
 };
 
-/** Dispatch a vertical touch-drag and report whether the scroll gesture was cancelled. */
-const dragWasBlocked = (doc: Document, el: HTMLElement): boolean => {
+/**
+ * Dispatch a vertical scroll gesture and report whether react-remove-scroll
+ * cancelled it. Uses a wheel event rather than touch events because the `Touch`
+ * / `TouchEvent` constructors are not available in all browsers (e.g. Firefox);
+ * react-remove-scroll routes wheel and touch through the same allow/block logic.
+ */
+const scrollWasBlocked = (doc: Document, el: HTMLElement): boolean => {
 	const win = doc.defaultView as Window & typeof globalThis;
 	const rect = el.getBoundingClientRect();
-	const cx = Math.round(rect.x + rect.width / 2);
-	const cy = Math.round(rect.y + rect.height / 2);
-	const touch = (y: number) =>
-		new win.Touch({ identifier: 1, target: el, clientX: cx, clientY: y, pageX: cx, pageY: y });
-	const ev = (type: string, y: number, withTouches: boolean) =>
-		new win.TouchEvent(type, {
-			cancelable: true,
-			bubbles: true,
-			composed: true,
-			touches: withTouches ? [touch(y)] : [],
-			targetTouches: withTouches ? [touch(y)] : [],
-			changedTouches: [touch(y)],
-		});
-
-	el.dispatchEvent(ev("touchstart", cy, true));
-	const move = ev("touchmove", cy - 40, true); // finger up -> content scrolls down
-	el.dispatchEvent(move);
-	el.dispatchEvent(ev("touchend", cy - 40, false));
-	return move.defaultPrevented;
+	const wheel = new win.WheelEvent("wheel", {
+		deltaY: 40, // scroll down; the element is pre-scrolled so it has room to move
+		clientX: Math.round(rect.x + rect.width / 2),
+		clientY: Math.round(rect.y + rect.height / 2),
+		cancelable: true,
+		bubbles: true,
+		composed: true,
+	});
+	el.dispatchEvent(wheel);
+	return wheel.defaultPrevented;
 };
 
 describe("Mobile scroll-lock shards (consent banners)", () => {
@@ -62,8 +58,8 @@ describe("Mobile scroll-lock shards (consent banners)", () => {
 		cy.document().then(doc => {
 			const shard = doc.getElementById("onetrust-consent-sdk") as HTMLElement;
 			const nonShard = doc.getElementById("some-unrelated-overlay") as HTMLElement;
-			expect(dragWasBlocked(doc, shard), "OneTrust container scroll allowed").to.eq(false);
-			expect(dragWasBlocked(doc, nonShard), "unrelated overlay scroll blocked").to.eq(true);
+			expect(scrollWasBlocked(doc, shard), "OneTrust container scroll allowed").to.eq(false);
+			expect(scrollWasBlocked(doc, nonShard), "unrelated overlay scroll blocked").to.eq(true);
 		});
 	});
 
@@ -82,7 +78,7 @@ describe("Mobile scroll-lock shards (consent banners)", () => {
 
 		cy.document().then(doc => {
 			const shard = doc.getElementById("my-cookie-bar") as HTMLElement;
-			expect(dragWasBlocked(doc, shard), "custom-selector container scroll allowed").to.eq(
+			expect(scrollWasBlocked(doc, shard), "custom-selector container scroll allowed").to.eq(
 				false,
 			);
 		});

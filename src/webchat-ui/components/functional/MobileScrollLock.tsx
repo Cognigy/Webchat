@@ -28,11 +28,7 @@ interface MobileScrollLockProps {
  * manager) and toggle their banner in and out, so the shard set is resolved live
  * via a MutationObserver while the lock is active.
  */
-export const MobileScrollLock = ({
-	enabled,
-	allowSelectors,
-	children,
-}: MobileScrollLockProps) => {
+export const MobileScrollLock = ({ enabled, allowSelectors, children }: MobileScrollLockProps) => {
 	const [shards, setShards] = useState<HTMLElement[]>([]);
 
 	// Stable dependency: the effect only needs to re-run when the selector set changes.
@@ -62,7 +58,9 @@ export const MobileScrollLock = ({
 				resolve();
 			});
 		});
-		observer.observe(document.body, { childList: true, subtree: true });
+		// Observe the whole document, not just <body>, so overlays mounted directly
+		// under <html> (rare, but some consent managers do this) are still detected.
+		observer.observe(document.documentElement, { childList: true, subtree: true });
 
 		return () => {
 			observer.disconnect();
