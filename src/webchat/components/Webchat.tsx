@@ -183,7 +183,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		this.client.on("output", handler);
 	};
 
-	updateSettings = (settings: IWebchatSettings) => {
+	updateSettings = (settings: Partial<IWebchatSettings>) => {
 		this.store.dispatch(updateSettings(settings));
 	};
 

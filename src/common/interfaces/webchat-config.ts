@@ -427,6 +427,13 @@ export interface IWebchatSettings {
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
 		disableTeaserMarkdownRemoval: boolean;
+		/**
+		 * When the webchat is open on a mobile-sized viewport it locks scrolling of the
+		 * underlying host page (via react-remove-scroll). Set this to `true` to opt out of
+		 * that behavior, e.g. when the host page shows its own scrollable overlay such as a
+		 * cookie-consent banner that would otherwise become unreachable.
+		 */
+		disableMobileScrollLock: boolean;
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

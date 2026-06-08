@@ -383,6 +383,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | disableTextInputSanitization | boolean | `false` | By default, text inputs from the user will be sanitized for HTML with scripting. If you set this to true, users can send any kind of HTML text, including script-tags and onload-attributes etc. |
 | disableToggleButton | boolean | `false` | Disable the Webchat Toggle Button |
 | disableTeaserMarkdownRemoval | boolean | `false` | Disable the automatic removal of Markdown in the Teaser Message. |
+| disableMobileScrollLock | boolean | `false` | When the webchat is open on a mobile-sized viewport it locks scrolling of the underlying host page. Set this to true to opt out of that behavior, e.g. when the host page shows its own scrollable overlay such as a cookie-consent banner that would otherwise become unreachable. |
 | enableAutoFocus | boolean | `false` | If true, focus will be automatically moved to the first focusable element within the latest incoming message. Ths focus will only be moved when the focus is currently on an element within the chat log. |
 | enableInjectionWithoutEmptyHistory | boolean | `false` | If true, will not prevent the auto-inject start behavior from being triggered if the history is not empty |
 | enableFocusTrap | boolean | `false` | If true, elements outside the chat window will not be focusable during keyboard navigation when the chat window is open |
@@ -836,6 +837,7 @@ interface IWebchatSettings {
 		disableTextInputSanitization: boolean;
 		disableToggleButton: boolean;
 		disableTeaserMarkdownRemoval: boolean;
+		disableMobileScrollLock: boolean;
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

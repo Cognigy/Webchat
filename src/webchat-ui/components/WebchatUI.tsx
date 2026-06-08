@@ -1039,7 +1039,7 @@ export class WebchatUI extends React.PureComponent<
 		const { theme, hadConnection, lastUnseenMessageText, wasOpen, isMobile } = state;
 
 		const {
-			widgetSettings: { disableToggleButton },
+			widgetSettings: { disableToggleButton, disableMobileScrollLock },
 			behavior: { enableConnectionStatusIndicator },
 		} = config.settings;
 
@@ -1141,7 +1141,10 @@ export class WebchatUI extends React.PureComponent<
 					{/* <Global styles={cssReset} /> */}
 					<>
 						{/* @ts-expect-error - react-remove-scroll typings require `children` even though JSX children are provided correctly */}
-						<RemoveScroll enabled={open && isMobile} allowPinchZoom={true}>
+						<RemoveScroll
+							enabled={open && isMobile && !disableMobileScrollLock}
+							allowPinchZoom={true}
+						>
 							<WebchatWrapper
 								data-cognigy-webchat-root
 								{...restProps}
