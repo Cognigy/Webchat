@@ -384,6 +384,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | disableToggleButton | boolean | `false` | Disable the Webchat Toggle Button |
 | disableTeaserMarkdownRemoval | boolean | `false` | Disable the automatic removal of Markdown in the Teaser Message. |
 | scrollLockAllowSelectors | string[] | `[]` | CSS selectors for host-page elements that must stay scrollable while the webchat holds the mobile scroll lock (open fullscreen on a mobile-sized viewport). Use this to keep your own overlays — e.g. a cookie-consent banner — usable. Common consent managers (OneTrust, Cookiebot, Usercentrics, Didomi) are always allowed; these selectors are added on top. |
+| disableMobileScrollLock | boolean | `false` | When the webchat is open on a mobile-sized viewport it locks scrolling of the underlying host page. Set this to true to opt out of that behavior, e.g. when the host page shows its own scrollable overlay such as a cookie-consent banner that would otherwise become unreachable. |
 | enableAutoFocus | boolean | `false` | If true, focus will be automatically moved to the first focusable element within the latest incoming message. Ths focus will only be moved when the focus is currently on an element within the chat log. |
 | enableInjectionWithoutEmptyHistory | boolean | `false` | If true, will not prevent the auto-inject start behavior from being triggered if the history is not empty |
 | enableFocusTrap | boolean | `false` | If true, elements outside the chat window will not be focusable during keyboard navigation when the chat window is open |
@@ -838,6 +839,7 @@ interface IWebchatSettings {
 		disableToggleButton: boolean;
 		disableTeaserMarkdownRemoval: boolean;
 		scrollLockAllowSelectors: string[];
+		disableMobileScrollLock: boolean;
 		enableAutoFocus: boolean;
 		enableInjectionWithoutEmptyHistory: boolean;
 		enableFocusTrap: boolean;

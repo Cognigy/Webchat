@@ -188,6 +188,7 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			disableToggleButton: false,
 			disableTeaserMarkdownRemoval: false,
 			scrollLockAllowSelectors: [],
+			disableMobileScrollLock: false,
 			enableAutoFocus: false,
 			enableInjectionWithoutEmptyHistory: false,
 			enableFocusTrap: false,
