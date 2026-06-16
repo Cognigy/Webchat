@@ -1056,7 +1056,11 @@ export class WebchatUI extends React.PureComponent<
 		const { theme, hadConnection, lastUnseenMessageText, wasOpen, isMobile } = state;
 
 		const {
-			widgetSettings: { disableToggleButton, scrollLockAllowSelectors, disableMobileScrollLock },
+			widgetSettings: {
+				disableToggleButton,
+				scrollLockAllowSelectors,
+				disableMobileScrollLock,
+			},
 			behavior: { enableConnectionStatusIndicator },
 		} = config.settings;
 
