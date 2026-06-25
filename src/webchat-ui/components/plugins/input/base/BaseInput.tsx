@@ -574,6 +574,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 														this
 															.inputRef as React.Ref<HTMLTextAreaElement>
 													}
+													// Intentional: focus the message input so keyboard
+													// users can type right away. Opt-out is exposed via
+													// the `disableInputAutofocus` setting.
+													// eslint-disable-next-line jsx-a11y/no-autofocus
 													autoFocus={!disableInputAutofocus}
 													value={combineStrings(text, speechInterim)}
 													onChange={this.handleChangeTextValue}

@@ -47,10 +47,12 @@
 		"prettier:fix": "prettier --write .",
 		"tsc:check": "tsc --noEmit",
 		"lint": "eslint src/",
+		"lint:a11y": "eslint src/ --config eslint.a11y.config.mjs",
 		"deps:check": "npx -y depcheck",
 		"deps:analyze": "npx -y webpack-bundle-analyzer stats.json dist",
 		"codeql:scan:src": "codeql database create --overwrite codeql-db --language=javascript --source-root=. --codescanning-config=codeql-config.yml && codeql database analyze codeql-db codeql/javascript-queries --format=sarifv2.1.0 --output=codeql-results-src.sarif --threads=0",
-		"codeql:scan:dist": "npm run build && codeql database create --overwrite codeql-db --language=javascript --source-root=dist && codeql database analyze codeql-db codeql/javascript-queries --format=sarifv2.1.0 --output=codeql-results-dist.sarif --threads=0"
+		"codeql:scan:dist": "npm run build && codeql database create --overwrite codeql-db --language=javascript --source-root=dist && codeql database analyze codeql-db codeql/javascript-queries --format=sarifv2.1.0 --output=codeql-results-dist.sarif --threads=0",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"@braintree/sanitize-url": "^6.0.0",
@@ -120,9 +122,12 @@
 		"cypress-wait-until": "^1.7.2",
 		"es-check": "^6.1.1",
 		"eslint": "^9.0.0",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-react": "^7.37.5",
 		"globals": "^16.0.0",
 		"http-server": "^0.13.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.4.0",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^3.5.3",
 		"react": "^18.3.0",
@@ -143,5 +148,8 @@
 	"overrides": {
 		"cross-spawn": ">=7.0.5",
 		"loader-utils": "2.0.4"
+	},
+	"lint-staged": {
+		"src/**/*.{ts,tsx,js,jsx}": "eslint --config eslint.a11y.config.mjs"
 	}
 }

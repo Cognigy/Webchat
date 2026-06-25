@@ -24,6 +24,17 @@ Please describe the individual steps on how a peer can test your change.
 - [ ] Exchanges data with external systems
 - [ ] No security implications
 
+# Accessibility (WCAG 2.2 AA)
+
+For UI changes (see [docs/accessibility.md](../docs/accessibility.md)):
+
+- [ ] `npm run lint:a11y` passes
+- [ ] Added a `cy.checkA11yCompliance()` assertion for the new/changed surface
+- [ ] Keyboard-only operable; focus visible and managed (move-in on open, restore on close)
+- [ ] All interactive elements have an accessible name; ARIA correct / not contradicting semantics
+- [ ] Color contrast and target size (≥24×24px) checked
+- [ ] No accessibility implications (non-UI change)
+
 # Additional considerations
 
 - [ ] This PR might have performance implications
