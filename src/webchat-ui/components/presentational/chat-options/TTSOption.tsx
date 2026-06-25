@@ -23,19 +23,24 @@ const TTSOption = (props: ITTSOption) => {
 
 	const isActive = useSelector(state => state.ui.ttsActive);
 
+	const labelId = React.useId();
+	const label = config.settings.chatOptions.labelTTSToggle || "Enable Text-to-Speech";
+
 	return (
 		<TTSOptionRoot className="webchat-tts-option-root">
 			<Typography
+				id={labelId}
 				variant="title1-semibold"
 				margin={0}
 				className="webchat-chat-options-tts-option-label"
 			>
-				{config.settings.chatOptions.labelTTSToggle || "Enable Text-to-Speech"}
+				{label}
 			</Typography>
 			<ToggleButton
 				onClick={onToggle}
 				className="webchat-chat-options-tts-option-toggle"
 				isActive={isActive}
+				aria-labelledby={labelId}
 			/>
 		</TTSOptionRoot>
 	);
