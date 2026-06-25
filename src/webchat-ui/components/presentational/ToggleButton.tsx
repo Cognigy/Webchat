@@ -68,7 +68,7 @@ export const ToggleButton = (props: IToggleButtonProps) => {
 			isActive={isActive}
 			disabled={disabled}
 			role="switch"
-			aria-checked={isActive}
+			aria-checked={Boolean(isActive)}
 			aria-labelledby={ariaLabelledBy}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
