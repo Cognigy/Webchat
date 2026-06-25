@@ -16,8 +16,16 @@ import globals from "globals";
  */
 const A11Y_SEVERITY = "error";
 
+// Apply the jsx-a11y "recommended" ruleset, overriding only the severity while
+// preserving each rule's original options. Rules the preset disables ("off")
+// stay off. A rule entry is either a bare severity ("error" | "off") or a
+// tuple [severity, options]; keep the options and swap the severity.
 const a11yRecommendedRules = Object.fromEntries(
-	Object.keys(jsxA11y.flatConfigs.recommended.rules).map(ruleName => [ruleName, A11Y_SEVERITY]),
+	Object.entries(jsxA11y.flatConfigs.recommended.rules).map(([ruleName, config]) => {
+		const [severity, ...options] = Array.isArray(config) ? config : [config];
+		if (severity === "off" || severity === 0) return [ruleName, config];
+		return [ruleName, [A11Y_SEVERITY, ...options]];
+	}),
 );
 
 export default [

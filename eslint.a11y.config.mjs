@@ -8,14 +8,12 @@ import globals from "globals";
  * Dedicated accessibility lint config used by the `lint:a11y` script and the
  * a11y CI gate (.github/workflows/lint.yml).
  *
- * Unlike the main eslint.config.mjs (where jsx-a11y runs as warnings during the
- * warn-first rollout), this config runs ONLY the jsx-a11y "recommended" ruleset
- * as ERRORS. That lets CI block PRs on accessibility regressions without being
- * affected by the warn-first severity or by unrelated pre-existing lint debt.
+ * This config runs ONLY the jsx-a11y "recommended" ruleset (the main
+ * eslint.config.mjs also enforces these rules as errors). Scoping the CI gate
+ * to a11y rules alone lets it block PRs on accessibility regressions without
+ * being affected by unrelated, pre-existing lint debt elsewhere in the project.
  *
- * During the warn-first rollout this command is expected to report violations;
- * it is wired into the CI gate once the codebase has been triaged (see
- * docs/accessibility.md).
+ * See docs/accessibility.md for the full accessibility governance setup.
  */
 export default [
 	{

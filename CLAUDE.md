@@ -29,7 +29,7 @@ The `wcag-component` skill (`.claude/skills/wcag-component/`) has detailed, copy
 
 ## Boundary: Webchat vs. chat-components
 
-Message **renderers** (text, image, gallery, list, datepicker, buttons, …) live in the `@cognigy/chat-components` package, not here. If an a11y issue is inside a renderer's internals, the fix likely belongs **upstream** in chat-components (`/home/sushmitha/Workspace/chat-components`) — call that out rather than patching around it in Webchat.
+Message **renderers** (text, image, gallery, list, datepicker, buttons, …) live in the `@cognigy/chat-components` package ([Cognigy/chat-components](https://github.com/Cognigy/chat-components)), not here. If an a11y issue is inside a renderer's internals, the fix likely belongs **upstream** in that repository — call that out rather than patching around it in Webchat.
 
 ## Definition of Done for UI changes
 
