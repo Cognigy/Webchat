@@ -7,7 +7,7 @@ WCAG defines _what_ must be true; for _how_ each widget should behave (keyboard 
 ## Definition of Done for UI changes
 
 1. **Static lint passes** — `npm run lint:a11y` (jsx-a11y rules, WCAG 2.2 AA) reports no errors.
-2. **Runtime axe assertion added** — the new/changed surface has a `cy.checkA11yCompliance()` assertion (in [`cypress/e2e/accessibility.cy.ts`](../cypress/e2e/accessibility.cy.ts) or the relevant feature spec). This runs axe-core in a real browser, so it also catches color-contrast and computed-ARIA issues.
+2. **Runtime axe assertion added** — the new/changed surface has a `cy.checkA11yCompliance()` assertion in its feature spec (e.g. `cypress/e2e/homeScreen.cy.ts`, `chatOptionsScreen.cy.ts`, `messageInput.cy.ts` — each has an `Accessibility (WCAG 2.2 AA)` describe block). Co-locate the check with the feature it tests; scope it to the widget root `[data-cognigy-webchat-root]`. This runs axe-core in a real browser, so it also catches color-contrast and computed-ARIA issues.
 3. **Pattern documented** — if you introduce a new a11y pattern, note it here.
 
 ## The two automated gates

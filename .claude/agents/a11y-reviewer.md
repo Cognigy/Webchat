@@ -12,7 +12,7 @@ The normative standard is the **[WCAG 2.2 Recommendation](https://www.w3.org/TR/
 
 1. Determine the diff. Default to the PR/branch diff vs. `main`:
     - `git diff --merge-base main` (or `git diff main...HEAD`). If given a PR number, use `gh pr diff <n>`.
-2. Read the changed files (and enough surrounding context to judge interactions, roles, and focus flow). For UI changes, also check whether a matching `cy.checkA11yCompliance()` assertion was added (in `cypress/e2e/accessibility.cy.ts` or the feature spec).
+2. Read the changed files (and enough surrounding context to judge interactions, roles, and focus flow). For UI changes, also check whether a matching `cy.checkA11yCompliance("[data-cognigy-webchat-root]")` assertion was added in the relevant feature spec's `Accessibility (WCAG 2.2 AA)` describe block (e.g. `cypress/e2e/homeScreen.cy.ts`).
 3. Cross-check against the repo's accessibility standards in `CLAUDE.md`, `docs/accessibility.md`, and the recipes in `.claude/skills/wcag-component/`.
 
 ## Check widgets against the W3C ARIA Authoring Practices Guide (APG)

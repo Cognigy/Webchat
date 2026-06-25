@@ -34,7 +34,7 @@ Message **renderers** (text, image, gallery, list, datepicker, buttons, …) liv
 ## Definition of Done for UI changes
 
 1. Passes `npm run lint:a11y` (jsx-a11y, WCAG 2.2 AA static rules).
-2. New/changed UI surfaces have a `cy.checkA11yCompliance()` assertion (add to `cypress/e2e/accessibility.cy.ts` or the relevant feature spec). This runs axe in a real browser, covering contrast + ARIA.
+2. New/changed UI surfaces have a `cy.checkA11yCompliance("[data-cognigy-webchat-root]")` assertion in the relevant feature spec's `Accessibility (WCAG 2.2 AA)` describe block (co-located with the feature, e.g. `cypress/e2e/homeScreen.cy.ts`). This runs axe in a real browser, covering contrast + ARIA.
 3. The a11y pattern is reflected in `docs/accessibility.md` if it's new.
 
 ## Other useful commands

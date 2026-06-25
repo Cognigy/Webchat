@@ -94,4 +94,4 @@ User-facing aria strings come from `customTranslations.ariaLabels` — read from
 - [ ] Contrast ≥ 4.5:1 (text) / 3:1 (large text, UI/state); honors `prefers-reduced-motion`; targets ≥ 24×24px; focus not obscured.
 - [ ] Images have `alt`; decorative icons `aria-hidden`.
 - [ ] `npm run lint:a11y` passes.
-- [ ] Added a `cy.checkA11yCompliance()` assertion for the new/changed surface (in `cypress/e2e/accessibility.cy.ts` or the feature spec).
+- [ ] Added a `cy.checkA11yCompliance("[data-cognigy-webchat-root]")` assertion for the new/changed surface in its feature spec's `Accessibility (WCAG 2.2 AA)` describe block (e.g. `cypress/e2e/homeScreen.cy.ts`).

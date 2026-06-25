@@ -294,4 +294,27 @@ describe("Rating", () => {
 			cy.get(`label[for="${inputId}"]`).should("have.text", "Please share your thoughts");
 		});
 	});
+
+	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("rating widget has no detectable a11y violations", () => {
+			cy.initMockWebchat();
+			cy.openWebchat().startConversation();
+			cy.receiveMessage(
+				"",
+				{
+					_plugin: {
+						type: "request-rating",
+						data: {
+							ratingTitleText: "How was your experience?",
+							ratingCommentText: "Please share your thoughts",
+						},
+					},
+				},
+				"bot",
+			);
+			cy.get(".webchat-rating-widget-root").should("exist");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
 });

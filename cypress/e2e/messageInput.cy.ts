@@ -29,4 +29,40 @@ describe("Webchat Message Input", () => {
 				cy.get(`#${inputId}`).should("have.value", "Hi");
 			});
 	});
+
+	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("conversation view (header + input) has no detectable a11y violations", () => {
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					privacyNotice: { enabled: false },
+				},
+			});
+			cy.openWebchat().startConversation();
+			cy.get(".webchat-input-message-input").should("be.visible");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
+		it("open persistent menu has no detectable a11y violations", () => {
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					layout: {
+						enablePersistentMenu: true,
+						persistentMenu: {
+							title: "Chat Menu",
+							menuItems: [
+								{ title: "Option 1", payload: "opt1" },
+								{ title: "Option 2", payload: "opt2" },
+							],
+						},
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+			cy.get(".webchat-input-persistent-menu-button").click();
+			cy.get(".webchat-input-persistent-menu").should("be.visible");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
 });
