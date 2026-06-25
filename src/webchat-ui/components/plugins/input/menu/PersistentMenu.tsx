@@ -75,12 +75,18 @@ const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSel
 
 	return (
 		<PersistentMenuContainer className="webchat-input-persistent-menu" tabIndex={-1}>
-			<Typography variant="body-semibold" component="h3" marginTop={4} marginLeft={8}>
+			<Typography
+				id="persistentMenuTitle"
+				variant="body-semibold"
+				component="h3"
+				marginTop={4}
+				marginLeft={8}
+			>
 				{title}
 			</Typography>
 			<ActionButtonsWrapper
 				aria-labelledby="persistentMenuTitle"
-				role="menu"
+				role="group"
 				ref={menuRef}
 				onKeyDown={handleMenuKeyDown}
 			>
