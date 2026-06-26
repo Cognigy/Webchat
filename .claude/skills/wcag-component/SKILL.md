@@ -48,10 +48,11 @@ User-facing aria strings come from `customTranslations.ariaLabels` — read from
 - Toggle buttons: `aria-expanded={open}` and, when controlling a region, `aria-controls={regionId}`.
 - On open, move focus into the opened surface; keep a ref to the trigger and restore focus to it on close (pattern in `WebchatUI.tsx`).
 
-### Persistent menu (`role="menu"`) — [APG: Menu Button](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/)
+### Persistent menu (`role="group"`) — action buttons grouped under a visible label
 
-- Trigger button: `aria-haspopup="true"` + `aria-expanded`. Container `role="menu"`; items `role="menuitem"`. Implement arrow-key navigation (Up/Down, Home/End wrap), Esc to close, Tab to leave. See `src/webchat-ui/components/plugins/input/menu/PersistentMenu.tsx`.
-- Roving tabindex: exactly one item `tabindex=0`, the rest `-1`.
+- The persistent menu contains plain action `<button>` elements, **not** `menuitem` children. Use `role="group"` (not `role="menu"`) on the wrapper, with `aria-labelledby` pointing at the visible title heading. Tab moves between the buttons normally — `role="group"` carries no special keyboard model, so don't attach arrow-key handlers. See `src/webchat-ui/components/plugins/input/menu/PersistentMenu.tsx`.
+- Example: `<ActionButtonsWrapper role="group" aria-labelledby="persistentMenuTitle">` with `<h3 id="persistentMenuTitle">{title}</h3>`.
+- Do **not** use `role="menu"` unless the children carry `role="menuitem"` / `menuitemradio` / `menuitemcheckbox` and you implement the full [APG Menu](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/) roving-tabindex + arrow-key model.
 
 ### Inputs / textarea / file upload / speech
 

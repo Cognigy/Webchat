@@ -22,7 +22,7 @@ WCAG says _what_ must be true; the **[W3C ARIA APG](https://www.w3.org/WAI/ARIA/
 Patterns most relevant to Webchat (use `WebFetch` to read the page when you need the exact keyboard table or required attributes):
 
 - **[Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)** — confirm modals, overlays, image lightbox. Focus moves in on open, is trapped, Esc closes, focus restores to trigger; `role="dialog"` + `aria-modal="true"` + labelled.
-- **[Menu & Menu Button](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/)** + **[Menu](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/)** — persistent menu. Button has `aria-haspopup`/`aria-expanded`; menu uses arrow keys, Home/End, Esc, type-ahead; roving tabindex.
+- **[Menu & Menu Button](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/)** + **[Menu](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/)** — a true menu has a trigger with `aria-haspopup`/`aria-expanded` and children carrying `role="menuitem"` (arrow keys, Home/End, Esc, type-ahead, roving tabindex). Note: the persistent menu is **not** one of these — it's plain action `<button>`s, so it correctly uses `role="group"` + `aria-labelledby` (Tab between buttons, no arrow-key model). Don't flag `role="group"` there as a violation.
 - **[Button](https://www.w3.org/WAI/ARIA/apg/patterns/button/)** — Enter/Space activate; `aria-pressed` for toggles.
 - **[Disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/)** — show/hide regions (e.g. expandable sections); `aria-expanded` on the trigger.
 - **[Link](https://www.w3.org/WAI/ARIA/apg/patterns/link/)** — Enter activates; real `<a href>` over a faux link.
