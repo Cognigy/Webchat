@@ -63,7 +63,11 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
 					<Markdown
 						components={{
+							// react-markdown renderer: anchor content is supplied at
+							// runtime via {...props}.children from the markdown source,
+							// so the static anchor-has-content check is a false positive.
 							a: ({ node, ...props }) => (
+								// eslint-disable-next-line jsx-a11y/anchor-has-content
 								<a {...props} target="_blank" rel="noreferrer" />
 							),
 						}}

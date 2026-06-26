@@ -616,4 +616,25 @@ describe("Previous Conversations", () => {
 			});
 		});
 	});
+
+	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("previous conversations list has no detectable a11y violations", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: {
+							enabled: true,
+							buttonText: "View previous conversations",
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("View previous conversations").click();
+			cy.get(".webchat-prev-conversations-content").should("exist");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
 });

@@ -32,41 +32,6 @@ const ActionButtonsWrapper = styled.div(({ theme }) => ({
 }));
 
 const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSelect }) => {
-	const menuRef = React.useRef<HTMLDivElement>(null);
-
-	const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-		const { key, target } = e;
-		let newFocusTarget: HTMLButtonElement | null = null;
-
-		if (!menuRef.current) return;
-
-		switch (key) {
-			case "ArrowUp":
-				newFocusTarget =
-					// @ts-expect-error Missing type for previousElementSibling in React Types
-					((target.previousElementSibling as HTMLButtonElement) ||
-						menuRef.current.lastChild) as HTMLButtonElement;
-				break;
-			case "ArrowDown":
-				newFocusTarget = ((target as HTMLElement).nextElementSibling ||
-					menuRef.current.firstChild) as HTMLButtonElement;
-				break;
-			case "Home":
-				newFocusTarget = menuRef.current.firstChild as HTMLButtonElement;
-				break;
-			case "End":
-				newFocusTarget = menuRef.current.lastChild as HTMLButtonElement;
-				break;
-			default:
-				break;
-		}
-
-		if (newFocusTarget !== null) {
-			newFocusTarget.focus();
-			e.preventDefault();
-		}
-	};
-
 	const buttons: IWebchatButton[] = menuItems.map(item => ({
 		title: item.title,
 		type: "postback",
@@ -75,15 +40,16 @@ const PersistentMenu: React.FC<PersistentMenuProps> = ({ title, menuItems, onSel
 
 	return (
 		<PersistentMenuContainer className="webchat-input-persistent-menu" tabIndex={-1}>
-			<Typography variant="body-semibold" component="h3" marginTop={4} marginLeft={8}>
+			<Typography
+				id="persistentMenuTitle"
+				variant="body-semibold"
+				component="h3"
+				marginTop={4}
+				marginLeft={8}
+			>
 				{title}
 			</Typography>
-			<ActionButtonsWrapper
-				aria-labelledby="persistentMenuTitle"
-				role="menu"
-				ref={menuRef}
-				onKeyDown={handleMenuKeyDown}
-			>
+			<ActionButtonsWrapper aria-labelledby="persistentMenuTitle" role="group">
 				<ActionButtons
 					buttonClassName="webchat-input-persistent-menu-item"
 					containerClassName="webchat-input-persistent-menu-item-container"

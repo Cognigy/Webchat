@@ -1,0 +1,36 @@
+name: Lint
+
+on: [pull_request]
+
+jobs:
+    # Accessibility lint gate. Runs ONLY the jsx-a11y rules as errors
+    # (eslint.a11y.config.mjs) so it blocks PRs on WCAG 2.2 AA regressions
+    # without being affected by unrelated, pre-existing lint debt.
+    # See docs/accessibility.md for the accessibility governance setup.
+    a11y:
+        name: Accessibility lint (jsx-a11y)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run lint:a11y
+
+    # Full ESLint run for visibility. Non-blocking for now (continue-on-error)
+    # because the broader codebase has pre-existing, non-accessibility lint debt
+    # that is out of scope for the accessibility initiative.
+    lint:
+        name: ESLint (full, non-blocking)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run lint
+              continue-on-error: true

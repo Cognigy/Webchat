@@ -69,6 +69,9 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 			}}
 		>
 			<HeaderIconButton
+				// Intentional: move focus into the overlay when it opens (the close
+				// button, unless the reconnect button below takes focus instead).
+				// eslint-disable-next-line jsx-a11y/no-autofocus
 				autoFocus={!isPermanent} // Focus only if the reconnect button is not rendered
 				data-disconnect-overlay-close-button
 				onClick={onClose}
@@ -86,6 +89,9 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				<>
 					{navigator.onLine ? (
 						<Button
+							// Intentional: focus the primary Reconnect action when the
+							// permanent-disconnect overlay opens.
+							// eslint-disable-next-line jsx-a11y/no-autofocus
 							autoFocus
 							onClick={onConnect}
 							color="primary"

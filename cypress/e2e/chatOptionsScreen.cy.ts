@@ -319,4 +319,49 @@ describe("Chat Options Screen", () => {
 		cy.get("[data-header-menu-button]").click();
 		cy.focused().should("have.id", "webchatHeaderTitle");
 	});
+
+	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("chat options screen (all sections) has no detectable a11y violations", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: {
+						enabled: true,
+						quickReplyOptions: {
+							enabled: true,
+							quickReplies: [
+								{ type: "postback", title: "Quick Reply", payload: "qr1" },
+							],
+						},
+						showTTSToggle: true,
+						rating: { enabled: "always" },
+						enableDeleteConversation: true,
+						footer: {
+							enabled: true,
+							items: [{ title: "Privacy", url: "https://example.com" }],
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-chat-options-root").should("exist");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
+		it("delete-conversation confirmation modal has no detectable a11y violations", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+			cy.get(".webchat-modal-root").should("exist");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
 });
