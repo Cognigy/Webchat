@@ -861,6 +861,25 @@ export class WebchatUI extends React.PureComponent<
 		}
 	};
 
+	/**
+	 * The webchat window (#webchatWindow) is a fixed-size flex shell with `overflow: hidden`; its
+	 * children (header, chat log, input) manage their own scrolling. Safari/WebKit, however, still
+	 * scrolls an `overflow: hidden` ancestor to bring a newly focused element into view — so during
+	 * (reverse) keyboard navigation it nudges the whole window by a few pixels, shifting the header
+	 * up and clipping the layout. Nothing else resets it, so the broken offset sticks (AB#105695).
+	 * Snap the window back to its origin whenever it is scrolled. This is browser- and message-type
+	 * agnostic and never interferes with the inner scroll containers.
+	 */
+	handleWebchatWindowScroll: React.UIEventHandler<HTMLDivElement> = event => {
+		// Only act on the window's own scroll, never on a descendant scroll container that might
+		// surface here. React 18 does not bubble synthetic scroll events, but this keeps the
+		// target-only intent explicit and resilient to any future change in event delegation.
+		if (event.target !== event.currentTarget) return;
+		const el = event.currentTarget;
+		if (el.scrollTop !== 0) el.scrollTop = 0;
+		if (el.scrollLeft !== 0) el.scrollLeft = 0;
+	};
+
 	handleSendRating = ({ rating, comment, showRatingStatus }) => {
 		this.props.onShowRatingScreen(false);
 
@@ -1189,6 +1208,7 @@ export class WebchatUI extends React.PureComponent<
 												className="webchat"
 												id="webchatWindow"
 												ref={this.webchatWindowRef}
+												onScroll={this.handleWebchatWindowScroll}
 												chatWindowWidth={
 													this.props.config.settings.layout
 														.chatWindowWidth
