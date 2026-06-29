@@ -64,7 +64,7 @@ CI blocks on these; run them locally to avoid round-trips:
 - **`npm run build`** — the real artifact. Babel transpiles (strips types); only size warnings are normal.
 - **`npm run lint:a11y`** — the **blocking** "Accessibility lint (jsx-a11y)" job (`lint.yml`); **0 errors** required. (The full `npm run lint` also runs in CI but is `continue-on-error` / non-blocking — don't chase its pre-existing debt during a release.)
 - **`npm run prettier:check`** — the **Format Check** CI job. Easy to trip with multi-line edits in `cypress/` (which `lint-staged`'s pre-commit does _not_ cover). Fix with `npx prettier --write <file>`.
-- **Cypress E2E** (`npm test`) — heavy; covers Chrome + Firefox + progressive-rendering. See §4.
+- **Cypress E2E** — heavy. `npm test` runs the **Chrome** suite only (`test:cypress:chrome`); Firefox and progressive-rendering are separate scripts (`test:cypress:firefox`, `test:cypress:progressive-rendering`) and separate CI workflows. See §4.
 
 **`npm run tsc:check` is NOT a release gate.** It reports ~150 pre-existing errors and is wired into no workflow (the build uses Babel, not `tsc`). Don't block a release on it or try to "fix" those errors as part of a release.
 
@@ -160,7 +160,7 @@ After publishing (per the Confluence runbook):
 
 - `npm install` after editing `package.json`, never `npm ci` (lockfile mismatch).
 - Regenerate `OSS_LICENSES.txt` **after** `npm version`, or the self-ref version is stale (Copilot will flag it).
-- `tsc:check` is not a gate; the gates are build, `lint:a11y`, `prettier:check`, Cypress E2E, Format Check.
+- `tsc:check` is not a gate; the gates are build, `lint:a11y` (Accessibility lint), **Format Check** (`prettier:check`), and Cypress E2E.
 - Prettier flags multi-line edits in `cypress/` that the pre-commit hook misses — run `prettier --check .`.
 - Dependency bumps break E2E specs that pin chat-components output; decide intended-vs-regression, fix upstream if it's a real regression.
 - Squash merges orphan the `npm version` tag — re-point `v3.NN.0` to the `main` squash commit before pushing it.
