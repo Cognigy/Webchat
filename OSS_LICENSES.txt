@@ -1,4 +1,4 @@
-Created on 29-06-2026 at 09:59:01
+Created on 29-06-2026 at 10:14:48
 
 {
   "@babel/code-frame@7.29.0": {
@@ -170,7 +170,7 @@ Created on 29-06-2026 at 09:59:01
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.44.0": {
+  "@cognigy/webchat@3.45.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
