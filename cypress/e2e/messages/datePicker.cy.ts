@@ -66,9 +66,9 @@ describe("Date Picker", () => {
 			// As of @cognigy/chat-components 0.76.0 the calendar grid a11y rework (AB#118957)
 			// moves focus to the dialog heading (tabIndex=-1) on open, so the screen reader
 			// announces the dialog name; the grid then uses roving tabindex (ARIA APG).
-			cy.get(
-				".webchat-plugin-date-picker-header .webchat-list-template-header-title",
-			).should("be.focused");
+			cy.get(".webchat-plugin-date-picker-header .webchat-list-template-header-title").should(
+				"be.focused",
+			);
 		});
 	});
 
