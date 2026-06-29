@@ -25,15 +25,18 @@
 							"images": [
 								{
 									"type": "Image",
-									"url": "http://contososcubademo.azurewebsites.net/assets/steak.jpg"
+									"url": "http://contososcubademo.azurewebsites.net/assets/steak.jpg",
+									"altText": "Steak"
 								},
 								{
 									"type": "Image",
-									"url": "http://contososcubademo.azurewebsites.net/assets/chicken.jpg"
+									"url": "http://contososcubademo.azurewebsites.net/assets/chicken.jpg",
+									"altText": "Chicken"
 								},
 								{
 									"type": "Image",
-									"url": "http://contososcubademo.azurewebsites.net/assets/tofu.jpg"
+									"url": "http://contososcubademo.azurewebsites.net/assets/tofu.jpg",
+									"altText": "Tofu"
 								}
 							]
 						}
