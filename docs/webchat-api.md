@@ -56,6 +56,22 @@ document.getElementById("my-toggle-button").addEventListener("click", () => {
 
 [![Edit Opening / Closing the Webchat widget externally](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/using-the-webchat-api-o227i?fontsize=14&hidenavigation=1&theme=dark)
 
+## Disconnect the Session
+
+To close the Webchat's socket connection and stop any automatic reconnection attempts, use `webchat.disconnect()`:
+
+```javascript
+webchat.disconnect();
+```
+
+This is distinct from the other "closing" methods:
+
+- `webchat.close()` only collapses the widget — the socket connection, and any automatic reconnection attempts, keep running in the background.
+- `webchat.endSession()` switches to a fresh session and **reconnects** — it does not stop the connection.
+- `webchat.disconnect()` closes the socket and cancels in-flight reconnection attempts.
+
+`disconnect()` is not a permanent stop: the Webchat establishes a new connection again when the conversation resumes (the user sends a message or returns to the chat screen) or when connectivity is restored (the browser tab becomes visible again or the network comes back online).
+
 ## Send Messages
 
 You can use the Webchat API to send messages from outside of the Webchat widget via `webchat.sendMessage()`.

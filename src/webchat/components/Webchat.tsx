@@ -15,7 +15,7 @@ import {
 	setShowChatOptionsScreen,
 } from "../store/ui/ui-reducer";
 import { loadConfig } from "../store/config/config-middleware";
-import { connect } from "../store/connection/connection-middleware";
+import { connect, disconnect } from "../store/connection/connection-middleware";
 import { EventEmitter } from "events";
 import { SocketClient } from "@cognigy/socket-client";
 import { getEndpointBaseUrl, getEndpointUrlToken } from "../helper/endpoint";
@@ -101,6 +101,22 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	// component API (for usage via ref)
 	connect = async () => {
 		this.store.dispatch(connect());
+	};
+
+	/**
+	 * Closes the socket connection and cancels any in-flight automatic
+	 * reconnection attempts.
+	 *
+	 * Unlike `close()` (which only collapses the widget, leaving the socket and
+	 * its reconnection loop running) and `endSession()` (which switches to a
+	 * fresh session and immediately reconnects), this leaves the Webchat
+	 * disconnected. A new connection is established again when the conversation
+	 * resumes (a message is sent or the chat screen is shown) or when
+	 * connectivity is restored (the tab becomes visible or the network comes back
+	 * online).
+	 */
+	disconnect = () => {
+		this.store.dispatch(disconnect());
 	};
 
 	sendMessage: MessageSender = (text, data, options) => {

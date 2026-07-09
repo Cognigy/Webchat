@@ -1,14 +1,20 @@
 /**
- * Regression coverage for the `webchat/close-button` analytics event.
+ * Coverage for the `webchat/close-button` analytics event and its payload.
  *
- * Background: the header close ("X") button and the toggle button (FAB) both
- * collapse the Webchat and both emit `webchat/close`. Integrations that end the
- * session on `webchat/close` therefore also end it when the user simply toggles
- * the widget shut. The dedicated `webchat/close-button` event fires ONLY for the
- * header close button, so integrations can distinguish an intentional close.
+ * The event fires from every header close ("X") button — the chat window
+ * header, the home screen, and the connection-lost (disconnect) overlay — and
+ * NOT from the toggle button (FAB), the minimize button, or the programmatic
+ * open/close/toggle APIs. Both the toggle button and the header X emit the
+ * generic `webchat/close`, so integrations that want an intentional-close
+ * signal rely on `webchat/close-button` instead.
  *
- * These tests assert the event fires for the header X and for nothing else
- * (toggle button, minimize, programmatic open/close/toggle).
+ * Its payload carries the connection status at close time
+ * (`{ connected, hadConnection }`) so integrations can act only when a session
+ * was actually active — the close button also appears on screens shown before
+ * the first connection (a first-visit home screen, privacy notice,
+ * previous-conversations) where `hadConnection` is false. These tests assert
+ * the emission rules, the payload values, the documented disconnect-on-close
+ * integration, and the `webchat.disconnect()` API it relies on.
  */
 
 type AnalyticsEvent = { type: string; payload?: any };
@@ -22,7 +28,49 @@ const collectEvents = (events: AnalyticsEvent[]) =>
 /** Open the Webchat and advance past the home screen into the chat screen. */
 const openChatScreen = () => cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 
+/**
+ * The mock endpoint never opens a real socket, so drive the connection state
+ * through the store (as the `sendMessage` support command does).
+ */
+const setConnected = (connected: boolean) =>
+	cy.getWebchat().then((webchat: any) => {
+		webchat.store.dispatch({ type: "SET_CONNECTED", connected });
+	});
+
+/**
+ * Connect via the store, then gate (retriably) on the store reflecting it —
+ * rather than a fixed wait — so WebchatUI's `hadConnection` latch has committed
+ * before we act. `hadConnection` latches true when `connected` first becomes
+ * true and never resets.
+ */
+const connectAndLatch = () => {
+	setConnected(true);
+	cy.getWebchat().its("store").invoke("getState").its("connection.connected").should("be.true");
+};
+
+/**
+ * Render the connection-lost overlay by connecting then dropping. react-redux 7
+ * on React 18 commits the transient connected state asynchronously, and
+ * `hadConnection` (WebchatUI component state) has no observable while connected —
+ * so rather than bet on a fixed delay, retry the connect/drop until the overlay
+ * (which requires the `hadConnection` latch) actually renders. `hadConnection`
+ * latches on any connect and never resets, so this converges.
+ */
+const showDisconnectOverlayViaDrop = (attempt = 0) => {
+	setConnected(true);
+	cy.wait(50); // let react-redux 7 commit the connect so hadConnection can latch
+	setConnected(false);
+	cy.get("body").then($body => {
+		const shown = $body.find("[data-disconnect-overlay-close-button]").length > 0;
+		if (!shown && attempt < 20) {
+			showDisconnectOverlayViaDrop(attempt + 1);
+		}
+	});
+};
+
 const typesOf = (events: AnalyticsEvent[]) => events.map(event => event.type);
+const closeButtonEventsOf = (events: AnalyticsEvent[]) =>
+	events.filter(event => event.type === "webchat/close-button");
 
 describe("Analytics: webchat/close-button event", () => {
 	it("emits 'webchat/close-button' when the header close (X) button is clicked", () => {
@@ -33,7 +81,7 @@ describe("Analytics: webchat/close-button event", () => {
 		cy.get("[data-header-close-button]").click();
 
 		cy.then(() => {
-			const closeButtonEvents = events.filter(event => event.type === "webchat/close-button");
+			const closeButtonEvents = closeButtonEventsOf(events);
 			expect(closeButtonEvents, "exactly one webchat/close-button event").to.have.length(1);
 		});
 	});
@@ -90,7 +138,7 @@ describe("Analytics: webchat/close-button event", () => {
 		});
 	});
 
-	it("does NOT emit 'webchat/close-button' from the home screen close button (it minimizes)", () => {
+	it("emits 'webchat/close-button' from the home screen close button (alongside webchat/minimize)", () => {
 		const events: AnalyticsEvent[] = [];
 		// Home screen enabled: opening lands on the home screen (no startConversation).
 		cy.visitWebchat().initMockWebchat({ settings: { homeScreen: { enabled: true } } });
@@ -102,10 +150,10 @@ describe("Analytics: webchat/close-button event", () => {
 		cy.wait(200);
 		cy.then(() => {
 			const types = typesOf(events);
-			expect(types, "home screen close emits webchat/minimize").to.include(
+			expect(types, "home screen close still emits webchat/minimize").to.include(
 				"webchat/minimize",
 			);
-			expect(types, "home screen close must NOT emit webchat/close-button").to.not.include(
+			expect(types, "home screen close now also emits webchat/close-button").to.include(
 				"webchat/close-button",
 			);
 		});
@@ -163,48 +211,154 @@ describe("Analytics: webchat/close-button event", () => {
 	});
 });
 
-describe("Analytics: end-session use case (docs/analytics-api.md example)", () => {
+describe("Analytics: webchat/close-button payload (connection status)", () => {
+	it("reports { connected: false, hadConnection: false } on a screen that never connected", () => {
+		const events: AnalyticsEvent[] = [];
+		openChatScreen(); // the mock never establishes a connection
+		collectEvents(events);
+
+		cy.get("[data-header-close-button]").click();
+
+		cy.then(() => {
+			const [event] = closeButtonEventsOf(events);
+			expect(event?.payload).to.deep.equal({ connected: false, hadConnection: false });
+		});
+	});
+
+	it("reports { connected: true, hadConnection: true } while connected", () => {
+		const events: AnalyticsEvent[] = [];
+		openChatScreen();
+		connectAndLatch();
+		collectEvents(events);
+
+		cy.get("[data-header-close-button]").click();
+
+		cy.then(() => {
+			const [event] = closeButtonEventsOf(events);
+			expect(event?.payload).to.deep.equal({ connected: true, hadConnection: true });
+		});
+	});
+
+	it("reports { connected: false, hadConnection: true } from the disconnect overlay after the connection drops", () => {
+		const events: AnalyticsEvent[] = [];
+		cy.visitWebchat().initMockWebchat({
+			settings: { behavior: { enableConnectionStatusIndicator: true } },
+		});
+		cy.openWebchat().startConversation();
+		collectEvents(events);
+
+		// With the connection-status indicator on, a previously connected session
+		// that disconnects renders the connection-lost overlay. Reaching it proves
+		// hadConnection latched true while connected is now false.
+		showDisconnectOverlayViaDrop();
+		cy.get("[data-disconnect-overlay-close-button]").should("be.visible").click();
+
+		cy.then(() => {
+			const [event] = closeButtonEventsOf(events);
+			expect(event?.payload).to.deep.equal({ connected: false, hadConnection: true });
+		});
+	});
+});
+
+describe("Analytics: disconnect-on-close use case (docs/analytics-api.md example)", () => {
 	/**
-	 * Mirrors the documented integration: end the session ONLY on the header
-	 * close button. Spies on `webchat.endSession` and wires the documented
-	 * handler, then asserts which UI interactions trigger it.
+	 * Mirrors the documented integration: disconnect on the header close button,
+	 * but ONLY when a session was actually active (`event.payload.hadConnection`).
+	 * Spies on `webchat.disconnect`, wires the documented handler, then asserts
+	 * which interactions trigger it.
 	 */
-	const wireEndSessionOnCloseButton = () =>
+	const wireDisconnectOnCloseButton = () =>
 		cy.getWebchat().then((webchat: any) => {
-			cy.spy(webchat, "endSession").as("endSession");
+			cy.spy(webchat, "disconnect").as("disconnect");
 			webchat.registerAnalyticsService((event: AnalyticsEvent) => {
-				if (event.type === "webchat/close-button") {
-					webchat.endSession();
+				if (event.type === "webchat/close-button" && event.payload?.hadConnection) {
+					webchat.disconnect();
 				}
 			});
 		});
 
-	it("ends the session when the header close (X) button is used", () => {
-		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
-		wireEndSessionOnCloseButton();
+	it("disconnects when the header close (X) button is used on a connected session", () => {
+		openChatScreen();
+		connectAndLatch();
+		wireDisconnectOnCloseButton();
 
 		cy.get("[data-header-close-button]").click();
 
-		cy.get("@endSession").should("have.been.calledOnce");
+		cy.get("@disconnect").should("have.been.calledOnce");
 	});
 
-	it("does NOT end the session when collapsing via the toggle button", () => {
-		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
-		wireEndSessionOnCloseButton();
+	it("does NOT disconnect when closing the home screen before any connection (event still fires)", () => {
+		const events: AnalyticsEvent[] = [];
+		// Home screen X emits webchat/close-button, but hadConnection is false with
+		// no prior connection, so the documented guard leaves it alone. Assert the
+		// event DID fire, so it is the guard — not a missing event — that suppresses
+		// the disconnect.
+		cy.visitWebchat().initMockWebchat({ settings: { homeScreen: { enabled: true } } });
+		cy.openWebchat();
+		collectEvents(events);
+		wireDisconnectOnCloseButton();
+
+		cy.get(".webchat-homescreen-close-button").click();
+
+		cy.wait(200);
+		cy.then(() => {
+			const [event] = closeButtonEventsOf(events);
+			expect(event, "close-button fired on the home screen").to.exist;
+			expect(event.payload).to.deep.equal({ connected: false, hadConnection: false });
+		});
+		cy.get("@disconnect").should("not.have.been.called");
+	});
+
+	it("DOES disconnect when closing the home screen after a prior connection", () => {
+		// hadConnection latches true on first connect and never resets, and the home
+		// screen is reachable again after connecting (the header X sets showHomeScreen
+		// true, then reopening lands back on it). A home-screen close there carries
+		// hadConnection: true, so the documented guard fires.
+		cy.visitWebchat().initMockWebchat({ settings: { homeScreen: { enabled: true } } });
+		cy.openWebchat().startConversation(); // leave the home screen into the chat
+		connectAndLatch(); // connect -> hadConnection latches true
+		cy.get("[data-header-close-button]").click(); // header X: returns to home screen + collapses
+		cy.openWebchat(); // reopen -> back on the home screen, still connected
+		wireDisconnectOnCloseButton();
+
+		cy.get(".webchat-homescreen-close-button").should("be.visible").click();
+
+		cy.get("@disconnect").should("have.been.calledOnce");
+	});
+
+	it("does NOT disconnect when collapsing via the toggle button", () => {
+		openChatScreen();
+		connectAndLatch();
+		wireDisconnectOnCloseButton();
 
 		cy.get("#webchatWindowToggleButton").click();
 
 		cy.wait(200);
-		cy.get("@endSession").should("not.have.been.called");
+		cy.get("@disconnect").should("not.have.been.called");
 	});
 
-	it("does NOT end the session when minimizing", () => {
-		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
-		wireEndSessionOnCloseButton();
+	it("does NOT disconnect when minimizing", () => {
+		openChatScreen();
+		connectAndLatch();
+		wireDisconnectOnCloseButton();
 
 		cy.get("[data-header-minimize-button]").click();
 
 		cy.wait(200);
-		cy.get("@endSession").should("not.have.been.called");
+		cy.get("@disconnect").should("not.have.been.called");
+	});
+});
+
+describe("Webchat API: disconnect()", () => {
+	it("tears down the socket connection through the client", () => {
+		openChatScreen();
+
+		cy.getWebchat().then((webchat: any) => {
+			// webchat.disconnect() dispatches DISCONNECT, which the connection
+			// middleware forwards to the socket client.
+			const clientDisconnect = cy.spy(webchat.client, "disconnect");
+			webchat.disconnect();
+			expect(clientDisconnect, "client.disconnect called once").to.have.been.calledOnce;
+		});
 	});
 });
