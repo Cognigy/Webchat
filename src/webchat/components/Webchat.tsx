@@ -15,7 +15,10 @@ import {
 	setShowChatOptionsScreen,
 } from "../store/ui/ui-reducer";
 import { loadConfig } from "../store/config/config-middleware";
-import { connect, disconnect } from "../store/connection/connection-middleware";
+import {
+	connect as connectAction,
+	disconnect as disconnectAction,
+} from "../store/connection/connection-middleware";
 import { EventEmitter } from "events";
 import { SocketClient } from "@cognigy/socket-client";
 import { getEndpointBaseUrl, getEndpointUrlToken } from "../helper/endpoint";
@@ -100,7 +103,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 
 	// component API (for usage via ref)
 	connect = async () => {
-		this.store.dispatch(connect());
+		this.store.dispatch(connectAction());
 	};
 
 	/**
@@ -116,7 +119,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	 * online).
 	 */
 	disconnect = () => {
-		this.store.dispatch(disconnect());
+		this.store.dispatch(disconnectAction());
 	};
 
 	sendMessage: MessageSender = (text, data, options) => {
