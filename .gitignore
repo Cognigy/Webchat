@@ -16,3 +16,5 @@ cypress/videos
 !.vscode/extensions.json
 
 stats.json
+codeql-db
+codeql-results-dist.sarif

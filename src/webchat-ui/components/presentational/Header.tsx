@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import styled from "@emotion/styled";
 import IconButton from "./IconButton";
 import CloseIcon from "../../assets/close-16px.svg";
@@ -101,6 +101,13 @@ export const Logo = styled.img(() => ({
 	marginInline: 8,
 }));
 
+const HeaderText = styled(Typography)(({ theme }) => ({
+	"&:focus-visible": {
+		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.backgroundWebchat)}`,
+		outlineOffset: 2,
+	},
+}));
+
 interface HeaderProps {
 	title: string;
 	logoUrl?: string;
@@ -118,6 +125,7 @@ interface HeaderProps {
 	hideBackButton?: boolean;
 	deleteIconColor?: string;
 	showChatScreen?: boolean;
+	autoFocusScreenTitle?: boolean;
 }
 
 const Header: FC<HeaderProps> = props => {
@@ -134,12 +142,14 @@ const Header: FC<HeaderProps> = props => {
 		isChatOptionsButtonVisible,
 		hideBackButton,
 		showChatScreen,
+		autoFocusScreenTitle,
 		onDeleteAllConversations,
 		...rest
 	} = props;
 
 	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
 	const settings = useSelector(state => state.config.settings);
+	const headerTextRef = React.useRef<HTMLHeadingElement>(null);
 
 	const handleCloseClick = () => {
 		onClose?.();
@@ -150,6 +160,18 @@ const Header: FC<HeaderProps> = props => {
 	const handleMenuClick = () => {
 		onSetShowChatOptionsScreen?.(true);
 	};
+
+	useEffect(() => {
+		if (autoFocusScreenTitle) {
+			const timeoutId = setTimeout(() => {
+				const headerTitle = headerTextRef.current;
+				headerTitle?.focus();
+			}, 200);
+
+			return () => clearTimeout(timeoutId);
+		}
+	}, [autoFocusScreenTitle]);
+
 	return (
 		<>
 			<HeaderBar {...rest} className="webchat-header-bar">
@@ -181,14 +203,16 @@ const Header: FC<HeaderProps> = props => {
 								className={classnames("webchat-header-cognigy-logo")}
 							/>
 						))}
-					<Typography
+					<HeaderText
+						ref={headerTextRef}
 						variant="h2-semibold"
 						id="webchatHeaderTitle"
 						className="webchat-header-title"
 						margin={0}
+						tabIndex={-1}
 					>
 						{title}
-					</Typography>
+					</HeaderText>
 				</div>
 				<HeaderIconsWrapper>
 					{rest.isDeleteAllConversationsButtonVisible && (

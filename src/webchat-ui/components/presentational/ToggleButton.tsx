@@ -7,6 +7,7 @@ interface IToggleButtonProps {
 	isActive: boolean;
 	disabled?: boolean;
 	className?: string;
+	"aria-labelledby"?: string;
 }
 
 const StyledToggleButtonOuter = styled.button<IToggleButtonProps>(
@@ -56,7 +57,7 @@ const StyledToggleButtonInner = styled.div<IToggleButtonProps>(({ theme, isActiv
 }));
 
 export const ToggleButton = (props: IToggleButtonProps) => {
-	const { onClick, isActive, className, disabled } = props;
+	const { onClick, isActive, className, disabled, "aria-labelledby": ariaLabelledBy } = props;
 
 	const [isHovered, setIsHovered] = React.useState(false);
 
@@ -66,6 +67,9 @@ export const ToggleButton = (props: IToggleButtonProps) => {
 			onClick={onClick}
 			isActive={isActive}
 			disabled={disabled}
+			role="switch"
+			aria-checked={Boolean(isActive)}
+			aria-labelledby={ariaLabelledBy}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>

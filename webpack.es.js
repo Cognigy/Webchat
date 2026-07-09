@@ -49,6 +49,9 @@ config.externalsType = "module";
 config.externals = {
 	react: "react",
 	"react-dom": "react-dom",
+	"react-dom/client": "react-dom/client",
+	"react/jsx-runtime": "react/jsx-runtime",
+	"react/jsx-dev-runtime": "react/jsx-dev-runtime",
 };
 
 config.plugins.push(

@@ -25,10 +25,21 @@ export const createInputCollationMiddleware = (): Middleware<object, StoreState>
 			const { messages } = store.getState().inputCollation;
 			const text = messages.map(message => message.text).join(" ");
 
+			/**
+			 * Preserve file upload attachments while collating. Each collatable input
+			 * carries its attachments in `data.attachments`, so we merge them across all
+			 * buffered messages. Without this, uploaded files are silently dropped when
+			 * input collation is enabled (no file payload reaches the flow).
+			 */
+			const attachments = messages.flatMap(message => {
+				const fileAttachments = message.data?.attachments;
+				return Array.isArray(fileAttachments) ? fileAttachments : [];
+			});
+
 			const message = {
 				...messages[0],
 				text,
-				data: undefined,
+				data: attachments.length > 0 ? { attachments } : undefined,
 			};
 
 			return message;

@@ -37,32 +37,52 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 		};
 
 		const timeout = setTimeout(() => {
-			const firstUnannouncedMsg = unannouncedMessages[0]; // Only announce one at a time
-			const id = `webchatMessageId-${firstUnannouncedMsg.timestamp}`;
+			// Scan for the first unannounced message that is currently announceable.
+			// We must NOT stop at index 0 for non-rendered (data-only) messages,
+			// otherwise a permanently data-only message would block all later ones.
+			for (const candidate of unannouncedMessages) {
+				const id = `webchatMessageId-${candidate.timestamp}`;
 
-			// Check if this is a streaming message that hasn't finished
-			const isStreaming =
-				isProgressiveRenderingEnabled &&
-				isStreamingMessage(firstUnannouncedMsg) &&
-				(firstUnannouncedMsg.animationState === "start" ||
-					firstUnannouncedMsg.animationState === "animating");
+				// A streaming message that hasn't finished blocks later announcements
+				// (preserves in-order announcement of streamed output).
+				const isStreaming =
+					isProgressiveRenderingEnabled &&
+					isStreamingMessage(candidate) &&
+					(candidate.animationState === "start" ||
+						candidate.animationState === "animating");
+				if (isStreaming) return;
 
-			// If streaming, don't announce yet
-			if (isStreaming) return;
+				// Event status pills announce themselves via aria-live="assertive".
+				// Mark handled and continue; they must not block later real messages.
+				if (liveContent[id] === `IGNORE-${id}`) {
+					announcedIdsRef.current.add(id);
+					continue;
+				}
 
-			announcedIdsRef.current.add(id);
+				// Prefer chat-components' live content; otherwise read the DOM.
+				// getTextFromDOM returns null when no <article data-message-id>
+				// node exists, which is the signal for a not-rendered message.
+				const liveText = liveContent[id];
+				const domText = liveText ? null : getTextFromDOM(id);
 
-			// Skip announcement if the message is marked as "IGNORE". Done by ChatEvent message component, as it has aria-live="assertive"
-			if (liveContent[id] === `IGNORE-${id}`) {
-				setLiveMessage(null);
+				// "Rendered" iff chat-components produced live content for it,
+				// or an <article data-message-id> node exists in the DOM.
+				const isRendered = Boolean(liveText) || domText !== null;
+
+				// Data-only / unsupported message: not in the chat log UI.
+				// Skip WITHOUT marking announced so it can still be announced
+				// if it becomes rendered later (e.g. progressive rendering).
+				if (!isRendered) {
+					continue;
+				}
+
+				// Rendered: announce exactly one message per effect run.
+				// Fall back to "A new message" for rendered-but-textless nodes.
+				announcedIdsRef.current.add(id);
+				const text = cleanUpText(liveText || domText || "A new message");
+				setLiveMessage({ id, text });
 				return;
 			}
-
-			// Use live content if available, otherwise extract from DOM
-			const rawText = liveContent[id] || getTextFromDOM(id);
-			const text = cleanUpText(rawText || "A new message");
-
-			setLiveMessage({ id, text });
 		}, 100);
 
 		return () => clearTimeout(timeout);

@@ -72,4 +72,13 @@ describe("Webchat Button", () => {
 			.get('[aria-label="Close chat"]')
 			.should("not.exist");
 	});
+
+	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("closed chat toggle button has no detectable a11y violations", () => {
+			cy.visitWebchat().initMockWebchat();
+			cy.get('[aria-label="Open chat"]').should("be.visible");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
 });

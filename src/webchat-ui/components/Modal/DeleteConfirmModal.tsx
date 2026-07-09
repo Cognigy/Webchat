@@ -59,6 +59,10 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 						className="webchat-delete-confirmation-cancel-button"
 						onClick={() => onClose(false)}
 						background={cancelButtonBackground}
+						// Intentional: move focus to the safe default (Cancel) action
+						// when this confirmation modal opens — expected dialog focus
+						// management, not an unexpected focus shift.
+						// eslint-disable-next-line jsx-a11y/no-autofocus
 						autoFocus
 					>
 						{cancelText}

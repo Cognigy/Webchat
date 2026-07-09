@@ -359,4 +359,41 @@ describe("Home Screen", () => {
 		cy.get("a").contains("Phone number starter");
 		cy.get("a").should("have.attr", "href", "tel:123456789");
 	});
+
+	// Accessibility (WCAG 2.2 AA) — scoped to the widget root so the bare test
+	// host page (no <html lang>/<main>/<h1>) isn't audited. See docs/accessibility.md.
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("home screen has no detectable a11y violations", () => {
+			cy.initMockWebchat({
+				settings: { homeScreen: { enabled: true } },
+			});
+			cy.openWebchat();
+			cy.get(".webchat-homescreen-content").should("be.visible");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
+		it("home screen with conversation starters has no detectable a11y violations", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						conversationStarters: {
+							enabled: true,
+							starters: [
+								{ type: "postback", title: "Postback starter", payload: "p" },
+								{
+									type: "web_url",
+									title: "Web URL starter",
+									url: "https://www.google.com",
+								},
+							],
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("Postback starter");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
 });

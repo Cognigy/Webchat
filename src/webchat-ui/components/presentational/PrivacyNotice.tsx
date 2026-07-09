@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@cognigy/chat-components";
 import PrimaryButton from "./PrimaryButton";
@@ -19,6 +19,7 @@ const PrivacyNoticeRoot = styled.div(({ theme }) => ({
 	alignItems: "center",
 	padding: 20,
 	overflowY: "auto",
+	overscrollBehavior: "contain",
 }));
 
 const PrivacyMessage = styled.div(({ theme }) => ({
@@ -53,41 +54,20 @@ interface IPrivacyNoticeProps {
 export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 	const { privacyNotice, onAcceptTerms, isHomeScreenEnabled } = props;
 	const { text, submitButtonText, urlText, url } = privacyNotice;
-	const privacyNoticeRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		if (!isHomeScreenEnabled) {
-			if (privacyNoticeRef.current) {
-				privacyNoticeRef.current.focus();
-			}
-			return;
-		}
-		// If the home screen is enabled, delay focusing the privacy notice message
-		// to allow any home screen transition animations to complete before moving focus.
-		const timeoutId = setTimeout(() => {
-			if (privacyNoticeRef.current) {
-				privacyNoticeRef.current.focus();
-			}
-		}, 200);
-
-		return () => {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-		};
-	}, [isHomeScreenEnabled]);
 	const sanitizedText = useMemo(() => sanitizeHTML(text), [text]);
+
 	return (
 		<PrivacyNoticeRoot className="webchat-privacy-notice-root">
-			<PrivacyMessage
-				className="webchat-privacy-notice-message"
-				tabIndex={-1}
-				ref={privacyNoticeRef}
-			>
+			<PrivacyMessage className="webchat-privacy-notice-message">
 				<Typography variant="body-regular" style={{ whiteSpace: "pre-wrap" }}>
 					<Markdown
 						components={{
+							// react-markdown renderer: anchor content is supplied at
+							// runtime via {...props}.children from the markdown source,
+							// so the static anchor-has-content check is a false positive.
 							a: ({ node, ...props }) => (
+								// eslint-disable-next-line jsx-a11y/anchor-has-content
 								<a {...props} target="_blank" rel="noreferrer" />
 							),
 						}}

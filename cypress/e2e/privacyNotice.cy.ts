@@ -15,7 +15,9 @@ describe("Privacy Notice", () => {
 		cy.openWebchat();
 		cy.startConversation();
 		cy.get(".webchat-privacy-notice-root").should("be.visible");
-		cy.checkA11yCompliance(".webchat-privacy-notice-root");
+		// Accessibility (WCAG 2.2 AA) — scoped to the widget root, not the bare
+		// test host page. See docs/accessibility.md.
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 	});
 
 	it("allows title customization", () => {
