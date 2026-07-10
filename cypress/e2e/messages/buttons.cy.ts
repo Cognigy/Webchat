@@ -54,19 +54,21 @@ describe("Message with Buttons", () => {
 		});
 	});
 
-	it("buttons in group should have 'aria-label' attribute with button position and name", () => {
+	// As of @cognigy/chat-components 0.77.0 (AB#105550), action buttons have no aria-label;
+	// the accessible name is formed from DOM content (sr-only position text + button title).
+	it("buttons in group should have sr-only position text and no aria-label", () => {
 		cy.withMessageFixture("buttons", () => {
 			cy.wrap([1, 2, 3, 4]).each(number => {
 				cy.contains(`foobar005b${number}`)
-					.invoke("attr", "aria-label")
-					.should("contain", `${number} of 4: foobar005b${number}`);
+					.should("not.have.attr", "aria-label")
+					.should("contain.text", `${number} of 4: foobar005b${number}`);
 			});
 		});
 	});
 
 	it("phone number button should be an anchor element with 'href' attribute", () => {
 		cy.withMessageFixture("buttons", () => {
-			cy.get('a[aria-label="4 of 4: foobar005b4"]')
+			cy.contains("a", "foobar005b4")
 				.invoke("attr", "href")
 				.should("contain", `tel:000111222`);
 		});

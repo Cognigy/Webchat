@@ -110,12 +110,14 @@ describe("Message with Gallery", () => {
 		});
 	});
 
-	it("gallery buttons should have 'aria-label' attribute with button position and name", () => {
+	// As of @cognigy/chat-components 0.77.0 (AB#105550), action buttons have no aria-label;
+	// the accessible name is formed from DOM content (sr-only position text + button title).
+	it("gallery buttons should have sr-only position text and no aria-label", () => {
 		cy.withMessageFixture("gallery", () => {
 			cy.wrap([1, 2, 3, 4]).each(number => {
 				cy.contains(`foobar004g1b${number}`)
-					.invoke("attr", "aria-label")
-					.should("contain", `${number} of 4: foobar004g1b${number}`);
+					.should("not.have.attr", "aria-label")
+					.should("contain.text", `${number} of 4: foobar004g1b${number}`);
 			});
 		});
 	});
