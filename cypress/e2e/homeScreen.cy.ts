@@ -331,10 +331,12 @@ describe("Home Screen", () => {
 			},
 		});
 		cy.openWebchat();
+		// "not.have.attr" must come last: it changes the yielded subject
+		// to the attribute value (undefined), breaking chained assertions.
 		cy.get(".webchat-homescreen-button")
-			.should("not.have.attr", "aria-label")
 			.should("contain.text", "Web URL starter")
-			.should("contain.text", "Opens in new tab");
+			.should("contain.text", "Opens in new tab")
+			.should("not.have.attr", "aria-label");
 	});
 
 	it("has phone number button with tel link when configured", () => {

@@ -59,9 +59,11 @@ describe("Message with Buttons", () => {
 	it("buttons in group should have sr-only position text and no aria-label", () => {
 		cy.withMessageFixture("buttons", () => {
 			cy.wrap([1, 2, 3, 4]).each(number => {
+				// "not.have.attr" must come last: it changes the yielded subject
+				// to the attribute value (undefined), breaking chained assertions.
 				cy.contains(".webchat-buttons-template-button", `foobar005b${number}`)
-					.should("not.have.attr", "aria-label")
-					.should("contain.text", `${number} of 4: foobar005b${number}`);
+					.should("contain.text", `${number} of 4: foobar005b${number}`)
+					.should("not.have.attr", "aria-label");
 			});
 		});
 	});

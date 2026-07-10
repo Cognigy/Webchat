@@ -67,12 +67,14 @@ describe("Message with Quick Replies", () => {
 	// the accessible name is formed from DOM content (sr-only position text + button title).
 	it("quick reply button should have sr-only position text and no aria-label", () => {
 		cy.withMessageFixture("quick-replies", () => {
+			// "not.have.attr" must come last: it changes the yielded subject
+			// to the attribute value (undefined), breaking chained assertions.
 			cy.contains(".webchat-quick-reply-template-button", "foobar003qr01")
-				.should("not.have.attr", "aria-label")
-				.should("contain.text", "1 of 2: foobar003qr01");
+				.should("contain.text", "1 of 2: foobar003qr01")
+				.should("not.have.attr", "aria-label");
 			cy.contains(".webchat-quick-reply-template-button", "foobar003qr02")
-				.should("not.have.attr", "aria-label")
-				.should("contain.text", "2 of 2: foobar003qr02");
+				.should("contain.text", "2 of 2: foobar003qr02")
+				.should("not.have.attr", "aria-label");
 		});
 	});
 });

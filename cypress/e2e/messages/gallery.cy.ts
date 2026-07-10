@@ -115,9 +115,11 @@ describe("Message with Gallery", () => {
 	it("gallery buttons should have sr-only position text and no aria-label", () => {
 		cy.withMessageFixture("gallery", () => {
 			cy.wrap([1, 2, 3, 4]).each(number => {
+				// "not.have.attr" must come last: it changes the yielded subject
+				// to the attribute value (undefined), breaking chained assertions.
 				cy.contains(".webchat-carousel-template-button", `foobar004g1b${number}`)
-					.should("not.have.attr", "aria-label")
-					.should("contain.text", `${number} of 4: foobar004g1b${number}`);
+					.should("contain.text", `${number} of 4: foobar004g1b${number}`)
+					.should("not.have.attr", "aria-label");
 			});
 		});
 	});
