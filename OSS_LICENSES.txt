@@ -1,4 +1,4 @@
-Created on 02-07-2026 at 14:08:29
+Created on 10-07-2026 at 19:18:11
 
 {
   "@babel/code-frame@7.29.0": {
@@ -157,7 +157,7 @@ Created on 02-07-2026 at 14:08:29
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.76.0": {
+  "@cognigy/chat-components@0.77.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
@@ -170,7 +170,7 @@ Created on 02-07-2026 at 14:08:29
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.46.0": {
+  "@cognigy/webchat@3.47.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -1053,7 +1053,7 @@ Created on 02-07-2026 at 14:08:29
     "licenseFile": "node_modules/dom-helpers/LICENSE",
     "copyright": "Copyright (c) 2015 Jason Quense"
   },
-  "dompurify@3.4.0": {
+  "dompurify@3.4.11": {
     "licenses": "(MPL-2.0 OR Apache-2.0)",
     "repository": "https://github.com/cure53/DOMPurify",
     "publisher": "Dr.-Ing. Mario Heiderich, Cure53",
