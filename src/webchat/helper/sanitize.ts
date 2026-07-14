@@ -238,3 +238,13 @@ export const sanitizeHTML = (text: string) => {
 
 	return DOMPurify.sanitize(text, configToUse).toString();
 };
+
+export const stripHtmlToInertText = (text: string): string => {
+	// 1. strip tags: parse as HTML and keep only the text content
+	const stripped = new DOMParser().parseFromString(text, "text/html").body.textContent || "";
+	// 2. re-escape so <, >, & render as literal characters and can never
+	//    be reinterpreted as markup downstream (robust to nested encoding)
+	const escaper = document.createElement("div");
+	escaper.textContent = stripped;
+	return escaper.innerHTML;
+};

@@ -5,7 +5,7 @@ import { addMessage, addMessageEvent } from "./message-reducer";
 import { Omit } from "react-redux";
 import { setFullscreenMessage, setLastInputId } from "../ui/ui-reducer";
 import { receiveMessage, ReceiveMessageAction } from "./message-handler";
-import { sanitizeHTML } from "../../helper/sanitize";
+import { sanitizeHTML, stripHtmlToInertText } from "../../helper/sanitize";
 import { SocketClient } from "@cognigy/socket-client";
 import { IMessageEvent } from "../../../common/interfaces/event";
 import bellSound from "../../../webchat-ui/utils/bell-sound";
@@ -124,9 +124,7 @@ export const createMessageMiddleware =
 				}
 
 				if (store.getState().config.settings.widgetSettings.disableHtmlInput) {
-					text =
-						new DOMParser().parseFromString(text || "", "text/html").body.textContent ||
-						"";
+					text = stripHtmlToInertText(text || "");
 				}
 
 				// data is either a non-empty object or null
