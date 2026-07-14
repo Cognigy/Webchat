@@ -19,3 +19,6 @@ cypress/downloads
 stats.json
 codeql-db
 codeql-results-dist.sarif
+
+# Superpowers brainstorming/planning docs (local working files, not committed)
+docs/superpowers/
