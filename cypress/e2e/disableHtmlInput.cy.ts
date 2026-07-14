@@ -32,6 +32,15 @@ describe("disableHtmlInput", () => {
 		cy.get(".webchat-chat-history").contains("onerror=alert(1)");
 	});
 
+	it("neutralizes a doubly entity-encoded <img> payload to inert text", () => {
+		init();
+		typeAndSend("&amp;#60;img src=x onerror=alert(1)&amp;#62;");
+
+		// Nested encoding must never reconstruct a live element downstream
+		cy.get("[data-cognigy-webchat-root]").find('img[src="x"]').should("not.exist");
+		cy.get(".webchat-chat-history").contains("onerror=alert(1)");
+	});
+
 	it("still strips a real tag down to its text (regression guard)", () => {
 		init();
 		typeAndSend("<b>bold</b>");
