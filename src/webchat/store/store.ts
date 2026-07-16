@@ -8,6 +8,7 @@ import { registerTypingHandler } from "./typing/typing-handler";
 import { createConnectionMiddleware } from "./connection/connection-middleware";
 import { createConfigMiddleware } from "./config/config-middleware";
 import { createAnalyticsMiddleware } from "./analytics/analytics-middleware";
+import { createUserInactivityMiddleware } from "./analytics/user-inactivity-middleware";
 import { registerConnectionHandler } from "./connection/connection-handler";
 import { Webchat } from "../components/Webchat";
 import { IWebchatSettings } from "../../common/interfaces/webchat-config";
@@ -41,6 +42,9 @@ export const createWebchatStore = (
 		composeWithDevToolsLogOnlyInProduction(
 			applyMiddleware(
 				createAnalyticsMiddleware(webchat),
+				// before the message middleware, which swallows SET_USER_TYPING
+				// when disableUserTypingEvent is set
+				createUserInactivityMiddleware(webchat),
 				createConnectionMiddleware(client),
 				createInputCollationMiddleware(),
 				createMessageMiddleware(client),

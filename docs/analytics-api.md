@@ -48,6 +48,41 @@ Pick the action that matches your intent:
 > [!NOTE]
 > Use `webchat/close-button` rather than `webchat/close` for this. The `webchat/close` event also fires when the user collapses the open chat with the toggle button (the chat icon in the corner of the page) and when you call `webchat.close()` or `webchat.toggle()`, so acting on `webchat/close` would also fire on every toggle. The `webchat/close-button` event fires when a header close ("X") button is used — the chat window header, the home screen, and the connection-lost (disconnect) overlay. (The home screen's X also emits `webchat/minimize`, since it minimizes rather than closing a session.) The header **minimize** button emits only `webchat/minimize`, never `webchat/close-button`. Because the close button also appears on pre-session screens, always check `event.payload.hadConnection` (as shown above) before acting.
 
+## Detecting user inactivity
+
+The Webchat can emit a `webchat/user-inactive` event when the user is connected but has not responded for a configurable amount of time. This detection is **opt-in** — enable it via `settings.widgetSettings.userInactivity` when embedding:
+
+```javascript
+initWebchat("https://your-endpoint-url", {
+	settings: {
+		widgetSettings: {
+			userInactivity: {
+				enabled: true,
+				timeout: 120000, // 2 minutes (default)
+			},
+		},
+	},
+});
+```
+
+The inactivity timer starts when the connection is established and is reset by user activity — sending a message or typing in the input. Incoming bot/agent messages do **not** reset it. When the timeout elapses while still connected, `webchat/user-inactive` fires **once**; it will not fire again until the user becomes active again (or reconnects). Disconnecting cancels the detection.
+
+A common use case is notifying the Cognigy flow so it can react (send a nudge, hand over, or end the session). Forward the event as a data-only message — an empty `text` does not render a bubble in the chat:
+
+```javascript
+webchat.registerAnalyticsService(event => {
+	if (event.type === "webchat/user-inactive") {
+		webchat.sendMessage("", {
+			analyticsEvent: event.type,
+			payload: event.payload,
+		});
+	}
+});
+```
+
+> [!NOTE]
+> Messages sent with an `analyticsEvent` property in their `data` and no `text` (like the forwarding example above) are treated as programmatic notifications, **not** user activity — they do not reset the inactivity timer. Otherwise the forwarded message itself would start a new inactivity period and the event would fire in an endless loop for an abandoned chat.
+
 ## Webchat Events
 
 | Type                       | Payload                        | Description                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -58,6 +93,7 @@ Pick the action that matches your intent:
 | `webchat/minimize`         | -                              | The webchat was minimized                                                                                                                                                                                                                                                                                                                                                                        |
 | `webchat/switch-session`   | `sessionId`                    | The session was switched                                                                                                                                                                                                                                                                                                                                                                         |
 | `webchat/incoming-message` | `{ text, data }`               | A message was received from Cognigy                                                                                                                                                                                                                                                                                                                                                              |
+| `webchat/user-inactive`    | `{ timeout, inactiveSince }`   | The user has been connected but inactive (no outgoing message, no typing) for the configured timeout. Opt-in via `settings.widgetSettings.userInactivity` — see [Detecting user inactivity](#detecting-user-inactivity). `timeout` is the configured timeout in milliseconds, `inactiveSince` the ISO timestamp of the last user activity (or connect)                                           |
 | `webchat/outgoing-message` | `{ text, data }`               | A message was sent to Cognigy                                                                                                                                                                                                                                                                                                                                                                    |
 | `plugin/messenger/action`  | `Object`                       | An action was triggered from a Webchat or Messenger Template                                                                                                                                                                                                                                                                                                                                     |
 

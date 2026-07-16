@@ -196,6 +196,10 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 			ignoreLineBreaks: false,
 			STTLanguage: "",
 			customAllowedHtmlTags: undefined,
+			userInactivity: {
+				enabled: false,
+				timeout: 120_000,
+			},
 
 			sourceDirectionMapping: {
 				agent: "incoming",

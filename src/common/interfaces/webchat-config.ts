@@ -451,6 +451,17 @@ export interface IWebchatSettings {
 		ignoreLineBreaks: boolean;
 		STTLanguage: string;
 		customAllowedHtmlTags?: string[];
+		/**
+		 * Emits the `webchat/user-inactive` analytics event when the webchat is
+		 * connected and the user has not been active (sent a message or typed)
+		 * for `timeout` milliseconds. The event fires once per inactivity period;
+		 * new user activity arms the detection again. See docs/analytics-api.md.
+		 */
+		userInactivity: {
+			enabled: boolean;
+			/** inactivity timeout in milliseconds (default: 120000 = 2 minutes) */
+			timeout: number;
+		};
 
 		sourceDirectionMapping: {
 			agent: TSourceDirection;

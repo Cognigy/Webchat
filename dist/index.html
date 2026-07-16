@@ -9,36 +9,33 @@
 		<script src="./webchat.js"></script>
 		<script>
 			initWebchat(
-				"https://endpoint-dev.cognigy.ai/45c4ec61c937e830ecdebfaad977e2ed0bd84001e3b6df736e84560b73506463",
+				"https://endpoint-dev.cognigy.ai/5f1d78a7902e746f041d99ac3c532dd29ddb52288a2af279e2d641e4184ef53d",
 				{
-					// userId: "user1",
-					// sessionId: "session1",
-					// settings: {
-					//     layout: {
-					//         watermark: "default",
-					//         watermarkText: "Some Random Watermark"
-					//     },
-					//     unreadMessages: {
-					//         enableIndicator: true,
-					//         enableBadge: true,
-					//         enablePreview: true,
-					//         enableSound: true
-					//     },
-					//     teaserMessage:{
-					//         showInChat: true,
-					//         teaserMessageDelay: 5000,
-					//         text: "Hi there!"
-					//         },
-					//     startBehavior: {
-					//         getStartedText: ""
-					//     },
-					//     widgetSettings: {
-					//         enableFocusTrap: true,
-					//     }
-					// },
+					settings: {
+						widgetSettings: {
+							// emit "webchat/user-inactive" when the user is connected
+							// but has not responded for 20 seconds
+							userInactivity: {
+								enabled: true,
+								timeout: 20000,
+							},
+						},
+					},
 				},
 			).then(function (webchat) {
 				window.cognigyWebchat = webchat;
+
+				// forward user-inactivity analytics events to the flow as a
+				// data-only message (empty text does not render in the chat)
+				webchat.registerAnalyticsService(function (event) {
+					if (event.type === "webchat/user-inactive") {
+						webchat.sendMessage("", {
+							analyticsEvent: event.type,
+							payload: event.payload,
+						});
+					}
+				});
+
 				webchat.open();
 				webchat.startConversation();
 			});
