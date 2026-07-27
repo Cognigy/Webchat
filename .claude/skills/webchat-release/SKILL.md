@@ -77,12 +77,13 @@ npm view @cognigy/chat-components version    # must show 0.NN.0 before step 1
 
 - **Local `.claude/worktrees/` poisons both local gates.** Neither `lint:a11y` nor `npm test` excludes nested worktrees, so a worktree inside the chat-components checkout gets linted _and_ its specs get collected — each with its own `node_modules`, so a duplicate React makes every rendering spec fail with `Cannot read properties of null (reading 'useContext')`. CI (fresh checkout) never sees any of it. Attribute failures by path before believing them:
 
-  ```bash
-  npm run lint:a11y 2>&1 | grep '^/Users' | grep -v '.claude/worktrees'      # empty => source clean
-  npx vitest run --dir test                                                  # scope to the real suite
-  ```
+    ```bash
+    npm run lint:a11y 2>&1 | grep '^/Users' | grep -v '.claude/worktrees'      # empty => source clean
+    npx vitest run --dir test                                                  # scope to the real suite
+    ```
 
-  If the only failures sit under `.claude/worktrees/`, the release is fine — that's local noise, not a regression.
+    If the only failures sit under `.claude/worktrees/`, the release is fine — that's local noise, not a regression.
+
 - **Releasing shifts the dom-compat baseline.** `test/dom-compat.spec.tsx` diffs rendered DOM against _the latest published release_, so 0.NN.0 becomes the new baseline the moment it publishes. An intentional DOM change needs a version-aware skip (pattern: `INTENTIONALLY_DIVERGING_PRE_0_77`) plus an "Accessibility changes" release-notes entry; those skips are then removed once the version is `latest` (see chat-components #259). Expect the gate's meaning to change across the release boundary rather than assuming a post-release failure is a regression.
 
 ## 1. Branch and update dependencies
