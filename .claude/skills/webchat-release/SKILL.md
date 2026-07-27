@@ -248,19 +248,23 @@ npm install --package-lock-only      # updates package-lock.json without touchin
 - **Edit `package.json` by hand, don't let npm rewrite it.** The file has **no trailing newline** and uses tabs; `npm install <pkg>@<ver>` reformats it and appends a newline, adding diff noise. Hand-editing plus `--package-lock-only` keeps `package.json` to a single changed line.
 - **Audit the lockfile churn before committing.** `@cognigy/webchat` must be the _only_ changed **direct** dependency. Everything else should be transitive — `@cognigy/chat-components` via webchat, and the caret-ranged `@radix-ui/*` tree via chat-components' `react-popover`. A changed direct dep that isn't webchat means unrelated drift got pulled in; drop it. Verify rather than eyeball a ~200-line diff:
 
+Run this from `services/service-webchat` — the same directory as the `npm install` above. All three paths are relative to it, including git's `HEAD:./` prefix:
+
 ```bash
 python3 - <<'EOF'
 import json, subprocess
-old = json.loads(subprocess.run(['git','show','HEAD:services/service-webchat/package-lock.json'],
+old = json.loads(subprocess.run(['git', 'show', 'HEAD:./package-lock.json'],
                                 capture_output=True, text=True).stdout)
-new = json.loads(open('services/service-webchat/package-lock.json').read())
+new = json.loads(open('package-lock.json').read())
 po, pn = old['packages'], new['packages']
 changed = {k for k in set(po) | set(pn) if po.get(k, {}).get('version') != pn.get(k, {}).get('version')}
-direct = set(json.loads(open('services/service-webchat/package.json').read()).get('dependencies', {}))
+direct = set(json.loads(open('package.json').read()).get('dependencies', {}))
 print("direct deps changed:", sorted(k for k in changed if k.replace('node_modules/','') in direct))
 print("total changed:", len(changed))
 EOF
 ```
+
+Expect exactly `['node_modules/@cognigy/webchat']` as the direct change, against a total in the low tens.
 
 The monorepo's pre-commit hooks (`pretty-quick`, `lint-staged`) only target `services/service-ui/**`, so they no-op here — but they do run, so don't mistake their output for an error. Open the PR titled `chore(service-webchat): update demo webchat to 3.NN.0`.
 
