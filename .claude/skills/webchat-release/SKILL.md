@@ -1,6 +1,6 @@
 ---
 name: webchat-release
-description: Cut, build, and ship a new @cognigy/webchat release in this repo — version bump, dependency updates (axios, @cognigy/chat-components, @cognigy/socket-client), OSS license regeneration, the release PR, tagging, the Automatic Draft Release workflow, the changelog, and publishing as a pre-release to npm. Use whenever the user wants to release Webchat, cut/prepare a new version, bump the version, "do a webchat release", update a core dependency and ship it, create or fill a draft release, publish a pre-release, or asks about the release/draft/publish CI workflows. Also use when diagnosing release CI failures (E2E specs broken by a dependency bump, Format/Prettier check, OSS license version mismatch).
+description: Cut, build, and ship a new @cognigy/webchat release in this repo — version bump, dependency updates (axios, @cognigy/chat-components, @cognigy/socket-client), OSS license regeneration, the release PR, tagging, the Automatic Draft Release workflow, the changelog, and publishing as a pre-release to npm. Use whenever the user wants to release Webchat, cut/prepare a new version, bump the version, "do a webchat release", update a core dependency and ship it, create or fill a draft release, publish a pre-release, or asks about the release/draft/publish CI workflows. Also covers the upstream pre-flight — detecting merged-but-unreleased @cognigy/chat-components work and cutting a chat-components release first so the Webchat release can include it ("include the latest chat-components"). Also use when diagnosing release CI failures (E2E specs broken by a dependency bump, Format/Prettier check, OSS license version mismatch).
 ---
 
 # Releasing @cognigy/webchat
@@ -13,21 +13,78 @@ Releasing is **outward-facing**: pushing branches/tags, opening PRs, triggering 
 
 ## 0. Pre-flight: release upstream dependencies first
 
-Before bumping Webchat, check whether `@cognigy/chat-components` or `@cognigy/socket-client` have unreleased changes that should go out first — they have their own release processes (see their repos' READMEs). Check the latest published versions and compare to `package.json`:
+Webchat releases exist mostly to ship `@cognigy/chat-components`. So the first question is not "is my `package.json` behind npm?" but **"does upstream have merged work that hasn't been released yet?"** If it does, **release upstream first**, then include it here.
+
+### 0a. Detect unreleased upstream work — compare `main` to the latest tag, not npm to `package.json`
+
+**Trap:** comparing the published version to `package.json` gives a false all-clear. Both can read `0.77.0` while upstream `main` sits several merged PRs ahead of the `v0.77.0` tag — nothing is "behind", yet a release is owed. Always compare the upstream **repo** state:
 
 ```bash
-npm view @cognigy/chat-components version
-npm view @cognigy/chat-components dist-tags --json
-npm view @cognigy/socket-client dist-tags --json       # Webchat tracks socket-client's `beta` tag, not `latest`
+npm view @cognigy/chat-components version                       # -> latest published, e.g. 0.77.0
+gh api repos/Cognigy/chat-components/compare/v0.77.0...main \
+  --jq '"ahead_by=\(.ahead_by) total=\(.total_commits)"'         # ahead_by > 0 => release owed
+gh api repos/Cognigy/chat-components/compare/v0.77.0...main \
+  --jq '.commits[] | "\(.sha[0:8]) \(.commit.message | split("\n")[0])"'
+```
+
+Triage what you find: `feat`/`fix` commits are user-facing and justify a release; commits touching only `test/`, `docs`, or CI usually ride along rather than motivate one. Read the PR bodies — chat-components PRs document consumer impact well, and that text is the raw material for both release notes:
+
+```bash
+gh pr view <N> --repo Cognigy/chat-components --json title,body -q '"\(.title)\n\(.body)"'
+```
+
+Do the same for `@cognigy/socket-client` (Webchat tracks its **`beta`** dist-tag, not `latest`) and check `axios`:
+
+```bash
+npm view @cognigy/socket-client dist-tags --json
 npm view axios version
 ```
 
-When bumping `@cognigy/chat-components` across several minors (it's `0.x`, so minors can carry behavior changes), read its GitHub releases to know what's coming — it directly changes Webchat's rendered output:
+### 0b. Release chat-components (its own repo, its own process)
+
+Per its `README.md` → **Release**: bump, PR, merge, then push the tag. It's `0.x`, so **`minor`** carries behavior changes; use `patch` only for a true no-behavior fix.
 
 ```bash
-gh release list --repo Cognigy/chat-components --limit 12
-gh release view v0.NN.0 --repo Cognigy/chat-components --json body -q .body
+# in the chat-components checkout, from a clean, up-to-date main
+git checkout main && git pull && git checkout -b release-chat-components-0.NN
+npm ci
+npm version minor                # writes 0.NN.0, commits, creates tag v0.NN.0
 ```
+
+Gates mirror its workflows (`test.yml`, `lint.yml`, `a11y.yml`, `format.yml`, `dom-compat.yml`):
+
+```bash
+npm test                         # vitest
+npm run lint:a11y                # blocking
+npx prettier --check .           # Format Check
+npm run build && npm run test:dom-compat:install-baseline && npm run test:dom-compat   # order matters
+```
+
+Then push the branch, open the PR, get it merged, and **`git push origin v0.NN.0`**.
+
+**Critical difference from Webchat: chat-components publishes straight to `latest`.** Its `release.yml` (on `v*` tag) creates a _real_ GitHub release — not a draft — and `publish.yml` (on `release: published`) runs a bare `npm publish` with **no `--tag pre-release`**. So pushing the tag ships to every consumer of `latest` (Webchat, Cognigy.AI Interaction Panel, …) with no QA staging window. There is no undo. **Confirm with the user before pushing that tag**, and call out any behavior change the release carries.
+
+Watch it land, then confirm npm actually has it before touching Webchat:
+
+```bash
+gh run list --repo Cognigy/chat-components --limit 5
+npm view @cognigy/chat-components version    # must show 0.NN.0 before step 1
+```
+
+**This blocks the Webchat release.** `npm install` in Webchat can only resolve `0.NN.0` once it's live on npm, so the Webchat half waits on the upstream PR being merged and published — a human-gated step in another repo. Don't try to route around it with a `file:`/tarball dependency; that is not shippable.
+
+### 0c. Two upstream gotchas worth knowing
+
+- **Local `.claude/worktrees/` poisons both local gates.** Neither `lint:a11y` nor `npm test` excludes nested worktrees, so a worktree inside the chat-components checkout gets linted _and_ its specs get collected — each with its own `node_modules`, so a duplicate React makes every rendering spec fail with `Cannot read properties of null (reading 'useContext')`. CI (fresh checkout) never sees any of it. Attribute failures by path before believing them:
+
+    ```bash
+    npm run lint:a11y 2>&1 | grep '^/Users' | grep -v '.claude/worktrees'      # empty => source clean
+    npx vitest run --dir test                                                  # scope to the real suite
+    ```
+
+    If the only failures sit under `.claude/worktrees/`, the release is fine — that's local noise, not a regression.
+
+- **Releasing shifts the dom-compat baseline.** `test/dom-compat.spec.tsx` diffs rendered DOM against _the latest published release_, so 0.NN.0 becomes the new baseline the moment it publishes. An intentional DOM change needs a version-aware skip (pattern: `INTENTIONALLY_DIVERGING_PRE_0_77`) plus an "Accessibility changes" release-notes entry; those skips are then removed once the version is `latest` (see chat-components #259). Expect the gate's meaning to change across the release boundary rather than assuming a post-release failure is a regression.
 
 ## 1. Branch and update dependencies
 
@@ -158,6 +215,8 @@ After publishing (per the Confluence runbook):
 
 ## Quick reference — gotchas
 
+- **Check upstream for unreleased work first** (§0a) — compare chat-components `main` to its latest `v*` tag, not npm to `package.json`; equal versions hide merged-but-unreleased PRs. If work is owed, release chat-components first and wait for it on npm.
+- **chat-components publishes straight to `latest`** — no draft, no `pre-release` dist-tag, no QA window. Pushing its `v*` tag ships to all consumers. Confirm before pushing it.
 - `npm install` after editing `package.json`, never `npm ci` (lockfile mismatch).
 - Regenerate `OSS_LICENSES.txt` **after** `npm version`, or the self-ref version is stale (Copilot will flag it).
 - `tsc:check` is not a gate; the gates are build, `lint:a11y` (Accessibility lint), **Format Check** (`prettier:check`), and Cypress E2E.
