@@ -426,23 +426,24 @@ With our latest release (v3.22.0), it is now possible to interpolate dynamic val
 
 In the above example only the texts outside the `{}` braces needs to be translated. Rest will be handled by interpolation during runtime. Also the position of the dynamic value is changeable within the text
 
-| Name                                  | Type   | Default                                                                                     | Description                                                                   |
-| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| network_error                         | string | "Connection Lost"                                                                           | Label shown in the connectivity overlay when a network error occurs.          |
-| no_network                            | string | "No network connection"                                                                     | Label displayed when there is no network connection.                          |
-| reconnect                             | string | "Reconnect"                                                                                 | Label for the button allowing the user to manually reconnect.                 |
-| reconnecting                          | string | "Reconnecting..."                                                                           | Text displayed while trying to re-establish the connection.                   |
-| conversations_options                 | string | "Conversations Options"                                                                     | Label for the conversations options menu in the webchat.                      |
-| delete_all_conversations              | string | "Delete all conversations"                                                                  | Label for the button to delete all previous conversations.                    |
-| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." | Confirmation message shown when deleting all conversations.                   |
-| delete_conversation                   | string | "Delete Conversation"                                                                       | Label for the button to delete the current conversation.                      |
-| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"           | Confirmation message shown when deleting the current conversation.            |
-| delete                                | string | "Delete"                                                                                    | Generic label for delete actions.                                             |
-| delete_anyway                         | string | "Delete anyway"                                                                             | Label for confirming deletion despite warnings.                               |
-| cancel                                | string | "Cancel"                                                                                    | Label for canceling a delete or confirm action.                               |
-| datePickerMonthLabel                  | string | "Month"                                                                                     | This text is used as the label for the Month select field in the date-picker. |
-| datePickerYearLabel                   | string | "Year"                                                                                      | This text is used as the label for the Year input field in the date-picker.   |
-| ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements.         |
+| Name                                  | Type   | Default                                                                                     | Description                                                                                        |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| network_error                         | string | "Connection Lost"                                                                           | Label shown in the connectivity overlay when a network error occurs.                               |
+| no_network                            | string | "No network connection"                                                                     | Label displayed when there is no network connection.                                               |
+| reconnect                             | string | "Reconnect"                                                                                 | Label for the button allowing the user to manually reconnect.                                      |
+| reconnecting                          | string | "Reconnecting..."                                                                           | Text displayed while trying to re-establish the connection.                                        |
+| connection_restored                   | string | "Connection restored."                                                                      | Announced to screen readers when the connection comes back and the connection-lost overlay closes. |
+| conversations_options                 | string | "Conversations Options"                                                                     | Label for the conversations options menu in the webchat.                                           |
+| delete_all_conversations              | string | "Delete all conversations"                                                                  | Label for the button to delete all previous conversations.                                         |
+| delete_all_conversations_confirmation | string | "Are you sure you want to delete all previous conversations? This action cannot be undone." | Confirmation message shown when deleting all conversations.                                        |
+| delete_conversation                   | string | "Delete Conversation"                                                                       | Label for the button to delete the current conversation.                                           |
+| delete_conversation_confirmation      | string | "Are you sure you want to delete this conversation? This action cannot be undone"           | Confirmation message shown when deleting the current conversation.                                 |
+| delete                                | string | "Delete"                                                                                    | Generic label for delete actions.                                                                  |
+| delete_anyway                         | string | "Delete anyway"                                                                             | Label for confirming deletion despite warnings.                                                    |
+| cancel                                | string | "Cancel"                                                                                    | Label for canceling a delete or confirm action.                                                    |
+| datePickerMonthLabel                  | string | "Month"                                                                                     | This text is used as the label for the Month select field in the date-picker.                      |
+| datePickerYearLabel                   | string | "Year"                                                                                      | This text is used as the label for the Year input field in the date-picker.                        |
+| ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements.                              |
 
 #### Aria Labels
 
@@ -749,6 +750,7 @@ interface IWebchatSettings {
 		no_network?: string;
 		reconnect?: string;
 		reconnecting?: string;
+		connection_restored?: string;
 		delete_all_conversations?: string;
 		delete_all_conversations_confirmation?: string;
 		delete_conversation?: string;

@@ -38,8 +38,24 @@ WCAG defines _what_ must be true; for _how_ each widget should behave (keyboard 
 | Visually-hidden text                 | `.sr-only` class                                              | `src/assets/style.css`                                                |
 | Hide/show an offscreen region        | tabindex-toggling pattern                                     | `src/webchat-ui/components/presentational/HomeScreen.tsx`             |
 | Open/close focus orchestration       | refs + focus-first-on-open                                    | `src/webchat-ui/components/WebchatUI.tsx`                             |
+| Modal dialog (card or fullscreen)    | `<Modal variant>` — APG dialog + focus trap + `aria-modal`    | `src/webchat-ui/components/Modal/Modal.tsx`                           |
 
 User-facing aria strings come from `customTranslations.ariaLabels` — read them with a fallback; never hardcode.
+
+### Pattern: modal dialogs (`Modal`, variant-driven)
+
+All modal surfaces build on `src/webchat-ui/components/Modal/Modal.tsx`, which implements the [APG modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) once — `aria-modal="true"`, `aria-labelledby` on the visible title, an Esc handler, and a Tab/Shift+Tab focus trap via `getKeyboardFocusableElements`. The fullscreen variant renders a `div[role="dialog"]` (APG-style): a native `<dialog open>` without `showModal()` has Chromium accessibility quirks where subtree changes inside it (inserted controls, focus on freshly inserted nodes) are not surfaced to screen readers. Pick the variant by what the surface _means_:
+
+- **`variant="card"`** (default) — an inset confirm dialog over a dimmed backdrop (e.g. `DeleteConfirmModal`). Consumers manage initial focus themselves (e.g. `autoFocus` on the safe Cancel action).
+- **`variant="fullscreen"`** — the modal represents a blocking state of the whole chat window (e.g. the disconnect overlay). It spans the entire window, so the close button's visual effect (closing the chat window) matches its accessible name. Pass `initialFocusRef` so focus moves **once** on open — to the primary action when rendered, otherwise the close button — and then stays put (SC 3.2.1, 2.4.3).
+
+The disconnect overlay (`DisconnectOverlay.tsx`) additionally:
+
+- Hides the chat layout behind it with `aria-hidden="true"` **and** `inert` (see `DisconnectableContentWrapper` in `WebchatUI.tsx`), so background content is neither announced by screen readers (SC 1.3.1/1.3.2) nor keyboard-reachable. On React 18 `inert` is not a supported prop — it is synced with an inline ref callback. `getKeyboardFocusableElements` skips `inert` subtrees (but deliberately not `aria-hidden` ancestors — the HomeScreen tabindex-toggling pattern queries inside its hidden root), so all focus logic composes with this.
+- Announces state **changes** through a persistent visually-hidden `role="status"` region that lives _outside_ the dialog, reusing the already-localized overlay strings (`reconnecting`, `network_error`, `no_network`) — plus one new key, `connection_restored`, announced when the overlay closes (the region outlives the dialog). The dialog's initial appearance is deliberately not announced there (screen readers announce the dialog themselves — a duplicate would be noise). For the same reason the fullscreen variant has no `aria-describedby`: its body contains the status text, which would otherwise be read twice.
+- The Reconnect action appears only in the permanent (gave-up) state. The transition is announced through the live region (`network_error` + `reconnect` strings) — a programmatic focus move to a freshly inserted control is **not reliably announced** by screen readers, so the live region is the guaranteed signal. Focus still moves to the new primary action as a convenience: **deferred** (~500ms, so the screen reader ingests the inserted node before the focus event) and **guarded** (only while focus still sits on the overlay's close button — never yanking it from a navigating user, SC 3.2.1). For the same reason, `Modal`'s `initialFocusRef` focus on open is deferred (~200ms) — focusing in the same task that inserted the dialog races the accessibility-tree update and the announcement gets dropped.
+- Shows a visible status line while something is happening ("Reconnecting…", "No network connection") and marks the Reconnect button `aria-disabled` (keeping focus, unlike `disabled`) while an attempt is in flight.
+- Restores focus on close to the element focused before the overlay opened (Modal does this whenever `initialFocusRef` is used), so a successful reconnect doesn't drop focus to `<body>`.
 
 ## Boundary: Webchat vs. chat-components
 

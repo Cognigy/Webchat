@@ -108,6 +108,7 @@ export interface WebchatUIProps {
 	webchatToggleProps?: React.ComponentProps<typeof FAB>;
 
 	connected: boolean;
+	connecting: boolean;
 	reconnectionLimit: boolean;
 
 	hasGivenRating: boolean;
@@ -209,6 +210,16 @@ const RegularLayoutRoot = styled.div({
 	display: "flex",
 	flexDirection: "column",
 	overscrollBehavior: "contain",
+});
+
+// Wraps the chat layout so it can be hidden from assistive technologies and
+// removed from the tab order (aria-hidden + inert) while the disconnect
+// overlay is open — the overlay must be the only perceivable/operable content.
+const DisconnectableContentWrapper = styled.div({
+	height: "100%",
+	display: "flex",
+	flexDirection: "column",
+	minHeight: 0,
 });
 
 const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
@@ -1227,13 +1238,29 @@ export class WebchatUI extends React.PureComponent<
 														.chatWindowWidth
 												}
 											>
-												{!fullscreenMessage
-													? this.renderRegularLayout(isInforming)
-													: this.renderFullscreenMessageLayout()}
+												<DisconnectableContentWrapper
+													aria-hidden={showDisconnectOverlay || undefined}
+													// React 18 has no `inert` prop; the inline
+													// ref callback runs on every render, keeping
+													// the attribute in sync with the overlay.
+													ref={el => {
+														if (!el) return;
+														if (showDisconnectOverlay) {
+															el.setAttribute("inert", "");
+														} else {
+															el.removeAttribute("inert");
+														}
+													}}
+												>
+													{!fullscreenMessage
+														? this.renderRegularLayout(isInforming)
+														: this.renderFullscreenMessageLayout()}
+												</DisconnectableContentWrapper>
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}
 													isPermanent={!!reconnectionLimit}
+													isConnecting={!!this.props.connecting}
 													onClose={handleClose}
 													config={config}
 												/>
@@ -1522,8 +1549,6 @@ export class WebchatUI extends React.PureComponent<
 						dropzoneText={config.settings.fileStorageSettings?.dropzoneText}
 					/>
 				);
-
-			// ReactModal.setAppElement moved to componentDidMount to avoid repeated invocations.
 
 			return (
 				<>

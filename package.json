@@ -71,7 +71,6 @@
 		"moment": "^2.29.4",
 		"react-hot-toast": "^2.4.1",
 		"react-markdown": "^9.0.3",
-		"react-modal": "^3.16.3",
 		"react-redux": "7.2.9",
 		"react-remove-scroll": "^2.7.1",
 		"react-responsive": "9.0.2",
