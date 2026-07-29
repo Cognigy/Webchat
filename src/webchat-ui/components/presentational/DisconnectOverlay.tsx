@@ -65,20 +65,20 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				setAnnouncement(noNetworkText);
 				return;
 			}
-			// Announce the transition through the live region — a programmatic
-			// focus move to a freshly inserted control is not reliably announced
-			// by screen readers, even deferred, so the focus move below is a
-			// convenience while this announcement is the guaranteed signal.
-			setAnnouncement(`${networkErrorText}. ${reconnectText}`);
 			// Move focus to the newly appeared Reconnect action. Deferred so
 			// the screen reader ingests the inserted button before the focus
-			// event, and guarded so it only happens while focus still sits on
-			// the overlay's close button — never yanking focus from a
-			// navigating user (SC 3.2.1).
+			// event (focusing in the same task the node was inserted is not
+			// announced), and guarded so it only happens while focus still
+			// sits on the overlay's close button — never yanking focus from a
+			// navigating user (SC 3.2.1). The focus move announces the button;
+			// when the guard skips it, the live region announces the label
+			// instead, so the transition is announced exactly once either way.
 			const focusTimer = setTimeout(() => {
 				const active = document.activeElement;
 				if (active?.hasAttribute("data-disconnect-overlay-close-button")) {
 					reconnectRef.current?.focus();
+				} else {
+					setAnnouncement(reconnectText);
 				}
 			}, 500);
 			return () => clearTimeout(focusTimer);

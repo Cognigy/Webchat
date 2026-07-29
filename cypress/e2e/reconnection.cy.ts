@@ -236,17 +236,14 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 		setReconnectionLimit(true);
 
-		// The live region is the guaranteed announcement of the transition
-		// (a focus move to a freshly inserted control is not reliably
-		// announced by screen readers).
-		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
-			"contain.text",
-			"Connection lost. Reconnect",
-		);
-		// Focus still moves to the new primary action — deferred and guarded:
-		// it only happens while focus still sits on the overlay's close
-		// button, never yanking it from a navigating user.
+		// Focus moves to the new primary action — deferred (so the screen
+		// reader announces the freshly inserted button) and guarded: it only
+		// happens while focus still sits on the overlay's close button,
+		// never yanking it from a navigating user. The focus announcement
+		// conveys the transition, so the live region stays silent here (no
+		// double announcement).
 		cy.contains("button", "Reconnect").should("have.focus");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should("have.text", "");
 	});
 
 	it("does not steal focus at the gave-up transition when the user is navigating", () => {
@@ -258,11 +255,11 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		cy.get("[data-disconnect-overlay-close-button]").blur();
 
 		cy.wait(700);
-		// The transition is still announced via the live region even though
-		// focus stays where the user put it.
+		// Focus was not moved, so the transition is announced via the live
+		// region instead — exactly one announcement either way.
 		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
-			"contain.text",
-			"Connection lost. Reconnect",
+			"have.text",
+			"Reconnect",
 		);
 		cy.contains("button", "Reconnect").should("not.have.focus");
 	});
