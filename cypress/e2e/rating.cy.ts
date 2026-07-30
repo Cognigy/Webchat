@@ -418,20 +418,6 @@ describe("Rating", () => {
 			cy.get('[aria-label="Like"]').click();
 			cy.get(".webchat-rating-widget-send-button").click();
 
-			// TEMP diagnostic (CGY-4035 CI debugging): dump toast DOM state while
-			// the toast should be alive (fires at +500ms, removed at ~+3000ms).
-			cy.wait(900);
-			cy.document().then(doc => {
-				const nodes = Array.from(
-					doc.querySelectorAll("[role='status'], [class*='webchat-toast']"),
-				);
-				cy.task(
-					"log",
-					"TOAST-DEBUG: " +
-						(nodes.map(e => e.outerHTML.slice(0, 250)).join(" ### ") || "NONE"),
-				);
-			});
-
 			// Scan while the toast is visible so axe checks its text contrast.
 			// Target the toast via its stable class — a bare cy.contains()
 			// would match the sr-only live region, which is never "visible".
