@@ -354,6 +354,52 @@ describe("Rating", () => {
 				});
 		});
 
+		it("moves focus to the screen title after submitting feedback from chat options (SC 2.4.3)", () => {
+			// With rating "once" the widget unmounts on submit, which would
+			// otherwise drop focus to document.body.
+			cy.initMockWebchat({
+				settings: {
+					chatOptions: {
+						enabled: true,
+						title: chatOptionsTitle,
+						rating: {
+							enabled: "once",
+						},
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
+			cy.get('[aria-label="Like"]').click();
+			cy.get(".webchat-rating-widget-send-button").click();
+
+			cy.get("#webchatHeaderTitle").should("have.focus");
+		});
+
+		it("moves focus to the screen title after submitting feedback with rating 'always' (SC 2.4.3)", () => {
+			// With rating "always" the widget stays but the focused Send button
+			// becomes disabled, which would also drop focus to document.body.
+			cy.initMockWebchat({
+				settings: {
+					chatOptions: {
+						enabled: true,
+						title: chatOptionsTitle,
+						rating: {
+							enabled: "always",
+						},
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
+			cy.get('[aria-label="Like"]').click();
+			cy.get(".webchat-rating-widget-send-button").click();
+
+			cy.get("#webchatHeaderTitle").should("have.focus");
+		});
+
 		it("status notification toast has no detectable a11y violations (incl. contrast)", () => {
 			cy.initMockWebchat({
 				settings: {

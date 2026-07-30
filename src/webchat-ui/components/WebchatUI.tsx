@@ -882,6 +882,8 @@ export class WebchatUI extends React.PureComponent<
 	};
 
 	handleSendRating = ({ rating, comment, showRatingStatus }) => {
+		const wasRatingScreen = this.props.showRatingScreen;
+
 		this.props.onShowRatingScreen(false);
 
 		this.props.onSendMessage(
@@ -904,6 +906,21 @@ export class WebchatUI extends React.PureComponent<
 		);
 
 		this.props.onSetHasGivenRating();
+
+		// Submitting from the chat options screen removes the focused Send
+		// button (rating "once" unmounts the widget; "always" disables it),
+		// which would drop focus to document.body (SC 2.4.3 Focus Order).
+		// Move focus to the screen title instead, mirroring the
+		// autoFocusScreenTitle pattern in Header. The request-rating screen
+		// path is excluded: it closes the screen and the message input
+		// takes focus on mount.
+		if (!wasRatingScreen) {
+			setTimeout(() => {
+				this.webchatWindowRef?.current
+					?.querySelector<HTMLElement>("#webchatHeaderTitle")
+					?.focus();
+			}, 200);
+		}
 	};
 
 	handleSendActionButtonMessage = (
