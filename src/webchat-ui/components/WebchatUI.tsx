@@ -914,10 +914,13 @@ export class WebchatUI extends React.PureComponent<
 		// autoFocusScreenTitle pattern in Header. The request-rating screen
 		// path is excluded: it closes the screen and the message input
 		// takes focus on mount.
+		// Scoped to the header bar: HomeScreen and TeaserMessage also render
+		// an element with id "webchatHeaderTitle", and HomeScreen stays
+		// mounted behind secondary screens.
 		if (!wasRatingScreen) {
 			setTimeout(() => {
 				this.webchatWindowRef?.current
-					?.querySelector<HTMLElement>("#webchatHeaderTitle")
+					?.querySelector<HTMLElement>(".webchat-header-bar .webchat-header-title")
 					?.focus();
 			}, 200);
 		}

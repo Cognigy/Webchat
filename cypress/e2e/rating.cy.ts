@@ -374,7 +374,7 @@ describe("Rating", () => {
 			cy.get('[aria-label="Like"]').click();
 			cy.get(".webchat-rating-widget-send-button").click();
 
-			cy.get("#webchatHeaderTitle").should("have.focus");
+			cy.get(".webchat-header-bar .webchat-header-title").should("have.focus");
 		});
 
 		it("moves focus to the screen title after submitting feedback with rating 'always' (SC 2.4.3)", () => {
@@ -397,7 +397,7 @@ describe("Rating", () => {
 			cy.get('[aria-label="Like"]').click();
 			cy.get(".webchat-rating-widget-send-button").click();
 
-			cy.get("#webchatHeaderTitle").should("have.focus");
+			cy.get(".webchat-header-bar .webchat-header-title").should("have.focus");
 		});
 
 		it("status notification toast has no detectable a11y violations (incl. contrast)", () => {
@@ -419,7 +419,9 @@ describe("Rating", () => {
 			cy.get(".webchat-rating-widget-send-button").click();
 
 			// Scan while the toast is visible so axe checks its text contrast.
-			cy.contains("Your feedback was submitted").should("be.visible");
+			// Target the toast via its aria-live="off" — a bare cy.contains()
+			// would match the sr-only live region, which is never "visible".
+			cy.contains('[aria-live="off"]', "Your feedback was submitted").should("be.visible");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 	});
