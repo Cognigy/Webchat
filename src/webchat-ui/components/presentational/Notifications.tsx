@@ -10,14 +10,6 @@ const Notifications: FC = () => {
 			gutter={1}
 			toastOptions={{
 				duration: 1500,
-				// The toast node is inserted into the DOM at the moment it appears,
-				// so its own role="status" never fires in screen readers (WCAG 4.1.3).
-				// Announcements go through <NotificationsLiveRegion>, which is
-				// always mounted; aria-live="off" here prevents double announcements.
-				ariaProps: {
-					role: "status",
-					"aria-live": "off",
-				},
 				style: {
 					backgroundColor: theme.green10,
 					borderRadius: 0,
@@ -91,8 +83,19 @@ export const NotificationsLiveRegion: FC = () => {
 
 type MessageType = Parameters<typeof toast>[0];
 
+// The toast node is inserted into the DOM at the moment it appears, so its
+// default role="status" never fires in screen readers (WCAG 4.1.3).
+// Announcements go through <NotificationsLiveRegion>, which is always
+// mounted; aria-live="off" prevents double announcements. This must be set
+// per toast() call — react-hot-toast stamps default ariaProps onto every
+// toast, which override any Toaster-level toastOptions.ariaProps.
+const silencedAriaProps: ToastOptions["ariaProps"] = {
+	role: "status",
+	"aria-live": "off",
+};
+
 export function createNotification(message: MessageType, options: ToastOptions = {}) {
-	toast(message, options);
+	toast(message, { ariaProps: silencedAriaProps, ...options });
 }
 
 /**
@@ -105,7 +108,7 @@ export function createNotification(message: MessageType, options: ToastOptions =
  * setTimeout(dismiss, 5000);
  */
 export function createPersistentNotification(message: MessageType, options: ToastOptions = {}) {
-	const id = toast(message, { ...options, duration: Infinity });
+	const id = toast(message, { ariaProps: silencedAriaProps, ...options, duration: Infinity });
 
 	return () => toast.dismiss(id);
 }
