@@ -74,6 +74,7 @@ import { isMobileViewport } from "../utils/isMobile";
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
+import { NotificationsLiveRegion } from "./presentational/Notifications";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -1230,6 +1231,7 @@ export class WebchatUI extends React.PureComponent<
 												{!fullscreenMessage
 													? this.renderRegularLayout(isInforming)
 													: this.renderFullscreenMessageLayout()}
+												<NotificationsLiveRegion />
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}

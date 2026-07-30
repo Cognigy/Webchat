@@ -1,6 +1,6 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { useTheme } from "@emotion/react";
-import toast, { ToastOptions, Toaster } from "react-hot-toast";
+import toast, { ToastOptions, Toaster, useToasterStore } from "react-hot-toast";
 
 const Notifications: FC = () => {
 	const theme = useTheme();
@@ -10,6 +10,14 @@ const Notifications: FC = () => {
 			gutter={1}
 			toastOptions={{
 				duration: 1500,
+				// The toast node is inserted into the DOM at the moment it appears,
+				// so its own role="status" never fires in screen readers (WCAG 4.1.3).
+				// Announcements go through <NotificationsLiveRegion>, which is
+				// always mounted; aria-live="off" here prevents double announcements.
+				ariaProps: {
+					role: "status",
+					"aria-live": "off",
+				},
 				style: {
 					backgroundColor: theme.green10,
 					borderRadius: 0,
@@ -33,6 +41,51 @@ const Notifications: FC = () => {
 				width: "100%",
 			}}
 		></Toaster>
+	);
+};
+
+interface LiveNotification {
+	id: string;
+	text: string;
+}
+
+/**
+ * Always-mounted screen-reader live region mirroring toast notifications.
+ *
+ * react-hot-toast adds the toast (and its role="status" wrapper) to the DOM
+ * only when the notification fires, which live-region processing ignores.
+ * This region exists in the DOM before any toast is created, so updating its
+ * text content triggers a proper announcement (WCAG 4.1.3 Status Messages).
+ */
+export const NotificationsLiveRegion: FC = () => {
+	const { toasts } = useToasterStore();
+	const announcedIdsRef = useRef<Set<string>>(new Set());
+	const [liveNotification, setLiveNotification] = useState<LiveNotification | null>(null);
+
+	useEffect(() => {
+		const unannounced = toasts.filter(
+			t => t.visible && !announcedIdsRef.current.has(t.id) && typeof t.message === "string",
+		);
+		if (!unannounced.length) return;
+
+		unannounced.forEach(t => announcedIdsRef.current.add(t.id));
+
+		// Announce the most recent notification; toasts virtually never
+		// stack within a single render in Webchat.
+		const latest = unannounced[unannounced.length - 1];
+		setLiveNotification({ id: latest.id, text: latest.message as string });
+	}, [toasts]);
+
+	return (
+		<div
+			role="status"
+			aria-live="polite"
+			aria-atomic="true"
+			id="webchatNotificationsLiveRegion"
+			className="sr-only"
+		>
+			{liveNotification && <div key={liveNotification.id}>{liveNotification.text}</div>}
+		</div>
 	);
 };
 

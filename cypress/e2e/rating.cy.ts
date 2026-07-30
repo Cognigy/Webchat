@@ -316,5 +316,65 @@ describe("Rating", () => {
 			cy.get(".webchat-rating-widget-root").should("exist");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
+
+		it("announces the feedback-submitted status via an always-mounted live region (SC 4.1.3)", () => {
+			cy.initMockWebchat({
+				settings: {
+					chatOptions: {
+						enabled: true,
+						title: chatOptionsTitle,
+						rating: {
+							enabled: "always",
+						},
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			// The live region must exist in the DOM BEFORE the notification fires,
+			// otherwise screen readers ignore the update (CGY-4035).
+			cy.get("#webchatNotificationsLiveRegion")
+				.should("exist")
+				.and("have.attr", "aria-live", "polite")
+				.and("be.empty");
+
+			cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
+			cy.get('[aria-label="Like"]').click();
+			cy.get(".webchat-rating-widget-send-button").click();
+
+			cy.get("#webchatNotificationsLiveRegion").contains("Your feedback was submitted");
+
+			// The visible toast must not announce itself as well (no double announcement).
+			cy.get('[role="status"]')
+				.not("#webchatNotificationsLiveRegion")
+				.should($els => {
+					$els.each((_, el) => {
+						expect(el.getAttribute("aria-live")).to.equal("off");
+					});
+				});
+		});
+
+		it("status notification toast has no detectable a11y violations (incl. contrast)", () => {
+			cy.initMockWebchat({
+				settings: {
+					chatOptions: {
+						enabled: true,
+						title: chatOptionsTitle,
+						rating: {
+							enabled: "always",
+						},
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.get(`[aria-label="${chatOptionsTitle}"]`).click();
+			cy.get('[aria-label="Like"]').click();
+			cy.get(".webchat-rating-widget-send-button").click();
+
+			// Scan while the toast is visible so axe checks its text contrast.
+			cy.contains("Your feedback was submitted").should("be.visible");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
 	});
 });
