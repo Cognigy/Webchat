@@ -274,6 +274,15 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		setReconnectionLimit(true);
 		showDisconnectOverlayViaDrop();
 
+		// The mock endpoint's initial CONNECT can leave `connecting` latched
+		// true (its connect() never settles), so reset it first — the
+		// announcement fires on the false -> true *transition*.
+		cy.getWebchat().then((webchat: any) => {
+			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: false });
+		});
+		// Idle permanent state renders no status line — a sync point proving
+		// the reset committed before we start the manual attempt.
+		cy.get(".webchat-disconnect-overlay-status").should("not.exist");
 		cy.getWebchat().then((webchat: any) => {
 			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: true });
 		});

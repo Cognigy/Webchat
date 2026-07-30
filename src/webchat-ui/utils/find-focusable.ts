@@ -18,7 +18,7 @@ const getKeyboardFocusableElements = (element: HTMLElement) => {
 	const focusable = interactiveElsArray?.filter(
 		el =>
 			!el.hasAttribute("disabled") &&
-			!el.getAttribute("aria-hidden") &&
+			el.getAttribute("aria-hidden") !== "true" &&
 			!el.closest("[inert]"),
 	);
 
