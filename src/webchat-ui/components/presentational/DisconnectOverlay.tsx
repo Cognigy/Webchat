@@ -97,6 +97,10 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 
 	const handleReconnect = () => {
 		if (isConnecting) return;
+		// Announce the attempt directly on activation — deterministic for
+		// assistive tech regardless of when (or whether) the store's
+		// `connecting` flag transition is observed by the effect above.
+		setAnnouncement(reconnectingText);
 		onConnect();
 	};
 

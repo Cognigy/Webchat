@@ -264,7 +264,7 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		cy.contains("button", "Reconnect").should("not.have.focus");
 	});
 
-	it("shows progress and disables Reconnect during a manual reconnection attempt", () => {
+	it("shows progress and disables Reconnect while an attempt is running", () => {
 		cy.visitWebchat()
 			.initMockWebchat({
 				settings: { behavior: { enableConnectionStatusIndicator: true } },
@@ -274,21 +274,34 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		setReconnectionLimit(true);
 		showDisconnectOverlayViaDrop();
 
-		// The mock endpoint's initial CONNECT can leave `connecting` latched
-		// true (its connect() never settles), so reset it first — the
-		// announcement fires on the false -> true *transition*.
-		cy.getWebchat().then((webchat: any) => {
-			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: false });
-		});
-		// Idle permanent state renders no status line — a sync point proving
-		// the reset committed before we start the manual attempt.
-		cy.get(".webchat-disconnect-overlay-status").should("not.exist");
 		cy.getWebchat().then((webchat: any) => {
 			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: true });
 		});
 
 		cy.contains("button", "Reconnect").should("have.attr", "aria-disabled", "true");
 		cy.get(".webchat-disconnect-overlay-status").should("contain.text", "Reconnecting");
+	});
+
+	it("announces a manual reconnection attempt on activation", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: { behavior: { enableConnectionStatusIndicator: true } },
+			})
+			.openWebchat()
+			.startConversation();
+		setReconnectionLimit(true);
+		showDisconnectOverlayViaDrop();
+
+		cy.getWebchat().then((webchat: any) => {
+			// Keep the attempt pending forever so the announced state is
+			// stable to assert, and clear any latched `connecting` flag from
+			// the mock endpoint's initial CONNECT so the click is not a no-op.
+			webchat.client.connect = () => new Promise(() => {});
+			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: false });
+		});
+
+		cy.contains("button", "Reconnect").click();
+
 		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
 			"contain.text",
 			"Reconnecting",
