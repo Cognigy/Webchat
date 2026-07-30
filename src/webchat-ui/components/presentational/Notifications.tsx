@@ -95,7 +95,11 @@ const silencedAriaProps: ToastOptions["ariaProps"] = {
 };
 
 export function createNotification(message: MessageType, options: ToastOptions = {}) {
-	toast(message, { ariaProps: silencedAriaProps, ...options });
+	toast(message, {
+		className: "webchat-toast-notification",
+		ariaProps: silencedAriaProps,
+		...options,
+	});
 }
 
 /**
@@ -108,7 +112,12 @@ export function createNotification(message: MessageType, options: ToastOptions =
  * setTimeout(dismiss, 5000);
  */
 export function createPersistentNotification(message: MessageType, options: ToastOptions = {}) {
-	const id = toast(message, { ariaProps: silencedAriaProps, ...options, duration: Infinity });
+	const id = toast(message, {
+		className: "webchat-toast-notification",
+		ariaProps: silencedAriaProps,
+		...options,
+		duration: Infinity,
+	});
 
 	return () => toast.dismiss(id);
 }
