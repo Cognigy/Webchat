@@ -74,6 +74,7 @@ import { isMobileViewport } from "../utils/isMobile";
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
+import { NotificationsLiveRegion } from "./presentational/Notifications";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -881,6 +882,8 @@ export class WebchatUI extends React.PureComponent<
 	};
 
 	handleSendRating = ({ rating, comment, showRatingStatus }) => {
+		const wasRatingScreen = this.props.showRatingScreen;
+
 		this.props.onShowRatingScreen(false);
 
 		this.props.onSendMessage(
@@ -903,6 +906,24 @@ export class WebchatUI extends React.PureComponent<
 		);
 
 		this.props.onSetHasGivenRating();
+
+		// Submitting from the chat options screen removes the focused Send
+		// button (rating "once" unmounts the widget; "always" disables it),
+		// which would drop focus to document.body (SC 2.4.3 Focus Order).
+		// Move focus to the screen title instead, mirroring the
+		// autoFocusScreenTitle pattern in Header. The request-rating screen
+		// path is excluded: it closes the screen and the message input
+		// takes focus on mount.
+		// Scoped to the header bar: HomeScreen and TeaserMessage also render
+		// an element with id "webchatHeaderTitle", and HomeScreen stays
+		// mounted behind secondary screens.
+		if (!wasRatingScreen) {
+			setTimeout(() => {
+				this.webchatWindowRef?.current
+					?.querySelector<HTMLElement>(".webchat-header-bar .webchat-header-title")
+					?.focus();
+			}, 200);
+		}
 	};
 
 	handleSendActionButtonMessage = (
@@ -1230,6 +1251,7 @@ export class WebchatUI extends React.PureComponent<
 												{!fullscreenMessage
 													? this.renderRegularLayout(isInforming)
 													: this.renderFullscreenMessageLayout()}
+												<NotificationsLiveRegion />
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}
