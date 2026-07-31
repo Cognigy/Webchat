@@ -3,18 +3,14 @@ import { useSelector } from "../../../webchat/helper/useSelector";
 import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
 import getMessagesListWithoutControlCommands from "../../utils/filter-out-control-commands";
 import { IStreamingMessage } from "../../../common/interfaces/message";
+import { SrOnlyLiveRegion, LiveRegionMessage } from "./SrOnlyLiveRegion";
 
 interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
 }
 
-interface LiveMessage {
-	id: string;
-	text: string;
-}
-
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveContent }) => {
-	const [liveMessage, setLiveMessage] = useState<LiveMessage | null>(null);
+	const [liveMessage, setLiveMessage] = useState<LiveRegionMessage | null>(null);
 	const messageHistory = useSelector(state => state.messages.messageHistory);
 	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
@@ -89,15 +85,10 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({ liveCon
 	}, [messages, liveContent, isProgressiveRenderingEnabled]);
 
 	return (
-		<div
-			aria-live="polite"
-			aria-relevant="additions text"
-			aria-atomic="true"
+		<SrOnlyLiveRegion
 			id="webchatMessageContainerScreenReaderLiveRegion"
-			className="sr-only"
-		>
-			{liveMessage && <div key={liveMessage.id}>{liveMessage.text}</div>}
-		</div>
+			message={liveMessage}
+		/>
 	);
 };
 

@@ -74,7 +74,7 @@ import { isMobileViewport } from "../utils/isMobile";
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
-import { NotificationsLiveRegion } from "./presentational/Notifications";
+import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -287,6 +287,7 @@ export class WebchatUI extends React.PureComponent<
 	private visibilityCheckCompleted = false;
 
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
+	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(props) {
 		super(props);
@@ -688,6 +689,11 @@ export class WebchatUI extends React.PureComponent<
 			this.engagementMessageTimeout = null;
 		}
 
+		if (this.ratingFocusTimeout) {
+			clearTimeout(this.ratingFocusTimeout);
+			this.ratingFocusTimeout = null;
+		}
+
 		// Teardown icon animation interval
 		if (this.iconAnimationIntervalHandle) {
 			clearInterval(this.iconAnimationIntervalHandle);
@@ -914,11 +920,11 @@ export class WebchatUI extends React.PureComponent<
 		// autoFocusScreenTitle pattern in Header. The request-rating screen
 		// path is excluded: it closes the screen and the message input
 		// takes focus on mount.
-		// Scoped to the header bar: HomeScreen and TeaserMessage also render
-		// an element with id "webchatHeaderTitle", and HomeScreen stays
-		// mounted behind secondary screens.
+		// Scoped to the header bar because id "webchatHeaderTitle" is
+		// duplicated across Header, HomeScreen and TeaserMessage.
 		if (!wasRatingScreen) {
-			setTimeout(() => {
+			if (this.ratingFocusTimeout) clearTimeout(this.ratingFocusTimeout);
+			this.ratingFocusTimeout = setTimeout(() => {
 				this.webchatWindowRef?.current
 					?.querySelector<HTMLElement>(".webchat-header-bar .webchat-header-title")
 					?.focus();
@@ -1251,7 +1257,7 @@ export class WebchatUI extends React.PureComponent<
 												{!fullscreenMessage
 													? this.renderRegularLayout(isInforming)
 													: this.renderFullscreenMessageLayout()}
-												<NotificationsLiveRegion />
+												<StatusLiveRegion />
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}
