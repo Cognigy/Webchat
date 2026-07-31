@@ -669,6 +669,43 @@ describe("Previous Conversations", () => {
 			});
 		});
 
+		it("hides the leaving screen from assistive tech during the back-to-home transition (CGY-3276)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: {
+							enabled: true,
+							buttonText: "View previous conversations",
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("View previous conversations").click();
+
+			// While active, the regular layout content is exposed to assistive tech
+			cy.get(".webchat-regular-layout-content").should("have.attr", "aria-hidden", "false");
+
+			cy.get("button.webchat-header-back-button").click();
+
+			// During the 500ms slide-out the leaving screen must be removed from
+			// the accessibility tree and stay frozen on the previous-conversations
+			// view — mounting the chat screen there would autofocus the input and
+			// re-announce the message history. Afterwards it unmounts entirely.
+			cy.get(".webchat-regular-layout-content").should($el => {
+				expect($el.attr("aria-hidden")).to.equal("true");
+				expect($el.find(".webchat-prev-conversations-root").length).to.be.greaterThan(0);
+				expect($el.find(".webchat-input, textarea").length).to.equal(0);
+			});
+			cy.get(".webchat-regular-layout-content").should("not.exist");
+
+			// After the transition, focus lands on the home screen close button
+			// and the screen change is announced via the status live region
+			cy.get(".webchat-homescreen-close-button").should("have.focus");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "Chat window home screen");
+		});
+
 		it("previous conversations list has no detectable a11y violations", () => {
 			cy.initMockWebchat({
 				settings: {

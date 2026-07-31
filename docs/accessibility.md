@@ -38,13 +38,29 @@ WCAG defines _what_ must be true; for _how_ each widget should behave (keyboard 
 | Visually-hidden text                 | `.sr-only` class                                              | `src/assets/style.css`                                                |
 | Hide/show an offscreen region        | tabindex-toggling pattern                                     | `src/webchat-ui/components/presentational/HomeScreen.tsx`             |
 | Open/close focus orchestration       | refs + focus-first-on-open                                    | `src/webchat-ui/components/WebchatUI.tsx`                             |
-| Announce toast/status notifications  | `<NotificationsLiveRegion>` (always mounted)                  | `src/webchat-ui/components/presentational/Notifications.tsx`          |
+| Announce status messages / toasts    | `<StatusLiveRegion>` + `announceStatus()`                     | `src/webchat-ui/components/presentational/StatusLiveRegion.tsx`       |
+| Build a new sr-only live region      | `<SrOnlyLiveRegion>` primitive (auto-clears after 15s)        | `src/webchat-ui/components/presentational/SrOnlyLiveRegion.tsx`       |
 
 User-facing aria strings come from `customTranslations.ariaLabels` — read them with a fallback; never hardcode.
 
 ### Status messages (SC 4.1.3): the live region must pre-exist
 
-A live region only announces **changes** to a node that is already in the accessibility tree. Inserting a `role="status"`/`aria-live` element together with its content (what toast libraries do by default) is silent in screen readers. Webchat therefore keeps `<NotificationsLiveRegion>` mounted in `WebchatUI` at all times and mirrors `react-hot-toast` notifications into it; the visible toast itself is set to `aria-live="off"` so nothing is announced twice. Follow the same pattern for any new status message: update an already-mounted live region, never mount a new one with the content.
+A live region only announces **changes** to a node that is already in the accessibility tree. Inserting a `role="status"`/`aria-live` element together with its content (what toast libraries do by default) is silent in screen readers. Webchat therefore keeps `<StatusLiveRegion>` mounted for the lifetime of the **open** chat window; it mirrors `react-hot-toast` notifications (the visible toast itself is set to `aria-live="off"` so nothing is announced twice) and also accepts direct announcements via `announceStatus()` — used e.g. to announce the home screen when it appears. Closing the webchat unmounts the region, so a persistent notification still visible after reopening announces again. Follow the same pattern for any new status message: update an already-mounted live region, never mount a new one with the content.
+
+Both `<StatusLiveRegion>` and `<ScreenReaderLiveRegion>` (chat messages) render through the shared `<SrOnlyLiveRegion>` primitive, which clears announced text after 15s (silently — removals aren't announced) so users browsing the window later don't read stale status text. They stay **separate DOM regions** on purpose: one `aria-atomic` region holds one message, so merging them would let a toast overwrite a pending message announcement.
+
+### Screen-transition pattern (SC 1.3.2)
+
+Screens animated with `CSSTransition` stay mounted during their 500ms exit, so a leaving screen can be announced over the arriving one. Two measures are needed (see `isRegularLayoutActiveView` and `lastRegularLayoutContent` in `src/webchat-ui/components/WebchatUI.tsx`):
+
+1. Set `aria-hidden` on the leaving surface for the duration of the exit, so only the active view is exposed to assistive technologies.
+2. **Freeze the leaving view's content** — don't let the exit render a _different_ screen just because navigation state already changed. `aria-hidden` alone is not enough: a newly mounted input can steal focus (focused elements are announced despite `aria-hidden`), and a remounted live region loses its already-announced guard and re-announces old messages.
+
+When a screen appears whose focus target doesn't convey the screen change (the home screen focuses its close button), announce the screen name through the always-mounted status live region instead of moving focus to a heading/region.
+
+### Label in Name (SC 2.5.3)
+
+Controls whose visible label is dynamic content (e.g. previous-conversation list items showing a message preview) must include that visible text in their accessible name — and per the [Understanding 2.5.3](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html) best practice, the name should **start** with the visible text so speech-input commands match. Append an index/timestamp for uniqueness when previews can repeat. When the source text can be very long, cap the name with a character budget that exceeds what the CSS-truncated label can display, so the name stays a superset of the visible text without flooding screen-reader announcements (see `truncatePreviewForName` in `previous-conversations/helpers.ts`).
 
 ## Boundary: Webchat vs. chat-components
 
