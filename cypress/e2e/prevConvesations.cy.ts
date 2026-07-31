@@ -619,6 +619,56 @@ describe("Previous Conversations", () => {
 
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
 	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("includes the visible preview text in the conversation item accessible name (CGY-3275)", () => {
+			cy.session("a11y-label-in-name", () => {
+				const localOptions = {
+					userId: `user-1`,
+					sessionId: `session-1`,
+					channel: `channel-1`,
+				};
+
+				cy.window().then(window => {
+					window.localStorage.clear();
+				});
+
+				cy.visitWebchat();
+				cy.initWebchat(localOptions).openWebchat().startConversation();
+				cy.sendMessage("hello");
+				cy.contains('You said "hello".').should("be.visible");
+
+				cy.get("button.webchat-header-back-button").should("exist").click();
+				cy.get("button").contains("Previous conversations").click();
+				cy.get(".webchat-prev-conversations-item")
+					.should("have.length", 1)
+					.first()
+					.invoke("attr", "aria-label")
+					.should(ariaLabel => {
+						// 2.5.3 best practice: the name starts with the visible preview text
+						expect(ariaLabel).to.match(/^You said "hello"\./);
+						expect(ariaLabel).to.contain("Today");
+						expect(ariaLabel).to.contain("Open conversation 1");
+					});
+
+				// Long previews are capped in the accessible name (still a superset
+				// of the visible, CSS-truncated text)
+				cy.get(".webchat-prev-conversations-item").first().click();
+				cy.sendMessage("word ".repeat(30).trim());
+				cy.contains('You said "word').should("be.visible");
+
+				cy.get("button.webchat-header-back-button").click();
+				cy.get("button").contains("Previous conversations").click();
+				cy.get(".webchat-prev-conversations-item")
+					.first()
+					.invoke("attr", "aria-label")
+					.should(ariaLabel => {
+						expect(ariaLabel).to.match(/^You said "word/);
+						const previewPart = ariaLabel.split(", ")[0];
+						expect(previewPart).to.match(/…$/);
+						expect(previewPart.length).to.be.at.most(81);
+					});
+			});
+		});
+
 		it("previous conversations list has no detectable a11y violations", () => {
 			cy.initMockWebchat({
 				settings: {

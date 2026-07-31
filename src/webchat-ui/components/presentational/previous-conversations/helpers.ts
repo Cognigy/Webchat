@@ -102,6 +102,25 @@ export const getLastMessagePreview = (messages: IMessage[]) => {
 	}
 };
 
+/**
+ * Caps the preview text used in a list item's accessible name (WCAG 2.5.3).
+ * The visible preview is CSS-truncated at 290px (~35-45 chars), so an 80-char
+ * budget keeps the name a superset of the visible text while preventing very
+ * long messages from flooding screen-reader announcements. Cuts at a word
+ * boundary where possible.
+ */
+export const truncatePreviewForName = (preview: string | string[], maxLength = 80) => {
+	const text = Array.isArray(preview) ? preview.join(" ") : preview;
+	if (text.length <= maxLength) return text;
+
+	const clipped = text.slice(0, maxLength);
+	const lastSpace = clipped.lastIndexOf(" ");
+	// Only respect the word boundary if it doesn't cut away most of the budget
+	const cutAt = lastSpace > maxLength / 2 ? lastSpace : maxLength;
+
+	return `${clipped.slice(0, cutAt).trimEnd()}…`;
+};
+
 export const getParticipants = (messages: IMessage[], config: IWebchatConfig) => {
 	const partecipants: string[] = [];
 	const hasBot = messages.some(message => ["bot", "engagement"].includes(message?.source));

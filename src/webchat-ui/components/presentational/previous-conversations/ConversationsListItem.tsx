@@ -3,7 +3,13 @@ import styled from "@emotion/styled";
 import ArrowIcon from "../../../assets/arrow-back-16px.svg";
 import CognigyAIAvatar from "../../../assets/cognigy-ai-avatar-28px.svg";
 import Ellipsis from "../../../assets/ellipsis-4px.svg";
-import { getAvatars, getLastMessagePreview, getParticipants, getRelativeTime } from "./helpers";
+import {
+	getAvatars,
+	getLastMessagePreview,
+	getParticipants,
+	getRelativeTime,
+	truncatePreviewForName,
+} from "./helpers";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { PrevConversationsState } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { Typography } from "@cognigy/chat-components";
@@ -112,13 +118,29 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 
 	const handleKeyDown = e => {
 		e.stopPropagation();
-		if (e.key === "Enter") {
+		if (e.key === "Enter" || e.key === " ") {
+			// Space must activate too (APG button pattern); prevent page scroll
+			e.preventDefault();
 			handleClick();
 		}
 	};
 
 	const openConversationAriaLabel =
 		config.settings.customTranslations?.ariaLabels?.openConversation ?? "Open conversation";
+
+	const lastMessagePreview = getLastMessagePreview(messages);
+	const relativeTime = getRelativeTime(messages);
+
+	// WCAG 2.5.3 Label in Name: the name must start with the visible preview text
+	// (speech-input tools match from the start); timestamp and index keep names
+	// unique when previews are identical. The budget must exceed what fits in the
+	// preview's 290px max-width, so the name always contains the visible portion
+	// while long messages don't flood the announcement.
+	const namePreview = truncatePreviewForName(lastMessagePreview);
+
+	const itemAriaLabel = [namePreview, relativeTime, `${openConversationAriaLabel} ${index + 1}`]
+		.filter(Boolean)
+		.join(", ");
 
 	return (
 		<ListItem
@@ -127,7 +149,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 			onKeyDown={handleKeyDown}
 			tabIndex={0}
 			role="button"
-			aria-label={`${openConversationAriaLabel} ${index + 1}`}
+			aria-label={itemAriaLabel}
 		>
 			<Left>
 				{avatars.length > 0 ? (
@@ -150,14 +172,12 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 			</Left>
 			<Center>
 				<CenterTitle variant="body-regular" component="div">
-					{getLastMessagePreview(messages)}
+					{lastMessagePreview}
 				</CenterTitle>
 				<CenterMeta variant="title2-regular" component="div">
 					<MetaNames>{getParticipants(messages, config)}</MetaNames>
 					<Ellipsis />
-					<MetaTime className="webchat-prev-conversations-time">
-						{getRelativeTime(messages)}
-					</MetaTime>
+					<MetaTime className="webchat-prev-conversations-time">{relativeTime}</MetaTime>
 				</CenterMeta>
 			</Center>
 			<Right>
