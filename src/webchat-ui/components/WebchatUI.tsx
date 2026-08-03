@@ -1643,10 +1643,12 @@ export class WebchatUI extends React.PureComponent<
 
 		const autoFocusScreenTitle = !showChatScreen && !showHomeScreen;
 
-		// True while the regular layout (header + chat/prev-conversations content) is the
-		// active view. During the back-to-home slide-out it stays mounted for the 500ms
-		// exit animation; hide it from assistive tech then (WCAG 1.3.2), so screen
-		// readers don't announce the leaving screen's messages and input label.
+		// True while the regular layout is the active view. During the back-to-home
+		// slide-out it stays mounted for the 500ms exit animation; the content wrapper
+		// below gets aria-hidden then (WCAG 1.3.2), so screen readers don't announce
+		// the leaving screen's messages and input label. The header transition is
+		// deliberately not hidden: it is static chrome with no live region, so
+		// nothing in it announces during the exit.
 		const isRegularLayoutActiveView = !!(!showEnabledHomeScreen || showInformationMessage);
 
 		return (

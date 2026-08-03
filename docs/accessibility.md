@@ -51,7 +51,7 @@ Both `<StatusLiveRegion>` and `<ScreenReaderLiveRegion>` (chat messages) render 
 
 ### Screen-transition pattern (SC 1.3.2)
 
-Screens animated with `CSSTransition` stay mounted during their 500ms exit, so a leaving screen can be announced over the arriving one. Two measures are needed (see `isRegularLayoutActiveView` and `lastRegularLayoutContent` in `src/webchat-ui/components/WebchatUI.tsx`):
+Screens animated with `CSSTransition` stay mounted during their 500ms exit, so a leaving screen can be announced over the arriving one. Two measures are needed (see `isRegularLayoutActiveView` in `src/webchat-ui/components/WebchatUI.tsx` and the `<FreezeOnExit>` component in `src/webchat-ui/components/presentational/FreezeOnExit.tsx`):
 
 1. Set `aria-hidden` on the leaving surface for the duration of the exit, so only the active view is exposed to assistive technologies.
 2. **Freeze the leaving view's content** — don't let the exit render a _different_ screen just because navigation state already changed. `aria-hidden` alone is not enough: a newly mounted input can steal focus (focused elements are announced despite `aria-hidden`), and a remounted live region loses its already-announced guard and re-announces old messages.
