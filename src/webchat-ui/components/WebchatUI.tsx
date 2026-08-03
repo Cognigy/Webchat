@@ -74,7 +74,9 @@ import { isMobileViewport } from "../utils/isMobile";
 import { removeMarkdownChars } from "../../webchat/helper/handleMarkdown";
 import DeleteAllConversationsModal from "./presentational/previous-conversations/DeleteAllConversations";
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
-import { StatusLiveRegion, announceStatus } from "./presentational/StatusLiveRegion";
+import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
+import FreezeOnExit from "./presentational/FreezeOnExit";
+import HomeScreenAnnouncer from "./presentational/HomeScreenAnnouncer";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -287,14 +289,7 @@ export class WebchatUI extends React.PureComponent<
 	private visibilityCheckCompleted = false;
 
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
-	private homeScreenAnnounceTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
-	// Last content rendered while the regular layout was the active view. During
-	// the back-to-home slide-out the layout stays mounted but the screen flags
-	// already point at the chat screen — rendering it then would mount the input
-	// (which autofocuses) and remount the live region (which re-announces old
-	// messages). Freezing the leaving view prevents both (CGY-3276).
-	private lastRegularLayoutContent: React.ReactNode = null;
 
 	constructor(props) {
 		super(props);
@@ -526,60 +521,9 @@ export class WebchatUI extends React.PureComponent<
 		this.setupIconAnimationInterval();
 
 		window.addEventListener("resize", this.handleResize);
-
-		// Covers mounting directly onto a visible home screen (e.g. page
-		// reload while the webchat is open)
-		if (this.isHomeScreenVisibleView(this.props)) {
-			this.announceHomeScreen();
-		}
 	}
 
-	/** True when the home screen is the visually active view for the given props. */
-	isHomeScreenVisibleView = (props: WebchatUIProps) => {
-		const { config } = props;
-		const isInforming =
-			config.isConfigLoaded &&
-			config.settings.embeddingConfiguration.awaitEndpointConfig &&
-			(isInformingDueToMaintenance(config.settings) ||
-				isInformingOutOfBusinessHours(config.settings.businessHours) ||
-				isInformingDueToConnectivity(config.settings, this.state.timedOut));
-
-		return !!(
-			props.open &&
-			props.showHomeScreen &&
-			config.settings.homeScreen.enabled &&
-			!isInforming
-		);
-	};
-
-	/**
-	 * Announces the home screen title through the status live region when the
-	 * home screen visually appears (webchat opened onto it, or back-navigation
-	 * from another screen). Focus lands on the home screen's close button,
-	 * which alone would not tell screen-reader users which screen they are on
-	 * — the home screen has no guaranteed visible title to focus instead.
-	 * Delayed until after the slide transition (500ms) and the close-button
-	 * focus (450ms), so the announcement follows the focus utterance instead
-	 * of being cancelled by it.
-	 */
-	announceHomeScreen = () => {
-		if (this.homeScreenAnnounceTimeout) clearTimeout(this.homeScreenAnnounceTimeout);
-		this.homeScreenAnnounceTimeout = setTimeout(() => {
-			// The user may have closed or navigated away within the delay
-			if (!this.isHomeScreenVisibleView(this.props)) return;
-			announceStatus(
-				this.props.config.settings.customTranslations?.ariaLabels?.homeScreen ??
-					"Chat window home screen",
-			);
-		}, 600);
-	};
-
 	async componentDidUpdate(prevProps: WebchatUIProps, prevState: WebchatUIState) {
-		// Announce the home screen when it becomes the visible view (WCAG 4.1.3)
-		if (!this.isHomeScreenVisibleView(prevProps) && this.isHomeScreenVisibleView(this.props)) {
-			this.announceHomeScreen();
-		}
-
 		// When the webchat is opened, focus is moved to the first focusable element inside the webchat window.
 		// This happens only if the currently focused element is the toggle button, ensuring no interruption to other interactions or auto-focus behavior.
 		// This prevents focus loss when no element with auto-focus is found inside the webchat window.
@@ -745,11 +689,6 @@ export class WebchatUI extends React.PureComponent<
 		if (this.engagementMessageTimeout) {
 			clearTimeout(this.engagementMessageTimeout);
 			this.engagementMessageTimeout = null;
-		}
-
-		if (this.homeScreenAnnounceTimeout) {
-			clearTimeout(this.homeScreenAnnounceTimeout);
-			this.homeScreenAnnounceTimeout = null;
 		}
 
 		if (this.ratingFocusTimeout) {
@@ -1321,6 +1260,22 @@ export class WebchatUI extends React.PureComponent<
 													? this.renderRegularLayout(isInforming)
 													: this.renderFullscreenMessageLayout()}
 												<StatusLiveRegion />
+												{/* Announce the home screen when it becomes the visible view (WCAG 4.1.3) */}
+												<HomeScreenAnnouncer
+													active={
+														!!(
+															open &&
+															this.props.showHomeScreen &&
+															config.settings.homeScreen.enabled &&
+															!isInforming
+														)
+													}
+													label={
+														config.settings.customTranslations
+															?.ariaLabels?.homeScreen ??
+														"Chat window home screen"
+													}
+												/>
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}
@@ -1694,13 +1649,6 @@ export class WebchatUI extends React.PureComponent<
 		// readers don't announce the leaving screen's messages and input label.
 		const isRegularLayoutActiveView = !!(!showEnabledHomeScreen || showInformationMessage);
 
-		// Keep the leaving view frozen during its exit animation instead of already
-		// rendering the chat screen (see lastRegularLayoutContent).
-		const regularLayoutContent = isRegularLayoutActiveView
-			? getRegularLayoutContent()
-			: this.lastRegularLayoutContent;
-		this.lastRegularLayoutContent = regularLayoutContent;
-
 		return (
 			<RegularLayoutRoot>
 				{!isXAppOverlayOpen && (
@@ -1775,7 +1723,11 @@ export class WebchatUI extends React.PureComponent<
 							className="webchat-regular-layout-content"
 							aria-hidden={!isRegularLayoutActiveView}
 						>
-							{regularLayoutContent}
+							{/* Keep the leaving view frozen during its exit animation
+							    instead of already rendering the chat screen (CGY-3276). */}
+							<FreezeOnExit active={isRegularLayoutActiveView}>
+								{getRegularLayoutContent()}
+							</FreezeOnExit>
 							<DeleteAllConversationsModal
 								config={config}
 								isOpen={this.state.showDeleteAllConversationsModal}

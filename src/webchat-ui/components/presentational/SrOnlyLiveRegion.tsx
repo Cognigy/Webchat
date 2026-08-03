@@ -29,7 +29,7 @@ interface SrOnlyLiveRegionProps {
  * announcements queue instead of overwriting each other.
  */
 export const SrOnlyLiveRegion: FC<SrOnlyLiveRegionProps> = ({ id, message, role }) => {
-	const [displayed, setDisplayed] = useState<LiveRegionMessage | null>(message);
+	const [displayed, setDisplayed] = useState<LiveRegionMessage | null>(null);
 
 	useEffect(() => {
 		setDisplayed(message);
