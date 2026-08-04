@@ -230,6 +230,31 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		cy.get("[data-cognigy-webchat]").should("not.exist");
 	});
 
+	it("announces the reconnecting status when the overlay opens (SC 4.1.3)", () => {
+		// The dialog announcement covers only its accessible name — VoiceOver
+		// does not read the dialog body, so the status text must additionally
+		// go through a live region (deferred past the dialog/focus
+		// announcement). That region must live INSIDE the aria-modal dialog:
+		// VoiceOver prunes the accessibility tree outside an open modal, so
+		// updates to an outside region are never announced. The dialog title
+		// must NOT be pushed through the region — that would double up on
+		// screen readers that do read the dialog (NVDA).
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay] [data-disconnect-overlay-live-region]").should(
+			"contain.text",
+			"Reconnecting",
+		);
+		cy.get("[data-disconnect-overlay-live-region]").should(
+			"not.contain.text",
+			"Connection lost",
+		);
+		// The visible status line is hidden from AT — the live region is the
+		// single programmatic source. Otherwise NVDA reads the visible line in
+		// each of its two dialog-entry passes plus the live region (thrice).
+		cy.get(".webchat-disconnect-overlay-status").should("have.attr", "aria-hidden", "true");
+	});
+
 	it("announces the gave-up transition and moves focus to the Reconnect action", () => {
 		openChatWithOverlay();
 		cy.get("[data-disconnect-overlay-close-button]").should("have.focus");
@@ -240,10 +265,10 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		// reader announces the freshly inserted button) and guarded: it only
 		// happens while focus still sits on the overlay's close button,
 		// never yanking it from a navigating user. The focus announcement
-		// conveys the transition, so the live region stays silent here (no
-		// double announcement).
+		// conveys the transition, so the live region is cleared here (no
+		// double announcement — emptying a live region is not announced).
 		cy.contains("button", "Reconnect").should("have.focus");
-		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should("have.text", "");
+		cy.get("[data-disconnect-overlay-live-region]").should("have.text", "");
 	});
 
 	it("does not steal focus at the gave-up transition when the user is navigating", () => {
@@ -257,10 +282,7 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		cy.wait(700);
 		// Focus was not moved, so the transition is announced via the live
 		// region instead — exactly one announcement either way.
-		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
-			"have.text",
-			"Reconnect",
-		);
+		cy.get("[data-disconnect-overlay-live-region]").should("have.text", "Reconnect");
 		cy.contains("button", "Reconnect").should("not.have.focus");
 	});
 
@@ -302,10 +324,7 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 		cy.contains("button", "Reconnect").click();
 
-		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
-			"contain.text",
-			"Reconnecting",
-		);
+		cy.get("[data-disconnect-overlay-live-region]").should("contain.text", "Reconnecting");
 	});
 
 	it("uses the connection_restored custom translation for the restored announcement", () => {

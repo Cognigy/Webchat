@@ -36,20 +36,45 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 	const connectionRestoredText =
 		config.settings.customTranslations?.connection_restored ?? "Connection restored.";
 
-	// Live announcements for state *changes*, reusing the already-localized
-	// overlay strings. This region lives outside the dialog (and outlives it),
-	// so it can announce "connection restored" after the dialog has closed.
-	// The dialog's initial appearance is deliberately not announced here —
-	// screen readers already announce the dialog itself.
+	// Live announcements reusing the already-localized overlay strings, split
+	// across two regions because VoiceOver prunes the accessibility tree
+	// outside an aria-modal dialog:
+	// - `announcement` renders in a region INSIDE the dialog body — the only
+	//   place VoiceOver honors live updates while the modal is open.
+	// - `closedAnnouncement` renders in a region OUTSIDE the dialog (it
+	//   outlives it), for "connection restored" after the dialog has closed —
+	//   at that point the tree is no longer pruned.
 	const [announcement, setAnnouncement] = useState("");
+	const [closedAnnouncement, setClosedAnnouncement] = useState("");
 	const prevStateRef = useRef({ isOpen, isPermanent, isConnecting });
 	useEffect(() => {
 		const prev = prevStateRef.current;
 		prevStateRef.current = { isOpen, isPermanent, isConnecting };
 
-		if (!prev.isOpen && isOpen) return; // opening is announced by the dialog
+		if (!prev.isOpen && isOpen) {
+			// The dialog announcement covers only its accessible name ("Connection
+			// lost") — VoiceOver does not read the status text in the dialog body,
+			// so the reconnecting phase would pass in silence (SC 4.1.3 Status
+			// Messages). Announce the opening status here — but never the dialog
+			// title, which the dialog already announces. Deferred past the Modal's
+			// ~200ms initial-focus move so the polite message queues after the
+			// dialog/focus announcement instead of being coalesced into it.
+			const statusText =
+				isConnecting || !isPermanent
+					? reconnectingText
+					: !navigator.onLine
+						? noNetworkText
+						: null; // idle permanent state: the focused Reconnect button announces itself
+			if (!statusText) return;
+			const openTimer = setTimeout(() => setAnnouncement(statusText), 300);
+			return () => clearTimeout(openTimer);
+		}
 		if (prev.isOpen && !isOpen) {
-			setAnnouncement(connectionRestoredText);
+			setClosedAnnouncement(connectionRestoredText);
+			// Clear the in-dialog region so a later reopen doesn't remount the
+			// dialog with stale text sitting in a live region (content present
+			// at insertion can be spuriously announced).
+			setAnnouncement("");
 			return;
 		}
 		if (!isOpen) return;
@@ -77,6 +102,11 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				const active = document.activeElement;
 				if (active?.hasAttribute("data-disconnect-overlay-close-button")) {
 					reconnectRef.current?.focus();
+					// Clear the region (emptying is not announced) so the focus
+					// announcement stays the only output here, and so a later
+					// manual-reconnect announcement is a fresh text mutation even
+					// when it repeats the last announced string.
+					setAnnouncement("");
 				} else {
 					setAnnouncement(reconnectText);
 				}
@@ -115,7 +145,7 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 	return (
 		<>
 			<div role="status" className="sr-only">
-				{announcement}
+				{closedAnnouncement}
 			</div>
 			<Modal
 				variant="fullscreen"
@@ -135,8 +165,22 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				className="webchat-disconnect-overlay"
 				data-disconnect-overlay
 			>
+				{/* While the modal is open, VoiceOver only honors live regions
+				    inside the aria-modal dialog — everything outside is pruned
+				    from its accessibility tree. Mounts empty with the dialog;
+				    text is always inserted in a later tick (VoiceOver ignores
+				    content already present when a live region enters the DOM). */}
+				<div role="status" className="sr-only" data-disconnect-overlay-live-region>
+					{announcement}
+				</div>
 				{getStatusText() && (
-					<div className="webchat-disconnect-overlay-status">{getStatusText()}</div>
+					// aria-hidden: the live region above is the single programmatic
+					// source of this text. Without this, NVDA reads the visible line
+					// in each of its two dialog-entry passes and then hears the live
+					// region too — "Reconnecting…" three times.
+					<div className="webchat-disconnect-overlay-status" aria-hidden="true">
+						{getStatusText()}
+					</div>
 				)}
 				{showReconnect && (
 					<Button
