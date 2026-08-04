@@ -241,7 +241,10 @@ export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchat
 	const textDark = black10;
 	const textLight = white;
 
-	const green = "#009918";
+	// Notification/status text color on the green10 background.
+	// #009918 on #E5F5E8 was only 3.33:1 — below the WCAG AA 4.5:1 text floor.
+	// #007313 keeps the same green hue and reaches ~5.4:1 (CGY-4035).
+	const green = "#007313";
 	const green10 = "#E5F5E8";
 	const red = "#FF0000";
 	const red10 = "#FFE5E5";

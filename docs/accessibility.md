@@ -39,8 +39,13 @@ WCAG defines _what_ must be true; for _how_ each widget should behave (keyboard 
 | Hide/show an offscreen region        | tabindex-toggling pattern                                     | `src/webchat-ui/components/presentational/HomeScreen.tsx`             |
 | Open/close focus orchestration       | refs + focus-first-on-open                                    | `src/webchat-ui/components/WebchatUI.tsx`                             |
 | Modal dialog (card or fullscreen)    | `<Modal variant>` — APG dialog + focus trap + `aria-modal`    | `src/webchat-ui/components/Modal/Modal.tsx`                           |
+| Announce toast/status notifications  | `<NotificationsLiveRegion>` (always mounted)                  | `src/webchat-ui/components/presentational/Notifications.tsx`          |
 
 User-facing aria strings come from `customTranslations.ariaLabels` — read them with a fallback; never hardcode.
+
+### Status messages (SC 4.1.3): the live region must pre-exist
+
+A live region only announces **changes** to a node that is already in the accessibility tree. Inserting a `role="status"`/`aria-live` element together with its content (what toast libraries do by default) is silent in screen readers. Webchat therefore keeps `<NotificationsLiveRegion>` mounted in `WebchatUI` at all times and mirrors `react-hot-toast` notifications into it; the visible toast itself is set to `aria-live="off"` so nothing is announced twice. Follow the same pattern for any new status message: update an already-mounted live region, never mount a new one with the content. Caveat for modal surfaces: VoiceOver prunes the tree outside an `aria-modal` dialog, so a status message that must be heard **while a modal is open** needs its live region **inside** the dialog (see the disconnect overlay below).
 
 ### Pattern: modal dialogs (`Modal`, variant-driven)
 
