@@ -46,29 +46,40 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 	//   at that point the tree is no longer pruned.
 	const [announcement, setAnnouncement] = useState("");
 	const [closedAnnouncement, setClosedAnnouncement] = useState("");
+	// The dialog announcement covers only its accessible name ("Connection
+	// lost") — VoiceOver does not read the status text in the dialog body, so
+	// the reconnecting phase would pass in silence (SC 4.1.3 Status Messages).
+	// Announce the status on open — but never the dialog title, which the
+	// dialog already announces. Deferred past the Modal's ~200ms initial-focus
+	// move so the polite message queues after the dialog/focus announcement
+	// instead of being coalesced into it. Deliberately a separate effect keyed
+	// on `isOpen` alone, reading the rest at fire time from a ref: inside the
+	// transition effect below, any connection-state flip within the deferral
+	// window would re-run the effect and its cleanup would cancel the pending
+	// announcement.
+	const openStatusRef = useRef({ isConnecting, isPermanent, reconnectingText, noNetworkText });
+	openStatusRef.current = { isConnecting, isPermanent, reconnectingText, noNetworkText };
+	useEffect(() => {
+		if (!isOpen) return;
+		const openTimer = setTimeout(() => {
+			const current = openStatusRef.current;
+			const statusText =
+				current.isConnecting || !current.isPermanent
+					? current.reconnectingText
+					: !navigator.onLine
+						? current.noNetworkText
+						: null; // idle permanent state: the focused Reconnect button announces itself
+			if (statusText) setAnnouncement(statusText);
+		}, 300);
+		return () => clearTimeout(openTimer);
+	}, [isOpen]);
+
 	const prevStateRef = useRef({ isOpen, isPermanent, isConnecting });
 	useEffect(() => {
 		const prev = prevStateRef.current;
 		prevStateRef.current = { isOpen, isPermanent, isConnecting };
 
-		if (!prev.isOpen && isOpen) {
-			// The dialog announcement covers only its accessible name ("Connection
-			// lost") — VoiceOver does not read the status text in the dialog body,
-			// so the reconnecting phase would pass in silence (SC 4.1.3 Status
-			// Messages). Announce the opening status here — but never the dialog
-			// title, which the dialog already announces. Deferred past the Modal's
-			// ~200ms initial-focus move so the polite message queues after the
-			// dialog/focus announcement instead of being coalesced into it.
-			const statusText =
-				isConnecting || !isPermanent
-					? reconnectingText
-					: !navigator.onLine
-						? noNetworkText
-						: null; // idle permanent state: the focused Reconnect button announces itself
-			if (!statusText) return;
-			const openTimer = setTimeout(() => setAnnouncement(statusText), 300);
-			return () => clearTimeout(openTimer);
-		}
+		if (!prev.isOpen && isOpen) return; // opening is announced by the effect above
 		if (prev.isOpen && !isOpen) {
 			setClosedAnnouncement(connectionRestoredText);
 			// Clear the in-dialog region so a later reopen doesn't remount the
@@ -79,9 +90,15 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 		}
 		if (!isOpen) return;
 
-		if (!prev.isConnecting && isConnecting) {
+		// The `connecting` transitions are only announced in the permanent
+		// state, where they reflect a *manual* reconnection attempt. During the
+		// automatic-retry phase the flag flips on every retry cycle — announcing
+		// each flip would alternate "Reconnecting…"/"Connection lost" as pure
+		// noise while the status ("Reconnecting…", announced on open) hasn't
+		// actually changed.
+		if (!prev.isConnecting && isConnecting && isPermanent) {
 			setAnnouncement(reconnectingText);
-		} else if (prev.isConnecting && !isConnecting) {
+		} else if (prev.isConnecting && !isConnecting && isPermanent) {
 			// A manual reconnection attempt ended while still disconnected
 			setAnnouncement(networkErrorText);
 		} else if (!prev.isPermanent && isPermanent) {
