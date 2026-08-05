@@ -344,9 +344,13 @@ describe("Rating", () => {
 
 			cy.get("#webchatNotificationsLiveRegion").contains("Your feedback was submitted");
 
-			// The visible toast must not announce itself as well (no double announcement).
+			// The visible toast must not announce itself as well (no double
+			// announcement). Only VISIBLE role="status" elements must be
+			// silenced — visually-hidden (.sr-only) regions are announcers by
+			// design (e.g. the disconnect overlay's status regions).
 			cy.get('[role="status"]')
 				.not("#webchatNotificationsLiveRegion")
+				.not(".sr-only")
 				.should($els => {
 					$els.each((_, el) => {
 						expect(el.getAttribute("aria-live")).to.equal("off");

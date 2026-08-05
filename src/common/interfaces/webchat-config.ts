@@ -312,6 +312,7 @@ export interface IWebchatSettings {
 		no_network: string;
 		reconnect: string;
 		reconnecting: string;
+		connection_restored?: string;
 		delete_all_conversations: string;
 		delete_all_conversations_confirmation: string;
 		delete_conversation: string;

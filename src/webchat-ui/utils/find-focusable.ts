@@ -10,9 +10,16 @@ const getKeyboardFocusableElements = (element: HTMLElement) => {
 	);
 	const interactiveElsArray = interactiveEls && Array.from(interactiveEls);
 
-	// Filter all the interactive elements that are not disabled or have aria-hidden 'true'
+	// Filter out interactive elements that are disabled, aria-hidden, or inside
+	// an inert subtree (e.g. the chat layout behind the disconnect overlay) —
+	// those cannot receive focus. Ancestor aria-hidden is deliberately NOT
+	// filtered: the HomeScreen show/hide pattern queries focusables inside its
+	// aria-hidden root to toggle their tabindex.
 	const focusable = interactiveElsArray?.filter(
-		el => !el.hasAttribute("disabled") && !el.getAttribute("aria-hidden"),
+		el =>
+			!el.hasAttribute("disabled") &&
+			el.getAttribute("aria-hidden") !== "true" &&
+			!el.closest("[inert]"),
 	);
 
 	const firstFocusable = focusable && (focusable[0] as HTMLElement);

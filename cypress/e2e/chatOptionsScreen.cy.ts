@@ -363,5 +363,36 @@ describe("Chat Options Screen", () => {
 			cy.get(".webchat-modal-root").should("exist");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
+
+		it("delete-conversation modal is aria-modal, traps focus and closes on Escape", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+
+			cy.get(".webchat-modal-root")
+				.should("have.attr", "role", "dialog")
+				.should("have.attr", "aria-modal", "true");
+			// Focus lands on the safe default action (Cancel, via autoFocus)
+			cy.get(".webchat-delete-confirmation-cancel-button").should("have.focus");
+
+			// The trap wraps: Tab on the last focusable (Delete) returns to the
+			// first (the close X); Shift+Tab on the first wraps back to the last.
+			cy.get(".webchat-delete-confirmation-confirm-button")
+				.focus()
+				.trigger("keydown", { key: "Tab" });
+			cy.get(".webchat-modal-close-button")
+				.should("have.focus")
+				.trigger("keydown", { key: "Tab", shiftKey: true });
+			cy.get(".webchat-delete-confirmation-confirm-button").should("have.focus");
+
+			cy.focused().type("{esc}");
+			cy.get(".webchat-modal-root").should("not.exist");
+		});
 	});
 });
