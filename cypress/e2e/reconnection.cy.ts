@@ -125,28 +125,44 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 	/**
 	 * Render the overlay by connecting then dropping. `hadConnection` (WebchatUI
-	 * state) latches asynchronously on the first connect and never resets, so
-	 * retry the connect/drop until the overlay actually renders.
+	 * state) latches asynchronously on the first connect and never resets.
 	 *
-	 * The attempt budget is sized for CI: there the mock endpoint's socket
-	 * connect first has to settle through the Cypress proxy, and the latch
-	 * reliably takes ~4s (~25 cycles) before a drop can show the overlay —
-	 * locally it succeeds on the first attempt. 60 cycles ≈ 10s of headroom.
+	 * The overlay mounts only while `connected` is false, so after the drop we
+	 * must poll WITHOUT reconnecting: in CI the overlay's React commit lags the
+	 * drop dispatch, and an eager loop that re-connects whenever an instant DOM
+	 * check comes up empty unmounts the overlay it is waiting for on every
+	 * cycle — it starves forever regardless of the attempt budget. A fresh
+	 * connect/drop cycle is only warranted if the latch itself missed, i.e. the
+	 * overlay still hasn't appeared after a full poll window.
 	 */
-	const showDisconnectOverlayViaDrop = (attempt = 0) => {
+	const showDisconnectOverlayViaDrop = (cycle = 0) => {
 		setConnected(true);
-		cy.wait(50); // let react-redux commit the connect so hadConnection can latch
+		// Retriable gate: the store must reflect the connect before the drop,
+		// otherwise the drop can win the race and hadConnection never latches.
+		cy.getWebchat()
+			.its("store")
+			.invoke("getState")
+			.its("connection.connected")
+			.should("be.true");
+		cy.wait(100); // let React commit the connected render (the latch runs in componentDidUpdate)
 		setConnected(false);
-		cy.get("body").then($body => {
-			const shown = $body.find("[data-disconnect-overlay]").length > 0;
-			if (shown) return;
-			if (attempt >= 60) {
-				throw new Error(
-					"showDisconnectOverlayViaDrop: disconnect overlay never rendered after 60 connect/drop attempts",
-				);
-			}
-			showDisconnectOverlayViaDrop(attempt + 1);
-		});
+		const awaitOverlay = (attempt = 0) => {
+			cy.get("body").then($body => {
+				if ($body.find("[data-disconnect-overlay]").length > 0) return;
+				if (attempt < 30) {
+					cy.wait(100);
+					awaitOverlay(attempt + 1);
+					return;
+				}
+				if (cycle >= 2) {
+					throw new Error(
+						"showDisconnectOverlayViaDrop: disconnect overlay never rendered after 3 connect/drop cycles",
+					);
+				}
+				showDisconnectOverlayViaDrop(cycle + 1);
+			});
+		};
+		awaitOverlay();
 	};
 
 	const openChatWithOverlay = () => {
