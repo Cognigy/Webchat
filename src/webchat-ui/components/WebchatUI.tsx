@@ -827,6 +827,16 @@ export class WebchatUI extends React.PureComponent<
 		);
 	};
 
+	// Whether the blocking connection-lost overlay is shown. Single source for
+	// render and the focus trap in handleKeydown — the two must stay in sync.
+	private get showDisconnectOverlay() {
+		return (
+			this.props.config.settings.behavior.enableConnectionStatusIndicator &&
+			!this.props.connected &&
+			this.state.hadConnection
+		);
+	}
+
 	// Key down handler
 	handleKeydown = event => {
 		const { enableFocusTrap } = this.props.config.settings.widgetSettings;
@@ -841,7 +851,12 @@ export class WebchatUI extends React.PureComponent<
 			open &&
 			// Do not trap focus when the delete conversations related modal is open
 			!showDeleteAllConversationsModal &&
-			!deleteConversationsModalState
+			!deleteConversationsModalState &&
+			// The disconnect overlay (a Modal) runs its own focus trap; the layout
+			// behind it is inert, so this trap would agree with it only by virtue
+			// of getKeyboardFocusableElements skipping inert subtrees. Excluded
+			// explicitly instead of relying on that coupling.
+			!this.showDisconnectOverlay
 		) {
 			// Get the first and last focusable elements within the webchat window and add focus
 			const webchatWindowEl = this.webchatWindowRef?.current as HTMLElement;
@@ -1125,7 +1140,6 @@ export class WebchatUI extends React.PureComponent<
 				scrollLockAllowSelectors,
 				disableMobileScrollLock,
 			},
-			behavior: { enableConnectionStatusIndicator },
 		} = config.settings;
 
 		if (
@@ -1154,8 +1168,7 @@ export class WebchatUI extends React.PureComponent<
 				isInformingOutOfBusinessHours(config.settings.businessHours) ||
 				isInformingDueToConnectivity(config.settings, state.timedOut));
 
-		const showDisconnectOverlay =
-			enableConnectionStatusIndicator && !connected && hadConnection;
+		const showDisconnectOverlay = this.showDisconnectOverlay;
 
 		const openChatAriaLabel = () => {
 			if (open)
@@ -1276,8 +1289,12 @@ export class WebchatUI extends React.PureComponent<
 													{!fullscreenMessage
 														? this.renderRegularLayout(isInforming)
 														: this.renderFullscreenMessageLayout()}
-													<NotificationsLiveRegion />
 												</DisconnectableContentWrapper>
+												{/* Outside the inert wrapper: the region must stay
+												    in the a11y tree while the disconnect overlay is
+												    open — hiding it and re-exposing it with content
+												    already inside would swallow announcements. */}
+												<NotificationsLiveRegion />
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}

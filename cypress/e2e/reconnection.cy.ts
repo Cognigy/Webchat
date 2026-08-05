@@ -134,9 +134,13 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		setConnected(false);
 		cy.get("body").then($body => {
 			const shown = $body.find("[data-disconnect-overlay]").length > 0;
-			if (!shown && attempt < 20) {
-				showDisconnectOverlayViaDrop(attempt + 1);
+			if (shown) return;
+			if (attempt >= 20) {
+				throw new Error(
+					"showDisconnectOverlayViaDrop: disconnect overlay never rendered after 20 connect/drop attempts",
+				);
 			}
+			showDisconnectOverlayViaDrop(attempt + 1);
 		});
 	};
 
@@ -353,6 +357,34 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 		setConnected(true);
 
+		cy.get("[data-disconnect-overlay]").should("not.exist");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"contain.text",
+			"Connection restored.",
+		);
+	});
+
+	it("announces the restore again on a second disconnect/restore cycle", () => {
+		openChatWithOverlay();
+
+		setConnected(true);
+		cy.get("[data-disconnect-overlay]").should("not.exist");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"contain.text",
+			"Connection restored.",
+		);
+
+		// Second cycle. The region must be cleared while the overlay is open so
+		// the next restore is a fresh DOM mutation — setting the same string
+		// again is a React no-op that live regions never announce.
+		showDisconnectOverlayViaDrop();
+		cy.get("[data-disconnect-overlay]").should("be.visible");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"not.contain.text",
+			"Connection restored.",
+		);
+
+		setConnected(true);
 		cy.get("[data-disconnect-overlay]").should("not.exist");
 		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
 			"contain.text",

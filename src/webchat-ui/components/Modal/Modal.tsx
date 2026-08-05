@@ -68,18 +68,14 @@ const ModalHeader = styled.div<{ variant: ModalVariant }>(({ variant }) => ({
 	display: "flex",
 	alignItems: "center",
 
-	...(variant === "card"
-		? { position: "relative" }
-		: {
-				// Static, so the close button anchors to the dialog's corner and
-				// the title centers in the window.
-				position: "static",
-				"> h3": { fontSize: "1.5rem" },
-			}),
+	// Static (fullscreen), so the close button anchors to the dialog's corner
+	// and the title centers in the window.
+	...(variant === "card" ? { position: "relative" } : { position: "static" }),
 
 	"> h3": {
 		margin: "auto",
 		textAlign: "center",
+		...(variant === "fullscreen" ? { fontSize: "1.5rem" } : {}),
 	},
 }));
 
@@ -144,7 +140,7 @@ const Divider = styled.div(({ theme }) => ({
 
 interface ModalProps extends Omit<
 	React.DialogHTMLAttributes<HTMLDialogElement>,
-	"title" | "onClose"
+	"title" | "onClose" | "open" | "inert" | "role" | "aria-modal"
 > {
 	isOpen: boolean;
 	onClose: (state: boolean) => void;
@@ -272,6 +268,9 @@ const Modal: React.FC<ModalProps> = ({
 					// screen readers. The card variant keeps <dialog> — its
 					// centering relies on the element's UA styles.
 					as={variant === "fullscreen" ? "div" : undefined}
+					// Spread first so the dialog semantics below always win over
+					// anything a consumer passes through.
+					{...restDialogProps}
 					role="dialog"
 					{...(variant === "card" ? { open: isOpen } : {})}
 					variant={variant}
@@ -283,7 +282,6 @@ const Modal: React.FC<ModalProps> = ({
 					// dialog entry and again as a live-region update).
 					aria-describedby={variant === "card" ? "modal-body" : undefined}
 					ref={dialogRef}
-					{...restDialogProps}
 				>
 					<ModalHeader className="webchat-modal-header" variant={variant}>
 						<Typography
@@ -311,7 +309,14 @@ const Modal: React.FC<ModalProps> = ({
 							<Divider className="webchat-modal-divider" />
 						</DividerWrapper>
 					)}
-					<ModalBody id="modal-body" className="webchat-modal-body" variant={variant}>
+					{/* The id is the card variant's aria-describedby target; unset
+					    otherwise so stacked modals (e.g. delete-confirm under the
+					    disconnect overlay) don't produce duplicate ids. */}
+					<ModalBody
+						id={variant === "card" ? "modal-body" : undefined}
+						className="webchat-modal-body"
+						variant={variant}
+					>
 						{children}
 					</ModalBody>
 					{footer ? (

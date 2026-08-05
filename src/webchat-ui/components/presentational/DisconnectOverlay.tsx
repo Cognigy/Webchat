@@ -1,9 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 
+import styled from "@emotion/styled";
+
 import Modal from "../Modal/Modal";
 import Button from "./Button";
 
 import { IWebchatConfig } from "../../../common/interfaces/webchat-config";
+
+// aria-disabled (not disabled) so the running state stays focusable and
+// announceable; the dimming therefore can't come from Button's `&:disabled`.
+const ReconnectButton = styled(Button)({
+	"&[aria-disabled='true']": { opacity: 0.6 },
+});
 
 interface DisconnectOverlayProps {
 	isOpen: boolean;
@@ -79,7 +87,14 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 		const prev = prevStateRef.current;
 		prevStateRef.current = { isOpen, isPermanent, isConnecting };
 
-		if (!prev.isOpen && isOpen) return; // opening is announced by the effect above
+		if (!prev.isOpen && isOpen) {
+			// Opening is announced by the effect above. Clear the outside region:
+			// setting it to the same "Connection restored." string on the next
+			// close would otherwise be a React no-op (no DOM mutation), leaving
+			// every restore after the first unannounced.
+			setClosedAnnouncement("");
+			return;
+		}
 		if (prev.isOpen && !isOpen) {
 			setClosedAnnouncement(connectionRestoredText);
 			// Clear the in-dialog region so a later reopen doesn't remount the
@@ -90,18 +105,11 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 		}
 		if (!isOpen) return;
 
-		// The `connecting` transitions are only announced in the permanent
-		// state, where they reflect a *manual* reconnection attempt. During the
-		// automatic-retry phase the flag flips on every retry cycle — announcing
-		// each flip would alternate "Reconnecting…"/"Connection lost" as pure
-		// noise while the status ("Reconnecting…", announced on open) hasn't
-		// actually changed.
-		if (!prev.isConnecting && isConnecting && isPermanent) {
-			setAnnouncement(reconnectingText);
-		} else if (prev.isConnecting && !isConnecting && isPermanent) {
-			// A manual reconnection attempt ended while still disconnected
-			setAnnouncement(networkErrorText);
-		} else if (!prev.isPermanent && isPermanent) {
+		// The permanent transition is checked first: `connecting` can flip in
+		// the same commit (e.g. a CONNECT dispatched on tab re-focus rejecting
+		// just as the retry limit is hit) and must not swallow the focus move
+		// below.
+		if (!prev.isPermanent && isPermanent) {
 			// Automatic reconnection gave up.
 			if (!showReconnect) {
 				setAnnouncement(noNetworkText);
@@ -130,6 +138,18 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 			}, 500);
 			return () => clearTimeout(focusTimer);
 		}
+		// The `connecting` transitions are only announced in the permanent
+		// state, where they reflect a *manual* reconnection attempt. During the
+		// automatic-retry phase the flag flips on every retry cycle — announcing
+		// each flip would alternate "Reconnecting…"/"Connection lost" as pure
+		// noise while the status ("Reconnecting…", announced on open) hasn't
+		// actually changed.
+		else if (!prev.isConnecting && isConnecting && isPermanent) {
+			setAnnouncement(reconnectingText);
+		} else if (prev.isConnecting && !isConnecting && isPermanent) {
+			// A manual reconnection attempt ended while still disconnected
+			setAnnouncement(networkErrorText);
+		}
 	}, [
 		isOpen,
 		isPermanent,
@@ -153,11 +173,8 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 
 	// Visible status line. The idle permanent state shows no status text (just
 	// the Reconnect action).
-	const getStatusText = () => {
-		if (isConnecting || !isPermanent) return reconnectingText;
-		if (!navigator.onLine) return noNetworkText;
-		return null;
-	};
+	const statusText =
+		isConnecting || !isPermanent ? reconnectingText : !navigator.onLine ? noNetworkText : null;
 
 	return (
 		<>
@@ -190,25 +207,24 @@ const DisconnectOverlay = (props: DisconnectOverlayProps) => {
 				<div role="status" className="sr-only" data-disconnect-overlay-live-region>
 					{announcement}
 				</div>
-				{getStatusText() && (
+				{statusText && (
 					// aria-hidden: the live region above is the single programmatic
 					// source of this text. Without this, NVDA reads the visible line
 					// in each of its two dialog-entry passes and then hears the live
 					// region too — "Reconnecting…" three times.
 					<div className="webchat-disconnect-overlay-status" aria-hidden="true">
-						{getStatusText()}
+						{statusText}
 					</div>
 				)}
 				{showReconnect && (
-					<Button
+					<ReconnectButton
 						ref={reconnectRef}
 						onClick={handleReconnect}
 						color="primary"
 						aria-disabled={isConnecting}
-						style={isConnecting ? { opacity: 0.6 } : undefined}
 					>
 						{reconnectText}
-					</Button>
+					</ReconnectButton>
 				)}
 			</Modal>
 		</>
