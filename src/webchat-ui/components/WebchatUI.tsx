@@ -111,6 +111,7 @@ export interface WebchatUIProps {
 	webchatToggleProps?: React.ComponentProps<typeof FAB>;
 
 	connected: boolean;
+	connecting: boolean;
 	reconnectionLimit: boolean;
 
 	hasGivenRating: boolean;
@@ -212,6 +213,16 @@ const RegularLayoutRoot = styled.div({
 	display: "flex",
 	flexDirection: "column",
 	overscrollBehavior: "contain",
+});
+
+// Wraps the chat layout so it can be hidden from assistive technologies and
+// removed from the tab order (aria-hidden + inert) while the disconnect
+// overlay is open — the overlay must be the only perceivable/operable content.
+const DisconnectableContentWrapper = styled.div({
+	height: "100%",
+	display: "flex",
+	flexDirection: "column",
+	minHeight: 0,
 });
 
 // `inert` is typed here because React 18's prop types don't know it yet;
@@ -826,6 +837,16 @@ export class WebchatUI extends React.PureComponent<
 		);
 	};
 
+	// Whether the blocking connection-lost overlay is shown. Single source for
+	// render and the focus trap in handleKeydown — the two must stay in sync.
+	private get showDisconnectOverlay() {
+		return (
+			this.props.config.settings.behavior.enableConnectionStatusIndicator &&
+			!this.props.connected &&
+			this.state.hadConnection
+		);
+	}
+
 	// Key down handler
 	handleKeydown = event => {
 		const { enableFocusTrap } = this.props.config.settings.widgetSettings;
@@ -840,7 +861,12 @@ export class WebchatUI extends React.PureComponent<
 			open &&
 			// Do not trap focus when the delete conversations related modal is open
 			!showDeleteAllConversationsModal &&
-			!deleteConversationsModalState
+			!deleteConversationsModalState &&
+			// The disconnect overlay (a Modal) runs its own focus trap; the layout
+			// behind it is inert, so this trap would agree with it only by virtue
+			// of getKeyboardFocusableElements skipping inert subtrees. Excluded
+			// explicitly instead of relying on that coupling.
+			!this.showDisconnectOverlay
 		) {
 			// Get the first and last focusable elements within the webchat window and add focus
 			const webchatWindowEl = this.webchatWindowRef?.current as HTMLElement;
@@ -1124,7 +1150,6 @@ export class WebchatUI extends React.PureComponent<
 				scrollLockAllowSelectors,
 				disableMobileScrollLock,
 			},
-			behavior: { enableConnectionStatusIndicator },
 		} = config.settings;
 
 		if (
@@ -1153,8 +1178,7 @@ export class WebchatUI extends React.PureComponent<
 				isInformingOutOfBusinessHours(config.settings.businessHours) ||
 				isInformingDueToConnectivity(config.settings, state.timedOut));
 
-		const showDisconnectOverlay =
-			enableConnectionStatusIndicator && !connected && hadConnection;
+		const showDisconnectOverlay = this.showDisconnectOverlay;
 
 		const openChatAriaLabel = () => {
 			if (open)
@@ -1258,9 +1282,28 @@ export class WebchatUI extends React.PureComponent<
 														.chatWindowWidth
 												}
 											>
-												{!fullscreenMessage
-													? this.renderRegularLayout(isInforming)
-													: this.renderFullscreenMessageLayout()}
+												<DisconnectableContentWrapper
+													aria-hidden={showDisconnectOverlay || undefined}
+													// React 18 has no `inert` prop; the inline
+													// ref callback runs on every render, keeping
+													// the attribute in sync with the overlay.
+													ref={el => {
+														if (!el) return;
+														if (showDisconnectOverlay) {
+															el.setAttribute("inert", "");
+														} else {
+															el.removeAttribute("inert");
+														}
+													}}
+												>
+													{!fullscreenMessage
+														? this.renderRegularLayout(isInforming)
+														: this.renderFullscreenMessageLayout()}
+												</DisconnectableContentWrapper>
+												{/* Outside the inert wrapper: the region must stay
+												    in the a11y tree while the disconnect overlay is
+												    open — hiding it and re-exposing it with content
+												    already inside would swallow announcements. */}
 												<StatusLiveRegion />
 												{/* Announce the home screen when it becomes the visible view (WCAG 4.1.3) */}
 												<HomeScreenAnnouncer
@@ -1282,6 +1325,7 @@ export class WebchatUI extends React.PureComponent<
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}
 													isPermanent={!!reconnectionLimit}
+													isConnecting={!!this.props.connecting}
 													onClose={handleClose}
 													config={config}
 												/>
@@ -1570,8 +1614,6 @@ export class WebchatUI extends React.PureComponent<
 						dropzoneText={config.settings.fileStorageSettings?.dropzoneText}
 					/>
 				);
-
-			// ReactModal.setAppElement moved to componentDidMount to avoid repeated invocations.
 
 			return (
 				<>

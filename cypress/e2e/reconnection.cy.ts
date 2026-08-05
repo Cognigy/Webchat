@@ -104,3 +104,312 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 		cy.get(".webchat-chat-history").contains('You said "Hi".');
 	});
 });
+
+/**
+ * WCAG 2.2 AA coverage for the disconnect (connection-lost) overlay
+ * (CGY-3269, CGY-3271, CGY-3885).
+ *
+ * The mock endpoint never opens a real socket, so the connection state is
+ * driven through the store (same pattern as closeButtonAnalytics.cy.ts).
+ */
+describe("Accessibility (WCAG 2.2 AA)", () => {
+	const setConnected = (connected: boolean) =>
+		cy.getWebchat().then((webchat: any) => {
+			webchat.store.dispatch({ type: "SET_CONNECTED", connected });
+		});
+
+	const setReconnectionLimit = (reconnectionLimit: boolean) =>
+		cy.getWebchat().then((webchat: any) => {
+			webchat.store.dispatch({ type: "SET_RECONNECTION_LIMIT", reconnectionLimit });
+		});
+
+	/**
+	 * Render the overlay by connecting then dropping. `hadConnection` (WebchatUI
+	 * state) latches asynchronously on the first connect and never resets.
+	 *
+	 * The overlay mounts only while `connected` is false, so after the drop we
+	 * must poll WITHOUT reconnecting: in CI the overlay's React commit lags the
+	 * drop dispatch, and an eager loop that re-connects whenever an instant DOM
+	 * check comes up empty unmounts the overlay it is waiting for on every
+	 * cycle — it starves forever regardless of the attempt budget. A fresh
+	 * connect/drop cycle is only warranted if the latch itself missed, i.e. the
+	 * overlay still hasn't appeared after a full poll window.
+	 */
+	const showDisconnectOverlayViaDrop = (cycle = 0) => {
+		setConnected(true);
+		// Retriable gate: the store must reflect the connect before the drop,
+		// otherwise the drop can win the race and hadConnection never latches.
+		cy.getWebchat()
+			.its("store")
+			.invoke("getState")
+			.its("connection.connected")
+			.should("be.true");
+		cy.wait(100); // let React commit the connected render (the latch runs in componentDidUpdate)
+		setConnected(false);
+		const awaitOverlay = (attempt = 0) => {
+			cy.get("body").then($body => {
+				if ($body.find("[data-disconnect-overlay]").length > 0) return;
+				if (attempt < 30) {
+					cy.wait(100);
+					awaitOverlay(attempt + 1);
+					return;
+				}
+				if (cycle >= 2) {
+					throw new Error(
+						"showDisconnectOverlayViaDrop: disconnect overlay never rendered after 3 connect/drop cycles",
+					);
+				}
+				showDisconnectOverlayViaDrop(cycle + 1);
+			});
+		};
+		awaitOverlay();
+	};
+
+	const openChatWithOverlay = () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: { behavior: { enableConnectionStatusIndicator: true } },
+			})
+			.openWebchat()
+			.startConversation();
+		showDisconnectOverlayViaDrop();
+		cy.get("[data-disconnect-overlay]").should("be.visible");
+	};
+
+	it("renders the overlay as a modal dialog with an accessible name", () => {
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay]")
+			.should("have.attr", "role", "dialog")
+			.should("have.attr", "aria-modal", "true")
+			.should("have.attr", "aria-labelledby", "webchatDisconnectOverlayTitle");
+		cy.get("#webchatDisconnectOverlayTitle").should("contain.text", "Connection lost");
+
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
+	it("moves focus once to the close button on open and keeps it stable", () => {
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay-close-button]").should("have.focus");
+		// Focus must not be moved again without user action (SC 3.2.1)
+		cy.wait(500);
+		cy.get("[data-disconnect-overlay-close-button]").should("have.focus");
+	});
+
+	it("focuses the Reconnect action when the overlay opens in the permanent state", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: { behavior: { enableConnectionStatusIndicator: true } },
+			})
+			.openWebchat()
+			.startConversation();
+		setReconnectionLimit(true);
+		showDisconnectOverlayViaDrop();
+
+		cy.contains("button", "Reconnect").should("be.visible").should("have.focus");
+	});
+
+	it("labels the close button with its real effect and closes the chat window", () => {
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay-close-button]")
+			.should("have.attr", "aria-label", "Close chat window")
+			.click();
+
+		// It closes the whole webchat window, and focus returns to the toggle
+		cy.get("[data-cognigy-webchat]").should("not.exist");
+		cy.get("[data-cognigy-webchat-toggle]").should("have.focus");
+	});
+
+	it("hides the background chat content from assistive technologies while open", () => {
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay]")
+			.parent()
+			.find("[aria-hidden='true'][inert]")
+			.should("exist")
+			.find(".webchat-chat-history")
+			.should("exist");
+	});
+
+	it("wraps keyboard focus at the overlay's boundaries (focus trap)", () => {
+		openChatWithOverlay();
+		setReconnectionLimit(true);
+
+		// Two focusable controls: close (X, first) and Reconnect (last).
+		// Tab on the last wraps to the first; Shift+Tab on the first wraps to
+		// the last. (In-between moves are native browser tabbing, which
+		// Cypress cannot synthesize.)
+		cy.contains("button", "Reconnect").focus().trigger("keydown", { key: "Tab" });
+		cy.get("[data-disconnect-overlay-close-button]")
+			.should("have.focus")
+			.trigger("keydown", { key: "Tab", shiftKey: true });
+		cy.contains("button", "Reconnect").should("have.focus");
+	});
+
+	it("closes on Escape", () => {
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay-close-button]").type("{esc}");
+		cy.get("[data-cognigy-webchat]").should("not.exist");
+	});
+
+	it("announces the reconnecting status when the overlay opens (SC 4.1.3)", () => {
+		// The dialog announcement covers only its accessible name — VoiceOver
+		// does not read the dialog body, so the status text must additionally
+		// go through a live region (deferred past the dialog/focus
+		// announcement). That region must live INSIDE the aria-modal dialog:
+		// VoiceOver prunes the accessibility tree outside an open modal, so
+		// updates to an outside region are never announced. The dialog title
+		// must NOT be pushed through the region — that would double up on
+		// screen readers that do read the dialog (NVDA).
+		openChatWithOverlay();
+
+		cy.get("[data-disconnect-overlay] [data-disconnect-overlay-live-region]").should(
+			"contain.text",
+			"Reconnecting",
+		);
+		cy.get("[data-disconnect-overlay-live-region]").should(
+			"not.contain.text",
+			"Connection lost",
+		);
+		// The visible status line is hidden from AT — the live region is the
+		// single programmatic source. Otherwise NVDA reads the visible line in
+		// each of its two dialog-entry passes plus the live region (thrice).
+		cy.get(".webchat-disconnect-overlay-status").should("have.attr", "aria-hidden", "true");
+	});
+
+	it("announces the gave-up transition and moves focus to the Reconnect action", () => {
+		openChatWithOverlay();
+		cy.get("[data-disconnect-overlay-close-button]").should("have.focus");
+
+		setReconnectionLimit(true);
+
+		// Focus moves to the new primary action — deferred (so the screen
+		// reader announces the freshly inserted button) and guarded: it only
+		// happens while focus still sits on the overlay's close button,
+		// never yanking it from a navigating user. The focus announcement
+		// conveys the transition, so the live region is cleared here (no
+		// double announcement — emptying a live region is not announced).
+		cy.contains("button", "Reconnect").should("have.focus");
+		cy.get("[data-disconnect-overlay-live-region]").should("have.text", "");
+	});
+
+	it("does not steal focus at the gave-up transition when the user is navigating", () => {
+		openChatWithOverlay();
+		cy.get("[data-disconnect-overlay-close-button]").should("have.focus");
+
+		setReconnectionLimit(true);
+		// The user moves focus away before the deferred move fires
+		cy.get("[data-disconnect-overlay-close-button]").blur();
+
+		cy.wait(700);
+		// Focus was not moved, so the transition is announced via the live
+		// region instead — exactly one announcement either way.
+		cy.get("[data-disconnect-overlay-live-region]").should("have.text", "Reconnect");
+		cy.contains("button", "Reconnect").should("not.have.focus");
+	});
+
+	it("shows progress and disables Reconnect while an attempt is running", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: { behavior: { enableConnectionStatusIndicator: true } },
+			})
+			.openWebchat()
+			.startConversation();
+		setReconnectionLimit(true);
+		showDisconnectOverlayViaDrop();
+
+		cy.getWebchat().then((webchat: any) => {
+			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: true });
+		});
+
+		cy.contains("button", "Reconnect").should("have.attr", "aria-disabled", "true");
+		cy.get(".webchat-disconnect-overlay-status").should("contain.text", "Reconnecting");
+	});
+
+	it("announces a manual reconnection attempt on activation", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: { behavior: { enableConnectionStatusIndicator: true } },
+			})
+			.openWebchat()
+			.startConversation();
+		setReconnectionLimit(true);
+		showDisconnectOverlayViaDrop();
+
+		cy.getWebchat().then((webchat: any) => {
+			// Keep the attempt pending forever so the announced state is
+			// stable to assert, and clear any latched `connecting` flag from
+			// the mock endpoint's initial CONNECT so the click is not a no-op.
+			webchat.client.connect = () => new Promise(() => {});
+			webchat.store.dispatch({ type: "SET_CONNECTING", connecting: false });
+		});
+
+		cy.contains("button", "Reconnect").click();
+
+		cy.get("[data-disconnect-overlay-live-region]").should("contain.text", "Reconnecting");
+	});
+
+	it("uses the connection_restored custom translation for the restored announcement", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: {
+					behavior: { enableConnectionStatusIndicator: true },
+					customTranslations: { connection_restored: "Back online!" },
+				},
+			})
+			.openWebchat()
+			.startConversation();
+		showDisconnectOverlayViaDrop();
+		cy.get("[data-disconnect-overlay]").should("be.visible");
+
+		setConnected(true);
+
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"contain.text",
+			"Back online!",
+		);
+	});
+
+	it("announces when the connection is restored and the overlay closes", () => {
+		openChatWithOverlay();
+
+		setConnected(true);
+
+		cy.get("[data-disconnect-overlay]").should("not.exist");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"contain.text",
+			"Connection restored.",
+		);
+	});
+
+	it("announces the restore again on a second disconnect/restore cycle", () => {
+		openChatWithOverlay();
+
+		setConnected(true);
+		cy.get("[data-disconnect-overlay]").should("not.exist");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"contain.text",
+			"Connection restored.",
+		);
+
+		// Second cycle. The region must be cleared while the overlay is open so
+		// the next restore is a fresh DOM mutation — setting the same string
+		// again is a React no-op that live regions never announce.
+		showDisconnectOverlayViaDrop();
+		cy.get("[data-disconnect-overlay]").should("be.visible");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"not.contain.text",
+			"Connection restored.",
+		);
+
+		setConnected(true);
+		cy.get("[data-disconnect-overlay]").should("not.exist");
+		cy.get("[data-cognigy-webchat-root] [role='status'].sr-only").should(
+			"contain.text",
+			"Connection restored.",
+		);
+	});
+});

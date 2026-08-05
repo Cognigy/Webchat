@@ -10,14 +10,19 @@ const getKeyboardFocusableElements = (element: HTMLElement) => {
 	);
 	const interactiveElsArray = interactiveEls && Array.from(interactiveEls);
 
-	// Filter out elements that are not keyboard-reachable: disabled, hidden from
-	// the accessibility tree (aria-hidden="true" on the element or an ancestor),
-	// or inside an inert subtree — e.g. a leaving screen during its exit
-	// transition (see RegularLayoutContentWrapper in WebchatUI.tsx). Matching
-	// aria-hidden="true" explicitly (not attribute presence) keeps elements with
-	// aria-hidden="false" focusable.
+	// Filter out interactive elements that are disabled, aria-hidden, or inside
+	// an inert subtree (e.g. the chat layout behind the disconnect overlay, or
+	// a leaving screen during its exit transition — see
+	// RegularLayoutContentWrapper in WebchatUI.tsx) — those cannot receive
+	// focus. Matching aria-hidden="true" explicitly (not attribute presence)
+	// keeps elements with aria-hidden="false" focusable. Ancestor aria-hidden
+	// is deliberately NOT filtered: the HomeScreen show/hide pattern queries
+	// focusables inside its aria-hidden root to toggle their tabindex.
 	const focusable = interactiveElsArray?.filter(
-		el => !el.hasAttribute("disabled") && !el.closest('[aria-hidden="true"], [inert]'),
+		el =>
+			!el.hasAttribute("disabled") &&
+			el.getAttribute("aria-hidden") !== "true" &&
+			!el.closest("[inert]"),
 	);
 
 	const firstFocusable = focusable && (focusable[0] as HTMLElement);

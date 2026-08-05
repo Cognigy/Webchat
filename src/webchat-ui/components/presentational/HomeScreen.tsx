@@ -192,7 +192,7 @@ export const HomeScreen: React.FC<IHomeScreenProps> = props => {
 	useEffect(() => {
 		if (homeScreenRef.current) {
 			const { firstFocusable } = getKeyboardFocusableElements(homeScreenRef.current);
-			firstFocusable.focus();
+			firstFocusable?.focus();
 		}
 	}, []);
 

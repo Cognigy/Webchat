@@ -42,6 +42,7 @@ type FromState = Pick<
 	| "fullscreenMessage"
 	| "config"
 	| "connected"
+	| "connecting"
 	| "reconnectionLimit"
 >;
 
@@ -70,7 +71,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			messages: { messageHistory: messages, visibleOutputMessages },
 			unseenMessages,
 			prevConversations,
-			connection: { connected, reconnectionLimit },
+			connection: { connected, connecting, reconnectionLimit },
 			ui: {
 				open,
 				typing,
@@ -111,6 +112,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			fullscreenMessage,
 			config,
 			connected,
+			connecting,
 			reconnectionLimit,
 			showRatingScreen,
 			hasGivenRating,
