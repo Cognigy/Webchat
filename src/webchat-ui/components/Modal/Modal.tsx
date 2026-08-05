@@ -75,7 +75,7 @@ const ModalHeader = styled.div<{ variant: ModalVariant }>(({ variant }) => ({
 	"> h3": {
 		margin: "auto",
 		textAlign: "center",
-		...(variant === "fullscreen" ? { fontSize: "1.5rem" } : {}),
+		...(variant === "fullscreen" ? { fontSize: "1.2rem" } : {}),
 	},
 }));
 
