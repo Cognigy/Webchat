@@ -645,8 +645,10 @@ describe("Previous Conversations", () => {
 				.should(ariaLabel => {
 					// 2.5.3 best practice: the name starts with the visible preview text
 					expect(ariaLabel).to.match(/^You said "hello"\./);
-					// Participant name comes before the timestamp (user-only chat → "You")
-					expect(ariaLabel).to.contain(", You, Today");
+					// Participant name comes before the timestamp (the bot echoed
+					// a reply, so the participant is "Bot" — the default when no
+					// layout title is configured)
+					expect(ariaLabel).to.contain(", Bot, Today");
 					expect(ariaLabel).to.contain("Open conversation 1");
 				});
 
