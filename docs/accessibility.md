@@ -61,7 +61,7 @@ When a screen appears whose focus target doesn't convey the screen change (the h
 
 ### Label in Name (SC 2.5.3)
 
-Controls whose visible label is dynamic content (e.g. previous-conversation list items showing a message preview) must include that visible text in their accessible name — and per the [Understanding 2.5.3](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html) best practice, the name should **start** with the visible text so speech-input commands match. Append an index/timestamp for uniqueness when previews can repeat. When the source text can be very long, cap the name with a character budget that exceeds what the CSS-truncated label can display, so the name stays a superset of the visible text without flooding screen-reader announcements (see `truncatePreviewForName` in `previous-conversations/helpers.ts`).
+Controls whose visible label is dynamic content (e.g. previous-conversation list items showing a message preview) must include that visible text in their accessible name — and per the [Understanding 2.5.3](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html) best practice, the name should **start** with the visible text so speech-input commands match. Append the participant name(s), then an index/timestamp for uniqueness when previews can repeat. When the source text can be very long, cap the name with a character budget that exceeds what the CSS-truncated label can display, so the name stays a superset of the visible text without flooding screen-reader announcements (see `truncatePreviewForName` in `previous-conversations/helpers.ts`).
 
 ### Pattern: modal dialogs (`Modal`, variant-driven)
 

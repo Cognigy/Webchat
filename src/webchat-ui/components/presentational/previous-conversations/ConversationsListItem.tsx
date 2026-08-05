@@ -130,6 +130,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 
 	const lastMessagePreview = getLastMessagePreview(messages);
 	const relativeTime = getRelativeTime(messages);
+	const participants = getParticipants(messages, config);
 
 	// WCAG 2.5.3 Label in Name: the name must start with the visible preview text
 	// (speech-input tools match from the start); timestamp and index keep names
@@ -138,7 +139,12 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 	// while long messages don't flood the announcement.
 	const namePreview = truncatePreviewForName(lastMessagePreview);
 
-	const itemAriaLabel = [namePreview, relativeTime, `${openConversationAriaLabel} ${index + 1}`]
+	const itemAriaLabel = [
+		namePreview,
+		participants,
+		relativeTime,
+		`${openConversationAriaLabel} ${index + 1}`,
+	]
 		.filter(Boolean)
 		.join(", ");
 
@@ -175,7 +181,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 					{lastMessagePreview}
 				</CenterTitle>
 				<CenterMeta variant="title2-regular" component="div">
-					<MetaNames>{getParticipants(messages, config)}</MetaNames>
+					<MetaNames>{participants}</MetaNames>
 					<Ellipsis />
 					<MetaTime className="webchat-prev-conversations-time">{relativeTime}</MetaTime>
 				</CenterMeta>
