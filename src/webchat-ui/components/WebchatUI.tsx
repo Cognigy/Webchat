@@ -214,7 +214,9 @@ const RegularLayoutRoot = styled.div({
 	overscrollBehavior: "contain",
 });
 
-const RegularLayoutContentWrapper = styled.div(({ theme }) => ({
+// `inert` is typed here because React 18's prop types don't know it yet;
+// the string form ("") renders the bare attribute, and emotion forwards it.
+const RegularLayoutContentWrapper = styled.div<{ inert?: string }>(({ theme }) => ({
 	height: "100%",
 	zIndex: 3,
 	display: "flex",
@@ -1645,10 +1647,15 @@ export class WebchatUI extends React.PureComponent<
 
 		// True while the regular layout is the active view. During the back-to-home
 		// slide-out it stays mounted for the 500ms exit animation; the content wrapper
-		// below gets aria-hidden then (WCAG 1.3.2), so screen readers don't announce
-		// the leaving screen's messages and input label. The header transition is
-		// deliberately not hidden: it is static chrome with no live region, so
-		// nothing in it announces during the exit.
+		// below then gets `inert` (removes it from tab order and pointer events —
+		// aria-hidden alone leaves the off-screen controls tabbable) plus
+		// aria-hidden="true" as a fallback for browsers without inert support
+		// (WCAG 1.3.2), so screen readers don't announce the leaving screen's
+		// messages and input label. While active, neither attribute is rendered:
+		// aria-hidden="false" has inconsistent AT support and would read as hidden
+		// to attribute-presence checks. The header transition is deliberately not
+		// hidden: it is static chrome with no live region, so nothing in it
+		// announces during the exit.
 		const isRegularLayoutActiveView = !!(!showEnabledHomeScreen || showInformationMessage);
 
 		return (
@@ -1723,7 +1730,8 @@ export class WebchatUI extends React.PureComponent<
 					>
 						<RegularLayoutContentWrapper
 							className="webchat-regular-layout-content"
-							aria-hidden={!isRegularLayoutActiveView}
+							aria-hidden={isRegularLayoutActiveView ? undefined : true}
+							inert={isRegularLayoutActiveView ? undefined : ""}
 						>
 							{/* Keep the leaving view frozen during its exit animation
 							    instead of already rendering the chat screen (CGY-3276). */}

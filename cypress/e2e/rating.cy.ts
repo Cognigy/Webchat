@@ -447,6 +447,10 @@ describe("Rating", () => {
 			cy.initMockWebchat({});
 			cy.openWebchat().startConversation();
 
+			// cy.clock() also freezes Date.now(), which react-hot-toast uses for
+			// toast createdAt — so this test can't be merged with the
+			// newest-notification-wins test above, which depends on real
+			// createdAt ordering.
 			cy.clock();
 
 			cy.getWebchat().then(webchat => {
@@ -457,7 +461,10 @@ describe("Rating", () => {
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "temporary status");
 
 			// Past the 15s clear delay the region must be empty again, so
-			// screen-reader users browsing later don't read stale status text
+			// screen-reader users browsing later don't read stale status text.
+			// This tick also fires the toast's own dismiss/remove timers; the
+			// resulting store update only prunes announcedIdsRef in
+			// StatusLiveRegion — it cannot re-set the cleared text.
 			cy.tick(15100);
 			cy.get("#webchatStatusLiveRegion").should("be.empty");
 		});

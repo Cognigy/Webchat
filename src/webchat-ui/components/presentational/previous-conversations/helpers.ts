@@ -110,7 +110,9 @@ export const getLastMessagePreview = (messages: IMessage[]) => {
  * boundary where possible.
  */
 export const truncatePreviewForName = (preview: string | string[], maxLength = 80) => {
-	const text = Array.isArray(preview) ? preview.join(" ") : preview;
+	// React renders an array of strings with no separator, so join with ""
+	// to keep the name identical to the visible text (SC 2.5.3)
+	const text = Array.isArray(preview) ? preview.join("") : preview;
 	if (text.length <= maxLength) return text;
 
 	const clipped = text.slice(0, maxLength);

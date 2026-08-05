@@ -27,6 +27,12 @@ interface SrOnlyLiveRegionProps {
  * Used by <ScreenReaderLiveRegion> (chat messages) and <StatusLiveRegion>
  * (toasts + screen changes); they stay separate DOM regions so simultaneous
  * announcements queue instead of overwriting each other.
+ *
+ * The text is deliberately committed via state in an effect — one commit
+ * after the `message` prop changes — rather than rendered directly from the
+ * prop. That guarantees the (empty) region exists in the accessibility tree
+ * strictly before its content appears; don't "optimise" this back into a
+ * derived render.
  */
 export const SrOnlyLiveRegion: FC<SrOnlyLiveRegionProps> = ({ id, message, role }) => {
 	const [displayed, setDisplayed] = useState<LiveRegionMessage | null>(null);
@@ -52,5 +58,3 @@ export const SrOnlyLiveRegion: FC<SrOnlyLiveRegionProps> = ({ id, message, role 
 		</div>
 	);
 };
-
-export default SrOnlyLiveRegion;

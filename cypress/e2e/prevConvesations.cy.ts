@@ -628,10 +628,9 @@ describe("Previous Conversations", () => {
 				channel: `channel-1`,
 			};
 
-			cy.window().then(window => {
-				window.localStorage.clear();
-			});
-
+			// No manual localStorage.clear() here: before cy.visitWebchat() the
+			// window still belongs to the previous test's page, and Cypress test
+			// isolation already clears storage between tests.
 			cy.visitWebchat();
 			cy.initWebchat(localOptions).openWebchat().startConversation();
 			cy.sendMessage("hello");
@@ -662,10 +661,13 @@ describe("Previous Conversations", () => {
 				.first()
 				.invoke("attr", "aria-label")
 				.should(ariaLabel => {
-					expect(ariaLabel).to.match(/^You said "word/);
-					const previewPart = ariaLabel.split(", ")[0];
-					expect(previewPart).to.match(/…$/);
-					expect(previewPart.length).to.be.at.most(81);
+					expect(ariaLabel).to.be.a("string");
+					// Capture the capped preview up to the ellipsis instead of
+					// splitting on ", ", which any preview containing ", "
+					// would break
+					const previewPart = String(ariaLabel).match(/^You said "word[^…]*…/)?.[0];
+					expect(previewPart, "capped preview ending in …").to.be.a("string");
+					expect(previewPart?.length).to.be.at.most(81);
 				});
 		});
 
@@ -684,20 +686,34 @@ describe("Previous Conversations", () => {
 			cy.openWebchat();
 			cy.get("button").contains("View previous conversations").click();
 
-			// While active, the regular layout content is exposed to assistive tech
-			cy.get(".webchat-regular-layout-content").should("have.attr", "aria-hidden", "false");
+			// While active, the regular layout content is fully exposed: no
+			// aria-hidden (the "false" value has inconsistent AT support) and
+			// not inert. `not.have.attr` assertions come last in their chains —
+			// they re-subject the chain to the (non-existent) attribute value.
+			cy.get(".webchat-regular-layout-content").should("not.have.attr", "inert");
+			cy.get(".webchat-regular-layout-content").should("not.have.attr", "aria-hidden");
 
+			// Freeze the app clock so the 500ms exit window is deterministic —
+			// without it, the first assertion below can land after the unmount
+			// and fail as "element not found" instead of meaningfully.
+			cy.clock();
 			cy.get("button.webchat-header-back-button").click();
 
-			// During the 500ms slide-out the leaving screen must be removed from
-			// the accessibility tree and stay frozen on the previous-conversations
-			// view — mounting the chat screen there would autofocus the input and
-			// re-announce the message history. Afterwards it unmounts entirely.
+			// During the slide-out the leaving screen must be removed from the
+			// accessibility tree and tab order (inert + aria-hidden fallback)
+			// and stay frozen on the previous-conversations view — mounting the
+			// chat screen there would autofocus the input and re-announce the
+			// message history. Afterwards it unmounts entirely.
 			cy.get(".webchat-regular-layout-content").should($el => {
 				expect($el.attr("aria-hidden")).to.equal("true");
+				expect($el.is("[inert]"), "inert during exit").to.equal(true);
 				expect($el.find(".webchat-prev-conversations-root").length).to.be.greaterThan(0);
 				expect($el.find(".webchat-input, textarea").length).to.equal(0);
 			});
+
+			// Past the 500ms exit, the 450ms focus timeout and the 600ms
+			// home-screen announcement delay
+			cy.tick(700);
 			cy.get(".webchat-regular-layout-content").should("not.exist");
 
 			// After the transition, focus lands on the home screen close button

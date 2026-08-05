@@ -53,7 +53,7 @@ Both `<StatusLiveRegion>` and `<ScreenReaderLiveRegion>` (chat messages) render 
 
 Screens animated with `CSSTransition` stay mounted during their 500ms exit, so a leaving screen can be announced over the arriving one. Two measures are needed (see `isRegularLayoutActiveView` in `src/webchat-ui/components/WebchatUI.tsx` and the `<FreezeOnExit>` component in `src/webchat-ui/components/presentational/FreezeOnExit.tsx`):
 
-1. Set `aria-hidden` on the leaving surface for the duration of the exit, so only the active view is exposed to assistive technologies.
+1. Set `inert` (plus `aria-hidden="true"` as a fallback for browsers without inert support) on the leaving surface for the duration of the exit. `inert` removes the subtree from the tab order and pointer events as well — `aria-hidden` alone would leave the off-screen controls keyboard-reachable, and the focus trap (`getKeyboardFocusableElements` skips `[inert]`/`[aria-hidden="true"]` subtrees) would still count them. Render **no** attribute while the surface is active: `aria-hidden="false"` has inconsistent AT support and reads as hidden to attribute-presence checks.
 2. **Freeze the leaving view's content** — don't let the exit render a _different_ screen just because navigation state already changed. `aria-hidden` alone is not enough: a newly mounted input can steal focus (focused elements are announced despite `aria-hidden`), and a remounted live region loses its already-announced guard and re-announces old messages.
 
 When a screen appears whose focus target doesn't convey the screen change (the home screen focuses its close button), announce the screen name through the always-mounted status live region instead of moving focus to a heading/region.

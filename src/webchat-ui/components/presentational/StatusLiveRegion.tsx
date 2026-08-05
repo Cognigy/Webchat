@@ -2,6 +2,10 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { useToasterStore } from "react-hot-toast";
 import { SrOnlyLiveRegion, LiveRegionMessage } from "./SrOnlyLiveRegion";
 
+// Module-global on purpose: webchat renders a single widget instance per page,
+// so one listener set is sufficient. If multi-instance embedding ever becomes
+// a supported scenario, scope this through context instead — otherwise every
+// mounted instance would announce every other instance's statuses.
 type StatusListener = (text: string) => void;
 const statusListeners = new Set<StatusListener>();
 let statusCounter = 0;
@@ -57,13 +61,13 @@ export const StatusLiveRegion: FC = () => {
 		unannounced.forEach(t => announcedIdsRef.current.add(t.id));
 
 		// Announce the most recent notification when several land in one
-		// render. Sorted explicitly: react-hot-toast prepends new toasts, so
-		// relying on array order silently picks the oldest (CGY-34519).
+		// render (CGY-34519). Compared by createdAt; on ties (same-millisecond
+		// toasts — exactly the several-in-one-tick case) the reduce keeps the
+		// earlier array element, which is the newest because react-hot-toast
+		// prepends new toasts.
 		const latest = unannounced.reduce((a, b) => (b.createdAt > a.createdAt ? b : a));
 		setStatus({ id: latest.id, text: latest.message as string });
 	}, [toasts]);
 
 	return <SrOnlyLiveRegion id="webchatStatusLiveRegion" role="status" message={status} />;
 };
-
-export default StatusLiveRegion;
