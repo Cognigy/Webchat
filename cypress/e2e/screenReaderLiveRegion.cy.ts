@@ -28,6 +28,78 @@ describe("Screen Reader Live Region", () => {
 		cy.get(liveRegionSelector).should("not.contain", "A new message");
 	});
 
+	describe("AI-agent notice announcement (CGY-3519)", () => {
+		const statusRegionSelector = "#webchatStatusLiveRegion";
+
+		it("announces the default notice when the chat screen appears", () => {
+			// beforeEach already opened the chat screen; wait past the 600ms
+			// announce delay in ScreenAnnouncer.
+			cy.wait(800);
+			cy.get(statusRegionSelector).should(
+				"contain.text",
+				"You're now chatting with an AI Agent.",
+			);
+		});
+
+		it("announces the configured AIAgentNoticeText", () => {
+			cy.visitWebchat();
+			cy.initMockWebchat({
+				settings: {
+					behavior: {
+						AIAgentNoticeText: "Je chat met een digitale AI assistent",
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.wait(800);
+			cy.get(statusRegionSelector).should(
+				"contain.text",
+				"Je chat met een digitale AI assistent",
+			);
+		});
+
+		it("announces the notice only on the first chat-screen visit per open window", () => {
+			// beforeEach opened the chat screen — first visit announces.
+			cy.wait(800);
+			cy.get(statusRegionSelector).should(
+				"contain.text",
+				"You're now chatting with an AI Agent.",
+			);
+
+			// Back to the home screen: announced as a screen change (500ms
+			// slide + 600ms announce delay)…
+			cy.get("button.webchat-header-back-button").click();
+			cy.wait(1300);
+			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
+
+			// …then return to the chat screen: the home-screen announcement
+			// stays — the notice is NOT announced a second time.
+			cy.startConversation();
+			cy.wait(800);
+			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
+			cy.get(statusRegionSelector).should(
+				"not.contain.text",
+				"You're now chatting with an AI Agent.",
+			);
+		});
+
+		it("does not announce anything when the notice is disabled", () => {
+			cy.visitWebchat();
+			cy.initMockWebchat({
+				settings: {
+					behavior: {
+						enableAIAgentNotice: false,
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.wait(800);
+			cy.get(statusRegionSelector).should("be.empty");
+		});
+	});
+
 	it("skips a data-only message but still announces a later rendered message", () => {
 		// Interleave a data-only message between two real text messages. This
 		// guards the index-0 blocking edge case: a non-rendered message at the

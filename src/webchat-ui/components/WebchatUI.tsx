@@ -76,7 +76,7 @@ import DeleteAllConversationsModal from "./presentational/previous-conversations
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
 import FreezeOnExit from "./presentational/FreezeOnExit";
-import HomeScreenAnnouncer from "./presentational/HomeScreenAnnouncer";
+import ScreenAnnouncer from "./presentational/ScreenAnnouncer";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -1180,6 +1180,10 @@ export class WebchatUI extends React.PureComponent<
 
 		const showDisconnectOverlay = this.showDisconnectOverlay;
 
+		// Drives the screen announcers below; the announcers mount only while
+		// the webchat is open, so no `open` check is needed here.
+		const { showHomeScreenView, showChatScreen } = this.getScreenVisibility(isInforming);
+
 		const openChatAriaLabel = () => {
 			if (open)
 				return config.settings.customTranslations?.ariaLabels?.closeChat ?? "Close chat";
@@ -1306,19 +1310,30 @@ export class WebchatUI extends React.PureComponent<
 												    already inside would swallow announcements. */}
 												<StatusLiveRegion />
 												{/* Announce the home screen when it becomes the visible view (WCAG 4.1.3) */}
-												<HomeScreenAnnouncer
-													active={
-														!!(
-															open &&
-															this.props.showHomeScreen &&
-															config.settings.homeScreen.enabled &&
-															!isInforming
-														)
-													}
+												<ScreenAnnouncer
+													active={showHomeScreenView}
 													label={
 														config.settings.customTranslations
 															?.ariaLabels?.homeScreen ??
 														"Chat window home screen"
+													}
+												/>
+												{/* Announce the AI-agent notice on the chat screen's
+												    first appearance (WCAG 4.1.3, CGY-3519) — the
+												    visible notice at the top of the chat log is
+												    otherwise never read: focus lands in the message
+												    input, past it in reading order. */}
+												<ScreenAnnouncer
+													active={
+														showChatScreen &&
+														config.settings.behavior
+															.enableAIAgentNotice !== false
+													}
+													once
+													label={
+														config.settings.behavior
+															.AIAgentNoticeText ||
+														"You're now chatting with an AI Agent."
 													}
 												/>
 												<DisconnectOverlay
@@ -1415,6 +1430,36 @@ export class WebchatUI extends React.PureComponent<
 				</ThemeProvider>
 			</>
 		);
+	}
+
+	/**
+	 * Which primary view the open chat window shows. Single source for the
+	 * screen announcers (render) and renderRegularLayout's layout decisions —
+	 * the chat screen is the fallback when no other screen claims the view.
+	 * (`showInformationMessage` in renderRegularLayout is truthy iff
+	 * `isInforming`: every inform branch has fallback text.)
+	 */
+	getScreenVisibility(isInforming: boolean) {
+		const {
+			config,
+			showHomeScreen,
+			showChatOptionsScreen,
+			showRatingScreen,
+			showPrevConversations,
+			hasAcceptedTerms,
+		} = this.props;
+
+		const showEnabledHomeScreen = !!(config.settings.homeScreen.enabled && showHomeScreen);
+		const showHomeScreenView = showEnabledHomeScreen && !isInforming;
+		const showChatScreen =
+			!isInforming &&
+			!showEnabledHomeScreen &&
+			!showChatOptionsScreen &&
+			!showRatingScreen &&
+			!showPrevConversations &&
+			(hasAcceptedTerms || !config.settings.privacyNotice.enabled);
+
+		return { showEnabledHomeScreen, showHomeScreenView, showChatScreen };
 	}
 
 	renderRegularLayout(isInforming: boolean) {
@@ -1663,15 +1708,7 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const isHomeScreenEnabled = config.settings.homeScreen.enabled;
-		const showEnabledHomeScreen = isHomeScreenEnabled && showHomeScreen;
-
-		const showChatScreen =
-			!showChatOptionsScreen &&
-			!showRatingScreen &&
-			!showPrevConversations &&
-			!showEnabledHomeScreen &&
-			!showInformationMessage &&
-			(hasAcceptedTerms || !config.settings.privacyNotice.enabled);
+		const { showEnabledHomeScreen, showChatScreen } = this.getScreenVisibility(isInforming);
 
 		const isChatOptionsButtonVisible = config.settings.chatOptions.enabled && showChatScreen;
 
