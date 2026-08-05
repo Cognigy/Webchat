@@ -127,6 +127,11 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 	 * Render the overlay by connecting then dropping. `hadConnection` (WebchatUI
 	 * state) latches asynchronously on the first connect and never resets, so
 	 * retry the connect/drop until the overlay actually renders.
+	 *
+	 * The attempt budget is sized for CI: there the mock endpoint's socket
+	 * connect first has to settle through the Cypress proxy, and the latch
+	 * reliably takes ~4s (~25 cycles) before a drop can show the overlay —
+	 * locally it succeeds on the first attempt. 60 cycles ≈ 10s of headroom.
 	 */
 	const showDisconnectOverlayViaDrop = (attempt = 0) => {
 		setConnected(true);
@@ -135,9 +140,9 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		cy.get("body").then($body => {
 			const shown = $body.find("[data-disconnect-overlay]").length > 0;
 			if (shown) return;
-			if (attempt >= 20) {
+			if (attempt >= 60) {
 				throw new Error(
-					"showDisconnectOverlayViaDrop: disconnect overlay never rendered after 20 connect/drop attempts",
+					"showDisconnectOverlayViaDrop: disconnect overlay never rendered after 60 connect/drop attempts",
 				);
 			}
 			showDisconnectOverlayViaDrop(attempt + 1);
