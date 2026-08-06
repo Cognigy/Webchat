@@ -75,6 +75,26 @@ describe("Screen Reader Live Region", () => {
 			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
 			cy.openWebchat().startConversation();
 
+			// Let the socket connect settle BEFORE the first tick: on connect,
+			// the session id lands in the store (SET_OPTIONS), and the notice
+			// session is re-evaluated — which restarts the intro's 600ms timer.
+			// A restart is harmless now (the fake clock is still at 0, so the
+			// deadline stays 600), but one landing between ticks would push the
+			// deadline past this test's tick budget and the intro would never
+			// commit (this is real: endpoint-mock.cognigy.ai is reachable from
+			// CI, so the connect DOES resolve mid-test). `connecting` flips
+			// false when the connect attempt settles either way — a failed
+			// connect (no network) never dispatches SET_OPTIONS, so both
+			// outcomes are safe to tick through.
+			cy.waitUntil(
+				() =>
+					cy.getWebchat().then(webchat => {
+						const state = webchat.store.getState();
+						return !!state.options.sessionId || !state.connection.connecting;
+					}),
+				{ timeout: 10000, interval: 100 },
+			);
+
 			// The message lands well inside the intro's 600ms deferral — it
 			// must be announced AFTER the intro, not instead of it.
 			cy.receiveMessage("Hello there");
