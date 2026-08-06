@@ -77,6 +77,14 @@ import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
 import FreezeOnExit from "./presentational/FreezeOnExit";
 import ScreenAnnouncer from "./presentational/ScreenAnnouncer";
+import {
+	computeNoticeSession,
+	getAIAgentNoticeIntroText,
+	INITIAL_NOTICE_SESSION,
+	NoticeSession,
+	DEFAULT_AI_AGENT_NOTICE_TEXT,
+} from "../utils/ai-agent-notice";
+import { getScreenVisibility } from "../utils/screen-visibility";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -172,18 +180,8 @@ interface WebchatUIState {
 	deleteConversationsModalState: boolean;
 	liveContent?: Record<string, string>;
 	isMobile: boolean;
-	/**
-	 * Whether the current session started as a brand-new conversation
-	 * rather than a previous conversation reopened from the conversations
-	 * list — gates the AI-agent notice announcement (CGY-3519).
-	 * `id` guards against renders where `currentSession` has already changed
-	 * but this state hasn't been re-evaluated yet (the session id updates
-	 * asynchronously after the socket switch). `announceKey` dedupes the
-	 * announcement per conversation; it differs from `id` only for the
-	 * page load's first conversation, which starts announceable before the
-	 * connect assigns its session id (see evaluateNoticeSession).
-	 */
-	noticeSession: { id: string; isNew: boolean; announceKey: string };
+	/** Gates the AI-agent notice announcement (CGY-3519) — see NoticeSession. */
+	noticeSession: NoticeSession;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -295,8 +293,7 @@ export class WebchatUI extends React.PureComponent<
 		deleteConversationsModalState: false,
 		liveContent: {},
 		isMobile: false,
-		// Inactive until the session is evaluated on mount / session change.
-		noticeSession: { id: "", isNew: false, announceKey: "" },
+		noticeSession: INITIAL_NOTICE_SESSION,
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -543,66 +540,27 @@ export class WebchatUI extends React.PureComponent<
 			false;
 	};
 
-	/**
-	 * (Re-)evaluate whether the current session is a brand-new conversation.
-	 * `prevConversationsSnapshot` must predate the session change: sessions
-	 * get upserted into prevConversations as soon as a message is sent or
-	 * received (e.g. auto-inject, in the same update batch as the session
-	 * switch), so the current map may already contain a genuinely new
-	 * session. A session found in the snapshot is a reopened previous
-	 * conversation (or a restored one after a reload) — not announced.
-	 *
-	 * The page load's first conversation exists on screen before the socket
-	 * connect assigns its session id (`currentSession` is "" until then).
-	 * That id arriving is not a new conversation, so the announcement key
-	 * is kept — a notice already announced (or pending) under the "" key is
-	 * not repeated under the id.
-	 */
+	// `prevConversationsSnapshot` must predate the session change — see
+	// computeNoticeSession for why.
 	private evaluateNoticeSession(prevConversationsSnapshot: PrevConversationsState) {
 		const id = this.props.currentSession || "";
-		this.setState(prev => {
-			const isNew = !prevConversationsSnapshot?.[id];
-			const isFirstConnectOfNewConversation =
-				prev.noticeSession.id === "" && prev.noticeSession.isNew && isNew;
-			return {
-				noticeSession: {
-					id,
-					isNew,
-					announceKey: isFirstConnectOfNewConversation
-						? prev.noticeSession.announceKey
-						: id,
-				},
-			};
-		});
+		this.setState(prev => ({
+			noticeSession: computeNoticeSession(prev.noticeSession, id, prevConversationsSnapshot),
+		}));
 	}
 
 	private handleNoticeIntroAnnounced = (introKey: string) => {
 		this.announcedNoticeKeys.add(introKey);
 	};
 
-	/**
-	 * The AI-agent notice text to announce through the chat log's live
-	 * region, or undefined when nothing should be announced. Announced once
-	 * per brand-new session (reopened previous conversations stay silent)
-	 * and held while the disconnect overlay is open (session switches
-	 * reconnect the socket and open it — its dialog and focus utterances
-	 * would cancel the notice; on close, the intro becomes pending again
-	 * and is announced after the "Connection restored" utterances).
-	 */
 	private getNoticeIntroText(): string | undefined {
-		const { noticeSession } = this.state;
-		const shouldAnnounce =
-			this.props.config.settings.behavior.enableAIAgentNotice !== false &&
-			!this.showDisconnectOverlay &&
-			noticeSession.isNew &&
-			noticeSession.id === (this.props.currentSession || "") &&
-			!this.announcedNoticeKeys.has(noticeSession.announceKey);
-		if (!shouldAnnounce) return undefined;
-
-		return (
-			this.props.config.settings.behavior.AIAgentNoticeText ||
-			"You're now chatting with an AI Agent."
-		);
+		return getAIAgentNoticeIntroText({
+			behavior: this.props.config.settings.behavior,
+			showDisconnectOverlay: this.showDisconnectOverlay,
+			noticeSession: this.state.noticeSession,
+			currentSessionId: this.props.currentSession || "",
+			announcedKeys: this.announcedNoticeKeys,
+		});
 	}
 
 	componentDidMount() {
@@ -1274,7 +1232,7 @@ export class WebchatUI extends React.PureComponent<
 
 		// Drives the home-screen announcer below; the announcer mounts only
 		// while the webchat is open, so no `open` check is needed here.
-		const { showHomeScreenView } = this.getScreenVisibility(isInforming);
+		const { showHomeScreenView } = getScreenVisibility(this.props, isInforming);
 
 		const openChatAriaLabel = () => {
 			if (open)
@@ -1504,36 +1462,6 @@ export class WebchatUI extends React.PureComponent<
 				</ThemeProvider>
 			</>
 		);
-	}
-
-	/**
-	 * Which primary view the open chat window shows. Single source for the
-	 * screen announcers (render) and renderRegularLayout's layout decisions —
-	 * the chat screen is the fallback when no other screen claims the view.
-	 * (`showInformationMessage` in renderRegularLayout is truthy iff
-	 * `isInforming`: every inform branch has fallback text.)
-	 */
-	getScreenVisibility(isInforming: boolean) {
-		const {
-			config,
-			showHomeScreen,
-			showChatOptionsScreen,
-			showRatingScreen,
-			showPrevConversations,
-			hasAcceptedTerms,
-		} = this.props;
-
-		const showEnabledHomeScreen = !!(config.settings.homeScreen.enabled && showHomeScreen);
-		const showHomeScreenView = showEnabledHomeScreen && !isInforming;
-		const showChatScreen =
-			!isInforming &&
-			!showEnabledHomeScreen &&
-			!showChatOptionsScreen &&
-			!showRatingScreen &&
-			!showPrevConversations &&
-			(hasAcceptedTerms || !config.settings.privacyNotice.enabled);
-
-		return { showEnabledHomeScreen, showHomeScreenView, showChatScreen };
 	}
 
 	renderRegularLayout(isInforming: boolean) {
@@ -1787,7 +1715,10 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const isHomeScreenEnabled = config.settings.homeScreen.enabled;
-		const { showEnabledHomeScreen, showChatScreen } = this.getScreenVisibility(isInforming);
+		const { showEnabledHomeScreen, showChatScreen } = getScreenVisibility(
+			this.props,
+			isInforming,
+		);
 
 		const isChatOptionsButtonVisible = config.settings.chatOptions.enabled && showChatScreen;
 
@@ -1999,7 +1930,7 @@ export class WebchatUI extends React.PureComponent<
 						component="div"
 						className="webchat-log-ai-agent-notice-text"
 					>
-						{AIAgentNoticeText || "You're now chatting with an AI Agent."}
+						{AIAgentNoticeText || DEFAULT_AI_AGENT_NOTICE_TEXT}
 					</TopStatusMessage>
 				)}
 				{visibleMessages.map((message, index) => {
