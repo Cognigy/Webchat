@@ -50,7 +50,16 @@ const defaultEndpointResponse = {
 
 Cypress.Commands.add(
 	"initMockWebchat",
-	(embeddingOptions = {}, endpointResponse = defaultEndpointResponse) => {
+	(
+		embeddingOptions = {},
+		endpointResponse = defaultEndpointResponse,
+		// The default host is a REAL, reachable origin, so the socket may
+		// actually connect (and flap) in CI. Tests that need a hermetic,
+		// never-connecting socket can pass an unroutable origin instead
+		// (e.g. "http://mock-endpoint.invalid/asdfqwer" — the config GET is
+		// stubbed by the intercept either way, only the socket is affected).
+		endpointUrl = "http://endpoint-mock.cognigy.ai/asdfqwer",
+	) => {
 		let finalOptions = embeddingOptions;
 
 		if (Cypress.env("useProgressiveRendering")) {
@@ -64,20 +73,18 @@ Cypress.Commands.add(
 			};
 		}
 
-		cy.intercept("GET", "http://endpoint-mock.cognigy.ai/asdfqwer", endpointResponse);
+		cy.intercept("GET", endpointUrl, endpointResponse);
 
 		return cy
 			.window()
 			.then(window => {
 				// @ts-ignore
-				return window
-					.initWebchat("http://endpoint-mock.cognigy.ai/asdfqwer", finalOptions)
-					.then(webchat => {
-						// @ts-ignore
-						window.webchat = webchat;
+				return window.initWebchat(endpointUrl, finalOptions).then(webchat => {
+					// @ts-ignore
+					window.webchat = webchat;
 
-						return webchat;
-					});
+					return webchat;
+				});
 			})
 			.as("webchat");
 	},

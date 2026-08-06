@@ -70,27 +70,30 @@ describe("Screen Reader Live Region", () => {
 			// racing command overhead against the 600ms deadline (flaky on
 			// slow CI runners). Only setTimeout/clearTimeout are faked so
 			// Date.now-based code (e.g. toasts) keeps working.
+			// Use an unroutable endpoint origin so the socket can NEVER
+			// connect. The default endpoint-mock.cognigy.ai is a real,
+			// reachable host: in CI the socket connects and then flaps
+			// (connect → server drop → reconnect), which briefly opens the
+			// disconnect overlay — and an open overlay withdraws the intro,
+			// CANCELLING its pending 600ms timer; the re-schedule after the
+			// flap starts a fresh 600ms countdown at the CURRENT fake time,
+			// pushing the deadline past this test's tick budget so the intro
+			// never commits. With no connectable socket there is exactly one
+			// failed connect attempt (socket.io reconnection is off) and the
+			// timer keeps its original fake-time-0 deadline.
 			cy.visitWebchat();
-			cy.initMockWebchat();
+			cy.initMockWebchat(undefined, undefined, "http://mock-endpoint.invalid/asdfqwer");
 			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
 			cy.openWebchat().startConversation();
 
-			// Let the socket connect settle BEFORE the first tick: on connect,
-			// the session id lands in the store (SET_OPTIONS), and the notice
-			// session is re-evaluated — which restarts the intro's 600ms timer.
-			// A restart is harmless now (the fake clock is still at 0, so the
-			// deadline stays 600), but one landing between ticks would push the
-			// deadline past this test's tick budget and the intro would never
-			// commit (this is real: endpoint-mock.cognigy.ai is reachable from
-			// CI, so the connect DOES resolve mid-test). `connecting` flips
-			// false when the connect attempt settles either way — a failed
-			// connect (no network) never dispatches SET_OPTIONS, so both
-			// outcomes are safe to tick through.
+			// Belt and braces: wait for that one connect attempt to settle
+			// (it fails in milliseconds) so its state updates can't land
+			// between ticks.
 			cy.waitUntil(
 				() =>
 					cy.getWebchat().then(webchat => {
 						const state = webchat.store.getState();
-						return !!state.options.sessionId || !state.connection.connecting;
+						return !state.connection.connecting;
 					}),
 				{ timeout: 10000, interval: 100 },
 			);
