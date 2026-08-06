@@ -29,16 +29,19 @@ describe("Screen Reader Live Region", () => {
 	});
 
 	describe("AI-agent notice announcement (CGY-3519)", () => {
-		const statusRegionSelector = "#webchatStatusLiveRegion";
+		// The notice announces through its own dedicated live region (a
+		// sibling of the message region — a shared region would let the next
+		// message announcement replace the notice's node, which NVDA then
+		// drops). Message announcements hold until the notice is committed,
+		// so the notice is always announced BEFORE any message.
+		const noticeRegionSelector = "#webchatAIAgentNoticeLiveRegion";
+		const noticeText = "You're now chatting with an AI Agent.";
 
 		it("announces the default notice when the chat screen appears", () => {
 			// beforeEach already opened the chat screen; wait past the 600ms
-			// announce delay in ScreenAnnouncer.
+			// intro announce delay.
 			cy.wait(800);
-			cy.get(statusRegionSelector).should(
-				"contain.text",
-				"You're now chatting with an AI Agent.",
-			);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 		});
 
 		it("announces the configured AIAgentNoticeText", () => {
@@ -53,35 +56,40 @@ describe("Screen Reader Live Region", () => {
 			cy.openWebchat().startConversation();
 
 			cy.wait(800);
-			cy.get(statusRegionSelector).should(
+			cy.get(noticeRegionSelector).should(
 				"contain.text",
 				"Je chat met een digitale AI assistent",
 			);
 		});
 
+		it("announces the notice before a message that arrives at the same time", () => {
+			// The message lands well inside the intro's 600ms deferral — it
+			// must be announced AFTER the intro, not instead of it.
+			cy.receiveMessage("Hello there");
+
+			// Before the intro commits, the message announcement is held.
+			cy.wait(450);
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// Intro commits at ~600ms, the held message right after it.
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+			cy.get(liveRegionSelector).should("contain.text", "Hello there");
+		});
+
 		it("does not re-announce the notice when returning to the same conversation", () => {
 			// beforeEach opened the chat screen — first visit announces.
 			cy.wait(800);
-			cy.get(statusRegionSelector).should(
-				"contain.text",
-				"You're now chatting with an AI Agent.",
-			);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 
-			// Back to the home screen: announced as a screen change (500ms
-			// slide + 600ms announce delay)…
+			// Back to the home screen (announced via the status region)…
 			cy.get("button.webchat-header-back-button").click();
 			cy.wait(1300);
-			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "Chat window home screen");
 
-			// …then return to the chat screen: the home-screen announcement
-			// stays — the notice is NOT announced a second time.
+			// …then return to the chat screen: same conversation, silent.
 			cy.startConversation();
 			cy.wait(800);
-			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
-			cy.get(statusRegionSelector).should(
-				"not.contain.text",
-				"You're now chatting with an AI Agent.",
-			);
+			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
 		});
 
 		it("re-announces the notice when starting a new conversation from previous conversations", () => {
@@ -95,27 +103,19 @@ describe("Screen Reader Live Region", () => {
 				channel: "channel-1",
 			});
 			cy.openWebchat().startConversation();
-			cy.get(statusRegionSelector).should(
-				"contain.text",
-				"You're now chatting with an AI Agent.",
-			);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 
 			// Persist the session so it shows up under previous conversations.
 			cy.sendMessage("hello");
 			cy.contains('You said "hello".').should("be.visible");
 
-			// Home (announced as a screen change, replacing the region text)…
 			cy.get("button.webchat-header-back-button").click();
-			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
-
-			// …then previous conversations → start a NEW conversation:
-			// a brand-new session announces the notice again.
 			cy.get("button").contains("Previous conversations").click();
+
+			// Start a NEW conversation: a brand-new session announces again
+			// (after the session-switch disconnect overlay has closed).
 			cy.get("[data-testid='webchat-start-chat-button']").click();
-			cy.get(statusRegionSelector).should(
-				"contain.text",
-				"You're now chatting with an AI Agent.",
-			);
+			cy.get(noticeRegionSelector, { timeout: 10000 }).should("contain.text", noticeText);
 		});
 
 		it("stays silent when reopening a previous conversation", () => {
@@ -129,25 +129,20 @@ describe("Screen Reader Live Region", () => {
 				channel: "channel-1",
 			});
 			cy.openWebchat().startConversation();
-			cy.get(statusRegionSelector).should(
-				"contain.text",
-				"You're now chatting with an AI Agent.",
-			);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 
 			cy.sendMessage("hello");
 			cy.contains('You said "hello".').should("be.visible");
 
 			cy.get("button.webchat-header-back-button").click();
-			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
-
-			// Reopen the same conversation from the list: not a new session,
-			// so the region keeps the home-screen announcement (past the
-			// 600ms announce delay) instead of re-announcing the notice.
 			cy.get("button").contains("Previous conversations").click();
+
+			// Reopen the same conversation: not a new session — no notice,
+			// even past the intro delay and the reconnect overlay.
 			cy.get(".webchat-prev-conversations-item").eq(0).click();
 			cy.contains('You said "hello".').should("be.visible");
-			cy.wait(1000);
-			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
+			cy.wait(1500);
+			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
 		});
 
 		it("does not announce anything when the notice is disabled", () => {
@@ -162,7 +157,7 @@ describe("Screen Reader Live Region", () => {
 			cy.openWebchat().startConversation();
 
 			cy.wait(800);
-			cy.get(statusRegionSelector).should("be.empty");
+			cy.get(noticeRegionSelector).should("be.empty");
 		});
 	});
 

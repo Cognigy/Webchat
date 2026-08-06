@@ -318,6 +318,14 @@ export class WebchatUI extends React.PureComponent<
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 
+	/**
+	 * Announce keys of conversations whose AI-agent notice was already
+	 * announced (CGY-3519). Lives on the instance (not in the live region):
+	 * ScreenReaderLiveRegion unmounts on every screen navigation, so it
+	 * cannot remember what it announced across visits to the chat screen.
+	 */
+	private announcedNoticeKeys = new Set<string>();
+
 	constructor(props) {
 		super(props);
 		this.chatToggleButtonRef = React.createRef();
@@ -566,6 +574,35 @@ export class WebchatUI extends React.PureComponent<
 				},
 			};
 		});
+	}
+
+	private handleNoticeIntroAnnounced = (introKey: string) => {
+		this.announcedNoticeKeys.add(introKey);
+	};
+
+	/**
+	 * The AI-agent notice text to announce through the chat log's live
+	 * region, or undefined when nothing should be announced. Announced once
+	 * per brand-new session (reopened previous conversations stay silent)
+	 * and held while the disconnect overlay is open (session switches
+	 * reconnect the socket and open it — its dialog and focus utterances
+	 * would cancel the notice; on close, the intro becomes pending again
+	 * and is announced after the "Connection restored" utterances).
+	 */
+	private getNoticeIntroText(): string | undefined {
+		const { noticeSession } = this.state;
+		const shouldAnnounce =
+			this.props.config.settings.behavior.enableAIAgentNotice !== false &&
+			!this.showDisconnectOverlay &&
+			noticeSession.isNew &&
+			noticeSession.id === (this.props.currentSession || "") &&
+			!this.announcedNoticeKeys.has(noticeSession.announceKey);
+		if (!shouldAnnounce) return undefined;
+
+		return (
+			this.props.config.settings.behavior.AIAgentNoticeText ||
+			"You're now chatting with an AI Agent."
+		);
 	}
 
 	componentDidMount() {
@@ -1235,9 +1272,9 @@ export class WebchatUI extends React.PureComponent<
 
 		const showDisconnectOverlay = this.showDisconnectOverlay;
 
-		// Drives the screen announcers below; the announcers mount only while
-		// the webchat is open, so no `open` check is needed here.
-		const { showHomeScreenView, showChatScreen } = this.getScreenVisibility(isInforming);
+		// Drives the home-screen announcer below; the announcer mounts only
+		// while the webchat is open, so no `open` check is needed here.
+		const { showHomeScreenView } = this.getScreenVisibility(isInforming);
 
 		const openChatAriaLabel = () => {
 			if (open)
@@ -1371,36 +1408,6 @@ export class WebchatUI extends React.PureComponent<
 														config.settings.customTranslations
 															?.ariaLabels?.homeScreen ??
 														"Chat window home screen"
-													}
-												/>
-												{/* Announce the AI-agent notice when the chat screen
-												    first appears for a brand-new session (WCAG 4.1.3,
-												    CGY-3519) — the visible notice at the top of the
-												    chat log is otherwise never read: focus lands in
-												    the message input, past it in reading order.
-												    Reopened previous conversations stay silent.
-												    Held while the disconnect overlay is open (it
-												    also opens during session switches): its dialog
-												    and focus utterances would cancel the notice —
-												    dropping `active` cancels the pending timer, and
-												    the overlay closing restarts it, so the notice
-												    follows the "Connection restored" utterances. */}
-												<ScreenAnnouncer
-													active={
-														showChatScreen &&
-														!showDisconnectOverlay &&
-														config.settings.behavior
-															.enableAIAgentNotice !== false &&
-														this.state.noticeSession.isNew &&
-														this.state.noticeSession.id ===
-															(this.props.currentSession || "")
-													}
-													once
-													onceKey={this.state.noticeSession.announceKey}
-													label={
-														config.settings.behavior
-															.AIAgentNoticeText ||
-														"You're now chatting with an AI Agent."
 													}
 												/>
 												<DisconnectOverlay
@@ -1742,7 +1749,12 @@ export class WebchatUI extends React.PureComponent<
 						</h3>
 						{this.renderHistory()}
 					</HistoryWrapper>
-					<ScreenReaderLiveRegion liveContent={this.state.liveContent} />
+					<ScreenReaderLiveRegion
+						liveContent={this.state.liveContent}
+						introText={this.getNoticeIntroText()}
+						introKey={this.state.noticeSession.announceKey}
+						onIntroAnnounced={this.handleNoticeIntroAnnounced}
+					/>
 					<QueueUpdates />
 					{this.renderInput()}
 				</>
