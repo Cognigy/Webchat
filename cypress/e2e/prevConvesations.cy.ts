@@ -619,6 +619,112 @@ describe("Previous Conversations", () => {
 
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
 	describe("Accessibility (WCAG 2.2 AA)", () => {
+		// Not wrapped in cy.session: on a retry a restored session would skip
+		// the callback — and every assertion in it — turning the test into a no-op.
+		it("includes the visible preview text in the conversation item accessible name (CGY-3275)", () => {
+			const localOptions = {
+				userId: `user-1`,
+				sessionId: `session-1`,
+				channel: `channel-1`,
+			};
+
+			// No manual localStorage.clear() here: before cy.visitWebchat() the
+			// window still belongs to the previous test's page, and Cypress test
+			// isolation already clears storage between tests.
+			cy.visitWebchat();
+			cy.initWebchat(localOptions).openWebchat().startConversation();
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			cy.get("button.webchat-header-back-button").should("exist").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-prev-conversations-item")
+				.should("have.length", 1)
+				.first()
+				.invoke("attr", "aria-label")
+				.should(ariaLabel => {
+					// 2.5.3 best practice: the name starts with the visible preview text
+					expect(ariaLabel).to.match(/^You said "hello"\./);
+					// Participant name comes before the timestamp (the bot echoed
+					// a reply, so the participant is "Bot" — the default when no
+					// layout title is configured)
+					expect(ariaLabel).to.contain(", Bot, Today");
+					expect(ariaLabel).to.contain("Open conversation 1");
+				});
+
+			// Long previews are capped in the accessible name (still a superset
+			// of the visible, CSS-truncated text)
+			cy.get(".webchat-prev-conversations-item").first().click();
+			cy.sendMessage("word ".repeat(30).trim());
+			cy.contains('You said "word').should("be.visible");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-prev-conversations-item")
+				.first()
+				.invoke("attr", "aria-label")
+				.should(ariaLabel => {
+					expect(ariaLabel).to.be.a("string");
+					// Capture the capped preview up to the ellipsis instead of
+					// splitting on ", ", which any preview containing ", "
+					// would break
+					const previewPart = String(ariaLabel).match(/^You said "word[^…]*…/)?.[0];
+					expect(previewPart, "capped preview ending in …").to.be.a("string");
+					expect(previewPart?.length).to.be.at.most(81);
+				});
+		});
+
+		it("hides the leaving screen from assistive tech during the back-to-home transition (CGY-3276)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: {
+							enabled: true,
+							buttonText: "View previous conversations",
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("View previous conversations").click();
+
+			// While active, the regular layout content is fully exposed: no
+			// aria-hidden (the "false" value has inconsistent AT support) and
+			// not inert. `not.have.attr` assertions come last in their chains —
+			// they re-subject the chain to the (non-existent) attribute value.
+			cy.get(".webchat-regular-layout-content").should("not.have.attr", "inert");
+			cy.get(".webchat-regular-layout-content").should("not.have.attr", "aria-hidden");
+
+			// Freeze the app clock so the 500ms exit window is deterministic —
+			// without it, the first assertion below can land after the unmount
+			// and fail as "element not found" instead of meaningfully.
+			cy.clock();
+			cy.get("button.webchat-header-back-button").click();
+
+			// During the slide-out the leaving screen must be removed from the
+			// accessibility tree and tab order (inert + aria-hidden fallback)
+			// and stay frozen on the previous-conversations view — mounting the
+			// chat screen there would autofocus the input and re-announce the
+			// message history. Afterwards it unmounts entirely.
+			cy.get(".webchat-regular-layout-content").should($el => {
+				expect($el.attr("aria-hidden")).to.equal("true");
+				expect($el.is("[inert]"), "inert during exit").to.equal(true);
+				expect($el.find(".webchat-prev-conversations-root").length).to.be.greaterThan(0);
+				expect($el.find(".webchat-input, textarea").length).to.equal(0);
+			});
+
+			// Past the 500ms exit, the 450ms focus timeout and the 600ms
+			// home-screen announcement delay
+			cy.tick(700);
+			cy.get(".webchat-regular-layout-content").should("not.exist");
+
+			// After the transition, focus lands on the home screen close button
+			// and the screen change is announced via the status live region
+			cy.get(".webchat-homescreen-close-button").should("have.focus");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "Chat window home screen");
+		});
+
 		it("previous conversations list has no detectable a11y violations", () => {
 			cy.initMockWebchat({
 				settings: {

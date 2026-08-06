@@ -164,7 +164,7 @@ describe("Rating", () => {
 		cy.get('[data-test="rating-input"]').type("I loved it");
 		cy.get(".webchat-rating-widget-send-button").click();
 
-		cy.get('[aria-live="polite"]').contains("Your feedback was submitted");
+		cy.get("#webchatStatusLiveRegion").contains("Your feedback was submitted");
 	});
 
 	it("shows the rating button in the header if rating is set to once", () => {
@@ -204,7 +204,7 @@ describe("Rating", () => {
 		cy.get('[data-test="rating-input"]').type("I loved it");
 		cy.get(".webchat-rating-widget-send-button").click();
 
-		cy.get('[aria-live="polite"]').contains("Your feedback was submitted");
+		cy.get("#webchatStatusLiveRegion").contains("Your feedback was submitted");
 
 		cy.get('[data-test="rating-input"]').should("not.exist");
 	});
@@ -317,7 +317,7 @@ describe("Rating", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
-		it("announces the feedback-submitted status via an always-mounted live region (SC 4.1.3)", () => {
+		it("announces the feedback-submitted status via a pre-existing live region (SC 4.1.3)", () => {
 			cy.initMockWebchat({
 				settings: {
 					chatOptions: {
@@ -333,7 +333,7 @@ describe("Rating", () => {
 
 			// The live region must exist in the DOM BEFORE the notification fires,
 			// otherwise screen readers ignore the update (CGY-4035).
-			cy.get("#webchatNotificationsLiveRegion")
+			cy.get("#webchatStatusLiveRegion")
 				.should("exist")
 				.and("have.attr", "aria-live", "polite")
 				.and("be.empty");
@@ -342,14 +342,14 @@ describe("Rating", () => {
 			cy.get('[aria-label="Like"]').click();
 			cy.get(".webchat-rating-widget-send-button").click();
 
-			cy.get("#webchatNotificationsLiveRegion").contains("Your feedback was submitted");
+			cy.get("#webchatStatusLiveRegion").contains("Your feedback was submitted");
 
 			// The visible toast must not announce itself as well (no double
 			// announcement). Only VISIBLE role="status" elements must be
 			// silenced — visually-hidden (.sr-only) regions are announcers by
 			// design (e.g. the disconnect overlay's status regions).
 			cy.get('[role="status"]')
-				.not("#webchatNotificationsLiveRegion")
+				.not("#webchatStatusLiveRegion")
 				.not(".sr-only")
 				.should($els => {
 					$els.each((_, el) => {
@@ -430,6 +430,47 @@ describe("Rating", () => {
 				.and("contain.text", "Your feedback was submitted");
 			cy.get(".webchat-toast-notification [aria-live='off']").should("exist");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
+		it("announces the newest notification when several land in the same tick (CGY-34519)", () => {
+			// react-hot-toast prepends new toasts, so naive array order picks
+			// the oldest one; regression test for the newest-wins fix.
+			cy.initMockWebchat({});
+			cy.openWebchat().startConversation();
+
+			cy.getWebchat().then(webchat => {
+				webchat.showNotification("first notification");
+				webchat.showNotification("second notification");
+			});
+
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "second notification");
+			cy.get("#webchatStatusLiveRegion").should("not.contain.text", "first notification");
+		});
+
+		it("clears announced status text after 15 seconds (CGY-34519)", () => {
+			cy.initMockWebchat({});
+			cy.openWebchat().startConversation();
+
+			// cy.clock() also freezes Date.now(), which react-hot-toast uses for
+			// toast createdAt — so this test can't be merged with the
+			// newest-notification-wins test above, which depends on real
+			// createdAt ordering.
+			cy.clock();
+
+			cy.getWebchat().then(webchat => {
+				webchat.showNotification("temporary status");
+			});
+			// Flush the toast store update into the region
+			cy.tick(100);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "temporary status");
+
+			// Past the 15s clear delay the region must be empty again, so
+			// screen-reader users browsing later don't read stale status text.
+			// This tick also fires the toast's own dismiss/remove timers; the
+			// resulting store update only prunes announcedIdsRef in
+			// StatusLiveRegion — it cannot re-set the cleared text.
+			cy.tick(15100);
+			cy.get("#webchatStatusLiveRegion").should("be.empty");
 		});
 	});
 });
