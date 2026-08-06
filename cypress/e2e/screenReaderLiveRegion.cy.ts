@@ -59,7 +59,7 @@ describe("Screen Reader Live Region", () => {
 			);
 		});
 
-		it("announces the notice only on the first chat-screen visit per open window", () => {
+		it("does not re-announce the notice when returning to the same conversation", () => {
 			// beforeEach opened the chat screen — first visit announces.
 			cy.wait(800);
 			cy.get(statusRegionSelector).should(
@@ -82,6 +82,72 @@ describe("Screen Reader Live Region", () => {
 				"not.contain.text",
 				"You're now chatting with an AI Agent.",
 			);
+		});
+
+		it("re-announces the notice when starting a new conversation from previous conversations", () => {
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-new",
+				sessionId: "session-cgy3519-new",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.get(statusRegionSelector).should(
+				"contain.text",
+				"You're now chatting with an AI Agent.",
+			);
+
+			// Persist the session so it shows up under previous conversations.
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			// Home (announced as a screen change, replacing the region text)…
+			cy.get("button.webchat-header-back-button").click();
+			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
+
+			// …then previous conversations → start a NEW conversation:
+			// a brand-new session announces the notice again.
+			cy.get("button").contains("Previous conversations").click();
+			cy.get("[data-testid='webchat-start-chat-button']").click();
+			cy.get(statusRegionSelector).should(
+				"contain.text",
+				"You're now chatting with an AI Agent.",
+			);
+		});
+
+		it("stays silent when reopening a previous conversation", () => {
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-reopen",
+				sessionId: "session-cgy3519-reopen",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.get(statusRegionSelector).should(
+				"contain.text",
+				"You're now chatting with an AI Agent.",
+			);
+
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
+
+			// Reopen the same conversation from the list: not a new session,
+			// so the region keeps the home-screen announcement (past the
+			// 600ms announce delay) instead of re-announcing the notice.
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-prev-conversations-item").eq(0).click();
+			cy.contains('You said "hello".').should("be.visible");
+			cy.wait(1000);
+			cy.get(statusRegionSelector).should("contain.text", "Chat window home screen");
 		});
 
 		it("does not announce anything when the notice is disabled", () => {

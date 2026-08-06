@@ -20,28 +20,32 @@ const ANNOUNCE_DELAY_MS = 600;
  * The effect cleanup cancels the pending announcement if the user closes
  * the webchat or navigates away within the delay.
  *
- * `once` limits the announcement to the screen's first appearance per mount.
- * The announcer lives inside the open chat window (like the status region it
- * feeds), so closing and reopening the webchat announces again — but
- * navigating away and back within one open window stays silent. A cancelled
- * announcement (navigated away within the delay) does not count as made.
+ * `once` limits the announcement to the screen's first appearance per
+ * `onceKey` value (e.g. the session id — a new session announces again;
+ * defaults to a single shared key) per mount. The announcer lives inside the
+ * open chat window (like the status region it feeds), so closing and
+ * reopening the webchat announces again — but navigating away and back
+ * within one open window stays silent. A cancelled announcement (navigated
+ * away within the delay) does not count as made.
  */
-const ScreenAnnouncer: FC<{ active: boolean; label: string; once?: boolean }> = ({
+const ScreenAnnouncer: FC<{ active: boolean; label: string; once?: boolean; onceKey?: string }> = ({
 	active,
 	label,
 	once,
+	onceKey,
 }) => {
-	const hasAnnouncedRef = useRef(false);
+	const announcedKeysRef = useRef<Set<string>>(new Set());
 
 	useEffect(() => {
-		if (!active || (once && hasAnnouncedRef.current)) return;
+		const key = onceKey ?? "";
+		if (!active || (once && announcedKeysRef.current.has(key))) return;
 
 		const announceTimeout = setTimeout(() => {
-			hasAnnouncedRef.current = true;
+			announcedKeysRef.current.add(key);
 			announceStatus(label);
 		}, ANNOUNCE_DELAY_MS);
 		return () => clearTimeout(announceTimeout);
-	}, [active, label, once]);
+	}, [active, label, once, onceKey]);
 
 	return null;
 };

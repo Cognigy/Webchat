@@ -172,6 +172,18 @@ interface WebchatUIState {
 	deleteConversationsModalState: boolean;
 	liveContent?: Record<string, string>;
 	isMobile: boolean;
+	/**
+	 * Whether the current session started as a brand-new conversation
+	 * rather than a previous conversation reopened from the conversations
+	 * list — gates the AI-agent notice announcement (CGY-3519).
+	 * `id` guards against renders where `currentSession` has already changed
+	 * but this state hasn't been re-evaluated yet (the session id updates
+	 * asynchronously after the socket switch). `announceKey` dedupes the
+	 * announcement per conversation; it differs from `id` only for the
+	 * page load's first conversation, which starts announceable before the
+	 * connect assigns its session id (see evaluateNoticeSession).
+	 */
+	noticeSession: { id: string; isNew: boolean; announceKey: string };
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -283,6 +295,8 @@ export class WebchatUI extends React.PureComponent<
 		deleteConversationsModalState: false,
 		liveContent: {},
 		isMobile: false,
+		// Inactive until the session is evaluated on mount / session change.
+		noticeSession: { id: "", isNew: false, announceKey: "" },
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -521,6 +535,39 @@ export class WebchatUI extends React.PureComponent<
 			false;
 	};
 
+	/**
+	 * (Re-)evaluate whether the current session is a brand-new conversation.
+	 * `prevConversationsSnapshot` must predate the session change: sessions
+	 * get upserted into prevConversations as soon as a message is sent or
+	 * received (e.g. auto-inject, in the same update batch as the session
+	 * switch), so the current map may already contain a genuinely new
+	 * session. A session found in the snapshot is a reopened previous
+	 * conversation (or a restored one after a reload) — not announced.
+	 *
+	 * The page load's first conversation exists on screen before the socket
+	 * connect assigns its session id (`currentSession` is "" until then).
+	 * That id arriving is not a new conversation, so the announcement key
+	 * is kept — a notice already announced (or pending) under the "" key is
+	 * not repeated under the id.
+	 */
+	private evaluateNoticeSession(prevConversationsSnapshot: PrevConversationsState) {
+		const id = this.props.currentSession || "";
+		this.setState(prev => {
+			const isNew = !prevConversationsSnapshot?.[id];
+			const isFirstConnectOfNewConversation =
+				prev.noticeSession.id === "" && prev.noticeSession.isNew && isNew;
+			return {
+				noticeSession: {
+					id,
+					isNew,
+					announceKey: isFirstConnectOfNewConversation
+						? prev.noticeSession.announceKey
+						: id,
+				},
+			};
+		});
+	}
+
 	componentDidMount() {
 		const defaultMessagePlugins: MessagePlugin[] = [];
 		if (this.props.ttsActive) {
@@ -532,6 +579,10 @@ export class WebchatUI extends React.PureComponent<
 			isMobile: isMobileViewport(),
 		});
 		this.setupIconAnimationInterval();
+
+		// No pre-change snapshot exists on mount; the current map predates
+		// any message activity of this page load.
+		this.evaluateNoticeSession(this.props.prevConversations);
 
 		window.addEventListener("resize", this.handleResize);
 	}
@@ -548,6 +599,10 @@ export class WebchatUI extends React.PureComponent<
 			if (document.activeElement === webchatToggleButton && firstFocusable) {
 				firstFocusable.focus();
 			}
+		}
+
+		if (prevProps.currentSession !== this.props.currentSession) {
+			this.evaluateNoticeSession(prevProps.prevConversations);
 		}
 
 		if (
@@ -1318,18 +1373,30 @@ export class WebchatUI extends React.PureComponent<
 														"Chat window home screen"
 													}
 												/>
-												{/* Announce the AI-agent notice on the chat screen's
-												    first appearance (WCAG 4.1.3, CGY-3519) — the
-												    visible notice at the top of the chat log is
-												    otherwise never read: focus lands in the message
-												    input, past it in reading order. */}
+												{/* Announce the AI-agent notice when the chat screen
+												    first appears for a brand-new session (WCAG 4.1.3,
+												    CGY-3519) — the visible notice at the top of the
+												    chat log is otherwise never read: focus lands in
+												    the message input, past it in reading order.
+												    Reopened previous conversations stay silent.
+												    Held while the disconnect overlay is open (it
+												    also opens during session switches): its dialog
+												    and focus utterances would cancel the notice —
+												    dropping `active` cancels the pending timer, and
+												    the overlay closing restarts it, so the notice
+												    follows the "Connection restored" utterances. */}
 												<ScreenAnnouncer
 													active={
 														showChatScreen &&
+														!showDisconnectOverlay &&
 														config.settings.behavior
-															.enableAIAgentNotice !== false
+															.enableAIAgentNotice !== false &&
+														this.state.noticeSession.isNew &&
+														this.state.noticeSession.id ===
+															(this.props.currentSession || "")
 													}
 													once
+													onceKey={this.state.noticeSession.announceKey}
 													label={
 														config.settings.behavior
 															.AIAgentNoticeText ||
