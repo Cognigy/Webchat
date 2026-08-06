@@ -63,16 +63,35 @@ describe("Screen Reader Live Region", () => {
 		});
 
 		it("announces the notice before a message that arrives at the same time", () => {
+			// Rebuild the webchat with a frozen clock: the intro's 600ms timer
+			// starts when the chat screen mounts (inside startConversation),
+			// so the clock must be installed before that — freezing it in the
+			// test body after beforeEach would leave the timer on real time,
+			// racing command overhead against the 600ms deadline (flaky on
+			// slow CI runners). Only setTimeout/clearTimeout are faked so
+			// Date.now-based code (e.g. toasts) keeps working.
+			cy.visitWebchat();
+			cy.initMockWebchat();
+			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
+			cy.openWebchat().startConversation();
+
 			// The message lands well inside the intro's 600ms deferral — it
 			// must be announced AFTER the intro, not instead of it.
 			cy.receiveMessage("Hello there");
 
-			// Before the intro commits, the message announcement is held.
-			cy.wait(450);
+			// Just before the intro deadline nothing is committed: the
+			// message announcement is held while the intro is pending.
+			cy.tick(599);
+			cy.get(noticeRegionSelector).should("be.empty");
 			cy.get(liveRegionSelector).should("be.empty");
 
-			// Intro commits at ~600ms, the held message right after it.
+			// The intro commits at 600ms — the message region is still empty…
+			cy.tick(1);
 			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// …and the held message follows after its own 100ms debounce.
+			cy.tick(100);
 			cy.get(liveRegionSelector).should("contain.text", "Hello there");
 		});
 
@@ -87,6 +106,12 @@ describe("Screen Reader Live Region", () => {
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "Chat window home screen");
 
 			// …then return to the chat screen: same conversation, silent.
+			// NOTE: the region remounts empty on navigation, so this
+			// assertion's baseline is the unmount wiping the FIRST
+			// announcement — what it actually tests is that no NEW
+			// announcement was committed during the 800ms (past the 600ms
+			// intro delay). If the region ever stays mounted across
+			// navigation, revisit this assertion.
 			cy.startConversation();
 			cy.wait(800);
 			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
@@ -139,7 +164,43 @@ describe("Screen Reader Live Region", () => {
 
 			// Reopen the same conversation: not a new session — no notice,
 			// even past the intro delay and the reconnect overlay.
+			// NOTE: the region remounted empty on navigation (the earlier
+			// announcement is gone with the unmount); this asserts no NEW
+			// announcement during the 1500ms window after the reopen.
 			cy.get(".webchat-prev-conversations-item").eq(0).click();
+			cy.contains('You said "hello".').should("be.visible");
+			cy.wait(1500);
+			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
+		});
+
+		it("stays silent when a persisted conversation is restored after a page reload", () => {
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-reload",
+				sessionId: "session-cgy3519-reload",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+
+			// Persist some history for this session.
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			// "Reload" the page: revisit and re-init with the same user and
+			// session — the conversation is restored from storage in the same
+			// React commit as the first connect's session id. A restored
+			// conversation is a continuation, not a brand-new one: no notice.
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-reload",
+				sessionId: "session-cgy3519-reload",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
 			cy.contains('You said "hello".').should("be.visible");
 			cy.wait(1500);
 			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
@@ -158,6 +219,16 @@ describe("Screen Reader Live Region", () => {
 
 			cy.wait(800);
 			cy.get(noticeRegionSelector).should("be.empty");
+		});
+	});
+
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("chat screen with live regions has no detectable a11y violations", () => {
+			// beforeEach opened the chat screen; wait for the notice to be
+			// committed so axe sees the populated (sr-only) live regions too.
+			cy.receiveMessage("Hello there");
+			cy.get("#webchatAIAgentNoticeLiveRegion").should("not.be.empty");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 	});
 

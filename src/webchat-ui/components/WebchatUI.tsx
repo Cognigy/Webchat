@@ -76,7 +76,7 @@ import DeleteAllConversationsModal from "./presentational/previous-conversations
 import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
 import FreezeOnExit from "./presentational/FreezeOnExit";
-import ScreenAnnouncer from "./presentational/ScreenAnnouncer";
+import HomeScreenAnnouncer from "./presentational/HomeScreenAnnouncer";
 import {
 	computeNoticeSession,
 	getAIAgentNoticeIntroText,
@@ -148,6 +148,8 @@ export interface WebchatUIProps {
 	showPrevConversations: boolean;
 	onSetShowPrevConversations: (show: boolean) => void;
 	prevConversations: PrevConversationsState;
+	/** True once a non-empty persisted history was restored (page reload of a stored conversation) — see MessageState. */
+	hasRestoredPersistedHistory?: boolean;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 
 	showChatOptionsScreen: boolean;
@@ -541,11 +543,18 @@ export class WebchatUI extends React.PureComponent<
 	};
 
 	// `prevConversationsSnapshot` must predate the session change — see
-	// computeNoticeSession for why.
+	// computeNoticeSession for why. `hasRestoredPersistedHistory` is read
+	// from CURRENT props on purpose: the restore lands in the same commit
+	// as the session id it belongs to.
 	private evaluateNoticeSession(prevConversationsSnapshot: PrevConversationsState) {
 		const id = this.props.currentSession || "";
 		this.setState(prev => ({
-			noticeSession: computeNoticeSession(prev.noticeSession, id, prevConversationsSnapshot),
+			noticeSession: computeNoticeSession(
+				prev.noticeSession,
+				id,
+				prevConversationsSnapshot,
+				this.props.hasRestoredPersistedHistory,
+			),
 		}));
 	}
 
@@ -553,14 +562,17 @@ export class WebchatUI extends React.PureComponent<
 		this.announcedNoticeKeys.add(introKey);
 	};
 
-	private getNoticeIntroText(): string | undefined {
-		return getAIAgentNoticeIntroText({
+	private getNoticeIntro(): { key: string; text: string } | undefined {
+		const text = getAIAgentNoticeIntroText({
 			behavior: this.props.config.settings.behavior,
 			showDisconnectOverlay: this.showDisconnectOverlay,
 			noticeSession: this.state.noticeSession,
 			currentSessionId: this.props.currentSession || "",
 			announcedKeys: this.announcedNoticeKeys,
 		});
+		if (!text) return undefined;
+
+		return { key: this.state.noticeSession.announceKey, text };
 	}
 
 	componentDidMount() {
@@ -1360,7 +1372,7 @@ export class WebchatUI extends React.PureComponent<
 												    already inside would swallow announcements. */}
 												<StatusLiveRegion />
 												{/* Announce the home screen when it becomes the visible view (WCAG 4.1.3) */}
-												<ScreenAnnouncer
+												<HomeScreenAnnouncer
 													active={showHomeScreenView}
 													label={
 														config.settings.customTranslations
@@ -1679,8 +1691,7 @@ export class WebchatUI extends React.PureComponent<
 					</HistoryWrapper>
 					<ScreenReaderLiveRegion
 						liveContent={this.state.liveContent}
-						introText={this.getNoticeIntroText()}
-						introKey={this.state.noticeSession.announceKey}
+						intro={this.getNoticeIntro()}
 						onIntroAnnounced={this.handleNoticeIntroAnnounced}
 					/>
 					<QueueUpdates />

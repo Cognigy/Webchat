@@ -97,6 +97,9 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 					messages: {
 						messageHistory: [...restoredMessages, ...state.messages.messageHistory],
 						visibleOutputMessages: restoredVisibleOutputMessages,
+						hasRestoredPersistedHistory:
+							state.messages.hasRestoredPersistedHistory ||
+							restoredMessages.length > 0,
 					},
 					rating: {
 						...state.rating,

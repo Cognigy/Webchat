@@ -8,16 +8,18 @@ import { SrOnlyLiveRegion, LiveRegionMessage } from "./SrOnlyLiveRegion";
 interface ScreenReaderLiveRegionProps {
 	liveContent: Record<string, string>;
 	/**
-	 * Intro text (the AI-agent notice, CGY-3519) announced BEFORE any
-	 * message announcement: while the intro is pending, message
-	 * announcements hold, so the live-region mutations always reach the
-	 * screen reader in intro-first order. Undefined when nothing should be
-	 * announced (notice disabled, reopened previous conversation,
-	 * disconnect overlay open, or already announced).
+	 * Intro (the AI-agent notice, CGY-3519) announced BEFORE any message
+	 * announcement: while the intro is pending, message announcements
+	 * hold, so the live-region mutations always reach the screen reader
+	 * in intro-first order. Undefined when nothing should be announced
+	 * (notice disabled, reopened previous conversation, disconnect
+	 * overlay open, or already announced). `key` is the intro's identity
+	 * (the session's announce key) — a changed key announces again. Key
+	 * and text travel together so one can never be supplied without the
+	 * other (a text without a key would keep the intro pending forever,
+	 * silently blocking all message announcements).
 	 */
-	introText?: string;
-	/** Identity of the intro (the session's announce key) — a changed key announces again. */
-	introKey?: string;
+	intro?: { key: string; text: string };
 	/** Called when the intro was actually announced (not cancelled), so the parent can mark it done across remounts. */
 	onIntroAnnounced?: (introKey: string) => void;
 }
@@ -32,13 +34,18 @@ const INTRO_ANNOUNCE_DELAY_MS = 600;
 
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 	liveContent,
-	introText,
-	introKey,
+	intro,
 	onIntroAnnounced,
 }) => {
 	const [liveMessage, setLiveMessage] = useState<LiveRegionMessage | null>(null);
 	const [introMessage, setIntroMessage] = useState<LiveRegionMessage | null>(null);
 	const [announcedIntroKey, setAnnouncedIntroKey] = useState<string | null>(null);
+	const introRegionRef = useRef<HTMLDivElement>(null);
+	// Destructured so the intro effect depends on primitives — the parent
+	// builds a fresh `intro` object every render, and an object dep would
+	// restart the announce timer on each of them.
+	const introKey = intro?.key;
+	const introText = intro?.text;
 	const messageHistory = useSelector(state => state.messages.messageHistory);
 	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
@@ -51,15 +58,26 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 	const introPending = !!introText && introKey !== announcedIntroKey;
 
 	useEffect(() => {
-		if (!introPending || !introText) return;
+		if (!introPending || !introText || introKey === undefined) return;
 
 		const introTimeout = setTimeout(() => {
+			// Fire-time exposure check: during the back-to-home exit
+			// transition this component stays MOUNTED (FreezeOnExit holds
+			// the chat screen for the 500ms slide) inside a wrapper that is
+			// aria-hidden + inert — text committed there is never voiced.
+			// Skip WITHOUT marking announced (announcedNoticeKeys outlives
+			// the remount by design), so the notice announces on the next
+			// real visit to the chat screen instead of being lost for the
+			// session. Checking `showChatScreen` in the parent can't do
+			// this: FreezeOnExit freezes props during the exit.
+			if (introRegionRef.current?.closest('[inert], [aria-hidden="true"]')) return;
+
 			setIntroMessage({
 				id: `webchatAIAgentNotice-${introKey}`,
 				text: cleanUpText(introText),
 			});
-			setAnnouncedIntroKey(introKey ?? "");
-			onIntroAnnounced?.(introKey ?? "");
+			setAnnouncedIntroKey(introKey);
+			onIntroAnnounced?.(introKey);
 		}, INTRO_ANNOUNCE_DELAY_MS);
 		return () => clearTimeout(introTimeout);
 	}, [introPending, introText, introKey, onIntroAnnounced]);
@@ -146,7 +164,11 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 			    nothing ever replaces the intro; the announcement ORDER is
 			    still guaranteed by the intro hold above, which sequences the
 			    DOM mutations (intro first, messages after). */}
-			<SrOnlyLiveRegion id="webchatAIAgentNoticeLiveRegion" message={introMessage} />
+			<SrOnlyLiveRegion
+				id="webchatAIAgentNoticeLiveRegion"
+				message={introMessage}
+				ref={introRegionRef}
+			/>
 		</>
 	);
 };

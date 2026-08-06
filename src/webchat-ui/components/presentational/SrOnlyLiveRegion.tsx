@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 
 export interface LiveRegionMessage {
 	id: string;
@@ -34,27 +34,32 @@ interface SrOnlyLiveRegionProps {
  * strictly before its content appears; don't "optimise" this back into a
  * derived render.
  */
-export const SrOnlyLiveRegion: FC<SrOnlyLiveRegionProps> = ({ id, message, role }) => {
-	const [displayed, setDisplayed] = useState<LiveRegionMessage | null>(null);
+export const SrOnlyLiveRegion = forwardRef<HTMLDivElement, SrOnlyLiveRegionProps>(
+	({ id, message, role }, ref) => {
+		const [displayed, setDisplayed] = useState<LiveRegionMessage | null>(null);
 
-	useEffect(() => {
-		setDisplayed(message);
-		if (!message) return;
+		useEffect(() => {
+			setDisplayed(message);
+			if (!message) return;
 
-		const clearTimer = setTimeout(() => setDisplayed(null), CLEAR_DELAY_MS);
-		return () => clearTimeout(clearTimer);
-	}, [message]);
+			const clearTimer = setTimeout(() => setDisplayed(null), CLEAR_DELAY_MS);
+			return () => clearTimeout(clearTimer);
+		}, [message]);
 
-	return (
-		<div
-			role={role}
-			aria-live="polite"
-			aria-relevant="additions text"
-			aria-atomic="true"
-			id={id}
-			className="sr-only"
-		>
-			{displayed && <div key={displayed.id}>{displayed.text}</div>}
-		</div>
-	);
-};
+		return (
+			<div
+				ref={ref}
+				role={role}
+				aria-live="polite"
+				aria-relevant="additions text"
+				aria-atomic="true"
+				id={id}
+				className="sr-only"
+			>
+				{displayed && <div key={displayed.id}>{displayed.text}</div>}
+			</div>
+		);
+	},
+);
+
+SrOnlyLiveRegion.displayName = "SrOnlyLiveRegion";

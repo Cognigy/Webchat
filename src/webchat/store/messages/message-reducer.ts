@@ -6,12 +6,22 @@ export interface MessageState {
 	messageHistory: (IMessage | IMessageEvent)[];
 	visibleOutputMessages: string[];
 	currentlyAnimatingId: string | null;
+	/**
+	 * True once RESET_STATE restored a non-empty persisted history (a page
+	 * reload continuing a stored conversation). Set only there — it is the
+	 * one signal that cannot be confused with a brand-new conversation's
+	 * auto-injected message, which lands in `messageHistory` in the same
+	 * React commit as the first connect. Read by the AI-agent notice
+	 * (CGY-3519) to stay silent on reloads.
+	 */
+	hasRestoredPersistedHistory?: boolean;
 }
 
 const initialState: MessageState = {
 	messageHistory: [],
 	visibleOutputMessages: [],
 	currentlyAnimatingId: null,
+	hasRestoredPersistedHistory: false,
 };
 
 const ADD_MESSAGE = "ADD_MESSAGE";

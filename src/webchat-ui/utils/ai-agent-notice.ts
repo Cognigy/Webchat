@@ -37,13 +37,25 @@ export const INITIAL_NOTICE_SESSION: NoticeSession = { id: "", isNew: false, ann
  * That id arriving is not a new conversation, so the announcement key
  * is kept — a notice already announced (or pending) under the "" key is
  * not repeated under the id.
+ *
+ * `hasRestoredPersistedHistory` covers the page reload of a persisted
+ * conversation: the restored session IS in the conversations map, but
+ * that map is filled in the same React commit as the session id, so the
+ * pre-change snapshot is still empty and the lookup alone would call the
+ * session brand-new. The flag (set only when RESET_STATE restores a
+ * non-empty history) is consulted for the page load's first connect
+ * only — later restores (reopening a previous conversation) are already
+ * covered by the snapshot lookup, and the flag must not silence a
+ * brand-new conversation started afterwards.
  */
 export function computeNoticeSession(
 	prev: NoticeSession,
 	currentSessionId: string,
 	prevConversationsSnapshot: PrevConversationsState,
+	hasRestoredPersistedHistory?: boolean,
 ): NoticeSession {
-	const isNew = !prevConversationsSnapshot?.[currentSessionId];
+	const isRestoredFirstConnect = prev.id === "" && !!hasRestoredPersistedHistory;
+	const isNew = !prevConversationsSnapshot?.[currentSessionId] && !isRestoredFirstConnect;
 	const isFirstConnectOfNewConversation = prev.id === "" && prev.isNew && isNew;
 	return {
 		id: currentSessionId,
