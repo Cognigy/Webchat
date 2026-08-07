@@ -2,6 +2,9 @@ name: Lint
 
 on: [pull_request]
 
+permissions:
+    contents: read
+
 jobs:
     # Accessibility lint gate. Runs ONLY the jsx-a11y rules as errors
     # (eslint.a11y.config.mjs) so it blocks PRs on WCAG 2.2 AA regressions
