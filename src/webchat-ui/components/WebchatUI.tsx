@@ -77,6 +77,14 @@ import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
 import FreezeOnExit from "./presentational/FreezeOnExit";
 import HomeScreenAnnouncer from "./presentational/HomeScreenAnnouncer";
+import {
+	computeNoticeSession,
+	getAIAgentNoticeIntroText,
+	INITIAL_NOTICE_SESSION,
+	NoticeSession,
+	DEFAULT_AI_AGENT_NOTICE_TEXT,
+} from "../utils/ai-agent-notice";
+import { getScreenVisibility } from "../utils/screen-visibility";
 import classNames from "classnames";
 
 export interface WebchatUIProps {
@@ -140,6 +148,8 @@ export interface WebchatUIProps {
 	showPrevConversations: boolean;
 	onSetShowPrevConversations: (show: boolean) => void;
 	prevConversations: PrevConversationsState;
+	/** True once a non-empty persisted history was restored (page reload of a stored conversation) — see MessageState. */
+	hasRestoredPersistedHistory?: boolean;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 
 	showChatOptionsScreen: boolean;
@@ -172,6 +182,8 @@ interface WebchatUIState {
 	deleteConversationsModalState: boolean;
 	liveContent?: Record<string, string>;
 	isMobile: boolean;
+	/** Gates the AI-agent notice announcement (CGY-3519) — see NoticeSession. */
+	noticeSession: NoticeSession;
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
@@ -283,6 +295,7 @@ export class WebchatUI extends React.PureComponent<
 		deleteConversationsModalState: false,
 		liveContent: {},
 		isMobile: false,
+		noticeSession: INITIAL_NOTICE_SESSION,
 	};
 
 	chatToggleButtonRef: React.RefObject<HTMLButtonElement>;
@@ -303,6 +316,14 @@ export class WebchatUI extends React.PureComponent<
 
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	/**
+	 * Announce keys of conversations whose AI-agent notice was already
+	 * announced (CGY-3519). Lives on the instance (not in the live region):
+	 * ScreenReaderLiveRegion unmounts on every screen navigation, so it
+	 * cannot remember what it announced across visits to the chat screen.
+	 */
+	private announcedNoticeKeys = new Set<string>();
 
 	constructor(props) {
 		super(props);
@@ -521,6 +542,39 @@ export class WebchatUI extends React.PureComponent<
 			false;
 	};
 
+	// `prevConversationsSnapshot` must predate the session change — see
+	// computeNoticeSession for why. `hasRestoredPersistedHistory` is read
+	// from CURRENT props on purpose: the restore lands in the same commit
+	// as the session id it belongs to.
+	private evaluateNoticeSession(prevConversationsSnapshot: PrevConversationsState) {
+		const id = this.props.currentSession || "";
+		this.setState(prev => ({
+			noticeSession: computeNoticeSession(
+				prev.noticeSession,
+				id,
+				prevConversationsSnapshot,
+				this.props.hasRestoredPersistedHistory,
+			),
+		}));
+	}
+
+	private handleNoticeIntroAnnounced = (introKey: string) => {
+		this.announcedNoticeKeys.add(introKey);
+	};
+
+	private getNoticeIntro(): { key: string; text: string } | undefined {
+		const text = getAIAgentNoticeIntroText({
+			behavior: this.props.config.settings.behavior,
+			showDisconnectOverlay: this.showDisconnectOverlay,
+			noticeSession: this.state.noticeSession,
+			currentSessionId: this.props.currentSession || "",
+			announcedKeys: this.announcedNoticeKeys,
+		});
+		if (!text) return undefined;
+
+		return { key: this.state.noticeSession.announceKey, text };
+	}
+
 	componentDidMount() {
 		const defaultMessagePlugins: MessagePlugin[] = [];
 		if (this.props.ttsActive) {
@@ -532,6 +586,10 @@ export class WebchatUI extends React.PureComponent<
 			isMobile: isMobileViewport(),
 		});
 		this.setupIconAnimationInterval();
+
+		// No pre-change snapshot exists on mount; the current map predates
+		// any message activity of this page load.
+		this.evaluateNoticeSession(this.props.prevConversations);
 
 		window.addEventListener("resize", this.handleResize);
 	}
@@ -548,6 +606,10 @@ export class WebchatUI extends React.PureComponent<
 			if (document.activeElement === webchatToggleButton && firstFocusable) {
 				firstFocusable.focus();
 			}
+		}
+
+		if (prevProps.currentSession !== this.props.currentSession) {
+			this.evaluateNoticeSession(prevProps.prevConversations);
 		}
 
 		if (
@@ -1180,6 +1242,10 @@ export class WebchatUI extends React.PureComponent<
 
 		const showDisconnectOverlay = this.showDisconnectOverlay;
 
+		// Drives the home-screen announcer below; the announcer mounts only
+		// while the webchat is open, so no `open` check is needed here.
+		const { showHomeScreenView } = getScreenVisibility(this.props, isInforming);
+
 		const openChatAriaLabel = () => {
 			if (open)
 				return config.settings.customTranslations?.ariaLabels?.closeChat ?? "Close chat";
@@ -1307,14 +1373,7 @@ export class WebchatUI extends React.PureComponent<
 												<StatusLiveRegion />
 												{/* Announce the home screen when it becomes the visible view (WCAG 4.1.3) */}
 												<HomeScreenAnnouncer
-													active={
-														!!(
-															open &&
-															this.props.showHomeScreen &&
-															config.settings.homeScreen.enabled &&
-															!isInforming
-														)
-													}
+													active={showHomeScreenView}
 													label={
 														config.settings.customTranslations
 															?.ariaLabels?.homeScreen ??
@@ -1630,7 +1689,11 @@ export class WebchatUI extends React.PureComponent<
 						</h3>
 						{this.renderHistory()}
 					</HistoryWrapper>
-					<ScreenReaderLiveRegion liveContent={this.state.liveContent} />
+					<ScreenReaderLiveRegion
+						liveContent={this.state.liveContent}
+						intro={this.getNoticeIntro()}
+						onIntroAnnounced={this.handleNoticeIntroAnnounced}
+					/>
 					<QueueUpdates />
 					{this.renderInput()}
 				</>
@@ -1663,15 +1726,10 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const isHomeScreenEnabled = config.settings.homeScreen.enabled;
-		const showEnabledHomeScreen = isHomeScreenEnabled && showHomeScreen;
-
-		const showChatScreen =
-			!showChatOptionsScreen &&
-			!showRatingScreen &&
-			!showPrevConversations &&
-			!showEnabledHomeScreen &&
-			!showInformationMessage &&
-			(hasAcceptedTerms || !config.settings.privacyNotice.enabled);
+		const { showEnabledHomeScreen, showChatScreen } = getScreenVisibility(
+			this.props,
+			isInforming,
+		);
 
 		const isChatOptionsButtonVisible = config.settings.chatOptions.enabled && showChatScreen;
 
@@ -1883,7 +1941,7 @@ export class WebchatUI extends React.PureComponent<
 						component="div"
 						className="webchat-log-ai-agent-notice-text"
 					>
-						{AIAgentNoticeText || "You're now chatting with an AI Agent."}
+						{AIAgentNoticeText || DEFAULT_AI_AGENT_NOTICE_TEXT}
 					</TopStatusMessage>
 				)}
 				{visibleMessages.map((message, index) => {

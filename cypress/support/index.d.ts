@@ -21,9 +21,15 @@ declare namespace Cypress {
 		visitMessageRenderer(): Chainable<Element>;
 
 		/**
-		 * Connects to a mocked endpoint and registers the "webchat" asset
+		 * Connects to a mocked endpoint and registers the "webchat" asset.
+		 * Pass an unroutable `endpointUrl` (e.g. "http://mock-endpoint.invalid/asdfqwer")
+		 * for a hermetic run where the socket can never connect.
 		 */
-		initMockWebchat(embeddingOptions?: any, endpointResponse?: any): Chainable<any>;
+		initMockWebchat(
+			embeddingOptions?: any,
+			endpointResponse?: any,
+			endpointUrl?: string,
+		): Chainable<any>;
 
 		/**
 		 * Connects to a real endpoint and registers the "webchat" asset

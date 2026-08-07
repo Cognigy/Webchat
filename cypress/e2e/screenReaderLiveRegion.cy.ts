@@ -28,6 +28,233 @@ describe("Screen Reader Live Region", () => {
 		cy.get(liveRegionSelector).should("not.contain", "A new message");
 	});
 
+	describe("AI-agent notice announcement (CGY-3519)", () => {
+		// The notice announces through its own dedicated live region (a
+		// sibling of the message region — a shared region would let the next
+		// message announcement replace the notice's node, which NVDA then
+		// drops). Message announcements hold until the notice is committed,
+		// so the notice is always announced BEFORE any message.
+		const noticeRegionSelector = "#webchatAIAgentNoticeLiveRegion";
+		const noticeText = "You're now chatting with an AI Agent.";
+
+		it("announces the default notice when the chat screen appears", () => {
+			// beforeEach already opened the chat screen; wait past the 600ms
+			// intro announce delay.
+			cy.wait(800);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+		});
+
+		it("announces the configured AIAgentNoticeText", () => {
+			cy.visitWebchat();
+			cy.initMockWebchat({
+				settings: {
+					behavior: {
+						AIAgentNoticeText: "Je chat met een digitale AI assistent",
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.wait(800);
+			cy.get(noticeRegionSelector).should(
+				"contain.text",
+				"Je chat met een digitale AI assistent",
+			);
+		});
+
+		it("announces the notice before a message that arrives at the same time", () => {
+			// Rebuild the webchat with a frozen clock: the intro's 600ms timer
+			// starts when the chat screen mounts (inside startConversation),
+			// so the clock must be installed before that — freezing it in the
+			// test body after beforeEach would leave the timer on real time,
+			// racing command overhead against the 600ms deadline (flaky on
+			// slow CI runners). Only setTimeout/clearTimeout are faked so
+			// Date.now-based code (e.g. toasts) keeps working.
+			// Use an unroutable endpoint origin so the socket can NEVER
+			// connect. The default endpoint-mock.cognigy.ai is a real,
+			// reachable host: in CI the socket connects and then flaps
+			// (connect → server drop → reconnect), which briefly opens the
+			// disconnect overlay — and an open overlay withdraws the intro,
+			// CANCELLING its pending 600ms timer; the re-schedule after the
+			// flap starts a fresh 600ms countdown at the CURRENT fake time,
+			// pushing the deadline past this test's tick budget so the intro
+			// never commits. With no connectable socket there is exactly one
+			// failed connect attempt (socket.io reconnection is off) and the
+			// timer keeps its original fake-time-0 deadline.
+			cy.visitWebchat();
+			cy.initMockWebchat(undefined, undefined, "http://mock-endpoint.invalid/asdfqwer");
+			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
+			cy.openWebchat().startConversation();
+
+			// Belt and braces: wait for that one connect attempt to settle
+			// (it fails in milliseconds) so its state updates can't land
+			// between ticks.
+			cy.waitUntil(
+				() =>
+					cy.getWebchat().then(webchat => {
+						const state = webchat.store.getState();
+						return !state.connection.connecting;
+					}),
+				{ timeout: 10000, interval: 100 },
+			);
+
+			// The message lands well inside the intro's 600ms deferral — it
+			// must be announced AFTER the intro, not instead of it.
+			cy.receiveMessage("Hello there");
+
+			// Just before the intro deadline nothing is committed: the
+			// message announcement is held while the intro is pending.
+			cy.tick(599);
+			cy.get(noticeRegionSelector).should("be.empty");
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// The intro commits at 600ms — the message region is still empty…
+			cy.tick(1);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// …and the held message follows after its own 100ms debounce.
+			cy.tick(100);
+			cy.get(liveRegionSelector).should("contain.text", "Hello there");
+		});
+
+		it("does not re-announce the notice when returning to the same conversation", () => {
+			// beforeEach opened the chat screen — first visit announces.
+			cy.wait(800);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+
+			// Back to the home screen (announced via the status region)…
+			cy.get("button.webchat-header-back-button").click();
+			cy.wait(1300);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "Chat window home screen");
+
+			// …then return to the chat screen: same conversation, silent.
+			// NOTE: the region remounts empty on navigation, so this
+			// assertion's baseline is the unmount wiping the FIRST
+			// announcement — what it actually tests is that no NEW
+			// announcement was committed during the 800ms (past the 600ms
+			// intro delay). If the region ever stays mounted across
+			// navigation, revisit this assertion.
+			cy.startConversation();
+			cy.wait(800);
+			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
+		});
+
+		it("re-announces the notice when starting a new conversation from previous conversations", () => {
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-new",
+				sessionId: "session-cgy3519-new",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+
+			// Persist the session so it shows up under previous conversations.
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+
+			// Start a NEW conversation: a brand-new session announces again
+			// (after the session-switch disconnect overlay has closed).
+			cy.get("[data-testid='webchat-start-chat-button']").click();
+			cy.get(noticeRegionSelector, { timeout: 10000 }).should("contain.text", noticeText);
+		});
+
+		it("stays silent when reopening a previous conversation", () => {
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-reopen",
+				sessionId: "session-cgy3519-reopen",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+
+			// Reopen the same conversation: not a new session — no notice,
+			// even past the intro delay and the reconnect overlay.
+			// NOTE: the region remounted empty on navigation (the earlier
+			// announcement is gone with the unmount); this asserts no NEW
+			// announcement during the 1500ms window after the reopen.
+			cy.get(".webchat-prev-conversations-item").eq(0).click();
+			cy.contains('You said "hello".').should("be.visible");
+			cy.wait(1500);
+			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
+		});
+
+		it("stays silent when a persisted conversation is restored after a page reload", () => {
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-reload",
+				sessionId: "session-cgy3519-reload",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+
+			// Persist some history for this session.
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			// "Reload" the page: revisit and re-init with the same user and
+			// session — the conversation is restored from storage in the same
+			// React commit as the first connect's session id. A restored
+			// conversation is a continuation, not a brand-new one: no notice.
+			cy.visitWebchat();
+			cy.initWebchat({
+				userId: "user-cgy3519-reload",
+				sessionId: "session-cgy3519-reload",
+				channel: "channel-1",
+			});
+			cy.openWebchat().startConversation();
+			cy.contains('You said "hello".').should("be.visible");
+			cy.wait(1500);
+			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
+		});
+
+		it("does not announce anything when the notice is disabled", () => {
+			cy.visitWebchat();
+			cy.initMockWebchat({
+				settings: {
+					behavior: {
+						enableAIAgentNotice: false,
+					},
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			cy.wait(800);
+			cy.get(noticeRegionSelector).should("be.empty");
+		});
+	});
+
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("chat screen with live regions has no detectable a11y violations", () => {
+			// beforeEach opened the chat screen; wait for the notice to be
+			// committed so axe sees the populated (sr-only) live regions too.
+			cy.receiveMessage("Hello there");
+			cy.get("#webchatAIAgentNoticeLiveRegion").should("not.be.empty");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
+
 	it("skips a data-only message but still announces a later rendered message", () => {
 		// Interleave a data-only message between two real text messages. This
 		// guards the index-0 blocking edge case: a non-rendered message at the
