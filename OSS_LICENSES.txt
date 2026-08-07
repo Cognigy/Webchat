@@ -1,4 +1,4 @@
-Created on 27-07-2026 at 12:01:49
+Created on 07-08-2026 at 13:03:04
 
 {
   "@babel/code-frame@7.29.0": {
@@ -170,7 +170,7 @@ Created on 27-07-2026 at 12:01:49
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.48.0": {
+  "@cognigy/webchat@3.49.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -689,7 +689,7 @@ Created on 27-07-2026 at 12:01:49
     "licenseFile": "node_modules/autolinker/LICENSE",
     "copyright": "Copyright (c) 2014 Gregory Jacobs (http://greg-jacobs.com)"
   },
-  "axios@1.18.1": {
+  "axios@1.19.0": {
     "licenses": "MIT",
     "repository": "https://github.com/axios/axios",
     "publisher": "Matt Zabriskie",
@@ -1179,13 +1179,6 @@ Created on 27-07-2026 at 12:01:49
     "licenseFile": "node_modules/estree-util-is-identifier-name/license",
     "copyright": "Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>"
   },
-  "exenv@1.2.2": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/JedWatson/exenv",
-    "publisher": "Jed Watson",
-    "licenseFile": "node_modules/exenv/LICENSE",
-    "copyright": "Copyright (c) 2013-2015, Facebook, Inc.. All rights reserved."
-  },
   "extend@3.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/justmoon/node-extend",
@@ -1219,7 +1212,7 @@ Created on 27-07-2026 at 12:01:49
     "licenseFile": "node_modules/follow-redirects/LICENSE",
     "copyright": "Copyright 2014–present Olivier Lalonde <olalonde@gmail.com>, James Talmage <james@talmage.io>, Ruben Verborgh"
   },
-  "form-data@4.0.5": {
+  "form-data@4.0.6": {
     "licenses": "MIT",
     "repository": "https://github.com/form-data/form-data",
     "publisher": "Felix Geisendörfer",
@@ -1335,7 +1328,7 @@ Created on 27-07-2026 at 12:01:49
     "licenseFile": "node_modules/has-tostringtag/LICENSE",
     "copyright": "Copyright (c) 2021 Inspect JS"
   },
-  "hasown@2.0.2": {
+  "hasown@2.0.4": {
     "licenses": "MIT",
     "repository": "https://github.com/inspect-js/hasOwn",
     "publisher": "Jordan Harband",
@@ -2362,12 +2355,6 @@ Created on 27-07-2026 at 12:01:49
     "licenseFile": "node_modules/react-redux/node_modules/react-is/LICENSE",
     "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
   },
-  "react-lifecycles-compat@3.0.4": {
-    "licenses": "MIT",
-    "repository": "https://github.com/reactjs/react-lifecycles-compat",
-    "licenseFile": "node_modules/react-lifecycles-compat/LICENSE.md",
-    "copyright": "Copyright (c) 2013-present, Facebook, Inc."
-  },
   "react-markdown@9.0.3": {
     "licenses": "MIT",
     "repository": "https://github.com/remarkjs/react-markdown",
@@ -2383,12 +2370,6 @@ Created on 27-07-2026 at 12:01:49
     "email": "espen@hovlandsdal.com",
     "licenseFile": "node_modules/react-markdown/license",
     "copyright": "Copyright (c) Espen Hovlandsdal"
-  },
-  "react-modal@3.16.3": {
-    "licenses": "MIT",
-    "repository": "https://github.com/reactjs/react-modal",
-    "licenseFile": "node_modules/react-modal/LICENSE",
-    "copyright": "Copyright (c) 2017 Ryan Florence"
   },
   "react-player@2.16.0": {
     "licenses": "MIT",
@@ -3034,15 +3015,6 @@ Created on 27-07-2026 at 12:01:49
     "url": "https://wooorm.com",
     "licenseFile": "node_modules/vfile/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
-  },
-  "warning@4.0.3": {
-    "licenses": "MIT",
-    "repository": "https://github.com/BerkeleyTrue/warning",
-    "publisher": "Berkeley Martinez",
-    "email": "berkeley@berkeleytrue.com",
-    "url": "http://www.berkeleytrue.com",
-    "licenseFile": "node_modules/warning/LICENSE.md",
-    "copyright": "Copyright (c) 2013-present, Facebook, Inc."
   },
   "web-namespaces@2.0.1": {
     "licenses": "MIT",
