@@ -16,19 +16,22 @@ const getKeyboardFocusableElements = (element: HTMLElement) => {
 	// RegularLayoutContentWrapper in WebchatUI.tsx) — those cannot receive
 	// focus. Matching aria-hidden="true" explicitly (not attribute presence)
 	// keeps elements with aria-hidden="false" focusable. Ancestor aria-hidden
-	// is deliberately NOT filtered: the HomeScreen show/hide pattern queries
-	// focusables inside its aria-hidden root to toggle their tabindex.
-	const focusable = interactiveElsArray?.filter(
-		el =>
-			!el.hasAttribute("disabled") &&
-			el.getAttribute("aria-hidden") !== "true" &&
-			!el.closest("[inert]"),
+	// is deliberately NOT filtered — hidden surfaces that must be excluded
+	// from focus logic carry `inert` alongside aria-hidden (HomeScreen,
+	// RegularLayoutContentWrapper, DisconnectableContentWrapper).
+	const focusableIgnoringInert = interactiveElsArray?.filter(
+		el => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true",
 	);
+
+	const focusable = focusableIgnoringInert?.filter(el => !el.closest("[inert]"));
 
 	const firstFocusable = focusable && (focusable[0] as HTMLElement);
 	const lastFocusable = focusable && (focusable[focusable.length - 1] as HTMLElement);
 
-	return { firstFocusable, lastFocusable, focusable };
+	// focusableIgnoringInert keeps elements inside [inert] subtrees — needed by
+	// HomeScreen's tabindex-toggle fallback, which must reach the interactive
+	// elements of its own inert-hidden root in browsers without inert support.
+	return { firstFocusable, lastFocusable, focusable, focusableIgnoringInert };
 };
 
 export default getKeyboardFocusableElements;
