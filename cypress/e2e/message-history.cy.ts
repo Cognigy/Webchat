@@ -1,4 +1,27 @@
 describe("Message History", () => {
+	it("assigns unique crypto.randomUUID-based IDs to all incoming messages (SC-13 / WCH-SC13-001)", () => {
+		cy.visitWebchat();
+		cy.window().then(win => {
+			cy.spy(win.crypto, "randomUUID").as("cryptoRandomUUID");
+		});
+		cy.initMockWebchat().openWebchat().startConversation();
+
+		cy.then(() => {
+			for (let i = 1; i <= 5; i++) {
+				cy.receiveMessage(`Bot message ${i}`);
+			}
+		});
+
+		// All 5 messages must be in the DOM — duplicate IDs (React key collisions)
+		// would cause messages to overwrite each other and fail these assertions
+		for (let i = 1; i <= 5; i++) {
+			cy.contains(`Bot message ${i}`).should("exist");
+		}
+
+		// crypto.randomUUID must have been called to generate each message ID
+		cy.get("@cryptoRandomUUID").should("have.been.called");
+	});
+
 	it("automatically scrolls to bottom for new incoming messages", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 

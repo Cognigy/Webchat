@@ -232,7 +232,7 @@ export const createMessageMiddleware =
 					store.dispatch(
 						receiveMessage({
 							source: "engagement",
-							traceId: `engagement-${Math.random()}`,
+							traceId: `engagement-${crypto.randomUUID()}`,
 							text,
 						}),
 					);

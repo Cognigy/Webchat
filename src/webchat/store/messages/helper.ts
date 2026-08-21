@@ -2,7 +2,7 @@ import { IWebchatMessage, IWebchatTemplateAttachment } from "@cognigy/socket-cli
 import { IStreamingMessage } from "../../../common/interfaces/message";
 
 export function generateRandomId(): string {
-	return String(Math.random()).slice(2, 18);
+	return crypto.randomUUID();
 }
 
 export function isAnimatedRichBotMessage(message: IStreamingMessage): boolean {

@@ -2,6 +2,26 @@
 /// <reference path="../support/index.d.ts" />
 
 describe("Engagement Message", () => {
+	it("uses crypto.randomUUID to generate the engagement trace ID (SC-13 / WCH-SC13-001)", () => {
+		cy.visitWebchat();
+		cy.window().then(win => {
+			cy.spy(win.crypto, "randomUUID").as("cryptoRandomUUID");
+		});
+		cy.initMockWebchat({
+			settings: {
+				teaserMessage: {
+					text: "engagement message text",
+					teaserMessageDelay: 1,
+				},
+				unreadMessages: {
+					enablePreview: false,
+				},
+			},
+		});
+		cy.window().contains("engagement message text", { timeout: 500 }).should("be.visible");
+		cy.get("@cryptoRandomUUID").should("have.been.called");
+	});
+
 	it("should display an engagement message if engagementMessageText is configured", () => {
 		cy.visitWebchat().initMockWebchat({
 			settings: {
