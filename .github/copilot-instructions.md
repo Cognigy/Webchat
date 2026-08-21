@@ -63,7 +63,7 @@ Settings come from Endpoint Config API (merged with client-side `initWebchat()` 
 - **Focus management** — move focus into new surfaces on open, restore to the trigger on close; trap focus only in modals and keep it Esc-dismissible; focus must not be obscured (SC 2.4.11).
 - **Color contrast** ≥ 4.5:1 text / 3:1 large text & UI/state; **target size** ≥ 24×24 CSS px (SC 2.5.8); respect `prefers-reduced-motion`; images need `alt` (empty for decorative), decorative icons `aria-hidden`.
 
-**Reuse existing utilities** — don't reinvent: focus discovery/trap → `getKeyboardFocusableElements` (`src/webchat-ui/utils/find-focusable.ts`); announcements → `ScreenReaderLiveRegion` + `src/webchat-ui/utils/live-region-announcement.ts`; visually-hidden text → `.sr-only` (`src/assets/style.css`); show/hide regions → tabindex-toggling pattern in `HomeScreen.tsx`; open/close focus → `WebchatUI.tsx`.
+**Reuse existing utilities** — don't reinvent: focus discovery/trap → `getKeyboardFocusableElements` (`src/webchat-ui/utils/find-focusable.ts`); announcements → `ScreenReaderLiveRegion` + `src/webchat-ui/utils/live-region-announcement.ts`; visually-hidden text → `.sr-only` (`src/assets/style.css`); show/hide regions → `inert` + `aria-hidden` on the root with tabindex-toggle fallback in `HomeScreen.tsx`; open/close focus → `WebchatUI.tsx`.
 
 **Boundary**: message renderers live in `@cognigy/chat-components`. If an a11y issue is inside a renderer's internals, the fix belongs upstream in that package — call that out rather than patching around it here.
 

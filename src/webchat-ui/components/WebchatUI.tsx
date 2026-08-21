@@ -30,6 +30,7 @@ import { TTyping } from "../../common/interfaces/typing";
 import Badge from "./presentational/Badge";
 import getTextFromMessage from "../../webchat/helper/message";
 import getKeyboardFocusableElements from "../utils/find-focusable";
+import { InertProps } from "../utils/inert-props";
 import notificationSound from "../utils/notification-sound";
 import { findReverse } from "../utils/find-reverse";
 import "../../assets/style.css";
@@ -237,9 +238,7 @@ const DisconnectableContentWrapper = styled.div({
 	minHeight: 0,
 });
 
-// `inert` is typed here because React 18's prop types don't know it yet;
-// the string form ("") renders the bare attribute, and emotion forwards it.
-const RegularLayoutContentWrapper = styled.div<{ inert?: string }>(({ theme }) => ({
+const RegularLayoutContentWrapper = styled.div<InertProps>(({ theme }) => ({
 	height: "100%",
 	zIndex: 3,
 	display: "flex",
@@ -316,6 +315,7 @@ export class WebchatUI extends React.PureComponent<
 
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
+	private homeScreenExitFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	/**
 	 * Announce keys of conversations whose AI-agent notice was already
@@ -608,6 +608,35 @@ export class WebchatUI extends React.PureComponent<
 			}
 		}
 
+		// Leaving the home screen: `inert` on its root blurs the control that
+		// triggered the exit (e.g. the just-clicked Start conversation button),
+		// so focus can drop to document.body and Tab would restart at the top
+		// of the host page (SC 2.4.3). Most exits re-focus on their own — the
+		// privacy notice / previous conversations / chat options via
+		// autoFocusScreenTitle, the chat screen via the message input's
+		// autofocus — so this fallback checks late (450ms, after BaseInput's
+		// 200ms autofocus and the Header's 200ms title focus, matching the
+		// back-to-home timing) and only acts if focus is still on document.body
+		// or stuck inside the hidden home screen. That is the case when
+		// entering the chat screen with `disableInputAutofocus: true`.
+		if (prevProps.showHomeScreen && !this.props.showHomeScreen) {
+			if (this.homeScreenExitFocusTimeout) clearTimeout(this.homeScreenExitFocusTimeout);
+			this.homeScreenExitFocusTimeout = setTimeout(() => {
+				const webchatWindowEl = this.webchatWindowRef?.current;
+				if (!webchatWindowEl) return;
+
+				const active = document.activeElement;
+				const homeScreenRoot = webchatWindowEl.querySelector(".webchat-homescreen-root");
+				if (active === document.body || homeScreenRoot?.contains(active)) {
+					// Scoped to the header bar because id "webchatHeaderTitle" is
+					// duplicated across Header, HomeScreen and TeaserMessage.
+					webchatWindowEl
+						.querySelector<HTMLElement>(".webchat-header-bar .webchat-header-title")
+						?.focus();
+				}
+			}, 450);
+		}
+
 		if (prevProps.currentSession !== this.props.currentSession) {
 			this.evaluateNoticeSession(prevProps.prevConversations);
 		}
@@ -769,6 +798,11 @@ export class WebchatUI extends React.PureComponent<
 		if (this.ratingFocusTimeout) {
 			clearTimeout(this.ratingFocusTimeout);
 			this.ratingFocusTimeout = null;
+		}
+
+		if (this.homeScreenExitFocusTimeout) {
+			clearTimeout(this.homeScreenExitFocusTimeout);
+			this.homeScreenExitFocusTimeout = null;
 		}
 
 		// Teardown icon animation interval
