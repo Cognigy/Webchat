@@ -13,10 +13,9 @@ import { IWebchatButton } from "@cognigy/socket-client";
 import CognigyAIAvatar from "../../assets/cognigy-ai-avatar-28px.svg";
 import { Logo } from "./Header";
 import getKeyboardFocusableElements from "../../utils/find-focusable";
+import { InertProps } from "../../utils/inert-props";
 
-// `inert` is typed here because React 18's prop types don't know it yet;
-// the string form ("") renders the bare attribute, and emotion forwards it.
-const HomeScreenRoot = styled.div<{ inert?: string }>(({ theme }) => ({
+const HomeScreenRoot = styled.div<InertProps>(({ theme }) => ({
 	display: "flex",
 	position: "absolute",
 	top: 0,

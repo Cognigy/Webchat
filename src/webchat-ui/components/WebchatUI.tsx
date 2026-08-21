@@ -30,6 +30,7 @@ import { TTyping } from "../../common/interfaces/typing";
 import Badge from "./presentational/Badge";
 import getTextFromMessage from "../../webchat/helper/message";
 import getKeyboardFocusableElements from "../utils/find-focusable";
+import { InertProps } from "../utils/inert-props";
 import notificationSound from "../utils/notification-sound";
 import { findReverse } from "../utils/find-reverse";
 import "../../assets/style.css";
@@ -237,9 +238,7 @@ const DisconnectableContentWrapper = styled.div({
 	minHeight: 0,
 });
 
-// `inert` is typed here because React 18's prop types don't know it yet;
-// the string form ("") renders the bare attribute, and emotion forwards it.
-const RegularLayoutContentWrapper = styled.div<{ inert?: string }>(({ theme }) => ({
+const RegularLayoutContentWrapper = styled.div<InertProps>(({ theme }) => ({
 	height: "100%",
 	zIndex: 3,
 	display: "flex",
@@ -316,6 +315,18 @@ export class WebchatUI extends React.PureComponent<
 
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
+	private homeScreenExitFocusTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	// Disarms the pending home-screen exit focus fallback. Also registered as
+	// a capture-phase document pointerdown listener while the fallback is
+	// armed, so a deliberate click/tap during the 450ms window cancels it.
+	private cancelHomeScreenExitFocusFallback = () => {
+		if (this.homeScreenExitFocusTimeout) {
+			clearTimeout(this.homeScreenExitFocusTimeout);
+			this.homeScreenExitFocusTimeout = null;
+		}
+		document.removeEventListener("pointerdown", this.cancelHomeScreenExitFocusFallback, true);
+	};
 
 	/**
 	 * Announce keys of conversations whose AI-agent notice was already
@@ -594,7 +605,27 @@ export class WebchatUI extends React.PureComponent<
 		window.addEventListener("resize", this.handleResize);
 	}
 
-	async componentDidUpdate(prevProps: WebchatUIProps, prevState: WebchatUIState) {
+	// Hiding the home screen applies `inert` to its root, which blurs any
+	// focused descendant. This hook runs just before that DOM update — the
+	// last moment to see whether focus is inside the home screen (user is
+	// leaving it) or elsewhere (programmatic exit). componentDidUpdate arms
+	// the exit-focus fallback only in the first case, so a programmatic exit
+	// never has focus stolen.
+	getSnapshotBeforeUpdate(prevProps: WebchatUIProps): boolean | null {
+		if (prevProps.showHomeScreen && !this.props.showHomeScreen) {
+			const homeScreenRoot = this.webchatWindowRef?.current?.querySelector(
+				".webchat-homescreen-root",
+			);
+			return !!homeScreenRoot?.contains(document.activeElement);
+		}
+		return null;
+	}
+
+	async componentDidUpdate(
+		prevProps: WebchatUIProps,
+		prevState: WebchatUIState,
+		focusWasInsideHomeScreen?: boolean | null,
+	) {
 		// When the webchat is opened, focus is moved to the first focusable element inside the webchat window.
 		// This happens only if the currently focused element is the toggle button, ensuring no interruption to other interactions or auto-focus behavior.
 		// This prevents focus loss when no element with auto-focus is found inside the webchat window.
@@ -606,6 +637,46 @@ export class WebchatUI extends React.PureComponent<
 			if (document.activeElement === webchatToggleButton && firstFocusable) {
 				firstFocusable.focus();
 			}
+		}
+
+		// Leaving the home screen: `inert` on its root blurs the control that
+		// triggered the exit (e.g. the just-clicked Start conversation button),
+		// so focus can drop to document.body and Tab would restart at the top
+		// of the host page (SC 2.4.3). Most exits re-focus on their own — the
+		// privacy notice / previous conversations / chat options via
+		// autoFocusScreenTitle, the chat screen via the message input's
+		// autofocus — so this fallback checks late (450ms, after BaseInput's
+		// 200ms autofocus and the Header's 200ms title focus, matching the
+		// back-to-home timing) and only acts if focus is still on document.body
+		// or stuck inside the hidden home screen. That is the case when
+		// entering the chat screen with `disableInputAutofocus: true`.
+		// It is armed only when the exit blurred focus out of the home screen
+		// (the getSnapshotBeforeUpdate result), and a pointerdown anywhere
+		// during the window disarms it — so a programmatic exit or a deliberate
+		// click (e.g. on a non-focusable area of the host page) never has focus
+		// pulled away.
+		if (prevProps.showHomeScreen && !this.props.showHomeScreen && focusWasInsideHomeScreen) {
+			this.cancelHomeScreenExitFocusFallback();
+			document.addEventListener("pointerdown", this.cancelHomeScreenExitFocusFallback, true);
+			this.homeScreenExitFocusTimeout = setTimeout(() => {
+				this.cancelHomeScreenExitFocusFallback();
+				const webchatWindowEl = this.webchatWindowRef?.current;
+				if (!webchatWindowEl) return;
+
+				const active = document.activeElement;
+				const homeScreenRoot = webchatWindowEl.querySelector(".webchat-homescreen-root");
+				if (active === document.body || homeScreenRoot?.contains(active)) {
+					// Scoped to the header bar because id "webchatHeaderTitle" is
+					// duplicated across Header, HomeScreen and TeaserMessage. The
+					// Header is not rendered while the xApp overlay is open, so
+					// fall back to the window's first focusable element.
+					(
+						webchatWindowEl.querySelector<HTMLElement>(
+							".webchat-header-bar .webchat-header-title",
+						) ?? getKeyboardFocusableElements(webchatWindowEl).firstFocusable
+					)?.focus();
+				}
+			}, 450);
 		}
 
 		if (prevProps.currentSession !== this.props.currentSession) {
@@ -770,6 +841,9 @@ export class WebchatUI extends React.PureComponent<
 			clearTimeout(this.ratingFocusTimeout);
 			this.ratingFocusTimeout = null;
 		}
+
+		// also removes the fallback's document pointerdown listener
+		this.cancelHomeScreenExitFocusFallback();
 
 		// Teardown icon animation interval
 		if (this.iconAnimationIntervalHandle) {

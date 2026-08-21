@@ -19,14 +19,14 @@ Key patterns for Webchat: [Dialog (Modal)](https://www.w3.org/WAI/ARIA/apg/patte
 
 ## Existing utilities (always prefer these)
 
-| Need                                | Use                                                                                 | Path                                                                  |
-| ----------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Find focusable children / trap      | `getKeyboardFocusableElements(el)` → `{ firstFocusable, lastFocusable, focusable }` | `src/webchat-ui/utils/find-focusable.ts`                              |
-| Announce to screen readers (polite) | `<ScreenReaderLiveRegion>`                                                          | `src/webchat-ui/components/presentational/ScreenReaderLiveRegion.tsx` |
-| Extract/clean text for announcing   | `extractTextForScreenReader`, `getTextFromDOM`, `cleanUpText`                       | `src/webchat-ui/utils/live-region-announcement.ts`                    |
-| Visually-hidden text                | `.sr-only` class                                                                    | `src/assets/style.css`                                                |
-| Hide/show an offscreen region       | tabindex-toggling pattern                                                           | `src/webchat-ui/components/presentational/HomeScreen.tsx`             |
-| Open/close focus orchestration      | refs + focus-first-on-open                                                          | `src/webchat-ui/components/WebchatUI.tsx`                             |
+| Need                                | Use                                                                                                                                                                                                                                                          | Path                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| Find focusable children / trap      | `getKeyboardFocusableElements(el)` → `{ firstFocusable, lastFocusable, focusable, focusableIgnoringInert }` (`focusable` skips `[inert]` subtrees — use for traps/focus-on-open; `focusableIgnoringInert` keeps them — for the HomeScreen tabindex fallback) | `src/webchat-ui/utils/find-focusable.ts`                              |
+| Announce to screen readers (polite) | `<ScreenReaderLiveRegion>`                                                                                                                                                                                                                                   | `src/webchat-ui/components/presentational/ScreenReaderLiveRegion.tsx` |
+| Extract/clean text for announcing   | `extractTextForScreenReader`, `getTextFromDOM`, `cleanUpText`                                                                                                                                                                                                | `src/webchat-ui/utils/live-region-announcement.ts`                    |
+| Visually-hidden text                | `.sr-only` class                                                                                                                                                                                                                                             | `src/assets/style.css`                                                |
+| Hide/show an offscreen region       | `inert` + `aria-hidden` on the root while hidden, tabindex toggle as fallback                                                                                                                                                                                | `src/webchat-ui/components/presentational/HomeScreen.tsx`             |
+| Open/close focus orchestration      | refs + focus-first-on-open                                                                                                                                                                                                                                   | `src/webchat-ui/components/WebchatUI.tsx`                             |
 
 User-facing aria strings come from `customTranslations.ariaLabels` — read from translations with a sensible fallback; never hardcode.
 
@@ -71,7 +71,7 @@ User-facing aria strings come from `customTranslations.ariaLabels` — read from
 
 ### Hidden / collapsible regions (e.g. home screen) — [APG: Disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/)
 
-- When hidden: `aria-hidden="true"` on the root and set all focusable descendants to `tabindex=-1`; when shown, set them back to `0` and move focus in. Pattern: `HomeScreen.tsx`.
+- When hidden: `inert` + `aria-hidden="true"` on the root (aria-hidden alone doesn't stop NVDA browse-mode reading), and set all focusable descendants to `tabindex=-1` (via `focusableIgnoringInert`) as a fallback for browsers without inert support; when shown, render neither root attribute and set descendants back to `0`. If hiding the region can blur the control that triggered the exit (`inert` blurs focused descendants), move focus to a sensible target (e.g. the header title) so it doesn't drop to `document.body` (SC 2.4.3). Pattern: `HomeScreen.tsx` + the home-screen exit fallback in `WebchatUI.tsx`.
 
 ### Galleries / carousels — [APG: Carousel](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/)
 

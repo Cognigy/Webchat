@@ -19,10 +19,10 @@
 
 ## Reuse these — don't reinvent
 
-- **Focus discovery / trap:** `getKeyboardFocusableElements` — `src/webchat-ui/utils/find-focusable.ts` (returns `{ firstFocusable, lastFocusable, focusable }`, skips `disabled`/`aria-hidden`).
+- **Focus discovery / trap:** `getKeyboardFocusableElements` — `src/webchat-ui/utils/find-focusable.ts` (returns `{ firstFocusable, lastFocusable, focusable, focusableIgnoringInert }`; both lists skip `disabled`/`aria-hidden` elements, and `focusable` additionally drops `[inert]` subtrees — use it for focus traps / focus-on-open; `focusableIgnoringInert` keeps `[inert]` descendants for the HomeScreen tabindex fallback).
 - **Screen-reader announcements:** `ScreenReaderLiveRegion` (`aria-live="polite"`) — `src/webchat-ui/components/presentational/ScreenReaderLiveRegion.tsx`; text extraction helpers in `src/webchat-ui/utils/live-region-announcement.ts` (`extractTextForScreenReader`, `getTextFromDOM`, `cleanUpText`). For interrupt-worthy status, `aria-live="assertive"` (see `ChatEvent` in chat-components).
 - **Visually-hidden text:** the `.sr-only` class — `src/assets/style.css`.
-- **Show/hide an off-screen region:** the tabindex-toggling pattern in `src/webchat-ui/components/presentational/HomeScreen.tsx` (set focusable children `tabindex=0` when visible, `-1` when hidden; `aria-hidden` on the root).
+- **Show/hide an off-screen region:** the pattern in `src/webchat-ui/components/presentational/HomeScreen.tsx` — `inert` + `aria-hidden="true"` on the root while hidden (neither attribute while visible), plus toggling child `tabindex` 0/-1 (via `focusableIgnoringInert`) as a fallback for browsers without inert support.
 - **Open/close focus orchestration:** `src/webchat-ui/components/WebchatUI.tsx` (focus moves to first focusable on open; refs restore focus on close).
 
 The `wcag-component` skill (`.claude/skills/wcag-component/`) has detailed, copy-paste recipes per component type — use it when building/editing UI.
