@@ -74,7 +74,21 @@ const xAppOverlay: FC = () => {
 	};
 
 	const handleSubmit = (event: MessageEvent) => {
-		if (url.startsWith(event.origin) === false) {
+		// WCH-SI10-004: compare canonical origins, not raw URL strings.
+		// The previous url.startsWith(event.origin) check was semantically backwards —
+		// a domain that is a string-prefix of url (e.g. "https://xapp.cognigy.a" for
+		// "https://xapp.cognigy.ai/form") could pass the check despite being a different
+		// origin. new URL(url).origin extracts the canonical scheme+host+port for an
+		// exact match, which is the correct cross-origin security boundary.
+		let urlOrigin: string;
+		try {
+			urlOrigin = new URL(url).origin;
+		} catch {
+			// url is empty or not a valid absolute URL — reject all postMessages.
+			return;
+		}
+
+		if (urlOrigin !== event.origin) {
 			return;
 		}
 
@@ -104,8 +118,12 @@ const xAppOverlay: FC = () => {
 		handleClose();
 	};
 
-	// We revieve a MessageEvent from the xApp iframe when submission happens
+	// We receive a MessageEvent from the xApp iframe when submission happens.
 	// https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent
+	// url and feedbackMessage are included in deps so the handler is re-registered
+	// whenever either changes — both affect the handleSubmit closure and can change
+	// independently (e.g. a subsequent RECEIVE_MESSAGE can update overlay settings
+	// for the same URL, which would change feedbackMessage without changing url).
 	useEffect(() => {
 		function unsubscribe() {
 			window.removeEventListener("message", handleSubmit);
@@ -116,7 +134,7 @@ const xAppOverlay: FC = () => {
 		return () => {
 			unsubscribe();
 		};
-	}, [closeOnSubmit]);
+	}, [closeOnSubmit, url, feedbackMessage]);
 
 	const showHeader = screenTitle || showCloseIcon;
 
