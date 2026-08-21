@@ -482,9 +482,14 @@ describe("Home Screen", () => {
 			cy.get("[data-cognigy-webchat-toggle]").click();
 			cy.get(".webchat-input-message-input").should("be.visible");
 
-			// allow any late (200ms/450ms) focus timers to fire before asserting
+			// allow any late (200ms/450ms) focus timers to fire before asserting.
+			// Assert the positive target (the window's first focusable — the
+			// header back button) rather than "not inside the home screen":
+			// cy.focused() yields null when focus is lost to <body>, which would
+			// fail a .closest() chain with a confusing error instead of a clean
+			// assertion.
 			cy.wait(600);
-			cy.focused().closest(".webchat-homescreen-root").should("not.exist");
+			cy.focused().should("have.class", "webchat-header-back-button");
 		});
 	});
 });
