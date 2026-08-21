@@ -398,5 +398,50 @@ describe("Home Screen", () => {
 			cy.get("button").contains("Postback starter");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
+
+		// CGY-3278 (WCAG 1.3.2): while another screen is active, the home screen
+		// stays mounted behind it for the transition. aria-hidden alone still let
+		// NVDA arrow-key browsing reach its content, so the root must also carry
+		// `inert` to leave the accessibility tree entirely.
+		it("removes the home screen from the accessibility tree while another screen is active (CGY-3278)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: { enabled: true },
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-homescreen-root")
+				.should("have.attr", "aria-hidden", "true")
+				.should("have.attr", "inert");
+			// tabindex fallback for browsers without inert support
+			cy.get(".webchat-homescreen-root button").each($el => {
+				cy.wrap($el).should("have.attr", "tabindex", "-1");
+			});
+		});
+
+		it("exposes the home screen to assistive tech again when navigating back to it (CGY-3278)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: { enabled: true },
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-homescreen-root").should("have.attr", "inert");
+			cy.get("button.webchat-header-back-button").click();
+			cy.get(".webchat-homescreen-root button").each($el => {
+				cy.wrap($el).should("have.attr", "tabindex", "0");
+			});
+			// not.have.attr re-subjects the chain — keep these assertions last
+			cy.get(".webchat-homescreen-root").should("not.have.attr", "inert");
+			cy.get(".webchat-homescreen-root").should("not.have.attr", "aria-hidden");
+		});
 	});
 });
