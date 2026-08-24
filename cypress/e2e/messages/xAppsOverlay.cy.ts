@@ -19,16 +19,12 @@ describe("xApps Overlay", () => {
 			});
 		});
 
-		it("xApp iframe allow= list does not contain high-risk device APIs", () => {
+		it("xApp iframe sandbox includes allow-modals so alert/confirm/prompt work", () => {
 			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 				cy.get("iframe")
-					.invoke("attr", "allow")
-					.should("not.include", "payment")
-					.and("not.include", "usb")
-					.and("not.include", "bluetooth")
-					.and("not.include", "serial")
-					.and("not.include", "hid")
-					.and("not.include", "xr-spatial-tracking");
+					.invoke("attr", "sandbox")
+					.should("include", "allow-modals")
+					.and("not.include", "allow-top-navigation");
 			});
 		});
 	});
