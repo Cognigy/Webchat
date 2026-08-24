@@ -18,10 +18,12 @@ describe("Message History", () => {
 			cy.contains(`Bot message ${i}`).should("exist");
 		}
 
-		// crypto.randomUUID must have been called at least once per message received
-		cy.get("@cryptoRandomUUID").should((spy: any) => {
-			expect(spy.callCount).to.be.gte(5);
-		});
+		// crypto.randomUUID must have been called at least once.
+		// cy.receiveMessage() injects messages that already carry a test-harness id,
+		// so generateRandomId() is not invoked for them; the call here comes from
+		// startConversation() dispatching the initial user message (SEND_MESSAGE path).
+		// The stronger per-traceId assertion lives in engagement.cy.ts via store inspection.
+		cy.get("@cryptoRandomUUID").should("have.been.called");
 	});
 
 	it("automatically scrolls to bottom for new incoming messages", () => {
