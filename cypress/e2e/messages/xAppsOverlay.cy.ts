@@ -28,6 +28,20 @@ describe("xApps Overlay", () => {
 					.and("not.include", "allow-top-navigation");
 			});
 		});
+
+		it("does not render iframe for a same-origin xApp URL to prevent sandbox escape", () => {
+			// allow-scripts + allow-same-origin together allow a same-origin iframe to
+			// remove its own sandbox via frameElement; reject same-origin URLs at render time.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: {},
+						url: "http://localhost:8787/same-origin-xapp",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
 	});
 
 	describe("Accessibility (WCAG 2.2 AA)", () => {

@@ -118,6 +118,20 @@ const xAppOverlay: FC = () => {
 		};
 	}, [closeOnSubmit]);
 
+	// Prevent sandbox escape: allow-scripts + allow-same-origin together allow a
+	// same-origin iframe to remove its own sandbox via frameElement access.
+	// xApp URLs must be cross-origin; a same-origin URL is a misconfiguration.
+	const xAppOrigin = (() => {
+		try {
+			return new URL(url).origin;
+		} catch {
+			return null;
+		}
+	})();
+	if (xAppOrigin === null || xAppOrigin === window.location.origin) {
+		return null;
+	}
+
 	const showHeader = screenTitle || showCloseIcon;
 
 	return (
