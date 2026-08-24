@@ -15,6 +15,7 @@ describe("xApps Overlay", () => {
 					.should("include", "allow-scripts")
 					.and("include", "allow-same-origin")
 					.and("include", "allow-forms")
+					.and("include", "allow-popups")
 					.and("not.include", "allow-top-navigation");
 			});
 		});
