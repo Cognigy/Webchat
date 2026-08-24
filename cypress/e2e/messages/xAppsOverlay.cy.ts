@@ -32,6 +32,29 @@ describe("xApps Overlay", () => {
 					.and("not.include", "xr-spatial-tracking");
 			});
 		});
+
+		it("xApp iframe sandbox includes allow-modals so alert/confirm/prompt work", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe")
+					.invoke("attr", "sandbox")
+					.should("include", "allow-modals")
+					.and("not.include", "allow-top-navigation");
+			});
+		});
+
+		it("does not render iframe for a same-origin xApp URL to prevent sandbox escape", () => {
+			// allow-scripts + allow-same-origin together allow a same-origin iframe to
+			// remove its own sandbox via frameElement; reject same-origin URLs at render time.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: {},
+						url: "http://localhost:8787/same-origin-xapp",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
 	});
 
 	it("opens overlay automatically", () => {
