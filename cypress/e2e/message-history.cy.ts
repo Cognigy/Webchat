@@ -18,8 +18,10 @@ describe("Message History", () => {
 			cy.contains(`Bot message ${i}`).should("exist");
 		}
 
-		// crypto.randomUUID must have been called to generate each message ID
-		cy.get("@cryptoRandomUUID").should("have.been.called");
+		// crypto.randomUUID must have been called at least once per message received
+		cy.get("@cryptoRandomUUID").should((spy: any) => {
+			expect(spy.callCount).to.be.gte(5);
+		});
 	});
 
 	it("automatically scrolls to bottom for new incoming messages", () => {
