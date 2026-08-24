@@ -139,7 +139,7 @@ const xAppOverlay: FC = () => {
 	const showHeader = screenTitle || showCloseIcon;
 
 	return (
-		<Root tabIndex={0} role="dialog" aria-modal="true">
+		<Root tabIndex={0} role="dialog" aria-modal="true" aria-label={screenTitle || "xApp"}>
 			{showHeader && (
 				<Header
 					title={screenTitle}
@@ -149,14 +149,15 @@ const xAppOverlay: FC = () => {
 			)}
 			<Iframe
 				src={url}
+				title={screenTitle || "xApp"}
 				allow="
-  accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera; 
-  cross-origin-isolated; display-capture; document-domain; encrypted-media; 
-  execution-while-not-rendered; execution-while-out-of-viewport; 
-  fullscreen; gamepad; geolocation; gyroscope; hid; idle-detection; 
-  interest-cohort; local-fonts; magnetometer; microphone; midi; 
-  otp-credentials; payment; picture-in-picture; publickey-credentials-get; 
-  screen-wake-lock; serial; speaker-selection; usb; web-share; 
+  accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera;
+  cross-origin-isolated; display-capture; document-domain; encrypted-media;
+  execution-while-not-rendered; execution-while-out-of-viewport;
+  fullscreen; gamepad; geolocation; gyroscope; hid; idle-detection;
+  interest-cohort; local-fonts; magnetometer; microphone; midi;
+  otp-credentials; payment; picture-in-picture; publickey-credentials-get;
+  screen-wake-lock; serial; speaker-selection; usb; web-share;
   xr-spatial-tracking"
 			/>
 		</Root>
