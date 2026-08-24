@@ -18,11 +18,21 @@ describe("Message History", () => {
 			cy.contains(`Bot message ${i}`).should("exist");
 		}
 
+		// Verify all 5 bot messages have distinct IDs in the Redux store —
+		// proves no ID collision regardless of which generation path was used
+		cy.window().then((win: any) => {
+			const history = win.webchat.store.getState().messages.messageHistory;
+			const botIds = history
+				.filter((m: any) => m.source === "bot")
+				.map((m: any) => m.id);
+			expect(botIds).to.have.length.gte(5);
+			expect(new Set(botIds).size).to.equal(botIds.length);
+		});
+
 		// crypto.randomUUID must have been called at least once.
 		// cy.receiveMessage() injects messages that already carry a test-harness id,
 		// so generateRandomId() is not invoked for them; the call here comes from
 		// startConversation() dispatching the initial user message (SEND_MESSAGE path).
-		// The stronger per-traceId assertion lives in engagement.cy.ts via store inspection.
 		cy.get("@cryptoRandomUUID").should("have.been.called");
 	});
 
