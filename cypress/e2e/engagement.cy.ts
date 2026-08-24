@@ -3,9 +3,11 @@
 
 describe("Engagement Message", () => {
 	it("uses crypto.randomUUID to generate the engagement trace ID (SC-13 / WCH-SC13-001)", () => {
+		const knownUUID = "fedramp-sc13-test-uuid-engagement";
+
 		cy.visitWebchat();
 		cy.window().then(win => {
-			cy.spy(win.crypto, "randomUUID").as("cryptoRandomUUID");
+			cy.stub(win.crypto, "randomUUID").as("cryptoRandomUUID").returns(knownUUID);
 		});
 		cy.initMockWebchat({
 			settings: {
@@ -19,7 +21,18 @@ describe("Engagement Message", () => {
 			},
 		});
 		cy.window().contains("engagement message text", { timeout: 500 }).should("be.visible");
+
+		// Verify the stub was called (randomUUID path was exercised)
 		cy.get("@cryptoRandomUUID").should("have.been.called");
+
+		// Verify the engagement message's traceId in the Redux store uses the stubbed
+		// randomUUID value — proves the traceId specifically (not just any other call)
+		cy.window().then((win: any) => {
+			const messages = win.webchat.store.getState().messages.messageHistory;
+			const engagementMsg = messages.find((m: any) => m.source === "engagement");
+			expect(engagementMsg).to.exist;
+			expect(engagementMsg.traceId).to.equal(`engagement-${knownUUID}`);
+		});
 	});
 
 	it("should display an engagement message if engagementMessageText is configured", () => {
