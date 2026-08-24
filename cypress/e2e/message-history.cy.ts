@@ -22,9 +22,7 @@ describe("Message History", () => {
 		// proves no ID collision regardless of which generation path was used
 		cy.window().then((win: any) => {
 			const history = win.webchat.store.getState().messages.messageHistory;
-			const botIds = history
-				.filter((m: any) => m.source === "bot")
-				.map((m: any) => m.id);
+			const botIds = history.filter((m: any) => m.source === "bot").map((m: any) => m.id);
 			expect(botIds).to.have.length.gte(5);
 			expect(new Set(botIds).size).to.equal(botIds.length);
 		});
