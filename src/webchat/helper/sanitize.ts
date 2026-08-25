@@ -223,14 +223,11 @@ export const allowedHtmlAttributes = [
 	"wrap",
 ];
 
-const config: Config = {
-	ALLOWED_TAGS: allowedHtmlTags,
-	ALLOWED_ATTR: allowedHtmlAttributes,
-};
-
 // Hard deny-list: these tags are never permitted regardless of tenant configuration.
 // Allowing any of these opens XSS, clickjacking, HTML-injection, or data-exfiltration
 // vectors even when ALLOWED_ATTR is otherwise constrained.
+// Applied via both FORBID_TAGS (DOMPurify-level, unconditional) and a pre-filter on
+// customAllowedHtmlTags (defence-in-depth before DOMPurify is even invoked).
 export const ALWAYS_BLOCKED_TAGS = new Set([
 	"script",
 	"iframe",
@@ -246,12 +243,24 @@ export const ALWAYS_BLOCKED_TAGS = new Set([
 	"form",
 ]);
 
+const config: Config = {
+	ALLOWED_TAGS: allowedHtmlTags,
+	ALLOWED_ATTR: allowedHtmlAttributes,
+	// FORBID_TAGS overrides ALLOWED_TAGS inside DOMPurify — tags listed here are
+	// stripped unconditionally, whether the default allow-list or a custom one is used.
+	FORBID_TAGS: [...ALWAYS_BLOCKED_TAGS],
+};
+
 export const sanitizeHTML = (text: string) => {
 	const customAllowedHtmlTags =
 		storeRef?.getState().config.settings.widgetSettings.customAllowedHtmlTags;
 
 	let configToUse = config;
 	if (customAllowedHtmlTags) {
+		// Pre-filter the tenant-supplied list before passing to DOMPurify (defence-in-depth).
+		// FORBID_TAGS in the base config already blocks these at the DOMPurify level,
+		// but filtering here makes the guarantee explicit and avoids passing dangerous
+		// tag names into DOMPurify's ALLOWED_TAGS at all.
 		const safeTags = customAllowedHtmlTags.filter(
 			tag => !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase()),
 		);

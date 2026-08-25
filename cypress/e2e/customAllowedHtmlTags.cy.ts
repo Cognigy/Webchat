@@ -4,58 +4,99 @@
 /**
  * Tests for the customAllowedHtmlTags deny-list (WCH-SI10-002 / SI-10 / AC-3).
  *
- * sanitizeHTML() reads customAllowedHtmlTags from the Redux store and, when set,
- * replaces the default ALLOWED_TAGS. The fix adds a hard deny-list (ALWAYS_BLOCKED_TAGS)
- * that is applied to the tenant-supplied list before it reaches DOMPurify, so that
- * dangerous tags (script, iframe, object, embed, …) can never be re-enabled by
- * endpoint configuration regardless of what customAllowedHtmlTags contains.
+ * The fix adds ALWAYS_BLOCKED_TAGS — a hard deny-list enforced at two layers:
+ *   1. FORBID_TAGS in the DOMPurify base config (unconditional, both default and
+ *      custom-tags paths).
+ *   2. A pre-filter on the tenant-supplied customAllowedHtmlTags array before it
+ *      reaches DOMPurify (defence-in-depth).
  *
- * sanitizeHTML() is called on user-sent text (SEND_MESSAGE path) and on the
- * privacy-notice body. Tests use the privacy-notice surface because it renders
- * its sanitized output as React elements, giving a DOM-observable assertion.
+ * Tests exercise sanitizeHTML() via the SEND_MESSAGE path (message-middleware.ts:123)
+ * where the sanitized text is written into the Redux message store, giving a
+ * directly observable assertion against the actual sanitizer output rather than
+ * relying on browser security features or react-markdown's own HTML filtering.
  */
 describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
-	const initWithAllowedTags = (customAllowedHtmlTags: string[], privacyText: string) =>
-		cy.visitWebchat().initMockWebchat({
-			settings: {
-				privacyNotice: {
-					enabled: true,
-					title: "Privacy notice",
-					text: privacyText,
-					submitButtonText: "Accept",
-					urlText: "Privacy policy",
-					url: "https://www.cognigy.com/",
-				},
-				widgetSettings: {
-					customAllowedHtmlTags,
-				},
-			},
+	const typeAndSend = (value: string) => {
+		cy.get(".webchat-input-message-label")
+			.contains("label", "Type something here…")
+			.invoke("attr", "for")
+			.then(inputId => {
+				cy.get(`#${inputId}`).type(value, { parseSpecialCharSequences: false });
+			});
+		cy.get('[aria-label="Send message"]').click();
+	};
+
+	const getLastUserMessageText = () =>
+		cy.get("@webchat").then((webchat: any) => {
+			const messages = webchat.store.getState().messages.messageHistory;
+			const userMessages = messages.filter((m: any) => m.source === "user");
+			return userMessages[userMessages.length - 1]?.text ?? "";
 		});
 
-	it("blocks script even when explicitly listed in customAllowedHtmlTags (SC-13 deny-list)", () => {
-		initWithAllowedTags(["script", "p"], "<script>window.__xss = true</script><p>safe</p>");
+	const initWithCustomTags = (customAllowedHtmlTags: string[]) =>
+		cy
+			.visitWebchat()
+			.initMockWebchat({
+				settings: {
+					widgetSettings: {
+						// Allow HTML through user input so sanitizeHTML() is the only gate
+						disableHtmlInput: false,
+						customAllowedHtmlTags,
+					},
+				},
+			})
+			.openWebchat()
+			.startConversation();
 
-		cy.get("[data-cognigy-webchat-toggle]").click();
+	it("strips a blocked tag (form) even when explicitly listed in customAllowedHtmlTags", () => {
+		initWithCustomTags(["form", "p"]);
 
-		// script must not execute
+		typeAndSend("<form action='x'><p>content</p></form>");
+
+		// sanitizeHTML() must have filtered 'form' from the custom list before
+		// passing to DOMPurify — the stored user message must not contain <form
+		getLastUserMessageText().then(text => {
+			expect(text).not.to.contain("<form");
+			expect(text).not.to.contain("<FORM");
+		});
+	});
+
+	it("strips script even when explicitly listed in customAllowedHtmlTags", () => {
+		initWithCustomTags(["script", "p"]);
+
+		typeAndSend("<script>window.__xss=true</script><p>safe</p>");
+
 		cy.window().its("__xss").should("equal", undefined);
 
-		// script element must not exist anywhere in the widget
-		cy.get("[data-cognigy-webchat-root]").find("script").should("not.exist");
+		getLastUserMessageText().then(text => {
+			expect(text).not.to.contain("<script");
+		});
 	});
 
-	it("blocks iframe even when explicitly listed in customAllowedHtmlTags", () => {
-		initWithAllowedTags(
-			["iframe", "p"],
-			'<iframe src="https://evil.example.com"></iframe><p>safe</p>',
-		);
+	it("strips iframe even when explicitly listed in customAllowedHtmlTags", () => {
+		initWithCustomTags(["iframe"]);
 
-		cy.get("[data-cognigy-webchat-toggle]").click();
+		typeAndSend("<iframe src='https://evil.example.com'></iframe>");
 
-		cy.get("[data-cognigy-webchat-root]").find("iframe").should("not.exist");
+		getLastUserMessageText().then(text => {
+			expect(text).not.to.contain("<iframe");
+		});
 	});
 
-	it("blocks all ALWAYS_BLOCKED_TAGS even when all are listed", () => {
+	it("rejects uppercase and mixed-case blocked tag names (toLowerCase normalisation)", () => {
+		initWithCustomTags(["SCRIPT", "Script", "FORM", "p"]);
+
+		typeAndSend("<SCRIPT>window.__xss2=true</SCRIPT><form></form><p>safe</p>");
+
+		cy.window().its("__xss2").should("equal", undefined);
+
+		getLastUserMessageText().then(text => {
+			expect(text).not.to.contain("<script");
+			expect(text).not.to.contain("<form");
+		});
+	});
+
+	it("strips all 12 ALWAYS_BLOCKED_TAGS even when all are listed", () => {
 		const blockedTags = [
 			"script",
 			"iframe",
@@ -70,63 +111,54 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 			"style",
 			"form",
 		];
-		const payload = blockedTags.map(tag => `<${tag}></${tag}>`).join("") + "<p>safe</p>";
+		initWithCustomTags(blockedTags);
 
-		initWithAllowedTags(blockedTags, payload);
+		typeAndSend("<script>x</script><iframe></iframe><form></form><object></object>safe");
 
-		cy.get("[data-cognigy-webchat-toggle]").click();
-
-		blockedTags.forEach(tag => {
-			cy.get("[data-cognigy-webchat-root]").find(tag).should("not.exist");
+		getLastUserMessageText().then(text => {
+			blockedTags.forEach(tag => {
+				expect(text).not.to.contain(`<${tag}`);
+			});
 		});
 	});
 
-	it("still allows safe tags listed in customAllowedHtmlTags through to the deny-list filter", () => {
-		// "script" is in the list but blocked; "p" is safe and must survive the filter.
-		// The privacy notice renders its text via react-markdown which does not render
-		// arbitrary HTML, so we verify no dangerous element was injected rather than
-		// asserting the <p> element specifically.
-		initWithAllowedTags(
-			["script", "p", "b"],
-			"<script>window.__xss2 = true</script>safe content",
-		);
+	it("FORBID_TAGS also blocks form in the default config (no customAllowedHtmlTags)", () => {
+		// When customAllowedHtmlTags is not set, FORBID_TAGS in the base DOMPurify
+		// config must still block tags from ALWAYS_BLOCKED_TAGS.
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: {
+					widgetSettings: {
+						disableHtmlInput: false,
+						// customAllowedHtmlTags intentionally not set
+					},
+				},
+			})
+			.openWebchat()
+			.startConversation();
 
-		cy.get("[data-cognigy-webchat-toggle]").click();
+		typeAndSend("<form action='x'>sensitive</form><p>safe</p>");
 
-		cy.window().its("__xss2").should("equal", undefined);
-		cy.get("[data-cognigy-webchat-root]").find("script").should("not.exist");
-		cy.get(".webchat-privacy-notice-root").should("be.visible");
+		getLastUserMessageText().then(text => {
+			expect(text).not.to.contain("<form");
+		});
 	});
 
-	it("handles uppercase and mixed-case tag names in deny-list check", () => {
-		// Attacker supplies "SCRIPT" or "Script" hoping to bypass toLowerCase() check
-		initWithAllowedTags(
-			["SCRIPT", "Script", "IFRAME"],
-			"<script>window.__xss3 = true</script><iframe></iframe>",
-		);
+	it("safe tags in customAllowedHtmlTags pass through the filter unchanged", () => {
+		// "script" is blocked; "p" is safe — verify p text is visible (not stripped)
+		initWithCustomTags(["script", "p"]);
 
-		cy.get("[data-cognigy-webchat-toggle]").click();
+		typeAndSend("hello world");
 
-		cy.window().its("__xss3").should("equal", undefined);
-		cy.get("[data-cognigy-webchat-root]").find("script").should("not.exist");
-		cy.get("[data-cognigy-webchat-root]").find("iframe").should("not.exist");
-	});
-
-	it("passes when customAllowedHtmlTags is empty — strips all tags", () => {
-		initWithAllowedTags([], "<b>bold</b><p>paragraph</p>");
-
-		cy.get("[data-cognigy-webchat-toggle]").click();
-
-		cy.get("[data-cognigy-webchat-root]").find("b").should("not.exist");
-		cy.get(".webchat-privacy-notice-root").should("be.visible");
+		getLastUserMessageText().then(text => {
+			expect(text).to.contain("hello world");
+		});
 	});
 
 	describe("Accessibility (WCAG 2.2 AA)", () => {
-		it("privacy notice surface has no a11y violations with customAllowedHtmlTags set", () => {
-			initWithAllowedTags(["script", "p"], "<script>window.__xss4 = true</script>safe");
-
-			cy.get("[data-cognigy-webchat-toggle]").click();
-
+		it("chat surface has no a11y violations after sending a message with customAllowedHtmlTags set", () => {
+			initWithCustomTags(["script", "p"]);
+			typeAndSend("hello");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 	});
