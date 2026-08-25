@@ -61,10 +61,13 @@ describe("sanitize — DOMPurify allow-list hardening (WCH-SI10-001)", () => {
 			cy.get("[data-cognigy-webchat-root]").find("embed").should("not.exist");
 		});
 
-		it("strips <style> — was in allow-list, enables CSS injection and attribute exfiltration", () => {
-			typeAndSend("<style>body{background:url(https://attacker.example.com)}</style>");
-			cy.get("[data-cognigy-webchat-root]").find("style").should("not.exist");
-		});
+		it(
+			"strips <style> — was in allow-list, enables CSS injection and attribute exfiltration",
+			() => {
+				typeAndSend("<style>body{background:url(https://attacker.example.com)}</style>");
+				cy.get("[data-cognigy-webchat-root]").find("style").should("not.exist");
+			},
+		);
 
 		it("strips <meta> — was in allow-list, enables HTTP redirect and CSP bypass", () => {
 			typeAndSend('<meta http-equiv="refresh" content="0;url=https://attacker.example.com">');
@@ -87,10 +90,13 @@ describe("sanitize — DOMPurify allow-list hardening (WCH-SI10-001)", () => {
 			cy.get("[data-cognigy-webchat-root]").find("[formaction]").should("not.exist");
 		});
 
-		it("strips srcdoc attribute — inline HTML document in iframe is a direct XSS vector", () => {
-			typeAndSend('<iframe srcdoc="<script>alert(1)</script>">fallback</iframe>');
-			cy.get("[data-cognigy-webchat-root]").find("[srcdoc]").should("not.exist");
-		});
+		it(
+			"strips srcdoc attribute — inline HTML document in iframe is a direct XSS vector",
+			() => {
+				typeAndSend('<iframe srcdoc="<script>alert(1)</script>">fallback</iframe>');
+				cy.get("[data-cognigy-webchat-root]").find("[srcdoc]").should("not.exist");
+			},
+		);
 
 		it("strips style attribute — inline CSS enables exfiltration and UI redressing", () => {
 			typeAndSend('<span style="background:url(https://attacker.example.com)">text</span>');
