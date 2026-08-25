@@ -66,7 +66,8 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 
 		typeAndSend("<script>window.__xss=true</script><p>safe</p>");
 
-		cy.window().its("__xss").should("equal", undefined);
+		// cy.its() retries until the property exists — use .then() for absence checks
+		cy.window().then((win: any) => expect(win.__xss).to.be.undefined);
 
 		getLastUserMessageText().then(text => {
 			expect(text).not.to.contain("<script");
@@ -88,7 +89,7 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 
 		typeAndSend("<SCRIPT>window.__xss2=true</SCRIPT><form></form><p>safe</p>");
 
-		cy.window().its("__xss2").should("equal", undefined);
+		cy.window().then((win: any) => expect(win.__xss2).to.be.undefined);
 
 		getLastUserMessageText().then(text => {
 			expect(text).not.to.contain("<script");
