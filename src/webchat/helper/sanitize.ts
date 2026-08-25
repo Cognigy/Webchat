@@ -228,13 +228,35 @@ const config: Config = {
 	ALLOWED_ATTR: allowedHtmlAttributes,
 };
 
+// Hard deny-list: these tags are never permitted regardless of tenant configuration.
+// Allowing any of these opens XSS, clickjacking, HTML-injection, or data-exfiltration
+// vectors even when ALLOWED_ATTR is otherwise constrained.
+export const ALWAYS_BLOCKED_TAGS = new Set([
+	"script",
+	"iframe",
+	"object",
+	"embed",
+	"applet",
+	"frame",
+	"frameset",
+	"meta",
+	"base",
+	"link",
+	"style",
+	"form",
+]);
+
 export const sanitizeHTML = (text: string) => {
 	const customAllowedHtmlTags =
 		storeRef?.getState().config.settings.widgetSettings.customAllowedHtmlTags;
 
-	const configToUse = customAllowedHtmlTags
-		? { ...config, ALLOWED_TAGS: customAllowedHtmlTags }
-		: config;
+	let configToUse = config;
+	if (customAllowedHtmlTags) {
+		const safeTags = customAllowedHtmlTags.filter(
+			tag => !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase()),
+		);
+		configToUse = { ...config, ALLOWED_TAGS: safeTags };
+	}
 
 	return DOMPurify.sanitize(text, configToUse).toString();
 };
