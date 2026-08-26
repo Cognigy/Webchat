@@ -350,6 +350,42 @@ describe("Chat Options Screen", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
+		// CGY-4039: the TTS toggle must be a focusable, labelled switch that announces its state
+		it("TTS toggle is a labelled switch announcing its state", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, showTTSToggle: true },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+
+			cy.get(".webchat-chat-options-tts-option-toggle")
+				.should("have.attr", "role", "switch")
+				.and("have.attr", "type", "button")
+				.and("have.attr", "aria-checked", "false");
+
+			// programmatic label is the visible heading, linked via aria-labelledby
+			cy.get(".webchat-chat-options-tts-option-toggle").then($toggle => {
+				const labelId = $toggle.attr("aria-labelledby");
+				expect(labelId).to.be.a("string").and.not.be.empty;
+				cy.get(`[id="${labelId}"]`).should("contain.text", "Enable Text-to-Speech");
+			});
+
+			// the toggle is keyboard-focusable in the reading order after the heading
+			cy.get(".webchat-chat-options-tts-option-toggle").focus();
+			cy.focused().should("have.class", "webchat-chat-options-tts-option-toggle");
+
+			// state changes are exposed programmatically via aria-checked
+			cy.get(".webchat-chat-options-tts-option-toggle")
+				.click()
+				.should("have.attr", "aria-checked", "true");
+			cy.get(".webchat-chat-options-tts-option-toggle")
+				.click()
+				.should("have.attr", "aria-checked", "false");
+		});
+
 		it("delete-conversation confirmation modal has no detectable a11y violations", () => {
 			cy.initMockWebchat({
 				settings: {
