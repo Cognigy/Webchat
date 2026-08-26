@@ -355,7 +355,11 @@ describe("Chat Options Screen", () => {
 			cy.initMockWebchat({
 				settings: {
 					homeScreen: { enabled: false },
-					chatOptions: { enabled: true, showTTSToggle: true },
+					chatOptions: {
+						enabled: true,
+						showTTSToggle: true,
+						labelTTSToggle: "Enable text-to-speech output",
+					},
 				},
 			});
 			cy.openWebchat();
@@ -380,11 +384,11 @@ describe("Chat Options Screen", () => {
 				).to.equal(4);
 			});
 
-			// programmatic label is the visible heading, linked via aria-labelledby
+			// programmatic label is the visible heading (configured text), linked via aria-labelledby
 			cy.get(".webchat-chat-options-tts-option-toggle").then($toggle => {
 				const labelId = $toggle.attr("aria-labelledby");
 				expect(labelId).to.be.a("string").and.not.be.empty;
-				cy.get(`[id="${labelId}"]`).should("contain.text", "Enable Text-to-Speech");
+				cy.get(`[id="${labelId}"]`).should("contain.text", "Enable text-to-speech output");
 			});
 
 			// the toggle is keyboard-focusable in the reading order after the heading
