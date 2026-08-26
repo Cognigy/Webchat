@@ -378,7 +378,8 @@ describe("Chat Options Screen", () => {
 			cy.get(".webchat-modal-root")
 				.should("have.attr", "role", "dialog")
 				.should("have.attr", "aria-modal", "true");
-			// Focus lands on the safe default action (Cancel, via autoFocus)
+			// Focus lands on the safe default action (Cancel) — deferred via the
+			// Modal's initialFocusRef so screen readers announce the dialog first
 			cy.get(".webchat-delete-confirmation-cancel-button").should("have.focus");
 
 			// The trap wraps: Tab on the last focusable (Delete) returns to the
@@ -393,6 +394,8 @@ describe("Chat Options Screen", () => {
 
 			cy.focused().type("{esc}");
 			cy.get(".webchat-modal-root").should("not.exist");
+			// Focus returns to the trigger (SC 2.4.3)
+			cy.get(".webchat-delete-conversation-button").should("have.focus");
 		});
 	});
 });

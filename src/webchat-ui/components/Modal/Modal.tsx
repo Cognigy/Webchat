@@ -160,8 +160,9 @@ interface ModalProps extends Omit<
 		Record<`data-${string}`, unknown>;
 	/** When provided, focus moves on open to this element (falling back to
 	 *  the close button when its `current` is not rendered). When omitted,
-	 *  the modal does not manage initial focus (consumers may use autoFocus
-	 *  on a footer action instead, e.g. DeleteConfirmModal's Cancel). */
+	 *  the modal does not manage initial focus. Always prefer this over
+	 *  React's autoFocus on a child: autoFocus fires in the same task that
+	 *  inserts the dialog, which VoiceOver does not announce (CGY-3274). */
 	initialFocusRef?: React.RefObject<HTMLElement | null>;
 }
 
