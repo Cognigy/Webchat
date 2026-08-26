@@ -138,6 +138,28 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 
 		cy.get(".webchat-chat-history").contains('You said "Hi".');
 	});
+
+	it("does not attempt to connect on a network blip if the widget was never opened", () => {
+		cy.initWebchat({
+			settings: {
+				homeScreen: { enabled: true },
+			},
+		});
+
+		cy.openWebchat();
+
+		goOffline();
+		assertOffline();
+
+		goOnline();
+		assertOnline();
+
+		cy.getWebchat()
+			.its("store")
+			.invoke("getState")
+			.its("connection.hasAttemptedConnection")
+			.should("be.false");
+	});
 });
 
 /**

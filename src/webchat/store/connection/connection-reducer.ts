@@ -46,6 +46,7 @@ export const connection: Reducer<
 			return {
 				...state,
 				connected: action.connected,
+				hasAttemptedConnection: state.hasAttemptedConnection || action.connected,
 			};
 		}
 
