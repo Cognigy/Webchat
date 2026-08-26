@@ -1,7 +1,7 @@
 import { StoreState } from "../store/store";
 
 export const shouldReestablishConnection = (store: StoreState) =>
-	store?.autoInject?.isConnectedOnce;
+	store?.connection?.hasAttemptedConnection;
 
 type silentHandler = () => void;
 

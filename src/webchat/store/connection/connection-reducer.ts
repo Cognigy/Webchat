@@ -1,15 +1,18 @@
 import { Reducer } from "redux";
+import type { ConnectAction } from "./connection-middleware";
 
 export interface ConnectionState {
 	connected: boolean;
 	connecting: boolean;
 	reconnectionLimit: boolean;
+	hasAttemptedConnection: boolean;
 }
 
 const initialState: ConnectionState = {
 	connected: false,
 	connecting: false,
 	reconnectionLimit: false,
+	hasAttemptedConnection: false,
 };
 
 export const SET_CONNECTING = "SET_CONNECTING";
@@ -36,7 +39,7 @@ export type SetReconnectionLimitAction = ReturnType<typeof setReconnectionLimit>
 
 export const connection: Reducer<
 	ConnectionState,
-	SetConnectedAction | SetReconnectionLimitAction | SetConnectingAction
+	SetConnectedAction | SetReconnectionLimitAction | SetConnectingAction | ConnectAction
 > = (state = initialState, action) => {
 	switch (action.type) {
 		case "SET_CONNECTED": {
@@ -57,6 +60,15 @@ export const connection: Reducer<
 			return {
 				...state,
 				reconnectionLimit: action.reconnectionLimit,
+			};
+		}
+
+		case "CONNECT": {
+			if (state.hasAttemptedConnection) return state;
+
+			return {
+				...state,
+				hasAttemptedConnection: true,
 			};
 		}
 
