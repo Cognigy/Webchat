@@ -384,6 +384,14 @@ describe("Chat Options Screen", () => {
 			cy.get(".webchat-chat-options-tts-option-toggle")
 				.click()
 				.should("have.attr", "aria-checked", "false");
+
+			// clicking the visible label also activates the switch (native <label for>, technique H44)
+			cy.get(".webchat-chat-options-tts-option-label label").click();
+			cy.get(".webchat-chat-options-tts-option-toggle").should(
+				"have.attr",
+				"aria-checked",
+				"true",
+			);
 		});
 
 		it("delete-conversation confirmation modal has no detectable a11y violations", () => {

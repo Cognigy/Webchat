@@ -7,6 +7,7 @@ interface IToggleButtonProps {
 	isActive: boolean;
 	disabled?: boolean;
 	className?: string;
+	id?: string;
 	"aria-labelledby"?: string;
 }
 
@@ -84,13 +85,14 @@ const StyledToggleButtonInner = styled.div<IToggleStyleProps>(({ theme, isActive
 }));
 
 export const ToggleButton = (props: IToggleButtonProps) => {
-	const { onClick, isActive, className, disabled, "aria-labelledby": ariaLabelledBy } = props;
+	const { onClick, isActive, className, disabled, id, "aria-labelledby": ariaLabelledBy } = props;
 
 	const [isHovered, setIsHovered] = React.useState(false);
 
 	return (
 		<StyledToggleButtonOuter
 			type="button"
+			id={id}
 			className={classNames(className, "webchat-toggle-button-root", isActive && "active")}
 			onClick={onClick}
 			isActive={isActive}
