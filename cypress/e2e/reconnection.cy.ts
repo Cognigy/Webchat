@@ -103,6 +103,41 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 
 		cy.get(".webchat-chat-history").contains('You said "Hi".');
 	});
+
+	it("should send a Home Screen conversation-starter message after network reconnection", () => {
+		cy.initWebchat({
+			settings: {
+				homeScreen: {
+					enabled: true,
+					conversationStarters: {
+						enabled: true,
+						starters: [{ type: "postback", title: "Hi", payload: "Hi" }],
+					},
+				},
+				behavior: {
+					enableConnectionStatusIndicator: false,
+				},
+			},
+		});
+
+		// Open Webchat - stay on the Home Screen, never connect while online.
+		cy.openWebchat();
+
+		// Go offline before the very first connection attempt.
+		goOffline();
+		assertOffline();
+
+		// Send a message via a Home Screen conversation-starter button.
+		cy.get("button").contains("Hi").click();
+		cy.get(".webchat-chat-history").contains("Hi");
+
+		// Come back online and expect the reconnection + buffered send to
+		// go through, same as it does from the main chat screen.
+		goOnline();
+		assertOnline();
+
+		cy.get(".webchat-chat-history").contains('You said "Hi".');
+	});
 });
 
 /**
