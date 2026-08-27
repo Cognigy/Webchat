@@ -8,7 +8,7 @@ jobs:
     # since dev tooling is not part of the published package and clearing the full tree
     # would mean major-upgrading Cypress and the webpack plugins.
     audit:
-        name: npm audit (production dependencies)
+        name: Audit Production Dependencies
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
