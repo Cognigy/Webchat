@@ -139,7 +139,7 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 		cy.get(".webchat-chat-history").contains('You said "Hi".');
 	});
 
-	it("does not attempt to connect on a network blip if the widget was never opened", () => {
+	it("does not attempt to connect on a network blip while sitting on the Home Screen", () => {
 		cy.initWebchat({
 			settings: {
 				homeScreen: { enabled: true },
@@ -148,17 +148,68 @@ describe("Reconnection", { browser: "!firefox" }, () => {
 
 		cy.openWebchat();
 
+		const assertNeverConnected = () =>
+			cy
+				.getWebchat()
+				.its("store")
+				.invoke("getState")
+				.then(state => {
+					expect(state.connection.hasAttemptedConnection, "hasAttemptedConnection").to.be
+						.false;
+					expect(state.connection.connected, "connected").to.be.false;
+					expect(state.connection.connecting, "connecting").to.be.false;
+				});
+
+		// Lock in the scenario: staying on the Home Screen must not have
+		// triggered a connection attempt, otherwise the offline/online cycle
+		// below would no longer exercise the watchdog gate at all.
+		assertNeverConnected();
+
 		goOffline();
 		assertOffline();
 
 		goOnline();
 		assertOnline();
 
+		assertNeverConnected();
+	});
+
+	it("arms the latch when a previous conversation is resumed", () => {
+		cy.initWebchat({
+			settings: {
+				homeScreen: { enabled: true },
+			},
+		});
+
+		cy.openWebchat();
+
 		cy.getWebchat()
 			.its("store")
 			.invoke("getState")
 			.its("connection.hasAttemptedConnection")
 			.should("be.false");
+
+		goOffline();
+		assertOffline();
+
+		// Resuming a previous conversation (ConversationsList -> onSwitchSession
+		// -> client.switchSession()) dispatches SWITCH_SESSION directly,
+		// bypassing showChatScreen()/CONNECT entirely - it must still arm the
+		// latch even though this connect attempt is offline and fails.
+		// Dispatched directly rather than driven through two full sessions of
+		// UI navigation, which is exactly what the click ends up doing anyway.
+		cy.getWebchat().then((webchat: any) => {
+			webchat.store.dispatch({ type: "SWITCH_SESSION", sessionId: "resumed-session" });
+		});
+
+		cy.getWebchat()
+			.its("store")
+			.invoke("getState")
+			.its("connection.hasAttemptedConnection")
+			.should("be.true");
+
+		goOnline();
+		assertOnline();
 	});
 });
 

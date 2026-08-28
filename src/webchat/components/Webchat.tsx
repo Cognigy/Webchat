@@ -15,10 +15,8 @@ import {
 	setShowChatOptionsScreen,
 } from "../store/ui/ui-reducer";
 import { loadConfig } from "../store/config/config-middleware";
-import {
-	connect as connectAction,
-	disconnect as disconnectAction,
-} from "../store/connection/connection-middleware";
+import { disconnect as disconnectAction } from "../store/connection/connection-middleware";
+import { connect as connectAction } from "../store/connection/connection-reducer";
 import { EventEmitter } from "events";
 import { SocketClient } from "@cognigy/socket-client";
 import { getEndpointBaseUrl, getEndpointUrlToken } from "../helper/endpoint";
@@ -30,7 +28,7 @@ import { createNotification } from "../../webchat-ui/components/presentational/N
 import { getStorage } from "../helper/storage";
 import { hasAcceptedTermsInStorage } from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
-import { switchSession } from "../store/previous-conversations/previous-conversations-middleware";
+import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { clearMessages } from "../store/messages/message-reducer";
 
 export interface WebchatProps extends FromProps {
