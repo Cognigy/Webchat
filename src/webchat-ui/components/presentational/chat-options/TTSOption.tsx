@@ -13,6 +13,11 @@ const TTSOptionRoot = styled.div(() => ({
 	height: 50,
 }));
 
+// Native <label for> so clicking the visible text also activates the switch (WCAG technique H44)
+const ToggleLabel = styled.label(() => ({
+	cursor: "pointer",
+}));
+
 interface ITTSOption {
 	config: IWebchatConfig;
 	onToggle: () => void;
@@ -24,6 +29,7 @@ const TTSOption = (props: ITTSOption) => {
 	const isActive = useSelector(state => state.ui.ttsActive);
 
 	const labelId = React.useId();
+	const toggleId = React.useId();
 	const label = config.settings.chatOptions.labelTTSToggle || "Enable Text-to-Speech";
 
 	return (
@@ -34,9 +40,10 @@ const TTSOption = (props: ITTSOption) => {
 				margin={0}
 				className="webchat-chat-options-tts-option-label"
 			>
-				{label}
+				<ToggleLabel htmlFor={toggleId}>{label}</ToggleLabel>
 			</Typography>
 			<ToggleButton
+				id={toggleId}
 				onClick={onToggle}
 				className="webchat-chat-options-tts-option-toggle"
 				isActive={isActive}

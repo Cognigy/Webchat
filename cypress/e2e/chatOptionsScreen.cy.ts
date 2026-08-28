@@ -350,6 +350,85 @@ describe("Chat Options Screen", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
+		// CGY-4039: the TTS toggle must be a focusable, labelled switch that announces its state
+		it("TTS toggle is a labelled switch announcing its state", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: {
+						enabled: true,
+						showTTSToggle: true,
+						labelTTSToggle: "Enable text-to-speech output",
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+
+			// a native <button> guarantees Space/Enter activation in every browser
+			cy.get(".webchat-chat-options-tts-option-toggle")
+				.should("match", "button")
+				.and("have.attr", "role", "switch")
+				.and("have.attr", "type", "button")
+				.and("have.attr", "aria-checked", "false");
+
+			// the heading precedes the switch in DOM order, so reading order and tab order
+			// match the visual order (SC 1.3.2)
+			cy.get(".webchat-tts-option-root").then($root => {
+				const heading = $root.find(".webchat-chat-options-tts-option-label")[0];
+				const toggle = $root.find(".webchat-chat-options-tts-option-toggle")[0];
+				// 4 = Node.DOCUMENT_POSITION_FOLLOWING
+				expect(
+					heading.compareDocumentPosition(toggle) & 4,
+					"toggle follows its heading in DOM order",
+				).to.equal(4);
+			});
+
+			// programmatic label is the visible heading (configured text), linked via aria-labelledby
+			cy.get(".webchat-chat-options-tts-option-toggle").then($toggle => {
+				const labelId = $toggle.attr("aria-labelledby");
+				expect(labelId).to.be.a("string").and.not.be.empty;
+				cy.get(`[id="${labelId}"]`).should("contain.text", "Enable text-to-speech output");
+			});
+
+			// the toggle is keyboard-focusable in the reading order after the heading
+			cy.get(".webchat-chat-options-tts-option-toggle").focus();
+			cy.focused().should("have.class", "webchat-chat-options-tts-option-toggle");
+
+			// keyboard activation with real key events (cypress-real-events is CDP-based,
+			// so Chromium only — the Firefox run relies on the native-<button> assertion above)
+			if (Cypress.isBrowser({ family: "chromium" })) {
+				cy.realPress(" ");
+				cy.get(".webchat-chat-options-tts-option-toggle").should(
+					"have.attr",
+					"aria-checked",
+					"true",
+				);
+				cy.realPress("Enter");
+				cy.get(".webchat-chat-options-tts-option-toggle").should(
+					"have.attr",
+					"aria-checked",
+					"false",
+				);
+			}
+
+			// state changes are exposed programmatically via aria-checked
+			cy.get(".webchat-chat-options-tts-option-toggle")
+				.click()
+				.should("have.attr", "aria-checked", "true");
+			cy.get(".webchat-chat-options-tts-option-toggle")
+				.click()
+				.should("have.attr", "aria-checked", "false");
+
+			// clicking the visible label also activates the switch (native <label for>, technique H44)
+			cy.get(".webchat-chat-options-tts-option-label label").click();
+			cy.get(".webchat-chat-options-tts-option-toggle").should(
+				"have.attr",
+				"aria-checked",
+				"true",
+			);
+		});
+
 		it("delete-conversation confirmation modal has no detectable a11y violations", () => {
 			cy.initMockWebchat({
 				settings: {
@@ -378,7 +457,8 @@ describe("Chat Options Screen", () => {
 			cy.get(".webchat-modal-root")
 				.should("have.attr", "role", "dialog")
 				.should("have.attr", "aria-modal", "true");
-			// Focus lands on the safe default action (Cancel, via autoFocus)
+			// Focus lands on the safe default action (Cancel) — deferred via the
+			// Modal's initialFocusRef so screen readers announce the dialog first
 			cy.get(".webchat-delete-confirmation-cancel-button").should("have.focus");
 
 			// The trap wraps: Tab on the last focusable (Delete) returns to the
@@ -393,6 +473,8 @@ describe("Chat Options Screen", () => {
 
 			cy.focused().type("{esc}");
 			cy.get(".webchat-modal-root").should("not.exist");
+			// Focus returns to the trigger (SC 2.4.3)
+			cy.get(".webchat-delete-conversation-button").should("have.focus");
 		});
 	});
 });

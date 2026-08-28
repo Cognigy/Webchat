@@ -51,19 +51,22 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 		confirmButtonBackground,
 	} = props;
 
+	// Focus the safe default (Cancel) action via the Modal's deferred focus
+	// path, not React's autoFocus: autoFocus fires in the same task that
+	// inserts the dialog subtree, and VoiceOver then reads a stale
+	// accessibility tree — the dialog role/title and the focused button are
+	// never announced (CGY-3274). The deferral lets the tree settle first.
+	const cancelButtonRef = React.useRef<HTMLButtonElement>(null);
+
 	return (
 		<Modal
 			footer={
 				<>
 					<CancelButton
+						ref={cancelButtonRef}
 						className="webchat-delete-confirmation-cancel-button"
 						onClick={() => onClose(false)}
 						background={cancelButtonBackground}
-						// Intentional: move focus to the safe default (Cancel) action
-						// when this confirmation modal opens — expected dialog focus
-						// management, not an unexpected focus shift.
-						// eslint-disable-next-line jsx-a11y/no-autofocus
-						autoFocus
 					>
 						{cancelText}
 					</CancelButton>
@@ -79,6 +82,7 @@ const DeleteConfirmModal = (props: DeleteConfirmModalProps) => {
 			isOpen={isOpen}
 			onClose={onClose}
 			title={title}
+			initialFocusRef={cancelButtonRef}
 		>
 			{children}
 		</Modal>
