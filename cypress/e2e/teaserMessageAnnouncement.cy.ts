@@ -102,6 +102,28 @@ describe("Teaser Message Announcement", () => {
 		cy.get(regionSelector).should("contain.text", "Neue Nachricht: engagement message text");
 	});
 
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("closed webchat with a visible, announced teaser has no detectable a11y violations", () => {
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					teaserMessage: {
+						text: "engagement message text",
+						teaserMessageDelay: 1,
+					},
+					unreadMessages: {
+						enablePreview: false,
+					},
+				},
+			});
+
+			// Run axe only after the announcement is committed, so it sees the
+			// populated live region too.
+			cy.get(".webchat-teaser-message-bubble").should("be.visible");
+			cy.get(regionSelector).should("contain.text", "engagement message text");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
+
 	it("clears the announcement silently when the teaser is dismissed", () => {
 		cy.visitWebchat().initMockWebchat({
 			settings: {
