@@ -10,7 +10,10 @@ describe("Teaser Message Announcement", () => {
 			settings: {
 				teaserMessage: {
 					text: "engagement message text",
-					teaserMessageDelay: 1000,
+					// Far beyond the test's lifetime, so the teaser can never
+					// appear mid-assertion however slow init is: this test pins
+					// the region existing BEFORE any teaser content.
+					teaserMessageDelay: 600_000,
 				},
 				unreadMessages: {
 					enablePreview: false,
@@ -39,7 +42,7 @@ describe("Teaser Message Announcement", () => {
 			},
 		});
 
-		cy.contains("engagement message text", { timeout: 500 }).should("be.visible");
+		cy.contains("engagement message text").should("be.visible");
 		cy.get(regionSelector).should(
 			"contain.text",
 			"New message preview: engagement message text",
