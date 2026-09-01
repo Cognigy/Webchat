@@ -51,6 +51,8 @@ A live region only announces **changes** to a node that is already in the access
 
 Both `<StatusLiveRegion>` and `<ScreenReaderLiveRegion>` (chat messages) render through the shared `<SrOnlyLiveRegion>` primitive, which clears announced text after 15s (silently — removals aren't announced) so users browsing the window later don't read stale status text. They stay **separate DOM regions** on purpose: one `aria-atomic` region holds one message, so merging them would let a toast overwrite a pending message announcement.
 
+The incoming **typing indicator** (bot or human agent) is visual-only — three animated dots with no text — so it announces through its own pre-mounted region (`#webchatTypingIndicatorLiveRegion`, `role="status"`, CGY-3146), a sibling of the indicator inside `history/TypingIndicator.tsx` (never a child: the idle indicator is kept in the DOM with `visibility: hidden`, which would drop a nested region from the accessibility tree). It announces once per sustained typing session — "A reply is being typed" (`ariaLabels.typingIndicator`) — after a 2s leading delay, so a short burst that resolves into a quick reply stays silent and the message's own announcement takes its place. Typing-**stopped** is deliberately not announced (the arriving message, or nothing, covers it); the text is removed silently when typing ends so it can't be read as stale status later.
+
 ### Screen-transition pattern (SC 1.3.2)
 
 Screens animated with `CSSTransition` stay mounted during their 500ms exit, so a leaving screen can be announced over the arriving one. Two measures are needed (see `isRegularLayoutActiveView` in `src/webchat-ui/components/WebchatUI.tsx` and the `<FreezeOnExit>` component in `src/webchat-ui/components/presentational/FreezeOnExit.tsx`):
