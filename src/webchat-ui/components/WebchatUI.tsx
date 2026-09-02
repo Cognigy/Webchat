@@ -2070,7 +2070,7 @@ export class WebchatUI extends React.PureComponent<
 						}
 						disableBorder={config?.settings?.layout?.disableBotOutputBorder}
 						announcementText={
-							config.settings.customTranslations?.ariaLabels?.typingIndicator
+							config?.settings?.customTranslations?.ariaLabels?.typingIndicator
 						}
 					/>
 				)}

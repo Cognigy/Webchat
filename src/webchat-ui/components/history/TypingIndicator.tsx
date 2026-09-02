@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { TypingIndicator as ComponentsTypingIndicator } from "@cognigy/chat-components";
 
@@ -69,6 +69,12 @@ const TypingIndicator: FC<ITypingIndicatorProps> = props => {
 		};
 	}, [active]);
 
+	// Read at fire time through a ref so a translations/config update while
+	// typing is visible neither restarts the delay nor emits a duplicate
+	// announcement mid-session.
+	const announcementTextRef = useRef(announcementText);
+	announcementTextRef.current = announcementText;
+
 	// Announce a sustained typing session once (WCAG 4.1.3 Status Messages).
 	// Keyed off the debounced "isVisible" so on/off flapping within the hide
 	// tail neither restarts the delay nor re-announces. When typing ends, the
@@ -84,12 +90,12 @@ const TypingIndicator: FC<ITypingIndicatorProps> = props => {
 		const timeout = setTimeout(() => {
 			setAnnouncement({
 				id: `typing-${++announcementCounter}`,
-				text: announcementText ?? "A reply is being typed",
+				text: announcementTextRef.current ?? "A reply is being typed",
 			});
 		}, ANNOUNCE_DELAY_MS);
 
 		return () => clearTimeout(timeout);
-	}, [isVisible, announcementText]);
+	}, [isVisible]);
 
 	return (
 		<>
