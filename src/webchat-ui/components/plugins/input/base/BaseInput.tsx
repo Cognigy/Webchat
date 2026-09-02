@@ -377,7 +377,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.handleCancelSpeech();
 		}
 
-		if (!text && !fileList) return;
+		// `fileList` is always an array (it defaults to `[]`), so emptiness has to be
+		// checked by length: `!fileList` would never be true and an empty input would
+		// still submit on Enter, which bypasses the disabled Send button.
+		if (!text && !fileList?.length) return;
 
 		const attachments: IUploadFileMetaData[] = [];
 		fileList.forEach(fileItem => {
