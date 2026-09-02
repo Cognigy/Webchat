@@ -760,6 +760,11 @@ interface IWebchatSettings {
 		cancel?: string;
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
+		// Speech-to-text failure messages (shown as a notification)
+		speech_recognition_not_allowed?: string;
+		speech_recognition_no_microphone?: string;
+		speech_recognition_no_speech?: string;
+		speech_recognition_error?: string;
 		ariaLabels?: {
 			chatRegion?: string;
 			scrollToBottom?: string;

@@ -14,6 +14,14 @@ import MediaQuery from "react-responsive";
 import PersistentMenu from "../menu/PersistentMenu";
 import FloatingLabel from "./FloatingLabel";
 import { IPersistentMenuItem } from "../../../../../common/interfaces/webchat-config";
+import { createErrorNotification } from "../../../presentational/Notifications";
+import {
+	createSpeechRecognition,
+	getSpeechRecognitionErrorMessage,
+	FIRST_TRANSCRIPT_TIMEOUT_MS,
+	TRANSCRIPT_IDLE_TIMEOUT_MS,
+	SpeechRecognitionFailure,
+} from "../../../../utils/speech-recognition";
 
 const InputWrapper = styled.div({
 	display: "flex",
@@ -164,9 +172,8 @@ export interface TextInputState {
 }
 
 interface ISpeechInputState {
-	speechRecognition: SpeechRecognition;
+	/** Transcript the engine has not finalized yet, appended after `text`. */
 	speechResult: string;
-	isFinalResult: boolean;
 }
 
 interface IPersistentMenuState {
@@ -184,7 +191,6 @@ interface IBaseInputProps extends InputComponentProps {
 	fileList: IFile[];
 	onSetFileList: (fileList: IFile[]) => void;
 	onAddFilesToList: (fileList: File[]) => void;
-	webchatSpeechTimeoutRef?: React.RefObject<NodeJS.Timeout>;
 }
 
 declare global {
@@ -193,57 +199,56 @@ declare global {
 	}
 }
 
-const getSpeechRecognition = (): SpeechRecognition | null => {
-	try {
-		return new SpeechRecognition();
-	} catch (e) {}
-
-	try {
-		return new webkitSpeechRecognition() as SpeechRecognition;
-	} catch (e) {}
-
-	return null;
-};
-
 const combineStrings = (str1: string, str2: string) => {
 	if (!str1) return str2;
 	if (!str2) return str1;
 	return str1 + " " + str2;
 };
 
-let webchatSpeechTimeoutRef: NodeJS.Timeout | null = null;
-
 export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputState> {
 	constructor(props: IBaseInputProps) {
 		super(props);
 
-		const speechRecognition = getSpeechRecognition();
-
-		if (speechRecognition) {
-			speechRecognition.continuous = true;
-			speechRecognition.interimResults = true;
-			speechRecognition.onresult = this.handleSpeechResult;
-
-			if (props.config.settings.widgetSettings.STTLanguage) {
-				speechRecognition.lang = props.config.settings.widgetSettings.STTLanguage;
-			}
-		}
-
 		this.state = {
 			text: "",
 
-			speechRecognition,
 			speechResult: "",
-			isFinalResult: false,
 			isMenuOpen: false,
 			selectionStart: 0,
 			selectionEnd: 0,
 		} as IBaseInputState;
+
+		this.configureSpeechRecognition();
 	}
 
 	inputRef = React.createRef<HTMLTextAreaElement | HTMLInputElement>();
 	menuRef = React.createRef<HTMLDivElement>();
 	fileInputRef = React.createRef<HTMLInputElement>();
+
+	/**
+	 * The live recognizer, or null where the browser has no Web Speech API.
+	 *
+	 * Deliberately NOT component state: it is a mutable host object whose
+	 * identity never changes, and keeping it in state invited
+	 * `setState({ speechRecognition: { ...recognizer, lang } })` to apply the
+	 * language. Native properties live on the prototype, so that spread
+	 * copied nothing but `lang` — `start`, `stop` and every event handler
+	 * disappeared, and the next click threw "start is not a function"
+	 * (CGY-37417).
+	 */
+	private speechRecognition: SpeechRecognition | null = createSpeechRecognition();
+
+	/** The warm-up or idle stop timer, whichever phase recognition is in. */
+	private speechTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	/** Whether the engine has produced any transcript since `start()`. */
+	private hasTranscript = false;
+
+	/**
+	 * Set while we are the ones ending recognition, so `onend` can tell an
+	 * engine-initiated end (which has to reconcile the UI) from our own.
+	 */
+	private endingDeliberately = false;
 
 	componentDidMount(): void {
 		// Global handler to modify the input text
@@ -258,69 +263,181 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	}
 
 	componentDidUpdate() {
-		const sttLanguage = this.props.config.settings.widgetSettings.STTLanguage;
-
-		if (
-			this.state.speechRecognition &&
-			sttLanguage &&
-			this.state.speechRecognition.lang !== sttLanguage
-		) {
-			this.setState({
-				speechRecognition: {
-					...this.state.speechRecognition,
-					lang: sttLanguage,
-				},
-			});
-		}
+		this.applySTTLanguage();
 	}
 
 	componentWillUnmount(): void {
-		if (webchatSpeechTimeoutRef) {
-			clearTimeout(webchatSpeechTimeoutRef);
+		this.clearSpeechTimeout();
+
+		// The input unmounts on every screen change (back to the home screen,
+		// into the previous-conversations list). Without releasing the engine
+		// here the microphone stays open — browser recording indicator and
+		// all — with nothing left to receive the transcript.
+		if (this.speechRecognition) {
+			this.endingDeliberately = true;
+			this.speechRecognition.onresult = null;
+			this.speechRecognition.onerror = null;
+			this.speechRecognition.onend = null;
+
+			try {
+				// abort(), not stop(): a final transcript can no longer be
+				// delivered anywhere, so don't wait for one.
+				this.speechRecognition.abort();
+			} catch {
+				// Never started, or already finished.
+			}
 		}
+
+		// `sttActive` lives in the store, which outlives this component —
+		// leaving it set would show an active mic button on the next visit to
+		// the chat screen with nothing actually listening.
+		if (this.props.sttActive) this.props.onSetSTTActive(false);
+	}
+
+	private configureSpeechRecognition() {
+		const recognition = this.speechRecognition;
+		if (!recognition) return;
+
+		recognition.continuous = true;
+		recognition.interimResults = true;
+		recognition.onresult = this.handleSpeechResult;
+		recognition.onerror = this.handleSpeechError;
+		recognition.onend = this.handleSpeechEnd;
+
+		this.applySTTLanguage();
+	}
+
+	/**
+	 * Applies the configured STT language to the live recognizer.
+	 *
+	 * Runs on every update because the endpoint config is fetched
+	 * asynchronously, so `STTLanguage` is typically absent when this
+	 * component first mounts. While it is unset we leave the engine's own
+	 * default (which follows the page's `lang`) rather than forcing a locale,
+	 * so an unconfigured German page keeps transcribing German.
+	 */
+	private applySTTLanguage() {
+		const sttLanguage = this.props.config.settings.widgetSettings.STTLanguage;
+
+		if (this.speechRecognition && sttLanguage && this.speechRecognition.lang !== sttLanguage) {
+			this.speechRecognition.lang = sttLanguage;
+		}
+	}
+
+	private clearSpeechTimeout() {
+		if (this.speechTimeout) {
+			clearTimeout(this.speechTimeout);
+			this.speechTimeout = null;
+		}
+	}
+
+	/**
+	 * Arms the single stop timer. `delay` is the warm-up budget before the
+	 * first transcript and the idle budget after it — the two differ by an
+	 * order of magnitude, see the constants' rationale.
+	 */
+	private armSpeechTimeout(delay: number) {
+		this.clearSpeechTimeout();
+
+		this.speechTimeout = setTimeout(() => {
+			this.speechTimeout = null;
+			const recognizedNothing = !this.hasTranscript;
+
+			this.handleCancelSpeech();
+
+			// The whole warm-up budget spent without a single word: the
+			// engine never reached its speech service, or the user never
+			// spoke. Either way, say so — this path used to stop the
+			// microphone silently (CGY-37417).
+			if (recognizedNothing) this.notifySpeechFailure("no-transcript");
+		}, delay);
+	}
+
+	private notifySpeechFailure(failure: SpeechRecognitionFailure) {
+		createErrorNotification(
+			getSpeechRecognitionErrorMessage(
+				failure,
+				this.props.config.settings.customTranslations,
+			),
+		);
 	}
 
 	handleSpeechResult = (e: SpeechRecognitionEvent) => {
 		const result = e.results[e.resultIndex];
-		const { isFinal } = result;
 		const { transcript } = result[0];
 
-		// Reset the 3s timeout for active speech recognition
-		if (webchatSpeechTimeoutRef) {
-			clearTimeout(webchatSpeechTimeoutRef);
-		}
-		webchatSpeechTimeoutRef = setTimeout(() => {
-			this.handleCancelSpeech();
-		}, 3000);
+		// Edge emits placeholder results — `isFinal` with an empty transcript
+		// — when speech starts and again on stop(); Chrome never does.
+		// Committing one would wipe the interim transcript on screen, and
+		// counting one as "the engine is producing output" would start the
+		// short idle countdown seconds before the first real word arrives.
+		if (!transcript) return;
 
-		this.setState({
-			speechResult: transcript,
-			isFinalResult: isFinal,
-		});
+		this.hasTranscript = true;
 
-		// only send messages that are not 'interim'
-		if (isFinal) {
-			this.setState({
+		// Only while listening: stop() lets one last result land afterwards,
+		// and re-arming then would stop recognition and steal focus back to
+		// the input seconds after the user had moved on.
+		if (this.props.sttActive) this.armSpeechTimeout(TRANSCRIPT_IDLE_TIMEOUT_MS);
+
+		// Interim results are shown next to the typed text but not committed;
+		// only a final result becomes part of the message.
+		if (result.isFinal) {
+			this.setState(({ text }) => ({
 				speechResult: "",
-				text: combineStrings(this.state.text, transcript),
-			});
+				text: combineStrings(text, transcript),
+			}));
+			return;
 		}
+
+		this.setState({ speechResult: transcript });
+	};
+
+	handleSpeechError = (event: SpeechRecognitionErrorEvent) => {
+		// `aborted` is just the engine acknowledging our own stop()/abort().
+		if (event.error === "aborted") return;
+
+		if (event.error === "language-not-supported" || event.error === "bad-grammar") {
+			// Misconfiguration the end user cannot act on: they get the
+			// generic message, the operator gets the detail.
+			console.warn(
+				`[cognigy-webchat] speech recognition rejected the configured STT language "${this.speechRecognition?.lang}" (${event.error})`,
+			);
+		}
+
+		this.handleCancelSpeech();
+		this.notifySpeechFailure(event.error);
+	};
+
+	handleSpeechEnd = () => {
+		if (this.endingDeliberately) {
+			this.endingDeliberately = false;
+			return;
+		}
+
+		// The engine ended on its own — its service dropped the connection,
+		// or it decided the utterance was over despite `continuous`.
+		// Reconcile, so the button can never claim to be listening when
+		// nothing is (SC 4.1.2).
+		if (this.props.sttActive) this.handleCancelSpeech();
 	};
 
 	handleCancelSpeech = () => {
-		const { speechRecognition } = this.state;
-		speechRecognition.stop();
+		this.clearSpeechTimeout();
+		this.endingDeliberately = true;
 
-		if (webchatSpeechTimeoutRef) {
-			clearTimeout(webchatSpeechTimeoutRef);
+		try {
+			// stop(), not abort(): the engine is allowed to deliver the final
+			// transcript of what it already heard, and handleSpeechResult
+			// still commits it after the button has gone inactive.
+			this.speechRecognition?.stop();
+		} catch {
+			// Not currently running.
 		}
 
 		this.props.onSetSTTActive(false);
 
-		this.setState({
-			speechResult: "",
-			isFinalResult: false,
-		});
+		this.setState({ speechResult: "" });
 
 		if (this.inputRef.current) {
 			this.inputRef.current.focus();
@@ -328,29 +445,37 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	};
 
 	isSTTSupported() {
-		return !!this.state.speechRecognition;
+		return !!this.speechRecognition;
 	}
 
-	toggleSTT = e => {
+	toggleSTT = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
-		const { speechRecognition } = this.state;
-		const { sttActive, onSetSTTActive } = this.props;
 
-		if (sttActive) {
+		if (this.props.sttActive) {
 			this.handleCancelSpeech();
-		} else {
-			speechRecognition.start();
-
-			if (webchatSpeechTimeoutRef) {
-				clearTimeout(webchatSpeechTimeoutRef);
-			}
-
-			webchatSpeechTimeoutRef = setTimeout(() => {
-				this.handleCancelSpeech();
-			}, 3000);
+			return;
 		}
 
-		onSetSTTActive(!sttActive);
+		const recognition = this.speechRecognition;
+		if (!recognition) return;
+
+		this.hasTranscript = false;
+		this.endingDeliberately = false;
+
+		try {
+			recognition.start();
+		} catch (error) {
+			// InvalidStateError only means it is already running, which is
+			// harmless. Anything else and the engine never started listening,
+			// so the button must not claim that it did.
+			if ((error as DOMException)?.name !== "InvalidStateError") {
+				this.notifySpeechFailure("start-failed");
+				return;
+			}
+		}
+
+		this.armSpeechTimeout(FIRST_TRANSCRIPT_TIMEOUT_MS);
+		this.props.onSetSTTActive(true);
 	};
 
 	handleChangeTextValue = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -370,9 +495,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		let messageText = text;
 
 		if (sttActive) {
-			if (text && speechResult) {
-				messageText = text + " " + speechResult;
-			}
+			// Send exactly what the field shows. The old condition required
+			// BOTH parts, so submitting a message that was purely dictated
+			// (no typed text yet) sent an empty string.
+			messageText = combineStrings(text, speechResult);
 
 			this.handleCancelSpeech();
 		}
@@ -604,6 +730,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 								{props.config.settings.behavior.enableSTT && (
 									<SpeechButton
+										type="button"
 										className={classnames(
 											"webchat-input-button-speech",
 											sttActive && "webchat-input-button-speech-active",
@@ -612,6 +739,11 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 											customTranslations?.ariaLabels?.speechToText ??
 											"Speech to text"
 										}
+										// APG toggle button: the "listening"
+										// state is otherwise conveyed only by
+										// the animated background, which is
+										// aria-hidden (SC 4.1.2).
+										aria-pressed={sttActive}
 										id="webchatInputMessageSpeechButton"
 										onClick={this.toggleSTT}
 										disabled={!this.isSTTSupported()}
