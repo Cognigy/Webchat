@@ -503,7 +503,11 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.handleCancelSpeech();
 		}
 
-		if (!text && !fileList) return;
+		// `messageText`, not `text`: a dictation the user never typed a word of
+		// must still submit. (The `fileList` half of this guard is ineffective
+		// — it is always an array, so this never returns early today — which is
+		// CGY-37418, fixed separately.)
+		if (!messageText && !fileList) return;
 
 		const attachments: IUploadFileMetaData[] = [];
 		fileList.forEach(fileItem => {

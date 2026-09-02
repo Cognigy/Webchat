@@ -199,6 +199,21 @@ describe("Speech to text", () => {
 		messageInput().should("have.value", "Question: how do I reset my password");
 	});
 
+	// The submit guard tests `messageText`, not `text`. Testing `text` drops a
+	// dictation that the user never typed a word of, as soon as that guard
+	// becomes effective (its file-list half is ineffective today — CGY-37418).
+	it("submits a dictation the engine has not finalized yet", () => {
+		openWebchatWithSTT();
+
+		micButton().click();
+		recognizer().then(rec => rec.emitInterim("send this by voice"));
+		messageInput().should("have.value", "send this by voice");
+
+		messageInput().type("{enter}");
+
+		cy.get(".webchat-chat-history").contains("send this by voice");
+	});
+
 	it("stops listening after a pause once transcription is flowing", () => {
 		openWebchatWithSTT();
 
