@@ -11,7 +11,7 @@ import { clearMessages } from "../../../../webchat/store/messages/message-reduce
 import DeleteConfirmModal, {
 	DeleteButton as ConfirmDeleteButton,
 } from "../../Modal/DeleteConfirmModal";
-import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-middleware";
+import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getOptionsKey } from "../../../../webchat/store/options/options";
 
 const Container = styled.div({
