@@ -250,6 +250,21 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	 */
 	private endingDeliberately = false;
 
+	/**
+	 * Set on the submit path, where a transcript arriving afterwards belongs
+	 * to the message that was already sent. `abort()` should prevent one, but
+	 * a result already dispatched can still be delivered, so the handler
+	 * checks this too.
+	 */
+	private discardResults = false;
+
+	/**
+	 * A start() the engine rejected because a previous stop() had not reached
+	 * `onend` yet. Retried once from `onend`, so a stop-then-start inside that
+	 * window isn't silently dropped.
+	 */
+	private restartPending = false;
+
 	componentDidMount(): void {
 		// Global handler to modify the input text
 		window.WebChatInputTextCallback = (text: string) => {
@@ -343,7 +358,11 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.speechTimeout = null;
 			const recognizedNothing = !this.hasTranscript;
 
-			this.handleCancelSpeech();
+			// A dictation that produced text ended normally, and the user's
+			// next move is to edit or send it, so focus goes to the input.
+			// Having heard nothing is a failure like any other: leave focus
+			// wherever the user put it (SC 3.2.1).
+			this.endSpeech({ restoreFocus: !recognizedNothing });
 
 			// The whole warm-up budget spent without a single word: the
 			// engine never reached its speech service, or the user never
@@ -363,6 +382,12 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	}
 
 	handleSpeechResult = (e: SpeechRecognitionEvent) => {
+		// A result that raced the abort() on the submit path. The message it
+		// belongs to has already been sent and `text` cleared, so committing
+		// it would refill the input with what the user just sent — and their
+		// next Enter would send it a second time.
+		if (this.discardResults) return;
+
 		const result = e.results[e.resultIndex];
 		const { transcript } = result[0];
 
@@ -405,32 +430,73 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			);
 		}
 
-		this.handleCancelSpeech();
+		// A failure is not a user-initiated stop: leave focus alone. The
+		// button's `aria-pressed` change and the notification convey it.
+		this.endSpeech({ restoreFocus: false });
 		this.notifySpeechFailure(event.error);
 	};
 
 	handleSpeechEnd = () => {
-		if (this.endingDeliberately) {
-			this.endingDeliberately = false;
+		const wasDeliberate = this.endingDeliberately;
+		this.endingDeliberately = false;
+
+		// The user pressed the button again while the engine was still
+		// winding down from the previous stop, so `start()` was rejected.
+		// Honour it now that the engine has actually ended — once, because
+		// only a rejected start sets the flag.
+		if (this.restartPending) {
+			this.restartPending = false;
+			this.startSpeech();
 			return;
 		}
+
+		if (wasDeliberate) return;
 
 		// The engine ended on its own — its service dropped the connection,
 		// or it decided the utterance was over despite `continuous`.
 		// Reconcile, so the button can never claim to be listening when
 		// nothing is (SC 4.1.2).
-		if (this.props.sttActive) this.handleCancelSpeech();
+		if (this.props.sttActive) this.endSpeech({ restoreFocus: false });
 	};
 
+	/** The user pressed the microphone button to stop dictating. */
 	handleCancelSpeech = () => {
+		this.endSpeech({ restoreFocus: true });
+	};
+
+	/**
+	 * Ends recognition and reconciles the UI.
+	 *
+	 * `discardPending` is for the submit path only: the message has been sent
+	 * and `text` cleared, so a transcript arriving afterwards has to be
+	 * thrown away rather than committed. Everywhere else a late final is
+	 * welcome — it is the engine's better-punctuated version of the interim
+	 * that was on screen, and dropping it would lose the user's words.
+	 *
+	 * `restoreFocus` is true only when the user themselves stopped: they are
+	 * likely to carry on typing. On an error or a timeout the stop was not
+	 * requested, and moving focus then would take it from wherever the user
+	 * had put it (SC 3.2.1).
+	 */
+	private endSpeech({
+		discardPending = false,
+		restoreFocus,
+	}: {
+		discardPending?: boolean;
+		restoreFocus: boolean;
+	}) {
 		this.clearSpeechTimeout();
 		this.endingDeliberately = true;
+		this.discardResults = discardPending;
 
 		try {
-			// stop(), not abort(): the engine is allowed to deliver the final
-			// transcript of what it already heard, and handleSpeechResult
-			// still commits it after the button has gone inactive.
-			this.speechRecognition?.stop();
+			if (discardPending) {
+				// abort() asks the engine not to return a result at all,
+				// unlike stop(), which finalizes what it heard.
+				this.speechRecognition?.abort();
+			} else {
+				this.speechRecognition?.stop();
+			}
 		} catch {
 			// Not currently running.
 		}
@@ -439,10 +505,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 		this.setState({ speechResult: "" });
 
-		if (this.inputRef.current) {
+		if (restoreFocus && this.inputRef.current) {
 			this.inputRef.current.focus();
 		}
-	};
+	}
 
 	isSTTSupported() {
 		return !!this.speechRecognition;
@@ -456,27 +522,38 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			return;
 		}
 
+		this.startSpeech();
+	};
+
+	private startSpeech() {
 		const recognition = this.speechRecognition;
 		if (!recognition) return;
 
 		this.hasTranscript = false;
 		this.endingDeliberately = false;
+		this.discardResults = false;
 
 		try {
 			recognition.start();
 		} catch (error) {
-			// InvalidStateError only means it is already running, which is
-			// harmless. Anything else and the engine never started listening,
-			// so the button must not claim that it did.
-			if ((error as DOMException)?.name !== "InvalidStateError") {
-				this.notifySpeechFailure("start-failed");
+			if ((error as DOMException)?.name === "InvalidStateError") {
+				// The engine is still winding down from a previous stop()
+				// whose `onend` hasn't arrived. Claiming to listen here would
+				// leave the button on with nothing running, so wait for the
+				// end and start then.
+				this.restartPending = true;
 				return;
 			}
+
+			// The engine never started listening, so the button must not
+			// claim that it did.
+			this.notifySpeechFailure("start-failed");
+			return;
 		}
 
 		this.armSpeechTimeout(FIRST_TRANSCRIPT_TIMEOUT_MS);
 		this.props.onSetSTTActive(true);
-	};
+	}
 
 	handleChangeTextValue = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		this.setState({
@@ -500,7 +577,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			// (no typed text yet) sent an empty string.
 			messageText = combineStrings(text, speechResult);
 
-			this.handleCancelSpeech();
+			// Discard whatever the engine still owes us: it belongs to this
+			// message, which is on its way. handleSubmit restores focus to
+			// the input itself once the message is sent.
+			this.endSpeech({ discardPending: true, restoreFocus: false });
 		}
 
 		// `messageText`, not `text`: a dictation the user never typed a word of

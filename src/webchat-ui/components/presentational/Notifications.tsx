@@ -10,12 +10,16 @@ const Notifications: FC = () => {
 			gutter={1}
 			toastOptions={{
 				duration: 1500,
-				// Failures stay up longer than confirmations — the user has to
-				// read a remedy, not just register that something worked.
+				// Failures stay up much longer than confirmations: the user has
+				// to read a remedy and act on it, not just register that
+				// something worked. The longest of these ("Microphone access
+				// is blocked. Allow it in your browser settings…") is ~95
+				// characters, which needs well over 5s to notice and read
+				// (SC 2.2.1).
 				// red40 on red10 is 5.27:1, mirroring the vetted green pairing
 				// below (SC 1.4.3).
 				error: {
-					duration: 5000,
+					duration: 12000,
 					style: {
 						backgroundColor: theme.red10,
 						color: theme.red40,

@@ -49,12 +49,23 @@ const installFakeSpeechRecognition = (win: Window) => {
 
 		private results: { 0: { transcript: string }; isFinal: boolean }[] = [];
 		private index = 0;
+		// The real engine stays "started" until it fires `onend`, and rejects
+		// a start() before that with InvalidStateError. Tests drive the end
+		// explicitly via emitEnd(), which is what makes the stop-then-start
+		// window reproducible.
+		private running = false;
 
 		constructor() {
 			recognizers.push(this);
 		}
 
 		start() {
+			if (this.running) {
+				const error = new Error("recognition has already started");
+				error.name = "InvalidStateError";
+				throw error;
+			}
+			this.running = true;
 			this.startCount++;
 		}
 
@@ -87,6 +98,7 @@ const installFakeSpeechRecognition = (win: Window) => {
 		}
 
 		emitEnd() {
+			this.running = false;
 			this.onend?.({});
 		}
 	}
@@ -212,6 +224,13 @@ describe("Speech to text", () => {
 		messageInput().type("{enter}");
 
 		cy.get(".webchat-chat-history").contains("send this by voice");
+
+		// The engine finalizes what it heard after the submit. That
+		// transcript belongs to the message already sent, so it must not
+		// reappear in the input — the next Enter would send it twice.
+		recognizer().then(rec => rec.emitFinal("Send this by voice."));
+		cy.wait(500);
+		messageInput().should("have.value", "");
 	});
 
 	it("stops listening after a pause once transcription is flowing", () => {
@@ -227,6 +246,59 @@ describe("Speech to text", () => {
 		recognizer().then(rec => {
 			expect(rec.stopCount).to.be.greaterThan(0);
 		});
+	});
+
+	// A stop() only takes effect when the engine fires `onend`; a start()
+	// before that is rejected with InvalidStateError. The click must not be
+	// dropped, and the button must not claim to listen while nothing does.
+	it("honours a restart requested while the engine is still stopping", () => {
+		openWebchatWithSTT();
+
+		micButton().click();
+		micButton().should("have.attr", "aria-pressed", "true");
+
+		// Stop, then start again before the engine's `onend` arrives.
+		micButton().click();
+		micButton().should("have.attr", "aria-pressed", "false");
+		micButton().click();
+
+		recognizerShould(rec => {
+			expect(rec.startCount, "the rejected start was not counted").to.equal(1);
+		});
+
+		// The engine finally ends, and the deferred start runs.
+		recognizer().then(rec => rec.emitEnd());
+		micButton().should("have.attr", "aria-pressed", "true");
+		recognizerShould(rec => {
+			expect(rec.startCount, "the restart was honoured").to.equal(2);
+		});
+
+		recognizer().then(rec => rec.emitFinal("restarted fine"));
+		messageInput().should("have.value", "restarted fine");
+	});
+
+	it("releases the microphone when the input unmounts mid-dictation", () => {
+		openWebchatWithSTT();
+
+		micButton().click();
+		micButton().should("have.attr", "aria-pressed", "true");
+
+		// Closing the webchat unmounts the chat window, and with it the input.
+		cy.get<{ close: () => void; open: () => void }>("@webchat").then(webchat => {
+			webchat.close();
+		});
+		cy.get("#webchatInputMessageSpeechButton").should("not.exist");
+
+		recognizerShould(rec => {
+			expect(rec.abortCount, "the engine was aborted, not left running").to.be.greaterThan(0);
+		});
+
+		// `sttActive` lives in the store, which outlived the component: the
+		// button must not come back looking like it is listening.
+		cy.get<{ close: () => void; open: () => void }>("@webchat").then(webchat => {
+			webchat.open();
+		});
+		micButton().should("have.attr", "aria-pressed", "false");
 	});
 
 	it("reconciles the button when the engine ends on its own", () => {
@@ -300,6 +372,30 @@ describe("Speech to text", () => {
 
 			cy.get(".webchat-toast-notification").should("contain.text", "No speech was detected");
 			micButton().should("have.attr", "aria-pressed", "false");
+		});
+
+		it("explains a missing microphone", () => {
+			openWebchatWithSTT();
+
+			micButton().click();
+			recognizer().then(rec => rec.emitError("audio-capture"));
+
+			cy.get(".webchat-toast-notification").should("contain.text", "No microphone was found");
+			micButton().should("have.attr", "aria-pressed", "false");
+		});
+
+		it("does not report a failure after the user stopped on their own", () => {
+			openWebchatWithSTT();
+
+			cy.clock(undefined, ["setTimeout", "clearTimeout"]);
+			micButton().click();
+			micButton().click();
+			micButton().should("have.attr", "aria-pressed", "false");
+
+			// Past the warm-up budget: the timer the user's stop cancelled
+			// must not fire and claim nothing was heard.
+			cy.tick(15100);
+			cy.get(".webchat-toast-notification").should("not.exist");
 		});
 
 		it("uses the configured translation for a failure message", () => {
