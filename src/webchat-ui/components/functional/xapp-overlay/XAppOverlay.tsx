@@ -135,7 +135,7 @@ const xAppOverlay: FC = () => {
 	const showHeader = screenTitle || showCloseIcon;
 
 	return (
-		<Root tabIndex={0} role="dialog" aria-modal="true">
+		<Root tabIndex={0} role="dialog" aria-modal="true" aria-label={screenTitle || "xApp"}>
 			{showHeader && (
 				<Header
 					title={screenTitle}
@@ -145,6 +145,7 @@ const xAppOverlay: FC = () => {
 			)}
 			<Iframe
 				src={url}
+				title={screenTitle || "xApp"}
 				sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
 				allow="
   accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera;
