@@ -1,6 +1,6 @@
 import { Middleware } from "redux";
 import { StoreState } from "../store";
-import { PrevConversationsState, upsertPrevConversation } from "./previous-conversations-reducer";
+import { SwitchSessionAction, upsertPrevConversation } from "./previous-conversations-reducer";
 import { SendMessageAction, TriggerEngagementMessageAction } from "../messages/message-middleware";
 import { ReceiveMessageAction } from "../messages/message-handler";
 import { RatingAction, ratingInitialState } from "../rating/rating-reducer";
@@ -9,17 +9,6 @@ import { SocketClient } from "@cognigy/socket-client";
 import { autoInjectHandledReset, triggerAutoInject } from "../autoinject/autoinject-reducer";
 import { setConnecting } from "../connection/connection-reducer";
 import { setOptions } from "../options/options-reducer";
-
-const SWITCH_SESSION = "SWITCH_SESSION";
-export const switchSession = (
-	sessionId = (self.crypto as any)?.randomUUID?.(),
-	conversation?: PrevConversationsState[string],
-) => ({
-	type: SWITCH_SESSION as "SWITCH_SESSION",
-	sessionId,
-	conversation,
-});
-export type SwitchSessionAction = ReturnType<typeof switchSession>;
 
 type Actions =
 	| SwitchSessionAction

@@ -17,9 +17,9 @@ import {
 	setMinimize,
 } from "../store/ui/ui-reducer";
 import { getPluginsForMessage, isFullscreenPlugin } from "../../plugins/helper";
-import { connect as doConnect } from "../store/connection/connection-middleware";
+import { connect as doConnect } from "../store/connection/connection-reducer";
 import { setHasGivenRating, showRatingScreen } from "../store/rating/rating-reducer";
-import { switchSession } from "../store/previous-conversations/previous-conversations-middleware";
+import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { PrevConversationsState } from "../store/previous-conversations/previous-conversations-reducer";
 import {
 	IFile,
