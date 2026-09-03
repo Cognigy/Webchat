@@ -12,6 +12,17 @@ export type PrevConversationsState = {
 
 const getInitialState = (): PrevConversationsState => ({});
 
+const SWITCH_SESSION = "SWITCH_SESSION";
+export const switchSession = (
+	sessionId = (self.crypto as any)?.randomUUID?.(),
+	conversation?: PrevConversationsState[string],
+) => ({
+	type: SWITCH_SESSION as "SWITCH_SESSION",
+	sessionId,
+	conversation,
+});
+export type SwitchSessionAction = ReturnType<typeof switchSession>;
+
 const SET_CONVERSATIONS = "SET_CONVERSATIONS" as const;
 export const setConversations = (conversations: PrevConversationsState) => ({
 	type: SET_CONVERSATIONS,
