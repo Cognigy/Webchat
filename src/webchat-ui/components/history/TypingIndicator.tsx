@@ -76,18 +76,32 @@ const TypingIndicator: FC<ITypingIndicatorProps> = props => {
 	announcementTextRef.current = announcementText;
 
 	// Announce a sustained typing session once (WCAG 4.1.3 Status Messages).
-	// Keyed off the debounced "isVisible" so on/off flapping within the hide
-	// tail neither restarts the delay nor re-announces. When typing ends, the
-	// announcement is removed silently (removals aren't announced) so users
-	// browsing the window later don't read stale "typing" text; typing-stopped
-	// itself is deliberately not announced — the arriving message covers it.
+	//
+	// The delay counts continuous typing ("active"): typing stopping (typingOff,
+	// or an output removing the indicator) cancels the pending announcement,
+	// resuming restarts it. The indicator's visible hide tail (`delay`) is not
+	// typing, so nothing can be announced after the reply has already landed.
+	//
+	// The emitted announcement lives as long as the indicator is visible: at
+	// most one per visible session, so typing flapping off/on between queued
+	// delayed messages of one bot turn doesn't re-announce. When the indicator
+	// hides, the text is removed silently (removals aren't announced) so it
+	// can't be read later as stale status. Typing-stopped itself is not
+	// announced — the arriving message covers it.
+	const hasAnnouncedRef = useRef(false);
+
 	useEffect(() => {
-		if (!isVisible) {
-			setAnnouncement(null);
-			return;
-		}
+		if (isVisible) return;
+
+		hasAnnouncedRef.current = false;
+		setAnnouncement(null);
+	}, [isVisible]);
+
+	useEffect(() => {
+		if (!active || hasAnnouncedRef.current) return;
 
 		const timeout = setTimeout(() => {
+			hasAnnouncedRef.current = true;
 			setAnnouncement({
 				id: `typing-${++announcementCounter}`,
 				text: announcementTextRef.current ?? "A reply is being typed",
@@ -95,7 +109,7 @@ const TypingIndicator: FC<ITypingIndicatorProps> = props => {
 		}, ANNOUNCE_DELAY_MS);
 
 		return () => clearTimeout(timeout);
-	}, [isVisible]);
+	}, [active]);
 
 	return (
 		<>
