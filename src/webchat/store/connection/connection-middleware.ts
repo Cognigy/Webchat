@@ -10,19 +10,13 @@ import {
 import { SendMessageAction, sendMessage } from "../messages/message-middleware";
 import { setOptions } from "../options/options-reducer";
 import { SocketClient } from "@cognigy/socket-client";
-import { setConnecting, setReconnectionLimit } from "./connection-reducer";
+import { connect, ConnectAction, setConnecting, setReconnectionLimit } from "./connection-reducer";
 import { shouldReestablishConnection } from "../../helper/connection-watchdog";
 
 export interface ISendMessageOptions {
 	/* overrides the displayed text within a chat bubble. useful for e.g. buttons */
 	label: string;
 }
-
-const CONNECT = "CONNECT";
-export const connect = () => ({
-	type: CONNECT as "CONNECT",
-});
-export type ConnectAction = ReturnType<typeof connect>;
 
 const DISCONNECT = "DISCONNECT" as const;
 export const disconnect = () => ({

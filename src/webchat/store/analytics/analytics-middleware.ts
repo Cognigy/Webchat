@@ -4,7 +4,7 @@ import { SetOpenAction, ToggleOpenAction, SetMinimizeAction } from "../ui/ui-red
 import { SendMessageAction } from "../messages/message-middleware";
 import { ReceiveMessageAction } from "../messages/message-handler";
 import { Webchat } from "../../components/Webchat";
-import { SwitchSessionAction } from "../previous-conversations/previous-conversations-middleware";
+import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 type AnalyticsAction =
 	| SetOpenAction
