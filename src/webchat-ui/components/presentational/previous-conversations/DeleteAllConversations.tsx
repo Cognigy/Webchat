@@ -8,7 +8,7 @@ import DeleteConfirmModal from "../../Modal/DeleteConfirmModal";
 import { Typography } from "@cognigy/chat-components";
 import { disconnect } from "../../../../webchat/store/connection/connection-middleware";
 import { clearMessages } from "../../../../webchat/store/messages/message-reducer";
-import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-middleware";
+import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 
 interface DeleteAllConversationsProps {
 	config: IWebchatConfig;
