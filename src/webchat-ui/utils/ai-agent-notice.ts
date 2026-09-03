@@ -11,8 +11,8 @@ export const DEFAULT_AI_AGENT_NOTICE_TEXT = "You're now chatting with an AI Agen
  * but this state hasn't been re-evaluated yet (the session id updates
  * asynchronously after the socket switch). `announceKey` dedupes the
  * announcement per conversation; it differs from `id` only for the page
- * load's first conversation, which starts announceable before the connect
- * assigns its session id (see computeNoticeSession).
+ * load's first conversation, which is keyed before the connect assigns
+ * its session id (see computeNoticeSession).
  */
 export interface NoticeSession {
 	id: string;
@@ -72,6 +72,15 @@ export function computeNoticeSession(
  * reconnect the socket and open it — its dialog and focus utterances
  * would cancel the notice; on close, the intro becomes pending again
  * and is announced after the "Connection restored" utterances).
+ *
+ * `isFirstConnectPending` holds the announcement while the page load's
+ * first connect is still in flight: the session id and any restored
+ * persisted history only arrive when it resolves, so before that the
+ * page load's first conversation merely LOOKS brand-new — and a
+ * conversation restored after a page reload is a continuation that must
+ * stay silent. A connect that fails (offline, unreachable endpoint)
+ * settles too and releases the notice, which is about the chat, not
+ * about the connection.
  */
 export function getAIAgentNoticeIntroText(args: {
 	behavior: IWebchatConfig["settings"]["behavior"];
@@ -79,12 +88,20 @@ export function getAIAgentNoticeIntroText(args: {
 	noticeSession: NoticeSession;
 	currentSessionId: string;
 	announcedKeys: ReadonlySet<string>;
+	isFirstConnectPending: boolean;
 }): string | undefined {
-	const { behavior, showDisconnectOverlay, noticeSession, currentSessionId, announcedKeys } =
-		args;
+	const {
+		behavior,
+		showDisconnectOverlay,
+		noticeSession,
+		currentSessionId,
+		announcedKeys,
+		isFirstConnectPending,
+	} = args;
 	const shouldAnnounce =
 		behavior.enableAIAgentNotice !== false &&
 		!showDisconnectOverlay &&
+		!isFirstConnectPending &&
 		noticeSession.isNew &&
 		noticeSession.id === currentSessionId &&
 		!announcedKeys.has(noticeSession.announceKey);
