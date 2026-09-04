@@ -95,10 +95,44 @@ describe("Date Picker", () => {
 	itChromiumOnly("traps Tab focus inside the dialog (APG dialog pattern)", () => {
 		const heading = ".webchat-plugin-date-picker-header .webchat-list-template-header-title";
 		cy.withMessageFixture("date-picker", () => {
+			// Diagnostic tracer (CGY-30265 CI investigation): record every
+			// programmatic focus() call in the app window with its caller, so the
+			// runner log shows what moves focus after the dialog opens.
+			cy.window().then(win => {
+				const traced = win as Window & { __focusLog?: string[] };
+				traced.__focusLog = [];
+				const proto = win.HTMLElement.prototype as unknown as {
+					focus: (this: HTMLElement, ...args: unknown[]) => void;
+				};
+				const original = proto.focus;
+				proto.focus = function (this: HTMLElement, ...args: unknown[]) {
+					const stack = (new Error().stack || "")
+						.split("\n")
+						.slice(2, 8)
+						.map(line => line.trim())
+						.join(" <- ");
+					traced.__focusLog?.push(
+						`${Date.now() % 100000} ${this.tagName.toLowerCase()}#${this.id}.${String(this.className).slice(0, 40)} :: ${stack}`,
+					);
+					return original.apply(this, args);
+				};
+			});
+
 			cy.contains("foobar012b1").click();
 			cy.get(heading).should("be.focused");
+			logActiveElement("date picker: t+0");
+			cy.wait(150);
+			logActiveElement("date picker: t+150");
+			cy.wait(150);
+			logActiveElement("date picker: t+300");
+			cy.wait(200);
+			logActiveElement("date picker: t+500");
+			cy.window().then(win => {
+				const traced = win as Window & { __focusLog?: string[] };
+				cy.task("log", "[focus-calls]\n" + (traced.__focusLog ?? []).join("\n"));
+			});
+			cy.document().then(doc => cy.task("log", `[document.hasFocus] ${doc.hasFocus()}`));
 			// the app's focus move must stick — nothing may pull focus back later
-			cy.wait(500);
 			cy.get(heading).should("be.focused");
 
 			// Hand the focus to Cypress before the real key press: in headless runs

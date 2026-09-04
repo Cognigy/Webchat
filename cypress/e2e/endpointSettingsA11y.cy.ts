@@ -241,6 +241,23 @@ describe("Endpoint settings — Accessibility (WCAG 2.2 AA)", () => {
 			cy.get(".webchat-message-row").should("have.length", 14);
 
 			cy.get("#webchatChatHistory").scrollTo("top");
+			// Diagnostics (CGY-30265 CI investigation, Firefox): which element
+			// actually scrolls, and did the scroll register?
+			cy.document().then(doc => {
+				const describe = (selector: string) => {
+					const el = doc.querySelector(selector);
+					return el
+						? `${selector} top=${el.scrollTop} height=${el.scrollHeight} client=${el.clientHeight}`
+						: `${selector} missing`;
+				};
+				cy.task(
+					"log",
+					`[scroll] ${describe("#webchatChatHistory")} | ${describe("#webchatChatHistoryWrapperLiveLogPanel")} | button=${!!doc.querySelector(".webchat-scroll-to-bottom-button")}`,
+				);
+			});
+			// a programmatic scrollTop change does not always emit a scroll event
+			// in Firefox; nudge the listener the way a wheel would
+			cy.get("#webchatChatHistory").trigger("scroll");
 			cy.get(".webchat-scroll-to-bottom-button")
 				.should("be.visible")
 				.and("match", "button")
