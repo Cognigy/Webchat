@@ -349,6 +349,7 @@ export interface IWebchatSettings {
 			homeScreen?: string;
 			newMessagePreview?: string;
 			opensInNewTab?: string;
+			typingIndicator?: string;
 			// The following is used by chat components
 			audioPlaybackProgress?: string;
 			pauseAudio?: string;
