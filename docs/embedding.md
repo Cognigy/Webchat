@@ -391,7 +391,7 @@ _These settings are NOT configurable via the Endpoint Editor in Cognigy.AI_
 | enableDefaultPreview | boolean | `false` | Enable default preview for Adaptive cards plugin |
 | ignoreLineBreaks | boolean | `false` | Enable to ignore line breaks in the Messenger Generic Templates, Gallery Cards Subtitle |
 | STTLanguage | string | `""` | Set the STTLanguage |
-| customAllowedHtmlTags | string[] | `undefined` | Custom list of allowed HTML tags that completely overrides the default allowed tags. When provided, only these tags will be allowed in HTML content sanitization. Set to `[]` to strip all HTML tags. Example: `["p", "br", "strong", "em"]` allows only paragraphs, line breaks, bold and italic text. |
+| customAllowedHtmlTags | string[] | `undefined` | Custom list of allowed HTML tags that completely overrides the default allowed tags. When provided, only these tags will be allowed in HTML content sanitization. Set to `[]` to strip all HTML tags. Example: `["p", "br", "strong", "em"]` allows only paragraphs, line breaks, bold and italic text. **Security note:** the following tags are always blocked regardless of this setting: `script`, `iframe`, `object`, `embed`, `applet`, `frame`, `frameset`, `meta`, `base`, `link`, `style`, `form`. |
 | sourceDirectionMapping | object | [Source Direction Mapping](#source-direction-mapping) | Configure source direction mapping |
 | sourceColorMapping | object | [Source Color Mapping](#source-color-mapping) | Configure source color mapping |
 
