@@ -574,6 +574,34 @@ export class WebchatUI extends React.PureComponent<
 		this.announcedNoticeKeys.add(introKey);
 	};
 
+	/**
+	 * Whether the page load's FIRST connect is still in flight. That connect
+	 * is what assigns the session id and — for an embedding that pins a
+	 * `sessionId` — restores the persisted conversation, both in the same
+	 * React commit. Until it settles, a conversation that is about to be
+	 * restored is indistinguishable from a brand-new one, so the AI-agent
+	 * notice waits instead of announcing on a hunch (CGY-3519); announcing
+	 * cannot be taken back.
+	 *
+	 * Narrowed to embeddings that can actually restore something: without a
+	 * pinned `sessionId` the socket client generates a fresh session id per
+	 * page load, and with local storage or persistent history disabled
+	 * nothing was stored — in either case there is nothing to wait for and
+	 * the notice keeps its original timing.
+	 */
+	private get isFirstConnectPending() {
+		const { disableLocalStorage, disablePersistentHistory } =
+			this.props.config.settings.embeddingConfiguration;
+
+		return (
+			!this.props.currentSession &&
+			!!this.props.connecting &&
+			!!this.props.config.initialSessionId &&
+			!disableLocalStorage &&
+			!disablePersistentHistory
+		);
+	}
+
 	private getNoticeIntro(): { key: string; text: string } | undefined {
 		const text = getAIAgentNoticeIntroText({
 			behavior: this.props.config.settings.behavior,
@@ -581,6 +609,7 @@ export class WebchatUI extends React.PureComponent<
 			noticeSession: this.state.noticeSession,
 			currentSessionId: this.props.currentSession || "",
 			announcedKeys: this.announcedNoticeKeys,
+			isFirstConnectPending: this.isFirstConnectPending,
 		});
 		if (!text) return undefined;
 
