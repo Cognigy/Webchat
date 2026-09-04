@@ -244,7 +244,13 @@ describe("Endpoint settings — Accessibility (WCAG 2.2 AA)", () => {
 			// treats the log as "scrolled up" once a scroll event sees a smaller
 			// scrollTop than the previous one, and a single programmatic jump from
 			// the bottom gives it no previous value to compare against.
+			// Two programmatic scrolls in the same frame coalesce into one scroll
+			// event (Firefox), so give the first step its own frame.
 			cy.get("#webchatChatHistory").scrollTo(0, 300);
+			cy.get("#webchatChatHistory").should($log =>
+				expect($log[0].scrollTop).to.be.closeTo(300, 5),
+			);
+			cy.wait(100);
 			cy.get("#webchatChatHistory").scrollTo("top");
 			cy.wait(600);
 			// Diagnostics (CGY-30265 CI investigation, Firefox): which element

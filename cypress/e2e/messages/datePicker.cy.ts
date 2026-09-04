@@ -154,6 +154,64 @@ describe("Date Picker", () => {
 				);
 			});
 			snapshotUi("before click");
+			// Diagnostic: record store slice changes, window (re)mounts and window
+			// events with timestamps, to see what remounts #webchatWindow on click.
+			cy.window().then(win => {
+				type Store = {
+					getState: () => Record<string, Record<string, unknown>>;
+					subscribe: (listener: () => void) => () => void;
+				};
+				const w = win as Window & { webchat?: { store: Store }; __diag?: string[] };
+				const log: string[] = [];
+				w.__diag = log;
+				const t0 = Date.now();
+				const stamp = () => `+${Date.now() - t0}ms`;
+				const store = w.webchat?.store;
+				if (store) {
+					let prev = store.getState();
+					store.subscribe(() => {
+						const next = store.getState();
+						const changed: string[] = [];
+						[
+							"ui",
+							"config",
+							"connection",
+							"input",
+							"messages",
+							"typing",
+							"userTyping",
+						].forEach(slice => {
+							const a = (prev[slice] ?? {}) as Record<string, unknown>;
+							const b = (next[slice] ?? {}) as Record<string, unknown>;
+							Object.keys({ ...a, ...b }).forEach(key => {
+								if (a[key] !== b[key]) changed.push(`${slice}.${key}`);
+							});
+						});
+						if (changed.length) log.push(`${stamp()} store: ${changed.join(",")}`);
+						prev = next;
+					});
+				}
+				const root = win.document.querySelector("[data-cognigy-webchat-root]");
+				if (root) {
+					new win.MutationObserver(records => {
+						records.forEach(r => {
+							r.removedNodes.forEach(n => {
+								if ((n as Element).id === "webchatWindow")
+									log.push(`${stamp()} #webchatWindow REMOVED`);
+							});
+							r.addedNodes.forEach(n => {
+								if ((n as Element).id === "webchatWindow")
+									log.push(`${stamp()} #webchatWindow ADDED`);
+							});
+						});
+					}).observe(root, { childList: true, subtree: true });
+				}
+				["resize", "focus", "blur", "visibilitychange", "pageshow"].forEach(type =>
+					(type === "visibilitychange" ? win.document : win).addEventListener(type, () =>
+						log.push(`${stamp()} event: ${type}`),
+					),
+				);
+			});
 
 			cy.contains("foobar012b1").click();
 			cy.get(heading).should("be.focused");
@@ -166,6 +224,11 @@ describe("Date Picker", () => {
 				cy.task("log", `[remount] ${survived.join(" | ")}`);
 			});
 			snapshotUi("after click");
+			cy.wait(300);
+			cy.window().then(win => {
+				const w = win as Window & { __diag?: string[] };
+				cy.task("log", "[diag]\n" + (w.__diag ?? []).join("\n"));
+			});
 			cy.wait(150);
 			logActiveElement("date picker: t+150");
 			cy.wait(150);
