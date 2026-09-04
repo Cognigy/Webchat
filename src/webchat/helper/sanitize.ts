@@ -1,24 +1,35 @@
 import DOMPurify, { Config } from "dompurify";
 import { storeRef } from "../store/store";
 
+// Tags that are always blocked regardless of caller configuration (WCH-SI10-001).
+// These were previously present in the allow-list but are explicitly excluded by
+// DOMPurify's own secure defaults because they enable XSS, URL hijacking, CSS
+// exfiltration, phishing, or arbitrary plugin execution:
+//   applet  — Java applet execution
+//   base    — rewrites all relative URLs on the host page
+//   embed   — loads arbitrary external content / plugins
+//   form    — posts user data to attacker-controlled URLs
+//   frame / frameset / noframes — clickjacking and legacy frame injection
+//   iframe  — inline HTML documents; srcdoc = direct XSS vector
+//   link    — loads external stylesheets
+//   meta    — HTTP redirects and CSP bypass via http-equiv
+//   object  — loads Flash, PDFs, and arbitrary external content
+//   style   — CSS injection and attribute-value exfiltration
 export const allowedHtmlTags = [
 	"a",
 	"abbr",
 	"acronym",
 	"address",
-	"applet",
 	"area",
 	"article",
 	"aside",
 	"audio",
 	"b",
-	"base",
 	"basefont",
 	"bdi",
 	"bdo",
 	"big",
 	"blockquote",
-	"body",
 	"br",
 	"button",
 	"canvas",
@@ -40,15 +51,11 @@ export const allowedHtmlTags = [
 	"dl",
 	"dt",
 	"em",
-	"embed",
 	"fieldset",
 	"figcaption",
 	"figure",
 	"font",
 	"footer",
-	"form",
-	"frame",
-	"frameset",
 	"h1",
 	"h2",
 	"h3",
@@ -60,7 +67,6 @@ export const allowedHtmlTags = [
 	"hr",
 	"html",
 	"i",
-	"iframe",
 	"img",
 	"input",
 	"ins",
@@ -68,15 +74,11 @@ export const allowedHtmlTags = [
 	"label",
 	"legend",
 	"li",
-	"link",
 	"main",
 	"map",
 	"mark",
-	"meta",
 	"meter",
 	"nav",
-	"noframes",
-	"object",
 	"ol",
 	"optgroup",
 	"option",
@@ -99,7 +101,6 @@ export const allowedHtmlTags = [
 	"span",
 	"strike",
 	"strong",
-	"style",
 	"sub",
 	"summary",
 	"sup",
@@ -124,11 +125,17 @@ export const allowedHtmlTags = [
 	"wbr",
 ];
 
+// Attributes that are always blocked regardless of caller configuration (WCH-SI10-001).
+// Removed from the previous allow-list:
+//   action / formaction — form submission to attacker-controlled URLs
+//   sandbox             — giving content control over its own sandbox policy
+//   srcdoc              — inline HTML document in an iframe (direct XSS vector)
+//   style               — inline CSS injection and attribute-value exfiltration
+//   target              — controls navigation target (_blank without rel is risky)
 export const allowedHtmlAttributes = [
 	"accept",
 	"accept-charset",
 	"accesskey",
-	"action",
 	"align",
 	"alt",
 	"autocomplete",
@@ -160,7 +167,6 @@ export const allowedHtmlAttributes = [
 	"enctype",
 	"for",
 	"form",
-	"formaction",
 	"headers",
 	"height",
 	"hidden",
@@ -197,7 +203,6 @@ export const allowedHtmlAttributes = [
 	"reversed",
 	"rows",
 	"rowspan",
-	"sandbox",
 	"scope",
 	"selected",
 	"shape",
@@ -206,14 +211,11 @@ export const allowedHtmlAttributes = [
 	"span",
 	"spellcheck",
 	"src",
-	"srcdoc",
 	"srclang",
 	"srcset",
 	"start",
 	"step",
-	"style",
 	"tabindex",
-	"target",
 	"title",
 	"translate",
 	"type",
