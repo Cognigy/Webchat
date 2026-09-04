@@ -7,6 +7,17 @@ import * as moment from "moment";
 // Firefox run keeps every assertion that does not need a native Tab key.
 const itChromiumOnly = Cypress.isBrowser({ family: "chromium" }) ? it : it.skip;
 
+// Writes document.activeElement to the runner log (cy.task("log")) so CI output
+// shows where focus actually is around real key presses.
+const logActiveElement = (label: string) =>
+	cy.document().then(doc => {
+		const el = doc.activeElement;
+		const description = el
+			? `${el.tagName.toLowerCase()}#${el.id} .${String(el.className).slice(0, 60)} [${el.getAttribute("aria-label") ?? el.getAttribute("data-testid") ?? ""}]`
+			: "null";
+		cy.task("log", `[focus] ${label}: ${description}`);
+	});
+
 describe("Date Picker", () => {
 	beforeEach(() => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
@@ -82,13 +93,22 @@ describe("Date Picker", () => {
 	// because the fixture's minDate preselects today); Tab from there wraps to
 	// the first control (the close button).
 	itChromiumOnly("traps Tab focus inside the dialog (APG dialog pattern)", () => {
+		const heading = ".webchat-plugin-date-picker-header .webchat-list-template-header-title";
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
-			cy.get(".webchat-plugin-date-picker-header .webchat-list-template-header-title").should(
-				"be.focused",
-			);
+			cy.get(heading).should("be.focused");
+			// the app's focus move must stick — nothing may pull focus back later
+			cy.wait(500);
+			cy.get(heading).should("be.focused");
 
+			// Hand the focus to Cypress before the real key press: in headless runs
+			// the CDP key event is not reliably routed to an element the app focused
+			// programmatically (the runner's focus polyfill), while an element
+			// focused through cy.focus() always receives it.
+			cy.get(heading).focus();
+			logActiveElement("date picker: before Shift+Tab");
 			cy.realPress(["Shift", "Tab"]);
+			logActiveElement("date picker: after Shift+Tab");
 			cy.focused().should("have.attr", "data-testid", "button-submit");
 
 			cy.realPress("Tab");

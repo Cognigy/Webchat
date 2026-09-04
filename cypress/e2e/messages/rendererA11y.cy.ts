@@ -19,6 +19,17 @@
 describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 	const ROOT = "[data-cognigy-webchat-root]";
 
+	// Writes document.activeElement to the runner log (cy.task("log")) so CI
+	// output shows where focus actually is around key presses.
+	const logActiveElement = (label: string) =>
+		cy.document().then(doc => {
+			const el = doc.activeElement;
+			const description = el
+				? `${el.tagName.toLowerCase()}#${el.id} .${String(el.className).slice(0, 60)} [${el.getAttribute("aria-label") ?? el.getAttribute("data-testid") ?? ""}]`
+				: "null";
+			cy.task("log", `[focus] ${label}: ${description}`);
+		});
+
 	beforeEach(() => {
 		cy.visitWebchat()
 			.initMockWebchat({ settings: { homeScreen: { enabled: false } } })
@@ -109,8 +120,12 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 			cy.get('[role="dialog"]').should("be.visible");
 			cy.focused().should("have.attr", "aria-label", "Download full-size image");
 			cy.checkA11yCompliance(ROOT);
+			logActiveElement("lightbox: after axe sweep");
 
-			cy.focused().type("{esc}");
+			// Hand the focus to Cypress before the key press (see datePicker.cy.ts):
+			// in headless runs focus set by the app is not reliably the target of
+			// the next synthetic/real key event.
+			cy.get('[aria-label="Download full-size image"]').focus().type("{esc}");
 			cy.get('[role="dialog"]').should("not.exist");
 			cy.focused().should("have.attr", "aria-label", "View full-size image");
 		});

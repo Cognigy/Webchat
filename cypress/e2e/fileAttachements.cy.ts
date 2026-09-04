@@ -221,7 +221,18 @@ describe("File Attachement", () => {
 					size: 13,
 					url: "https://example.com/mock-upload/myfile.txt",
 				},
-			});
+			}).as("fileUpload");
+		};
+
+		// The file-input middleware re-dispatches its own snapshot of the list at
+		// +100ms and again when every upload has settled, so a removal issued while
+		// an upload is still in flight is overwritten (see docs/accessibility.md,
+		// follow-ups). Wait until each chip has dropped its progress bar (100%).
+		const waitForUploadsToSettle = (count: number) => {
+			for (let i = 0; i < count; i++) {
+				cy.wait("@fileUpload");
+				cy.get(`#filePreview${i} > div`).should("have.length", 1);
+			}
 		};
 
 		it("attach button is a named native button and the hidden file input is not exposed to assistive tech", () => {
@@ -301,6 +312,7 @@ describe("File Attachement", () => {
 
 				selectFiles(["myfile.txt", "second.txt"]);
 				cy.get("#filePreview1").should("contain.text", "second.txt");
+				waitForUploadsToSettle(2);
 
 				cy.get("[aria-label='Remove file attachment 2']").focus();
 				cy.realPress("Enter");
