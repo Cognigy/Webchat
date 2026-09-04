@@ -75,8 +75,8 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 			cy.get(".gallery-button-next").should("exist");
 			// Two findings live inside the upstream carousel renderer
 			// (@cognigy/chat-components Gallery) and are excluded here until they
-			// are fixed there — tracked in docs/accessibility.md, "Known upstream
-			// findings":
+			// are fixed there — tracked as CGY-37634 (see docs/accessibility.md,
+			// "Known upstream findings"):
 			//  - color-contrast: a card without an image renders its white title
 			//    over the #cccccc placeholder (1.6:1, SC 1.4.3 needs 4.5:1)
 			//  - target-size: swiper pagination bullets are 6×6px focusable
@@ -102,7 +102,7 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 	// The lightbox is an APG dialog rendered by chat-components; in the full
 	// widget it must take focus on open and hand it back to the thumbnail on
 	// Escape (SC 2.4.3). Uses the fixture WITH alt text: without it the lightbox
-	// <img> renders no alt attribute at all (upstream finding, see docs).
+	// <img> renders no alt attribute at all (upstream finding, CGY-37634).
 	it("open image lightbox has no detectable a11y violations and returns focus to the thumbnail on Escape", () => {
 		cy.withMessageFixture("downloadableImage-with-alt", () => {
 			cy.get(".webchat-media-template-image[role=button]").click();
