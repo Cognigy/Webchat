@@ -3,6 +3,20 @@ name: Lint
 on: [pull_request]
 
 jobs:
+    # Dependency vulnerability gate for pull requests (CGY-36979). Audits
+    # package-lock.json, so no install is needed. Limited to production dependencies,
+    # since dev tooling is not part of the published package and clearing the full tree
+    # would mean major-upgrading Cypress and the webpack plugins.
+    audit:
+        name: Audit Production Dependencies
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+            - run: npm audit --omit=dev --audit-level=high
+
     # Accessibility lint gate. Runs ONLY the jsx-a11y rules as errors
     # (eslint.a11y.config.mjs) so it blocks PRs on WCAG 2.2 AA regressions
     # without being affected by unrelated, pre-existing lint debt.
