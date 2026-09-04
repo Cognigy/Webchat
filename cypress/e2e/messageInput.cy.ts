@@ -19,7 +19,7 @@ describe("Webchat Message Input", () => {
 		},
 	};
 
-	it("message input filed should have correct label", () => {
+	it("message input field should have correct label", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 
 		cy.contains("label", "Type something here…")
@@ -29,7 +29,7 @@ describe("Webchat Message Input", () => {
 			});
 	});
 
-	it("message input filed should receive focus on open", () => {
+	it("message input field should receive focus on open", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 
 		cy.contains("label", "Type something here…")
@@ -39,7 +39,7 @@ describe("Webchat Message Input", () => {
 			});
 	});
 
-	it("should be able to type in message input filed should", () => {
+	it("should be able to type in message input field", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 
 		cy.contains("label", "Type something here…")

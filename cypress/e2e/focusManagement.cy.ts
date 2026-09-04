@@ -8,8 +8,9 @@
  *   wraps Tab / Shift+Tab at the window's boundaries (and from the toggle
  *   button), while the default keeps the host page reachable.
  *
- * Screen-specific focus behaviour lives with its feature spec (homeScreen,
- * chatOptionsScreen, prevConvesations, rating, reconnection, privacyNotice).
+ * Screen-specific focus behaviour lives with its feature spec (homeScreen.cy.ts,
+ * chatOptionsScreen.cy.ts, prevConvesations.cy.ts (sic — the file is spelled that way),
+ * rating.cy.ts, reconnection.cy.ts, privacyNotice.cy.ts).
  */
 
 describe("Focus management (WCAG 2.2 AA)", () => {
