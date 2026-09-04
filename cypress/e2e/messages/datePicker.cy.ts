@@ -3,6 +3,10 @@
 
 import * as moment from "moment";
 
+// cypress-real-events dispatches real key events over CDP — Chromium only. The
+// Firefox run keeps every assertion that does not need a native Tab key.
+const itChromiumOnly = Cypress.isBrowser({ family: "chromium" }) ? it : it.skip;
+
 describe("Date Picker", () => {
 	beforeEach(() => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
@@ -72,13 +76,36 @@ describe("Date Picker", () => {
 		});
 	});
 
-	xit("should trap focus", () => {
+	// APG modal dialog: Tab focus stays inside while open. The wrap is driven by
+	// real key events (cypress-real-events, CDP), so it runs in Chromium only.
+	// Heading -> Shift+Tab wraps to the last control (the submit button, enabled
+	// because the fixture's minDate preselects today); Tab from there wraps to
+	// the first control (the close button).
+	itChromiumOnly("traps Tab focus inside the dialog (APG dialog pattern)", () => {
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
-			// cy.realPress("Tab")
-			//     .contains("foobar012b2").should("be.focused");
-			cy.realPress("Tab").contains("foobar012b3").should("be.focused");
-			cy.realPress("Tab").get(".flatpickr-calendar ").should("be.focused");
+			cy.get(".webchat-plugin-date-picker-header .webchat-list-template-header-title").should(
+				"be.focused",
+			);
+
+			cy.realPress(["Shift", "Tab"]);
+			cy.focused().should("have.attr", "data-testid", "button-submit");
+
+			cy.realPress("Tab");
+			cy.focused().should("have.attr", "data-testid", "button-close");
+		});
+	});
+
+	it("closes on Escape and returns focus to the button that opened it (SC 2.4.3)", () => {
+		cy.withMessageFixture("date-picker", () => {
+			cy.contains("foobar012b1").click();
+			cy.get(".webchat-plugin-date-picker-header .webchat-list-template-header-title").should(
+				"be.focused",
+			);
+
+			cy.focused().type("{esc}");
+			cy.get(".webchat-plugin-date-picker").should("not.exist");
+			cy.focused().should("have.attr", "data-testid", "button-open");
 		});
 	});
 

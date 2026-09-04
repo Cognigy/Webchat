@@ -24,7 +24,7 @@ WCAG defines _what_ must be true; for _how_ each widget should behave (keyboard 
 
 ### 2. Runtime: `cypress-axe` (catches issues in the rendered DOM)
 
-- Command `cy.checkA11yCompliance(selector?)` in [`cypress/support/commands.ts`](../cypress/support/commands.ts) injects axe and checks `wcag2a/2aa`, `wcag21a/aa`, `wcag22a/aa`, and `best-practice` at all impact levels.
+- Command `cy.checkA11yCompliance(selector?, { disabledRules? })` in [`cypress/support/commands.ts`](../cypress/support/commands.ts) injects axe and checks `wcag2a/2aa`, `wcag21a/aa`, `wcag22aa`, and `best-practice` at all impact levels (axe-core has no `wcag22a` tag — the WCAG 2.2 rules it automates are all AA). `disabledRules` exists only for documented findings tracked elsewhere (see "Known upstream findings" below) and must be justified at the call site; the goal state is no exclusions.
 - Runs inside the existing Cypress E2E workflows (`cypress.yml`, `-firefox`, `-progressive-rendering`), which already block PRs — so any axe assertion you add gates automatically.
 - Because Cypress runs a **real browser**, this is where color-contrast is verified (jsdom-based tools can't). We deliberately do **not** add jest-axe/vitest-axe — there is no unit-test runner in Webchat.
 
@@ -115,6 +115,37 @@ This repo ships AI-assistant configuration so AI-assisted work stays accessible 
 - **`.claude/skills/wcag-component/`** — detailed, per-component-type recipes (loaded on demand).
 - **`.claude/agents/a11y-reviewer.md`** + **`/a11y-review`** command — an accessibility-focused PR reviewer you can run on a diff.
 - **[`.github/copilot-instructions.md`](../.github/copilot-instructions.md)** — repository custom instructions; includes an Accessibility section so GitHub Copilot's code suggestions and PR review also follow WCAG 2.2 AA.
+
+## Interaction and renderer specs (CGY-30265)
+
+The per-screen axe sweeps prove static ARIA and contrast; these specs additionally lock in the keyboard and focus behaviour axe cannot see, and the real-browser rules that the `@cognigy/chat-components` jsdom gate explicitly defers to Webchat (`color-contrast`, `target-size`, `scrollable-region-focusable`):
+
+| Spec                                                                                    | Covers                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`cypress/e2e/focusManagement.cy.ts`](../cypress/e2e/focusManagement.cy.ts)             | Open/close focus hand-offs (toggle → window, every close path → toggle; SC 2.4.3) and the opt-in `widgetSettings.enableFocusTrap` wrap at the window boundaries and from the toggle (SC 2.1.2 / 2.4.3)    |
+| [`cypress/e2e/messages/rendererA11y.cy.ts`](../cypress/e2e/messages/rendererA11y.cy.ts) | axe sweep of every message renderer _inside_ the widget (text, buttons, quick replies, list, gallery, image, lightbox, audio, video, adaptive card, open date picker) plus the lightbox focus hand-off    |
+| [`cypress/e2e/messages/datePicker.cy.ts`](../cypress/e2e/messages/datePicker.cy.ts)     | APG dialog: Tab / Shift+Tab wrap inside the date picker, Escape closes and restores focus to the opener                                                                                                   |
+| [`cypress/e2e/messageInput.cy.ts`](../cypress/e2e/messageInput.cy.ts)                   | Persistent menu: native toggle with `aria-expanded`, labelled group of native buttons, keyboard activation, focus returned to the input on close, configurable label                                      |
+| [`cypress/e2e/fileAttachements.cy.ts`](../cypress/e2e/fileAttachements.cy.ts)           | Attach button naming, hidden `<input type=file>`, per-position remove-button names, failure conveyed as text (SC 1.4.1), axe in the queued (mocked successful upload) and failed states, keyboard removal |
+| [`cypress/e2e/privacyNotice.cy.ts`](../cypress/e2e/privacyNotice.cy.ts)                 | Screen-title focus on entry (from the home screen and as first screen), policy link naming (Label in Name + "opens in new tab"), native accept button, keyboard accept → input focus                      |
+
+Real Tab / Enter / Escape presses use `cypress-real-events` (CDP), so those tests are declared with an `itChromiumOnly` helper and run in the Chrome jobs only; the Firefox job keeps every assertion that does not need a native key event. Renderer-internal keyboard/ARIA behaviour is covered upstream (chat-components `test/*A11y.spec.tsx`) and is deliberately not duplicated here.
+
+### Known upstream findings (excluded per call until fixed in chat-components)
+
+| Finding                                                                                                                                          | Renderer         | Handling in Webchat                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------ |
+| Gallery card without an image renders its white title over the `#cccccc` placeholder — 1.6:1 (SC 1.4.3 needs 4.5:1)                              | Gallery          | `color-contrast` excluded in the gallery sweep                     |
+| Swiper pagination bullets are 6×6 px focusable `role="button"` elements (SC 2.5.8 needs 24×24 CSS px)                                            | Gallery          | `target-size` excluded in the gallery sweep                        |
+| Lightbox `<img>` renders **no** `alt` attribute when the message carries no alt text (`alt={altText}`, unlike the thumbnail's `altText \|\| ""`) | Image / lightbox | sweep uses the `downloadableImage-with-alt` fixture                |
+| flatpickr grid/rowgroup without `role="row"` children, gridcells outside rows, unnamed readonly `flatpickr-input` (AB#144248)                    | DatePicker       | `aria-required-children`, `aria-required-parent`, `label` excluded |
+
+### Follow-ups found while writing these specs (Webchat)
+
+- **xApp overlay** (`functional/xapp-overlay/XAppOverlay.tsx`): `role="dialog" aria-modal="true"` with no accessible name, no focus move on open, no focus trap, no Escape, no focus restore, and an `<iframe>` without `title`. Needs the `Modal` treatment before a spec can be written for it.
+- **Persistent menu**: Escape does not close the menu or return focus to the toggle (expected for a menu button / disclosure).
+- **File attachments**: removing an attachment unmounts the focused remove button, dropping focus to `<body>` (SC 2.4.3) — move it to the neighbouring chip or the attach button; upload failure is visible text only, not announced through the status live region (SC 4.1.3).
+- **Privacy notice**: markdown links in the notice text open in a new tab (`target="_blank"`) without the "Opens in new tab" cue the policy link has.
 
 ## Manual checks
 
