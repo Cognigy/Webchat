@@ -118,10 +118,24 @@ const xAppOverlay: FC = () => {
 		};
 	}, [closeOnSubmit]);
 
+	// Prevent sandbox escape: allow-scripts + allow-same-origin together allow a
+	// same-origin iframe to remove its own sandbox via frameElement access.
+	// xApp URLs must be cross-origin; a same-origin URL is a misconfiguration.
+	const xAppOrigin = (() => {
+		try {
+			return new URL(url).origin;
+		} catch {
+			return null;
+		}
+	})();
+	if (xAppOrigin === null || xAppOrigin === window.location.origin) {
+		return null;
+	}
+
 	const showHeader = screenTitle || showCloseIcon;
 
 	return (
-		<Root tabIndex={0} role="dialog" aria-modal="true">
+		<Root tabIndex={0} role="dialog" aria-modal="true" aria-label={screenTitle || "xApp"}>
 			{showHeader && (
 				<Header
 					title={screenTitle}
@@ -131,14 +145,16 @@ const xAppOverlay: FC = () => {
 			)}
 			<Iframe
 				src={url}
+				title={screenTitle || "xApp"}
+				sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
 				allow="
-  accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera; 
-  cross-origin-isolated; display-capture; document-domain; encrypted-media; 
-  execution-while-not-rendered; execution-while-out-of-viewport; 
-  fullscreen; gamepad; geolocation; gyroscope; hid; idle-detection; 
-  interest-cohort; local-fonts; magnetometer; microphone; midi; 
-  otp-credentials; payment; picture-in-picture; publickey-credentials-get; 
-  screen-wake-lock; serial; speaker-selection; usb; web-share; 
+  accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera;
+  cross-origin-isolated; display-capture; document-domain; encrypted-media;
+  execution-while-not-rendered; execution-while-out-of-viewport;
+  fullscreen; gamepad; geolocation; gyroscope; hid; idle-detection;
+  interest-cohort; local-fonts; magnetometer; microphone; midi;
+  otp-credentials; payment; picture-in-picture; publickey-credentials-get;
+  screen-wake-lock; serial; speaker-selection; usb; web-share;
   xr-spatial-tracking"
 			/>
 		</Root>

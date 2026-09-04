@@ -6,6 +6,52 @@ describe("xApps Overlay", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 	});
 
+	describe("Security (WCH-SI10-003)", () => {
+		it("xApp iframe has sandbox attribute restricting default capabilities", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe").should("have.attr", "sandbox");
+				cy.get("iframe")
+					.invoke("attr", "sandbox")
+					.should("include", "allow-scripts")
+					.and("include", "allow-same-origin")
+					.and("include", "allow-forms")
+					.and("include", "allow-popups")
+					.and("not.include", "allow-top-navigation");
+			});
+		});
+
+		it("xApp iframe sandbox includes allow-modals so alert/confirm/prompt work", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe")
+					.invoke("attr", "sandbox")
+					.should("include", "allow-modals")
+					.and("not.include", "allow-top-navigation");
+			});
+		});
+
+		it("does not render iframe for a same-origin xApp URL to prevent sandbox escape", () => {
+			// allow-scripts + allow-same-origin together allow a same-origin iframe to
+			// remove its own sandbox via frameElement; reject same-origin URLs at render time.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: {},
+						url: "http://localhost:8787/same-origin-xapp",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
+	});
+
+	describe("Accessibility (WCAG 2.2 AA)", () => {
+		it("xApps overlay passes axe audit", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+			});
+		});
+	});
+
 	it("opens overlay automatically", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 			cy.get(".webchat-header-logo-name-container").contains("XApp Title 1");
