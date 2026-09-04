@@ -240,7 +240,13 @@ describe("Endpoint settings — Accessibility (WCAG 2.2 AA)", () => {
 			receiveManyMessages(14);
 			cy.get(".webchat-message-row").should("have.length", 14);
 
+			// Scroll up in two steps like a wheel gesture would: the scroller only
+			// treats the log as "scrolled up" once a scroll event sees a smaller
+			// scrollTop than the previous one, and a single programmatic jump from
+			// the bottom gives it no previous value to compare against.
+			cy.get("#webchatChatHistory").scrollTo(0, 300);
 			cy.get("#webchatChatHistory").scrollTo("top");
+			cy.wait(600);
 			// Diagnostics (CGY-30265 CI investigation, Firefox): which element
 			// actually scrolls, and did the scroll register?
 			cy.document().then(doc => {
@@ -255,9 +261,6 @@ describe("Endpoint settings — Accessibility (WCAG 2.2 AA)", () => {
 					`[scroll] ${describe("#webchatChatHistory")} | ${describe("#webchatChatHistoryWrapperLiveLogPanel")} | button=${!!doc.querySelector(".webchat-scroll-to-bottom-button")}`,
 				);
 			});
-			// a programmatic scrollTop change does not always emit a scroll event
-			// in Firefox; nudge the listener the way a wheel would
-			cy.get("#webchatChatHistory").trigger("scroll");
 			cy.get(".webchat-scroll-to-bottom-button")
 				.should("be.visible")
 				.and("match", "button")

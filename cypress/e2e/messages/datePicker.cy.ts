@@ -118,9 +118,54 @@ describe("Date Picker", () => {
 				};
 			});
 
+			// Diagnostic: tag stable nodes so we can tell which subtree remounts
+			// around the click (the trace showed the message input remounting).
+			const DIAG_SELECTORS = [
+				"[data-cognigy-webchat-root]",
+				"#webchatWindow",
+				".webchat-header-bar",
+				"#webchatChatHistory",
+				".webchat-input",
+				".webchat-input-message-input",
+				"[data-testid=button-open]",
+			];
+			const snapshotUi = (label: string) =>
+				cy.window().then(win => {
+					const w = win as Window & {
+						webchat?: { store: { getState: () => Record<string, unknown> } };
+					};
+					const state = w.webchat?.store.getState() ?? {};
+					const ui = (state.ui ?? {}) as Record<string, unknown>;
+					const connection = (state.connection ?? {}) as Record<string, unknown>;
+					const picked = Object.keys(ui)
+						.filter(k => typeof ui[k] !== "object" || ui[k] === null)
+						.map(k => `${k}=${String(ui[k])}`)
+						.join(" ");
+					cy.task(
+						"log",
+						`[ui ${label}] ${picked} | connection: ${Object.keys(connection)
+							.map(k => `${k}=${String(connection[k])}`)
+							.join(" ")} | inner=${win.innerWidth}x${win.innerHeight}`,
+					);
+				});
+			cy.document().then(doc => {
+				DIAG_SELECTORS.forEach(sel =>
+					doc.querySelector(sel)?.setAttribute("data-diag", "1"),
+				);
+			});
+			snapshotUi("before click");
+
 			cy.contains("foobar012b1").click();
 			cy.get(heading).should("be.focused");
 			logActiveElement("date picker: t+0");
+			cy.document().then(doc => {
+				const survived = DIAG_SELECTORS.map(
+					sel =>
+						`${sel}:${doc.querySelector(sel)?.getAttribute("data-diag") === "1" ? "same" : "REMOUNTED/missing"}`,
+				);
+				cy.task("log", `[remount] ${survived.join(" | ")}`);
+			});
+			snapshotUi("after click");
 			cy.wait(150);
 			logActiveElement("date picker: t+150");
 			cy.wait(150);
