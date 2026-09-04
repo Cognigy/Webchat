@@ -295,43 +295,57 @@ Cypress.Commands.add("focusInput", () => {
 	return cy.then(() => {});
 });
 
-Cypress.Commands.add("checkA11yCompliance", (selector?: string) => {
-	cy.injectAxe();
+Cypress.Commands.add(
+	"checkA11yCompliance",
+	(selector?: string, options?: { disabledRules?: string[] }) => {
+		cy.injectAxe();
 
-	const targetElement = selector || "Entire page";
-	cy.task("log", `\nChecking accessibility for: ${targetElement}`);
+		const targetElement = selector || "Entire page";
+		cy.task("log", `\nChecking accessibility for: ${targetElement}`);
 
-	cy.checkA11y(
-		selector || null,
-		{
-			runOnly: {
-				type: "tag",
-				values: [
-					"wcag2a",
-					"wcag2aa",
-					"wcag21a",
-					"wcag21aa",
-					"wcag22a",
-					"wcag22aa",
-					"best-practice",
-				],
+		// Per-call rule exclusions for documented findings that live upstream
+		// (e.g. inside a @cognigy/chat-components renderer). Every exclusion must
+		// be justified at the call site with the tracking reference; the goal
+		// state is no exclusions at all.
+		const rules: Record<string, { enabled: boolean }> = {};
+		(options?.disabledRules ?? []).forEach(ruleId => {
+			rules[ruleId] = { enabled: false };
+		});
+
+		cy.checkA11y(
+			selector || null,
+			{
+				runOnly: {
+					type: "tag",
+					// axe-core has no `wcag22a` tag — the WCAG 2.2 additions it
+					// automates are all Level AA (`wcag22aa`).
+					values: [
+						"wcag2a",
+						"wcag2aa",
+						"wcag21a",
+						"wcag21aa",
+						"wcag22aa",
+						"best-practice",
+					],
+				},
+				rules,
+				includedImpacts: ["minor", "moderate", "serious", "critical"],
 			},
-			includedImpacts: ["minor", "moderate", "serious", "critical"],
-		},
-		violations => {
-			if (violations.length > 0) {
-				violations.forEach((violation, index) => {
-					cy.task(
-						"log",
-						`${index + 1}. ${violation.impact} - ${violation.id}: ${violation.description}`,
-					);
-					violation.nodes.forEach(node => {
-						cy.task("log", `   HTML: ${node.html}`);
+			violations => {
+				if (violations.length > 0) {
+					violations.forEach((violation, index) => {
+						cy.task(
+							"log",
+							`${index + 1}. ${violation.impact} - ${violation.id}: ${violation.description}`,
+						);
+						violation.nodes.forEach(node => {
+							cy.task("log", `   HTML: ${node.html}`);
+						});
 					});
-				});
-			}
-		},
-	);
+				}
+			},
+		);
 
-	return cy.then(() => {});
-});
+		return cy.then(() => {});
+	},
+);
