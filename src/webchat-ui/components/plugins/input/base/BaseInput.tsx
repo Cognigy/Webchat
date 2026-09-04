@@ -365,7 +365,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		e.stopPropagation();
 
 		const { text, speechResult } = this.state;
-		const { sttActive, fileList } = this.props;
+		const { sttActive, fileList, fileUploadError } = this.props;
 
 		let messageText = text;
 
@@ -377,7 +377,16 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.handleCancelSpeech();
 		}
 
-		if (!text && !fileList) return;
+		/**
+		 * Enter reaches `handleSubmit` straight from `handleInputKeyDown`, which does
+		 * not consult the Send button — so both of the button's `disabled` conditions
+		 * have to be repeated here or Enter bypasses them.
+		 *
+		 * `fileList` is always an array (it defaults to `[]`), so emptiness has to be
+		 * checked by length: `!fileList` would never be true.
+		 */
+		if (fileUploadError) return;
+		if (!text && !fileList?.length) return;
 
 		const attachments: IUploadFileMetaData[] = [];
 		fileList.forEach(fileItem => {
