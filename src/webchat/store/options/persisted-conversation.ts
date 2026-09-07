@@ -28,42 +28,60 @@ import { getStorage } from "../../helper/storage";
  * page load, which no stored entry can match, so there is nothing to
  * predict.
  */
-// mapStateToProps runs on every dispatch, and a persisted conversation
-// can be sizeable — so the parse is cached against the raw string it was
-// derived from. `getItem` itself still runs every time, which is what
-// keeps the answer current (the key changes once the endpoint config
-// supplies its URLToken).
+// mapStateToProps runs on every dispatch and a persisted conversation can
+// be sizeable, so this must not sit on the hot path: the parse is cached
+// against the raw string it was derived from, and the read stops
+// altogether once the answer is spent (see below). Until then `getItem`
+// runs on every call, which is what keeps the answer current — the key
+// changes once the endpoint config supplies its URLToken.
 let lastRead: { key: string; raw: string | null; result: boolean } | null = null;
 
 export const hasPersistedConversationForInitialSession = (state: StoreState): boolean => {
-	const { disableLocalStorage, useSessionStorage } = state.config.settings.embeddingConfiguration;
-	const browserStorage = getStorage({ disableLocalStorage, useSessionStorage });
-	if (!browserStorage) return false;
-
 	const sessionId = state.config.initialSessionId;
 	if (!sessionId) return false;
 
-	// `channel` is not part of the storage key; it is only in the type.
-	const key = getOptionsKey(
-		{ userId: state.options.userId, sessionId, channel: state.options.channel },
-		state.config,
-	);
-	const persistedString = browserStorage.getItem(key);
+	const { disableLocalStorage, useSessionStorage } = state.config.settings.embeddingConfiguration;
 
-	if (lastRead && lastRead.key === key && lastRead.raw === persistedString) {
-		return lastRead.result;
-	}
+	try {
+		const browserStorage = getStorage({ disableLocalStorage, useSessionStorage });
+		if (!browserStorage) return false;
 
-	let result = false;
-	if (persistedString) {
-		try {
-			const messages = JSON.parse(persistedString)?.messages;
-			result = Array.isArray(messages) && messages.length > 0;
-		} catch (e) {
-			result = false;
+		// `channel` is not part of the storage key; it is only in the type.
+		const key = getOptionsKey(
+			{ userId: state.options.userId, sessionId, channel: state.options.channel },
+			state.config,
+		);
+
+		// Once the first connect has assigned a session id the answer is
+		// spent: `computeNoticeSession` consults it only while its own
+		// `prev.id` is still "". The key is final well before that (userId
+		// is dispatched on mount, URLToken with the config, and the connect
+		// waits for the config), so the cache is populated by then and every
+		// later dispatch is served without touching storage.
+		if (state.options.sessionId && lastRead?.key === key) return lastRead.result;
+
+		const persistedString = browserStorage.getItem(key);
+
+		if (lastRead && lastRead.key === key && lastRead.raw === persistedString) {
+			return lastRead.result;
 		}
-	}
 
-	lastRead = { key, raw: persistedString, result };
-	return result;
+		let result = false;
+		if (persistedString) {
+			try {
+				const messages = JSON.parse(persistedString)?.messages;
+				result = Array.isArray(messages) && messages.length > 0;
+			} catch (e) {
+				result = false;
+			}
+		}
+
+		lastRead = { key, raw: persistedString, result };
+		return result;
+	} catch (e) {
+		// Restricted embeddings can throw on merely touching storage. The
+		// restore reads it the same way, so nothing would be restored there
+		// either — "no persisted conversation" is the truthful answer.
+		return false;
+	}
 };

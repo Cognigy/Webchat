@@ -85,10 +85,10 @@ export function computeNoticeSession(
  * and is announced after the "Connection restored" utterances).
  *
  * Eligibility only — WHEN an eligible notice is spoken is the live
- * region's business: `WebchatUI.isFirstConnectPending` additionally holds
- * the announcement (as `intro.held`) while the page load's first connect
- * is in flight, because the verdict this function computes is not final
- * until that connect assigns the session id.
+ * region's business (it defers the intro past the screen's focus
+ * utterances). That deferral is why the verdict must be final before the
+ * first connect resolves rather than after it, which is what
+ * `willRestorePersistedConversation` in `computeNoticeSession` provides.
  */
 export function getAIAgentNoticeIntroText(args: {
 	behavior: IWebchatConfig["settings"]["behavior"];
