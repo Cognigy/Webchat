@@ -118,6 +118,7 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 		it("blocks user messages until the SUN is accepted", () => {
 			cy.visitWebchat().initMockWebchat({ settings: sunSettings });
 			cy.openWebchat();
+			cy.startConversation();
 			// SUN is visible — no chat history yet
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 			cy.get("#webchatChatHistory").should("not.exist");
