@@ -30,7 +30,12 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 		it("does NOT show the SUN screen when systemUseNotification.enabled is false", () => {
 			cy.visitWebchat().initMockWebchat({
 				settings: {
-					systemUseNotification: { enabled: false, title: "", text: "", submitButtonText: "" },
+					systemUseNotification: {
+					enabled: false,
+					title: "",
+					text: "",
+					submitButtonText: "",
+				},
 				},
 			});
 			cy.openWebchat();
