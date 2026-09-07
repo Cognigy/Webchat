@@ -1,9 +1,18 @@
 describe("Screen Reader Live Region", () => {
 	const liveRegionSelector = "#webchatMessageContainerScreenReaderLiveRegion";
+	// initMockWebchat's default endpoint origin is a REAL, reachable host:
+	// only the config GET is stubbed, so the socket dials out for real and
+	// its first connect can hang until socket.io's own ~20s timeout. The
+	// AI-agent notice waits for that first connect to settle (and message
+	// announcements queue behind the notice), so every announcement in this
+	// spec would inherit that wait. An unroutable origin fails the connect
+	// in milliseconds, which is both hermetic and fast — no test here needs
+	// a live socket, messages are injected through `_handleOutput`.
+	const unconnectableEndpoint = "http://mock-endpoint.invalid/asdfqwer";
 
 	beforeEach(() => {
 		cy.visitWebchat();
-		cy.initMockWebchat();
+		cy.initMockWebchat(undefined, undefined, unconnectableEndpoint);
 		cy.openWebchat().startConversation();
 	});
 
@@ -37,13 +46,14 @@ describe("Screen Reader Live Region", () => {
 		const noticeRegionSelector = "#webchatAIAgentNoticeLiveRegion";
 		const noticeText = "You're now chatting with an AI Agent.";
 
-		// An embedding with a pinned `sessionId` holds the notice until the
-		// page load's FIRST connect has settled — that connect is what
-		// assigns the session id and restores the persisted conversation, so
-		// before it settles Webchat cannot tell a brand-new conversation
-		// from a continued one. Assertions in those tests start from this
-		// point rather than from a fixed wait: on CI the connect to a real
-		// endpoint regularly takes longer than the intro's 600ms delay.
+		// The notice is held until the page load's FIRST connect has
+		// settled — that connect is what assigns the session id and
+		// restores a persisted conversation, so before it settles Webchat
+		// cannot tell a brand-new conversation from a continued one. Both
+		// the "announces" and the "stays silent" assertions below therefore
+		// start from this point rather than from a fixed wait: on CI a
+		// connect to a real endpoint regularly outlasts the intro's 600ms
+		// delay.
 		const waitForFirstConnectSettled = () =>
 			cy.waitUntil(
 				() =>
@@ -54,24 +64,71 @@ describe("Screen Reader Live Region", () => {
 				{ timeout: 20000, interval: 100 },
 			);
 
+		// Keeps the page load's FIRST connect in flight for the rest of the
+		// test. A real stall cannot be arranged from Cypress — the socket
+		// dials an unroutable origin and settles on its own schedule, and
+		// `cy.intercept` cannot hold socket.io's transport open — so the
+		// flag is driven through the store instead: let the one real
+		// attempt settle (socket.io reconnection is off and a retry only
+		// follows a NETWORK_ON / SET_PAGE_VISIBLE / SEND_MESSAGE, none of
+		// which these tests trigger), then re-arm `connecting`. Callers
+		// install `cy.clock` first, so no app timer has fired in between
+		// and the intro sees one uninterrupted pending connect.
+		const holdFirstConnectInFlight = () => {
+			cy.waitUntil(
+				() =>
+					cy
+						.getWebchat()
+						.then(webchat => !webchat.store.getState().connection.connecting),
+				{ timeout: 10000, interval: 100 },
+			);
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "SET_CONNECTING", connecting: true });
+			});
+			// Real time, so React commits that state before any fake time
+			// advances — cy.tick would otherwise fire the app's timers while
+			// the update is still queued.
+			cy.wait(100);
+		};
+
+		// The connect resolves, in connection-middleware's order:
+		// `setOptions` first — `options-middleware` restores a persisted
+		// conversation while handling it — and `connecting` released last,
+		// so the restore is already in the store when the hold lifts.
+		const settleFirstConnect = (options: Record<string, string>) => {
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "SET_OPTIONS", options });
+				webchat.store.dispatch({ type: "SET_CONNECTING", connecting: false });
+			});
+			// Real time first: the released hold has to reach the live
+			// region (and re-arm the 600ms timer) before fake time passes.
+			cy.wait(100);
+		};
+
 		it("announces the default notice when the chat screen appears", () => {
-			// beforeEach already opened the chat screen; wait past the 600ms
-			// intro announce delay.
+			// beforeEach already opened the chat screen; the notice follows
+			// the first connect settling, then its 600ms intro delay.
+			waitForFirstConnectSettled();
 			cy.wait(800);
 			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 		});
 
 		it("announces the configured AIAgentNoticeText", () => {
 			cy.visitWebchat();
-			cy.initMockWebchat({
-				settings: {
-					behavior: {
-						AIAgentNoticeText: "Je chat met een digitale AI assistent",
+			cy.initMockWebchat(
+				{
+					settings: {
+						behavior: {
+							AIAgentNoticeText: "Je chat met een digitale AI assistent",
+						},
 					},
 				},
-			});
+				undefined,
+				unconnectableEndpoint,
+			);
 			cy.openWebchat().startConversation();
 
+			waitForFirstConnectSettled();
 			cy.wait(800);
 			cy.get(noticeRegionSelector).should(
 				"contain.text",
@@ -99,7 +156,7 @@ describe("Screen Reader Live Region", () => {
 			// failed connect attempt (socket.io reconnection is off) and the
 			// timer keeps its original fake-time-0 deadline.
 			cy.visitWebchat();
-			cy.initMockWebchat(undefined, undefined, "http://mock-endpoint.invalid/asdfqwer");
+			cy.initMockWebchat(undefined, undefined, unconnectableEndpoint);
 			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
 			cy.openWebchat().startConversation();
 
@@ -137,6 +194,7 @@ describe("Screen Reader Live Region", () => {
 
 		it("does not re-announce the notice when returning to the same conversation", () => {
 			// beforeEach opened the chat screen — first visit announces.
+			waitForFirstConnectSettled();
 			cy.wait(800);
 			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 
@@ -194,6 +252,7 @@ describe("Screen Reader Live Region", () => {
 				channel: "channel-1",
 			});
 			cy.openWebchat().startConversation();
+			waitForFirstConnectSettled();
 			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 
 			cy.sendMessage("hello");
@@ -237,6 +296,7 @@ describe("Screen Reader Live Region", () => {
 			cy.visitWebchat();
 			cy.initWebchat(options);
 			cy.openWebchat().startConversation();
+			waitForFirstConnectSettled();
 			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 
 			// Persist some history for this session.
@@ -302,7 +362,7 @@ describe("Screen Reader Live Region", () => {
 			cy.initMockWebchat(
 				{ userId, sessionId, channel: "channel-1" },
 				undefined,
-				"http://mock-endpoint.invalid/asdfqwer",
+				unconnectableEndpoint,
 			);
 			// The endpoint config carries the URLToken the storage key is
 			// built from, so the restore can only happen once it is loaded —
@@ -316,41 +376,23 @@ describe("Screen Reader Live Region", () => {
 			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
 			cy.openWebchat().startConversation();
 
-			// Let the one real (failing) connect attempt settle, then model a
-			// first connect that is still in flight. No fake time passes in
-			// between, so the intro sees an uninterrupted pending connect.
-			cy.waitUntil(
-				() =>
-					cy
-						.getWebchat()
-						.then(webchat => !webchat.store.getState().connection.connecting),
-				{ timeout: 10000, interval: 100 },
-			);
+			holdFirstConnectInFlight();
+
+			// The precondition the assertion below rests on: nothing has
+			// settled the connect behind our back.
 			cy.getWebchat().then(webchat => {
-				webchat.store.dispatch({ type: "SET_CONNECTING", connecting: true });
+				expect(webchat.store.getState().connection.connecting).to.equal(true);
 			});
-			// Real time, so React commits that state before any fake time
-			// advances — cy.tick would otherwise fire the app's timers while
-			// the update is still queued.
-			cy.wait(100);
 
 			// Well past the intro deadline — still nothing, the notice waits
 			// for the connect. `cy.wait` runs on real time (only the app's
-			// timers are faked) and lets the announcement's own commit land,
+			// timers are faked) and lets an announcement's own commit land,
 			// so an empty region here really means "not announced".
 			cy.tick(1000);
 			cy.wait(100);
 			cy.get(noticeRegionSelector).should("be.empty");
 
-			// The connect resolves: session id and restored history land in
-			// one commit, as they do in connection-middleware.
-			cy.getWebchat().then(webchat => {
-				webchat.store.dispatch({ type: "SET_CONNECTING", connecting: false });
-				webchat.store.dispatch({
-					type: "SET_OPTIONS",
-					options: { userId, sessionId, channel: "channel-1" },
-				});
-			});
+			settleFirstConnect({ userId, sessionId, channel: "channel-1" });
 			cy.contains('You said "hello".').should("be.visible");
 
 			// A continued conversation: silent from here on, too.
@@ -359,15 +401,171 @@ describe("Screen Reader Live Region", () => {
 			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
 		});
 
+		it("announces the notice when the first connect fails", () => {
+			// The hold must not swallow the notice when there is nothing to
+			// wait for any more: a connect that fails settles the same as one
+			// that succeeds, and the notice describes the chat, not the
+			// connection. A pinned `sessionId` — the shape a persisted
+			// conversation has, so the hold is definitely armed — plus an
+			// unroutable origin, so the connect can only ever fail. The
+			// notice is asserted with a retry rather than after a fixed
+			// wait because Webchat retries a failed first connect
+			// (CGY-3852) and each attempt re-arms the hold; the notice
+			// lands in the first window that outlasts the 600ms delay.
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initMockWebchat(
+				{
+					userId: "user-cgy3519-failed-connect",
+					sessionId: "session-cgy3519-failed-connect",
+					channel: "channel-1",
+				},
+				undefined,
+				unconnectableEndpoint,
+			);
+			cy.openWebchat().startConversation();
+
+			// No session id was ever assigned, so this settles as a failure.
+			waitForFirstConnectSettled();
+			cy.getWebchat().then(webchat => {
+				expect(webchat.store.getState().options.sessionId || "").to.equal("");
+			});
+			cy.get(noticeRegionSelector, { timeout: 10000 }).should("contain.text", noticeText);
+		});
+
+		it("still announces the notice before a message that arrives while the first connect is in flight", () => {
+			// The hold defers the notice's timer but keeps the intro
+			// PENDING, so message announcements queue behind it. Were the
+			// intro withheld instead, a message present before the connect
+			// settles — an engagement teaser, a message typed while
+			// connecting — would be announced first and the notice would
+			// follow it, inverting the intro-first order.
+			const sessionId = "session-cgy3519-order-under-hold";
+
+			cy.visitWebchat();
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.initMockWebchat(
+				{ userId: "user-cgy3519-order-under-hold", channel: "channel-1" },
+				undefined,
+				unconnectableEndpoint,
+			);
+			cy.waitUntil(
+				() =>
+					cy.getWebchat().then(webchat => webchat.store.getState().config.isConfigLoaded),
+				{ timeout: 10000, interval: 50 },
+			);
+			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
+			cy.openWebchat().startConversation();
+
+			holdFirstConnectInFlight();
+
+			cy.receiveMessage("Hello there");
+
+			// Run the message's own pipeline to completion: `messageDelay`
+			// (500ms) before it reaches the store, then the live region's
+			// 100ms announce debounce. The ticks are interleaved with real
+			// time so React can commit in between — one coarse tick would
+			// arm the debounce only after the tick had already ended, and
+			// the region would then read as empty whether or not the hold
+			// works.
+			cy.tick(500);
+			cy.wait(100);
+			// On screen, so an empty message region below means "not
+			// announced", not "not rendered yet".
+			cy.contains("Hello there").should("be.visible");
+			cy.tick(200);
+			cy.wait(100);
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// Past the intro's 600ms delay as well: neither has been
+			// announced, the message is queued behind the pending intro
+			// (and the connect is still in flight, so the hold is real).
+			cy.getWebchat().then(webchat => {
+				expect(webchat.store.getState().connection.connecting).to.equal(true);
+			});
+			cy.tick(1000);
+			cy.wait(100);
+			cy.get(noticeRegionSelector).should("be.empty");
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// The connect resolves into a brand-new session: notice first…
+			settleFirstConnect({
+				userId: "user-cgy3519-order-under-hold",
+				sessionId,
+				channel: "channel-1",
+			});
+			cy.tick(600);
+			cy.wait(100);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// …then the held message, after its own 100ms debounce.
+			cy.tick(100);
+			cy.wait(100);
+			cy.get(liveRegionSelector).should("contain.text", "Hello there");
+		});
+
+		it("gives up the hold when the first connect never settles", () => {
+			// Safety valve: a socket that connects but never completes its
+			// handshake would keep `connecting` true forever, and a held
+			// intro also holds every message announcement. After
+			// INTRO_HOLD_TIMEOUT_MS the notice is announced anyway and the
+			// message region is released with it — one notice too many
+			// beats a live region that never speaks again.
+			cy.visitWebchat();
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.initMockWebchat(
+				{ userId: "user-cgy3519-hold-timeout", channel: "channel-1" },
+				undefined,
+				unconnectableEndpoint,
+			);
+			cy.waitUntil(
+				() =>
+					cy.getWebchat().then(webchat => webchat.store.getState().config.isConfigLoaded),
+				{ timeout: 10000, interval: 50 },
+			);
+			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
+			cy.openWebchat().startConversation();
+
+			holdFirstConnectInFlight();
+			cy.receiveMessage("Hello there");
+			cy.tick(700);
+			cy.wait(100);
+			cy.get(noticeRegionSelector).should("be.empty");
+			cy.get(liveRegionSelector).should("be.empty");
+
+			// Past INTRO_HOLD_TIMEOUT_MS (8000ms) while the connect is
+			// still in flight: the notice fires, then the queued message.
+			cy.getWebchat().then(webchat => {
+				expect(webchat.store.getState().connection.connecting).to.equal(true);
+			});
+			cy.tick(7500);
+			cy.wait(100);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
+			cy.tick(100);
+			cy.wait(100);
+			cy.get(liveRegionSelector).should("contain.text", "Hello there");
+		});
+
 		it("does not announce anything when the notice is disabled", () => {
 			cy.visitWebchat();
-			cy.initMockWebchat({
-				settings: {
-					behavior: {
-						enableAIAgentNotice: false,
+			cy.initMockWebchat(
+				{
+					settings: {
+						behavior: {
+							enableAIAgentNotice: false,
+						},
 					},
 				},
-			});
+				undefined,
+				unconnectableEndpoint,
+			);
 			cy.openWebchat().startConversation();
 
 			cy.wait(800);

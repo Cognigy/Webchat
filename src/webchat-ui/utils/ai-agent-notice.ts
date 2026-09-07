@@ -73,14 +73,11 @@ export function computeNoticeSession(
  * would cancel the notice; on close, the intro becomes pending again
  * and is announced after the "Connection restored" utterances).
  *
- * `isFirstConnectPending` holds the announcement while the page load's
- * first connect is still in flight: the session id and any restored
- * persisted history only arrive when it resolves, so before that the
- * page load's first conversation merely LOOKS brand-new — and a
- * conversation restored after a page reload is a continuation that must
- * stay silent. A connect that fails (offline, unreachable endpoint)
- * settles too and releases the notice, which is about the chat, not
- * about the connection.
+ * Eligibility only — WHEN an eligible notice is spoken is the live
+ * region's business: `WebchatUI.isFirstConnectPending` additionally holds
+ * the announcement (as `intro.held`) while the page load's first connect
+ * is in flight, because the verdict this function computes is not final
+ * until that connect assigns the session id.
  */
 export function getAIAgentNoticeIntroText(args: {
 	behavior: IWebchatConfig["settings"]["behavior"];
@@ -88,20 +85,12 @@ export function getAIAgentNoticeIntroText(args: {
 	noticeSession: NoticeSession;
 	currentSessionId: string;
 	announcedKeys: ReadonlySet<string>;
-	isFirstConnectPending: boolean;
 }): string | undefined {
-	const {
-		behavior,
-		showDisconnectOverlay,
-		noticeSession,
-		currentSessionId,
-		announcedKeys,
-		isFirstConnectPending,
-	} = args;
+	const { behavior, showDisconnectOverlay, noticeSession, currentSessionId, announcedKeys } =
+		args;
 	const shouldAnnounce =
 		behavior.enableAIAgentNotice !== false &&
 		!showDisconnectOverlay &&
-		!isFirstConnectPending &&
 		noticeSession.isNew &&
 		noticeSession.id === currentSessionId &&
 		!announcedKeys.has(noticeSession.announceKey);

@@ -574,45 +574,51 @@ export class WebchatUI extends React.PureComponent<
 	};
 
 	/**
-	 * Whether the page load's FIRST connect is still in flight. That connect
-	 * is what assigns the session id and — for an embedding that pins a
-	 * `sessionId` — restores the persisted conversation, both in the same
-	 * React commit. Until it settles, a conversation that is about to be
-	 * restored is indistinguishable from a brand-new one, so the AI-agent
-	 * notice waits instead of announcing on a hunch (CGY-3519); announcing
-	 * cannot be taken back.
+	 * Whether a connect is in flight that has yet to produce a session id —
+	 * the page load's first connect (or a retry of it after a failure).
+	 * That connect is what assigns the session id and, for a persisted
+	 * conversation, restores it: `options-middleware` reads storage while
+	 * handling the `SET_OPTIONS` the connect dispatches, and
+	 * `connection-middleware` dispatches that before it releases
+	 * `connecting` — so the restore is already in the store by the time
+	 * this turns false, whether or not React batches the two updates.
 	 *
-	 * Narrowed to embeddings that can actually restore something: without a
-	 * pinned `sessionId` the socket client generates a fresh session id per
-	 * page load, and with local storage or persistent history disabled
-	 * nothing was stored — in either case there is nothing to wait for and
-	 * the notice keeps its original timing.
+	 * Until it settles, a conversation about to be restored is
+	 * indistinguishable from a brand-new one, so the AI-agent notice waits
+	 * rather than announcing on a hunch (CGY-3519) — an announcement
+	 * cannot be taken back. Deliberately not narrowed by embedding options
+	 * (a pinned `sessionId`, storage flags): the notice is a 600ms-deferred
+	 * sr-only utterance, a few hundred milliseconds more costs nothing, and
+	 * one rule for every embedding beats a set of "could this one restore
+	 * anything?" predicates that must stay in sync with the restore path.
+	 *
+	 * A connect that FAILS settles too and releases the notice, which
+	 * describes the chat, not the connection. A retry then re-arms the
+	 * hold, so only a notice already announced between the failure and the
+	 * retry can precede a late restore.
 	 */
 	private get isFirstConnectPending() {
-		const { disableLocalStorage, disablePersistentHistory } =
-			this.props.config.settings.embeddingConfiguration;
-
-		return (
-			!this.props.currentSession &&
-			!!this.props.connecting &&
-			!!this.props.config.initialSessionId &&
-			!disableLocalStorage &&
-			!disablePersistentHistory
-		);
+		return !this.props.currentSession && !!this.props.connecting;
 	}
 
-	private getNoticeIntro(): { key: string; text: string } | undefined {
+	private getNoticeIntro(): { key: string; text: string; held: boolean } | undefined {
 		const text = getAIAgentNoticeIntroText({
 			behavior: this.props.config.settings.behavior,
 			showDisconnectOverlay: this.showDisconnectOverlay,
 			noticeSession: this.state.noticeSession,
 			currentSessionId: this.props.currentSession || "",
 			announcedKeys: this.announcedNoticeKeys,
-			isFirstConnectPending: this.isFirstConnectPending,
 		});
 		if (!text) return undefined;
 
-		return { key: this.state.noticeSession.announceKey, text };
+		// `held` rather than `undefined`: the intro stays PENDING while the
+		// connect is in flight, so message announcements queue behind it
+		// and the notice is still spoken first (see the `intro` prop).
+		return {
+			key: this.state.noticeSession.announceKey,
+			text,
+			held: this.isFirstConnectPending,
+		};
 	}
 
 	componentDidMount() {
