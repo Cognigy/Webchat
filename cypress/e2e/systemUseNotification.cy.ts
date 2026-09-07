@@ -31,12 +31,11 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.visitWebchat().initMockWebchat({
 				settings: {
 					systemUseNotification: {
-					enabled: false,
-					title: "",
-					text: "",
-					submitButtonText: "",
-				},
-				},
+						enabled: false,
+						title: "",
+						text: "",
+						submitButtonText: "",
+					},
 			});
 			cy.openWebchat();
 			cy.startConversation();

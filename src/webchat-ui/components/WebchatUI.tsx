@@ -1750,9 +1750,7 @@ export class WebchatUI extends React.PureComponent<
 			onAcceptSystemUseNotification(currentSession || "");
 			// If the privacy notice also needs to be shown, let it render next naturally.
 			// Otherwise connect immediately so storedMessage is flushed.
-			const privacyGateActive =
-				config.settings.privacyNotice.enabled && !hasAcceptedTerms;
-			if (!privacyGateActive) {
+			if (!config.settings.privacyNotice.enabled || hasAcceptedTerms) {
 				onShowChatScreen();
 			}
 		};
