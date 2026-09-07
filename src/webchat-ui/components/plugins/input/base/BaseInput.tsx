@@ -251,6 +251,11 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.setState({ text });
 		};
 		setTimeout(() => {
+			const hasOpenDialog = !!document.querySelector(
+				'[role="dialog"][aria-modal="true"], dialog[open]',
+			);
+
+			if (hasOpenDialog) return;
 			if (!this.props.config.settings.widgetSettings.disableInputAutofocus) {
 				this.inputRef.current?.focus?.();
 			}
