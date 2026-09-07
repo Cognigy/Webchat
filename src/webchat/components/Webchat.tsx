@@ -8,6 +8,7 @@ import { sendMessage } from "../store/messages/message-middleware";
 import { MessageSender } from "../../webchat-ui/interfaces";
 import {
 	setHasAcceptedTerms,
+	setHasAcceptedSystemUseNotification,
 	setOpen,
 	setShowHomeScreen,
 	showChatScreen,
@@ -26,7 +27,7 @@ import { setInitialSessionId, updateSettings } from "../store/config/config-redu
 import { createOutputHandler } from "../store/messages/message-handler";
 import { createNotification } from "../../webchat-ui/components/presentational/Notifications";
 import { getStorage } from "../helper/storage";
-import { hasAcceptedTermsInStorage } from "../helper/privacyPolicy";
+import { hasAcceptedTermsInStorage, hasAcceptedSunInStorage } from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
 import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { clearMessages } from "../store/messages/message-reducer";
@@ -73,6 +74,13 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		const userId = this.client.socketOptions.userId;
 		if (hasAcceptedTermsInStorage(browserStorage, userId)) {
 			this.store.dispatch(setHasAcceptedTerms(userId));
+		}
+
+		// System Use Notification (AC-8 / FedRAMP): restore per-session acceptance.
+		// If the current sessionId was already accepted in this browser session, skip the notice.
+		const sessionId = this.client.socketOptions.sessionId || "";
+		if (sessionId && hasAcceptedSunInStorage(browserStorage, sessionId)) {
+			this.store.dispatch(setHasAcceptedSystemUseNotification(sessionId));
 		}
 
 		this.store.dispatch(loadConfig());

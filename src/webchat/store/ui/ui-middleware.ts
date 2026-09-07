@@ -7,10 +7,14 @@ import {
 	ShowChatScreenAction,
 	SetPageVisibleAction,
 	SetHasAcceptedTermsAction,
+	SetHasAcceptedSystemUseNotificationAction,
 	SetOpenAction,
 } from "./ui-reducer";
 import { getStorage } from "../../helper/storage";
-import { setHasAcceptedTermsInStorage } from "../../helper/privacyPolicy";
+import {
+	setHasAcceptedTermsInStorage,
+	setHasAcceptedSunInStorage,
+} from "../../helper/privacyPolicy";
 
 export const uiMiddleware: Middleware<object, StoreState> =
 	store =>
@@ -21,7 +25,8 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			| SetOpenAction
 			| ShowChatScreenAction
 			| SetPageVisibleAction
-			| SetHasAcceptedTermsAction,
+			| SetHasAcceptedTermsAction
+			| SetHasAcceptedSystemUseNotificationAction,
 	) => {
 		const { disableLocalStorage, useSessionStorage } =
 			store.getState().config.settings.embeddingConfiguration;
@@ -74,6 +79,17 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			case "SET_HAS_ACCEPTED_TERMS": {
 				if (browserStorage) {
 					setHasAcceptedTermsInStorage(browserStorage, action.userId);
+				}
+
+				break;
+			}
+
+			// System Use Notification (AC-8 / FedRAMP) — store accepted sessionId.
+			// If no storage is available the notice will re-appear on the next page load,
+			// which is the correct FedRAMP behaviour (no silent bypass).
+			case "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION": {
+				if (browserStorage) {
+					setHasAcceptedSunInStorage(browserStorage, action.sessionId);
 				}
 
 				break;

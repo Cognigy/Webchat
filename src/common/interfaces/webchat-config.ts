@@ -295,6 +295,12 @@ export interface IWebchatSettings {
 		urlText: string;
 		url: string;
 	};
+	systemUseNotification?: {
+		enabled: boolean;
+		title: string;
+		text: string;
+		submitButtonText: string;
+	};
 	fileAttachmentMaxSize: number;
 	maintenance: {
 		enabled: boolean;

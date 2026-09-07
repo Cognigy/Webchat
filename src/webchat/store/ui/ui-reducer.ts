@@ -16,6 +16,7 @@ export interface UIState {
 	showPrevConversations: boolean;
 	showChatOptionsScreen: boolean;
 	hasAcceptedTerms: boolean;
+	hasAcceptedSystemUseNotification: boolean;
 	storedMessage: {
 		text?: string;
 		data?: any;
@@ -120,6 +121,15 @@ export const setHasAcceptedTerms = (userId: string) => ({
 });
 export type SetHasAcceptedTermsAction = ReturnType<typeof setHasAcceptedTerms>;
 
+const SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION = "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION";
+export const setHasAcceptedSystemUseNotification = (sessionId: string) => ({
+	type: SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION as "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION",
+	sessionId,
+});
+export type SetHasAcceptedSystemUseNotificationAction = ReturnType<
+	typeof setHasAcceptedSystemUseNotification
+>;
+
 const SET_STORED_MESSAGE = "SET_STORED_MESSAGE";
 export const setStoredMessage = (message: UIState["storedMessage"]) => ({
 	type: SET_STORED_MESSAGE as "SET_STORED_MESSAGE",
@@ -153,6 +163,7 @@ const getInitialState = (): UIState => ({
 	showPrevConversations: false,
 	showChatOptionsScreen: false,
 	hasAcceptedTerms: false,
+	hasAcceptedSystemUseNotification: false,
 	storedMessage: null,
 	ttsActive: false,
 	lastInputId: "",
@@ -258,6 +269,13 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				hasAcceptedTerms: true,
+			};
+		}
+
+		case SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION: {
+			return {
+				...state,
+				hasAcceptedSystemUseNotification: true,
 			};
 		}
 
