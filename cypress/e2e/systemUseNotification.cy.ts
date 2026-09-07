@@ -36,6 +36,7 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 						text: "",
 						submitButtonText: "",
 					},
+				},
 			});
 			cy.openWebchat();
 			cy.startConversation();
