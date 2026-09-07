@@ -147,7 +147,8 @@
 	"overrides": {
 		"cross-spawn": ">=7.0.5",
 		"loader-utils": "2.0.4",
-		"ws": ">=8.21.0"
+		"ws": "^8.21.0",
+		"browserslist": "^4.28.7"
 	},
 	"lint-staged": {
 		"src/**/*.{ts,tsx,js,jsx}": "eslint --config eslint.a11y.config.mjs"

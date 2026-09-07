@@ -7,8 +7,13 @@ jobs:
     # package-lock.json, so no install is needed. Limited to production dependencies,
     # since dev tooling is not part of the published package and clearing the full tree
     # would mean major-upgrading Cypress and the webpack plugins.
+    #
+    # Scope: this repository's lock file only. The `ws` override in package.json is not
+    # inherited by consumers of the published package, so a green run here says nothing
+    # about what `npm install @cognigy/webchat` resolves. Closing that gap needs the
+    # socket.io-client bump in Cognigy/SocketClient.
     audit:
-        name: Audit Production Dependencies
+        name: Audit Production Dependencies (this repo's lock file)
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
