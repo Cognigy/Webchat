@@ -66,6 +66,7 @@ import DropZone from "./plugins/input/file/DropZone";
 import { IFile } from "../../webchat/store/input/input-reducer";
 import { CSSTransition } from "react-transition-group";
 import { TeaserMessage } from "./presentational/TeaserMessage";
+import TeaserMessageAnnouncer from "./presentational/TeaserMessageAnnouncer";
 import XAppOverlay from "./functional/xapp-overlay/XAppOverlay";
 import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
@@ -1466,6 +1467,17 @@ export class WebchatUI extends React.PureComponent<
 										)}
 									{!disableToggleButton && (
 										<div>
+											{/* Mounted for the page lifetime (the teaser shows while
+											    the chat window — and its StatusLiveRegion — is closed),
+											    so the region pre-exists the teaser it announces. */}
+											<TeaserMessageAnnouncer
+												active={!!lastUnseenMessageText && !open}
+												text={lastUnseenMessageText}
+												label={
+													config.settings.customTranslations?.ariaLabels
+														?.newMessagePreview ?? "New message preview"
+												}
+											/>
 											{
 												// Show the message teaser if there is a last bot message and the webchat is closed
 												lastUnseenMessageText && !open && (
@@ -2069,6 +2081,9 @@ export class WebchatUI extends React.PureComponent<
 							"incoming"
 						}
 						disableBorder={config?.settings?.layout?.disableBotOutputBorder}
+						announcementText={
+							config?.settings?.customTranslations?.ariaLabels?.typingIndicator
+						}
 					/>
 				)}
 			</>
