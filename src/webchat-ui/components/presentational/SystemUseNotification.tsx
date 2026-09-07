@@ -63,7 +63,7 @@ export const SystemUseNotification = (props: ISystemUseNotificationProps) => {
 						components={{
 							a: ({ node, ...props }) => (
 								// eslint-disable-next-line jsx-a11y/anchor-has-content
-								<a {...props} target="_blank" rel="noreferrer" />
+								<a {...props} target="_blank" rel="noopener noreferrer" />
 							),
 						}}
 						remarkPlugins={[remarkGfm]}

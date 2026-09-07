@@ -3,6 +3,7 @@ import { IMessage } from "../../../common/interfaces/message";
 import { TTyping } from "../../../common/interfaces/typing";
 import { isPageVisible } from "../../helper/page-visibility";
 import { ISendMessageOptions } from "../messages/message-middleware";
+import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 export interface UIState {
 	open: boolean;
@@ -276,6 +277,15 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				hasAcceptedSystemUseNotification: true,
+			};
+		}
+
+		// When a new conversation session starts the acceptance must be re-evaluated
+		// so the notice shows for the new sessionId if it has not yet been accepted.
+		case "SWITCH_SESSION": {
+			return {
+				...state,
+				hasAcceptedSystemUseNotification: false,
 			};
 		}
 
