@@ -41,7 +41,8 @@ const Actions = styled.div({
 });
 
 const AcceptButton = styled(PrimaryButton)(() => ({
-	width: 303,
+	width: "100%",
+	maxWidth: 303,
 }));
 
 interface ISystemUseNotificationProps {

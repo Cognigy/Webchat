@@ -183,9 +183,11 @@ type UIAction =
 	| SetShowPrevConversationsAction
 	| SetShowChatOptionsScreenAction
 	| SetHasAcceptedTermsAction
+	| SetHasAcceptedSystemUseNotificationAction
 	| SetStoredMessageAction
 	| SetTTSActiveAction
-	| SetLastInputIdAction;
+	| SetLastInputIdAction
+	| SwitchSessionAction;
 
 export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action) => {
 	switch (action.type) {

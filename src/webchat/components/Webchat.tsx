@@ -84,7 +84,12 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		}
 
 		this.store.dispatch(loadConfig());
-		if (this.props.options?.sessionId) {
+		// Always sync the Redux options.sessionId from the socket client so that
+		// handleAcceptSystemUseNotification in WebchatUI reads the same sessionId
+		// that was used to check SUN acceptance in storage above.
+		if (sessionId) {
+			this.store.dispatch(setInitialSessionId(sessionId));
+		} else if (this.props.options?.sessionId) {
 			this.store.dispatch(setInitialSessionId(this.props.options.sessionId));
 		}
 		if (this.props.options?.userId) {

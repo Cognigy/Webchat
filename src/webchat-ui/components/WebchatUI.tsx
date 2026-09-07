@@ -1745,7 +1745,16 @@ export class WebchatUI extends React.PureComponent<
 
 		const sun = config.settings.systemUseNotification;
 		const handleAcceptSystemUseNotification = () => {
-			onAcceptSystemUseNotification(this.props?.options?.sessionId || "");
+			// Use currentSession (synced from the socket client's sessionId) so the
+			// recorded sessionId matches what Webchat.tsx checks on page reload.
+			onAcceptSystemUseNotification(currentSession || "");
+			// If the privacy notice also needs to be shown, let it render next naturally.
+			// Otherwise connect immediately so storedMessage is flushed.
+			const privacyGateActive =
+				config.settings.privacyNotice.enabled && !hasAcceptedTerms;
+			if (!privacyGateActive) {
+				onShowChatScreen();
+			}
 		};
 
 		const getRegularLayoutContent = () => {
