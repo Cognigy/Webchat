@@ -167,8 +167,8 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 		onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) =>
 			dispatch(switchSession(sessionId, conversation)),
 		onAcceptTerms: (userId: string) => dispatch(setHasAcceptedTerms(userId)),
-	onAcceptSystemUseNotification: (sessionId: string) =>
-		dispatch(setHasAcceptedSystemUseNotification(sessionId)),
+		onAcceptSystemUseNotification: (sessionId: string) =>
+			dispatch(setHasAcceptedSystemUseNotification(sessionId)),
 		onSetStoredMessage: (message: UIState["storedMessage"]) =>
 			dispatch(setStoredMessage(message)),
 		onSetDropZoneVisible: (isVisible: boolean) => dispatch(setDropZoneVisible(isVisible)),
