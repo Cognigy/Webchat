@@ -90,8 +90,11 @@ export const getSpeechRecognitionErrorMessage = (
 	switch (failure) {
 		// The user (or a policy) blocked the microphone. Only they can undo
 		// it, and only in browser settings — the prompt won't come back.
+		// NOT `service-not-allowed`, which per the spec means the recognition
+		// *service* was refused and says nothing about microphone access;
+		// sending those users to their microphone settings would be a wrong
+		// remedy, so it falls through to the generic message below.
 		case "not-allowed":
-		case "service-not-allowed":
 			return (
 				customTranslations?.speech_recognition_not_allowed ??
 				"Microphone access is blocked. Allow it in your browser settings to use speech input."
@@ -111,8 +114,10 @@ export const getSpeechRecognitionErrorMessage = (
 			);
 
 		// "network" is the engine's speech service being unreachable;
+		// "service-not-allowed" is that service being refused to this page;
 		// "language-not-supported" and "bad-grammar" are misconfiguration the
 		// end user cannot act on (both are logged for the operator instead).
+		// None of these have a remedy the user can apply beyond typing.
 		default:
 			return (
 				customTranslations?.speech_recognition_error ??

@@ -440,6 +440,12 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		const wasDeliberate = this.endingDeliberately;
 		this.endingDeliberately = false;
 
+		// The engine is finished, so anything still held as an interim never
+		// got a final result. Commit it rather than let the user's visible
+		// words vanish. A real final would already have moved it into `text`
+		// and emptied this, so there is nothing to duplicate.
+		this.commitPendingTranscript();
+
 		// The user pressed the button again while the engine was still
 		// winding down from the previous stop, so `start()` was rejected.
 		// Honour it now that the engine has actually ended — once, because
@@ -456,8 +462,26 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		// or it decided the utterance was over despite `continuous`.
 		// Reconcile, so the button can never claim to be listening when
 		// nothing is (SC 4.1.2).
-		if (this.props.sttActive) this.endSpeech({ restoreFocus: false });
+		if (!this.props.sttActive) return;
+
+		const recognizedNothing = !this.hasTranscript;
+		this.endSpeech({ restoreFocus: false });
+
+		// Ending with nothing to show for it is exactly the silent failure
+		// this change exists to remove, so say so. `onerror` cannot reach
+		// here — it ends recognition itself, which marks the end deliberate.
+		if (recognizedNothing) this.notifySpeechFailure("no-transcript");
 	};
+
+	/**
+	 * Moves an un-finalized transcript into the message text. No-op when the
+	 * engine already finalized it (or when the submit path discarded it).
+	 */
+	private commitPendingTranscript() {
+		this.setState(({ text, speechResult }) =>
+			speechResult ? { text: combineStrings(text, speechResult), speechResult: "" } : null,
+		);
+	}
 
 	/** The user pressed the microphone button to stop dictating. */
 	handleCancelSpeech = () => {
@@ -503,7 +527,13 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 		this.props.onSetSTTActive(false);
 
-		this.setState({ speechResult: "" });
+		// The interim transcript deliberately stays on screen. The engine may
+		// still upgrade it to a final; if it never does, `onend` commits it.
+		// Clearing it here would lose the words the user watched appear —
+		// Edge answers stop() with an empty placeholder final, which carries
+		// no text to put back. Only the submit path clears it, because that
+		// text is already on its way.
+		if (discardPending) this.setState({ speechResult: "" });
 
 		if (restoreFocus && this.inputRef.current) {
 			this.inputRef.current.focus();
@@ -529,10 +559,6 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		const recognition = this.speechRecognition;
 		if (!recognition) return;
 
-		this.hasTranscript = false;
-		this.endingDeliberately = false;
-		this.discardResults = false;
-
 		try {
 			recognition.start();
 		} catch (error) {
@@ -550,6 +576,14 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.notifySpeechFailure("start-failed");
 			return;
 		}
+
+		// Only now that a session is really running: a rejected start above
+		// leaves the previous session's flags in place, so a stale result
+		// still in flight from an aborted submit stays discarded instead of
+		// refilling the input with the message that was just sent.
+		this.hasTranscript = false;
+		this.endingDeliberately = false;
+		this.discardResults = false;
 
 		this.armSpeechTimeout(FIRST_TRANSCRIPT_TIMEOUT_MS);
 		this.props.onSetSTTActive(true);
@@ -569,14 +603,12 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		const { text, speechResult } = this.state;
 		const { sttActive, fileList, fileUploadError } = this.props;
 
-		let messageText = text;
+		// Exactly what the field shows, which is `text` plus any transcript
+		// not yet finalized — including after recognition stopped, while the
+		// interim waits for `onend` to commit it.
+		const messageText = combineStrings(text, speechResult);
 
 		if (sttActive) {
-			// Send exactly what the field shows. The old condition required
-			// BOTH parts, so submitting a message that was purely dictated
-			// (no typed text yet) sent an empty string.
-			messageText = combineStrings(text, speechResult);
-
 			// Discard whatever the engine still owes us: it belongs to this
 			// message, which is on its way. handleSubmit restores focus to
 			// the input itself once the message is sent.
@@ -617,6 +649,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		this.setState(
 			{
 				text: "",
+				speechResult: "",
 			},
 			() => {
 				this.props.onSendMessage(messageText, data, {

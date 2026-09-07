@@ -233,6 +233,42 @@ describe("Speech to text", () => {
 		messageInput().should("have.value", "");
 	});
 
+	// Edge answers stop() with an `isFinal` result whose transcript is empty,
+	// so there is nothing to put back if the interim was already cleared.
+	it("keeps the words the user saw when only a placeholder final follows", () => {
+		openWebchatWithSTT();
+
+		micButton().click();
+		recognizer().then(rec => rec.emitInterim("please call me back"));
+		messageInput().should("have.value", "please call me back");
+
+		// The user stops mid-utterance.
+		micButton().click();
+		messageInput().should("have.value", "please call me back");
+
+		// Edge's placeholder, then the end. The words must survive both.
+		recognizer().then(rec => rec.emitFinal(""));
+		recognizer().then(rec => rec.emitEnd());
+		messageInput().should("have.value", "please call me back");
+
+		// And they are real text now, so they can be sent.
+		messageInput().type("{enter}");
+		cy.get(".webchat-chat-history").contains("please call me back");
+	});
+
+	it("does not duplicate the transcript when a real final follows a stop", () => {
+		openWebchatWithSTT();
+
+		micButton().click();
+		recognizer().then(rec => rec.emitInterim("please call me"));
+		micButton().click();
+
+		// stop() lets the engine finalize what it heard.
+		recognizer().then(rec => rec.emitFinal("Please call me back."));
+		recognizer().then(rec => rec.emitEnd());
+		messageInput().should("have.value", "Please call me back.");
+	});
+
 	it("stops listening after a pause once transcription is flowing", () => {
 		openWebchatWithSTT();
 
@@ -275,6 +311,32 @@ describe("Speech to text", () => {
 
 		recognizer().then(rec => rec.emitFinal("restarted fine"));
 		messageInput().should("have.value", "restarted fine");
+	});
+
+	// The submit path aborts and discards, but a rejected restart used to
+	// clear that guard, letting a stale result from the aborted session
+	// refill the input with the message that had just been sent.
+	it("still discards a stale result when an immediate restart is rejected", () => {
+		openWebchatWithSTT();
+
+		micButton().click();
+		recognizer().then(rec => rec.emitInterim("book an appointment"));
+		messageInput().type("{enter}");
+		cy.get(".webchat-chat-history").contains("book an appointment");
+		messageInput().should("have.value", "");
+
+		// The user clicks the mic again before the aborted session has ended,
+		// so start() is rejected and the restart is deferred.
+		micButton().click();
+		recognizerShould(rec => {
+			expect(rec.startCount, "the restart was rejected").to.equal(1);
+		});
+
+		// A final from the old session arrives late. It belongs to the message
+		// already sent.
+		recognizer().then(rec => rec.emitFinal("Book an appointment."));
+		cy.wait(500);
+		messageInput().should("have.value", "");
 	});
 
 	it("releases the microphone when the input unmounts mid-dictation", () => {
@@ -396,6 +458,41 @@ describe("Speech to text", () => {
 			// must not fire and claim nothing was heard.
 			cy.tick(15100);
 			cy.get(".webchat-toast-notification").should("not.exist");
+		});
+
+		it("reports an engine that ends on its own without recognizing anything", () => {
+			openWebchatWithSTT();
+
+			micButton().click();
+			recognizer().then(rec => rec.emitEnd());
+
+			micButton().should("have.attr", "aria-pressed", "false");
+			cy.get(".webchat-toast-notification").should("contain.text", "No speech was detected");
+		});
+
+		it("stays quiet when the engine ends on its own after transcribing", () => {
+			openWebchatWithSTT();
+
+			micButton().click();
+			recognizer().then(rec => rec.emitFinal("all good"));
+			recognizer().then(rec => rec.emitEnd());
+
+			micButton().should("have.attr", "aria-pressed", "false");
+			messageInput().should("have.value", "all good");
+			cy.get(".webchat-toast-notification").should("not.exist");
+		});
+
+		// Per the spec this is the recognition *service* being refused, which
+		// says nothing about microphone permission — so no settings advice.
+		it("does not blame the microphone for a refused service", () => {
+			openWebchatWithSTT();
+
+			micButton().click();
+			recognizer().then(rec => rec.emitError("service-not-allowed"));
+
+			cy.get(".webchat-toast-notification")
+				.should("contain.text", "Speech input is currently unavailable")
+				.and("not.contain.text", "Microphone access");
 		});
 
 		it("uses the configured translation for a failure message", () => {
