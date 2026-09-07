@@ -54,6 +54,8 @@ export const createConnectionMiddleware =
 					client
 						.connect()
 						.then(() => {
+							// set options
+							store.dispatch(setConnecting(false));
 							store.dispatch(setReconnectionLimit(false));
 
 							if (storedMessage) {
@@ -65,17 +67,7 @@ export const createConnectionMiddleware =
 								);
 								store.dispatch(setStoredMessage(null));
 							}
-							// set options — `options-middleware` restores a
-							// persisted conversation while handling this.
 							store.dispatch(setOptions(client.socketOptions));
-							// Last: `connecting` turning false is what tells
-							// the UI the connect has settled and its session
-							// id (and any restore) are known — the AI-agent
-							// notice waits for exactly that (CGY-3519).
-							// Dispatching it after the restore keeps that
-							// true without relying on React batching these
-							// updates into one commit.
-							store.dispatch(setConnecting(false));
 						})
 						.catch(() => {
 							store.dispatch(setConnecting(false));

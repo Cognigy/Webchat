@@ -15,15 +15,7 @@ describe("Typing Indicator Announcement (CGY-3146)", () => {
 
 	beforeEach(() => {
 		cy.visitWebchat();
-		// initMockWebchat's default endpoint origin is a REAL, reachable
-		// host — only the config GET is stubbed — so its socket dials out
-		// and the first connect can hang until socket.io's own ~20s
-		// timeout. These tests inject messages while that connect is still
-		// in flight, and message announcements queue behind the AI-agent
-		// notice until it settles (CGY-3519), so the announcement would
-		// never land inside the test's window. An unroutable origin fails
-		// the connect in milliseconds; no test here needs a live socket.
-		cy.initMockWebchat(undefined, undefined, "http://mock-endpoint.invalid/asdfqwer");
+		cy.initMockWebchat();
 		cy.openWebchat().startConversation();
 	});
 
@@ -92,18 +84,13 @@ describe("Typing Indicator Announcement (CGY-3146)", () => {
 		// stopped; a timer keyed off that tail would fire *after* the reply
 		// has already been rendered and announced.
 		cy.visitWebchat();
-		// Unroutable origin for the same reason as in beforeEach.
-		cy.initMockWebchat(
-			{
-				settings: {
-					behavior: {
-						messageDelay: 4000,
-					},
+		cy.initMockWebchat({
+			settings: {
+				behavior: {
+					messageDelay: 4000,
 				},
 			},
-			undefined,
-			"http://mock-endpoint.invalid/asdfqwer",
-		);
+		});
 		cy.openWebchat().startConversation();
 
 		setTyping("show");

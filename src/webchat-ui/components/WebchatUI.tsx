@@ -152,6 +152,13 @@ export interface WebchatUIProps {
 	prevConversations: PrevConversationsState;
 	/** True once a non-empty persisted history was restored (page reload of a stored conversation) — see MessageState. */
 	hasRestoredPersistedHistory?: boolean;
+	/**
+	 * Whether the page load's first connect is going to restore a
+	 * persisted conversation — known from storage before that connect
+	 * resolves, which is what keeps the AI-agent notice from announcing
+	 * for a continued conversation on a slow connect (CGY-3519).
+	 */
+	willRestorePersistedConversation?: boolean;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 
 	showChatOptionsScreen: boolean;
@@ -566,6 +573,7 @@ export class WebchatUI extends React.PureComponent<
 				id,
 				prevConversationsSnapshot,
 				this.props.hasRestoredPersistedHistory,
+				this.props.willRestorePersistedConversation,
 			),
 		}));
 	}
@@ -574,35 +582,7 @@ export class WebchatUI extends React.PureComponent<
 		this.announcedNoticeKeys.add(introKey);
 	};
 
-	/**
-	 * Whether a connect is in flight that has yet to produce a session id —
-	 * the page load's first connect (or a retry of it after a failure).
-	 * That connect is what assigns the session id and, for a persisted
-	 * conversation, restores it: `options-middleware` reads storage while
-	 * handling the `SET_OPTIONS` the connect dispatches, and
-	 * `connection-middleware` dispatches that before it releases
-	 * `connecting` — so the restore is already in the store by the time
-	 * this turns false, whether or not React batches the two updates.
-	 *
-	 * Until it settles, a conversation about to be restored is
-	 * indistinguishable from a brand-new one, so the AI-agent notice waits
-	 * rather than announcing on a hunch (CGY-3519) — an announcement
-	 * cannot be taken back. Deliberately not narrowed by embedding options
-	 * (a pinned `sessionId`, storage flags): the notice is a 600ms-deferred
-	 * sr-only utterance, a few hundred milliseconds more costs nothing, and
-	 * one rule for every embedding beats a set of "could this one restore
-	 * anything?" predicates that must stay in sync with the restore path.
-	 *
-	 * A connect that FAILS settles too and releases the notice, which
-	 * describes the chat, not the connection. A retry then re-arms the
-	 * hold, so only a notice already announced between the failure and the
-	 * retry can precede a late restore.
-	 */
-	private get isFirstConnectPending() {
-		return !this.props.currentSession && !!this.props.connecting;
-	}
-
-	private getNoticeIntro(): { key: string; text: string; held: boolean } | undefined {
+	private getNoticeIntro(): { key: string; text: string } | undefined {
 		const text = getAIAgentNoticeIntroText({
 			behavior: this.props.config.settings.behavior,
 			showDisconnectOverlay: this.showDisconnectOverlay,
@@ -612,14 +592,7 @@ export class WebchatUI extends React.PureComponent<
 		});
 		if (!text) return undefined;
 
-		// `held` rather than `undefined`: the intro stays PENDING while the
-		// connect is in flight, so message announcements queue behind it
-		// and the notice is still spoken first (see the `intro` prop).
-		return {
-			key: this.state.noticeSession.announceKey,
-			text,
-			held: this.isFirstConnectPending,
-		};
+		return { key: this.state.noticeSession.announceKey, text };
 	}
 
 	componentDidMount() {
@@ -717,6 +690,22 @@ export class WebchatUI extends React.PureComponent<
 
 		if (prevProps.currentSession !== this.props.currentSession) {
 			this.evaluateNoticeSession(prevProps.prevConversations);
+		}
+
+		// The persisted-conversation prediction is read from storage under a
+		// key that contains the endpoint config's URLToken, so it only
+		// becomes meaningful once that config has loaded — after this
+		// component has already mounted. Re-evaluating on the flip is always
+		// in time: `open()` awaits the config, so the chat screen (and with
+		// it the notice's announce timer) cannot appear any earlier. No
+		// session id exists yet at that point, so current props are the
+		// pre-change snapshot.
+		if (
+			prevProps.willRestorePersistedConversation !==
+				this.props.willRestorePersistedConversation &&
+			!this.props.currentSession
+		) {
+			this.evaluateNoticeSession(this.props.prevConversations);
 		}
 
 		if (

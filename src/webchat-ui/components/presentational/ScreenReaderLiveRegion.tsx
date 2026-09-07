@@ -18,18 +18,8 @@ interface ScreenReaderLiveRegionProps {
 	 * and text travel together so one can never be supplied without the
 	 * other (a text without a key would keep the intro pending forever,
 	 * silently blocking all message announcements).
-	 *
-	 * `held` defers the announcement while the parent cannot yet know
-	 * whether the notice is warranted (the page load's first connect is
-	 * still in flight — see `WebchatUI.isFirstConnectPending`). It holds
-	 * the announce TIMER only: the intro stays pending, so message
-	 * announcements keep queueing behind it and intro-first order
-	 * survives the wait. Withholding `intro` entirely would instead let
-	 * a message already in `messageHistory` at mount (an engagement
-	 * teaser, a message typed before the connect settled) announce first
-	 * and the notice follow it.
 	 */
-	intro?: { key: string; text: string; held?: boolean };
+	intro?: { key: string; text: string };
 	/** Called when the intro was actually announced (not cancelled), so the parent can mark it done across remounts. */
 	onIntroAnnounced?: (introKey: string) => void;
 }
@@ -41,13 +31,6 @@ interface ScreenReaderLiveRegionProps {
 // keeps them clear of the mount, and the intro hold below keeps them in
 // order.
 const INTRO_ANNOUNCE_DELAY_MS = 600;
-
-// Safety valve for a held intro (see the `held` prop): a socket that
-// connects but never completes its handshake leaves the first connect
-// pending forever, and a pending intro also holds message announcements.
-// After this long the notice is announced anyway — a notice that may be
-// one conversation too many beats a live region that never speaks again.
-const INTRO_HOLD_TIMEOUT_MS = 8000;
 
 const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 	liveContent,
@@ -63,7 +46,6 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 	// restart the announce timer on each of them.
 	const introKey = intro?.key;
 	const introText = intro?.text;
-	const introHeld = intro?.held ?? false;
 	const messageHistory = useSelector(state => state.messages.messageHistory);
 	const messages = getMessagesListWithoutControlCommands(messageHistory, ["acceptPrivacyPolicy"]);
 	const announcedIdsRef = useRef<Set<string>>(new Set());
@@ -78,34 +60,27 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 	useEffect(() => {
 		if (!introPending || !introText || introKey === undefined) return;
 
-		// A held intro waits for the parent's verdict instead of its own
-		// deadline; the hold lifting re-runs this effect and starts the
-		// normal countdown, so the timeout below only fires if the hold
-		// never lifts.
-		const introTimeout = setTimeout(
-			() => {
-				// Fire-time exposure check: during the back-to-home exit
-				// transition this component stays MOUNTED (FreezeOnExit holds
-				// the chat screen for the 500ms slide) inside a wrapper that is
-				// aria-hidden + inert — text committed there is never voiced.
-				// Skip WITHOUT marking announced (announcedNoticeKeys outlives
-				// the remount by design), so the notice announces on the next
-				// real visit to the chat screen instead of being lost for the
-				// session. Checking `showChatScreen` in the parent can't do
-				// this: FreezeOnExit freezes props during the exit.
-				if (introRegionRef.current?.closest('[inert], [aria-hidden="true"]')) return;
+		const introTimeout = setTimeout(() => {
+			// Fire-time exposure check: during the back-to-home exit
+			// transition this component stays MOUNTED (FreezeOnExit holds
+			// the chat screen for the 500ms slide) inside a wrapper that is
+			// aria-hidden + inert — text committed there is never voiced.
+			// Skip WITHOUT marking announced (announcedNoticeKeys outlives
+			// the remount by design), so the notice announces on the next
+			// real visit to the chat screen instead of being lost for the
+			// session. Checking `showChatScreen` in the parent can't do
+			// this: FreezeOnExit freezes props during the exit.
+			if (introRegionRef.current?.closest('[inert], [aria-hidden="true"]')) return;
 
-				setIntroMessage({
-					id: `webchatAIAgentNotice-${introKey}`,
-					text: cleanUpText(introText),
-				});
-				setAnnouncedIntroKey(introKey);
-				onIntroAnnounced?.(introKey);
-			},
-			introHeld ? INTRO_HOLD_TIMEOUT_MS : INTRO_ANNOUNCE_DELAY_MS,
-		);
+			setIntroMessage({
+				id: `webchatAIAgentNotice-${introKey}`,
+				text: cleanUpText(introText),
+			});
+			setAnnouncedIntroKey(introKey);
+			onIntroAnnounced?.(introKey);
+		}, INTRO_ANNOUNCE_DELAY_MS);
 		return () => clearTimeout(introTimeout);
-	}, [introPending, introText, introKey, introHeld, onIntroAnnounced]);
+	}, [introPending, introText, introKey, onIntroAnnounced]);
 
 	useEffect(() => {
 		if (introPending) return;

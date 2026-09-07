@@ -11,8 +11,8 @@ export const DEFAULT_AI_AGENT_NOTICE_TEXT = "You're now chatting with an AI Agen
  * but this state hasn't been re-evaluated yet (the session id updates
  * asynchronously after the socket switch). `announceKey` dedupes the
  * announcement per conversation; it differs from `id` only for the page
- * load's first conversation, which is keyed before the connect assigns
- * its session id (see computeNoticeSession).
+ * load's first conversation, which starts announceable before the connect
+ * assigns its session id (see computeNoticeSession).
  */
 export interface NoticeSession {
 	id: string;
@@ -47,14 +47,25 @@ export const INITIAL_NOTICE_SESSION: NoticeSession = { id: "", isNew: false, ann
  * only — later restores (reopening a previous conversation) are already
  * covered by the snapshot lookup, and the flag must not silence a
  * brand-new conversation started afterwards.
+ *
+ * `willRestorePersistedConversation` is that same page-reload case seen
+ * BEFORE the connect: the restore only happens when the connect
+ * resolves, which can take longer than the notice's 600ms announce
+ * delay, and by then an announcement can no longer be taken back. It is
+ * read from storage through the very helpers the restore uses (see
+ * `hasPersistedConversationForInitialSession`), so it cannot disagree
+ * with the restore that follows. Same first-connect-only scope as the
+ * flag above, for the same reason.
  */
 export function computeNoticeSession(
 	prev: NoticeSession,
 	currentSessionId: string,
 	prevConversationsSnapshot: PrevConversationsState,
 	hasRestoredPersistedHistory?: boolean,
+	willRestorePersistedConversation?: boolean,
 ): NoticeSession {
-	const isRestoredFirstConnect = prev.id === "" && !!hasRestoredPersistedHistory;
+	const isRestoredFirstConnect =
+		prev.id === "" && (!!hasRestoredPersistedHistory || !!willRestorePersistedConversation);
 	const isNew = !prevConversationsSnapshot?.[currentSessionId] && !isRestoredFirstConnect;
 	const isFirstConnectOfNewConversation = prev.id === "" && prev.isNew && isNew;
 	return {
