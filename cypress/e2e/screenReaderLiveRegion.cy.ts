@@ -288,6 +288,46 @@ describe("Screen Reader Live Region", () => {
 			cy.get(noticeRegionSelector).should("be.empty");
 		});
 
+		it("announces a new conversation started from previous conversations before the first connect", () => {
+			// The pinned session HAS stored history, so the page load
+			// predicts a continuation — but the user never connects to it:
+			// from the home screen they open the conversations list (which
+			// fills without a socket) and start a NEW conversation, which
+			// mints a fresh session id. That is a brand-new conversation and
+			// must be announced; inheriting the pinned session's verdict
+			// would lose the notice entirely, the mirror image of the bug
+			// this suite guards.
+			const options = {
+				userId: "user-cgy3519-new-before-connect",
+				sessionId: "session-cgy3519-new-before-connect",
+				channel: "channel-1",
+			};
+
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat(options);
+			cy.openWebchat().startConversation();
+
+			// Give the pinned session something to persist.
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			// Reload and stay on the home screen: no connect happens, so the
+			// pinned session's stored conversation is still only a prediction.
+			cy.visitWebchat();
+			cy.initWebchat(options);
+			cy.openWebchat();
+
+			cy.get("button").contains("Previous conversations").click();
+			cy.get("[data-testid='webchat-start-chat-button']").click();
+
+			// A fresh session id — announced (after the session-switch
+			// disconnect overlay has closed).
+			cy.get(noticeRegionSelector, { timeout: 10000 }).should("contain.text", noticeText);
+		});
+
 		it("announces for a pinned session with nothing stored for it", () => {
 			// The counterpart: the storage lookup must not silence a
 			// brand-new conversation. Same shape as the test above — pinned

@@ -18,10 +18,15 @@ import { getStorage } from "../../helper/storage";
  * `SET_OPTIONS` handler: same `getStorage`, same `getOptionsKey`, same
  * "non-empty messages" condition that `RESET_STATE` uses to set
  * `hasRestoredPersistedHistory`. Reading the same inputs through the
- * same helpers is what makes the prediction and the restore agree —
+ * same helpers is what keeps the prediction and the restore aligned —
  * including when they agree on "no": if the endpoint config (and with it
  * `URLToken`) has not loaded yet, the key misses here exactly as it
- * misses there, and nothing is restored either.
+ * misses there, and nothing is restored either. The one case where they
+ * part company is benign: a message sent before the first connect is
+ * dispatched ahead of `setOptions`, so `RESET_STATE` finds a non-empty
+ * history and skips the restore while this still says "continued" — the
+ * session IS a continuation for the backend, so staying silent remains
+ * the right outcome.
  *
  * `config.initialSessionId` is the pinned `sessionId` from the embedding
  * options. Without one, the socket client mints a fresh session id per
@@ -39,6 +44,18 @@ let lastRead: { key: string; raw: string | null; result: boolean } | null = null
 export const hasPersistedConversationForInitialSession = (state: StoreState): boolean => {
 	const sessionId = state.config.initialSessionId;
 	if (!sessionId) return false;
+
+	// This page load ended up on a session other than the pinned one, so
+	// nothing stored under the pinned key is being restored into it and
+	// there is nothing to predict. "Start new conversation" from the
+	// conversations list does this before the first connect
+	// (`SWITCH_SESSION` with no id mints a fresh session id), and without
+	// this guard that brand-new conversation would inherit the pinned
+	// session's "continued" verdict and never be announced — the mirror
+	// image of the bug this predicate exists for. A REopened previous
+	// conversation also lands here, and is correctly silenced by the
+	// `prevConversations` snapshot instead.
+	if (state.options.sessionId && state.options.sessionId !== sessionId) return false;
 
 	const { disableLocalStorage, useSessionStorage } = state.config.settings.embeddingConfiguration;
 
@@ -71,14 +88,14 @@ export const hasPersistedConversationForInitialSession = (state: StoreState): bo
 			try {
 				const messages = JSON.parse(persistedString)?.messages;
 				result = Array.isArray(messages) && messages.length > 0;
-			} catch (e) {
+			} catch {
 				result = false;
 			}
 		}
 
 		lastRead = { key, raw: persistedString, result };
 		return result;
-	} catch (e) {
+	} catch {
 		// Restricted embeddings can throw on merely touching storage. The
 		// restore reads it the same way, so nothing would be restored there
 		// either — "no persisted conversation" is the truthful answer.

@@ -695,11 +695,17 @@ export class WebchatUI extends React.PureComponent<
 		// The persisted-conversation prediction is read from storage under a
 		// key that contains the endpoint config's URLToken, so it only
 		// becomes meaningful once that config has loaded — after this
-		// component has already mounted. Re-evaluating on the flip is always
-		// in time: `open()` awaits the config, so the chat screen (and with
-		// it the notice's announce timer) cannot appear any earlier. No
-		// session id exists yet at that point, so current props are the
-		// pre-change snapshot.
+		// component has already mounted. Re-evaluating on the flip is in
+		// time for every case the notice can observe, and normally with
+		// room to spare: `open()` waits for the config before showing
+		// anything, and even if it gives up waiting (~1s by default, then
+		// it opens regardless) the flip still lands within the intro's own
+		// 600ms delay and its effect cleanup cancels the pending timer. A
+		// config slower than roughly the sum of the two would let the
+		// notice announce before the prediction arrives — the remaining
+		// gap, and the reason the notice is not gated on the connect on
+		// top of this. No session id exists yet at this point, so current
+		// props are the pre-change snapshot.
 		if (
 			prevProps.willRestorePersistedConversation !==
 				this.props.willRestorePersistedConversation &&
