@@ -10,6 +10,25 @@ const Notifications: FC = () => {
 			gutter={1}
 			toastOptions={{
 				duration: 1500,
+				// Failures stay up much longer than confirmations: the user has
+				// to read a remedy and act on it, not just register that
+				// something worked. The longest of these ("Microphone access
+				// is blocked. Allow it in your browser settings…") is ~95
+				// characters, which needs well over 5s to notice and read
+				// (SC 2.2.1).
+				// red40 on red10 is 5.27:1, mirroring the vetted green pairing
+				// below (SC 1.4.3).
+				error: {
+					duration: 12000,
+					style: {
+						backgroundColor: theme.red10,
+						color: theme.red40,
+					},
+					iconTheme: {
+						primary: theme.red40,
+						secondary: theme.red10,
+					},
+				},
 				style: {
 					backgroundColor: theme.green10,
 					borderRadius: 0,
@@ -58,6 +77,20 @@ export function createNotification(message: string, options: ToastOptions = {}) 
 	toast(message, {
 		...options,
 		className: "webchat-toast-notification",
+		ariaProps: silencedAriaProps,
+	});
+}
+
+/**
+ * Same as `createNotification`, styled as a failure and shown for longer.
+ * Use for anything the user needs to act on (e.g. a dictation that could not
+ * be started) — the message is mirrored into <StatusLiveRegion> like every
+ * other toast, so it reaches screen readers too (SC 3.3.1 / 4.1.3).
+ */
+export function createErrorNotification(message: string, options: ToastOptions = {}) {
+	toast.error(message, {
+		...options,
+		className: "webchat-toast-notification webchat-toast-notification-error",
 		ariaProps: silencedAriaProps,
 	});
 }

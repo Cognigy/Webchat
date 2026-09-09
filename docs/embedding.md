@@ -443,6 +443,10 @@ In the above example only the texts outside the `{}` braces needs to be translat
 | cancel                                | string | "Cancel"                                                                                    | Label for canceling a delete or confirm action.                                                    |
 | datePickerMonthLabel                  | string | "Month"                                                                                     | This text is used as the label for the Month select field in the date-picker.                      |
 | datePickerYearLabel                   | string | "Year"                                                                                      | This text is used as the label for the Year input field in the date-picker.                        |
+| speech_recognition_not_allowed        | string | "Microphone access is blocked. Allow it in your browser settings to use speech input."      | Shown when the browser or the user has blocked microphone access for the page.                     |
+| speech_recognition_no_microphone      | string | "No microphone was found. Connect one to use speech input."                                 | Shown when no capture device is available for speech input.                                        |
+| speech_recognition_no_speech          | string | "No speech was detected. Please try again."                                                 | Shown when a dictation ended without the engine recognizing anything.                              |
+| speech_recognition_error              | string | "Speech input is currently unavailable. Please type your message instead."                  | Shown for any other speech-recognition failure, e.g. the speech service being unreachable.         |
 | ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements.                              |
 
 #### Aria Labels
@@ -760,6 +764,11 @@ interface IWebchatSettings {
 		cancel?: string;
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
+		// Speech-to-text failure messages (shown as a notification)
+		speech_recognition_not_allowed?: string;
+		speech_recognition_no_microphone?: string;
+		speech_recognition_no_speech?: string;
+		speech_recognition_error?: string;
 		ariaLabels?: {
 			chatRegion?: string;
 			scrollToBottom?: string;
