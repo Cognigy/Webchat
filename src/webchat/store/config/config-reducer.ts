@@ -138,7 +138,7 @@ export const getInitialState = (): ConfigState => ({
 		systemUseNotification: {
 			enabled: false,
 			title: "System Use Notification",
-			text: "You are accessing a U.S. Government information system. This system is provided for authorized use only. By using this system, you consent to monitoring and recording of all activities. Unauthorized use is prohibited and subject to criminal and civil penalties. All information on this system may be monitored, recorded, and subject to audit.",
+			text: "You are accessing a U.S. Government information system. Information system usage may be monitored, recorded, and subject to audit. Unauthorized use of the information system is prohibited and subject to criminal and civil penalties. Use of the information system indicates consent to monitoring and recording.",
 			submitButtonText: "I acknowledge and accept",
 		},
 		privacyNotice: {
