@@ -30,6 +30,7 @@ import {
 import { openOverlay } from "../store/xapp-overlay/slice";
 import { IStreamingMessage } from "../../common/interfaces/message";
 import { setMessageAnimated } from "../store/messages/message-reducer";
+import { hasPersistedConversationForInitialSession } from "../store/options/persisted-conversation";
 
 type FromState = Pick<
 	WebchatUIProps,
@@ -37,6 +38,7 @@ type FromState = Pick<
 	| "unseenMessages"
 	| "prevConversations"
 	| "hasRestoredPersistedHistory"
+	| "willRestorePersistedConversation"
 	| "open"
 	| "typingIndicator"
 	| "inputMode"
@@ -112,6 +114,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			unseenMessages,
 			prevConversations,
 			hasRestoredPersistedHistory,
+			willRestorePersistedConversation: hasPersistedConversationForInitialSession(state),
 			open,
 			typingIndicator: typing,
 			inputMode,

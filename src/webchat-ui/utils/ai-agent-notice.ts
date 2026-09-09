@@ -47,14 +47,25 @@ export const INITIAL_NOTICE_SESSION: NoticeSession = { id: "", isNew: false, ann
  * only — later restores (reopening a previous conversation) are already
  * covered by the snapshot lookup, and the flag must not silence a
  * brand-new conversation started afterwards.
+ *
+ * `willRestorePersistedConversation` is that same page-reload case seen
+ * BEFORE the connect: the restore only happens when the connect
+ * resolves, which can take longer than the notice's 600ms announce
+ * delay, and by then an announcement can no longer be taken back. It is
+ * read from storage through the very helpers the restore uses (see
+ * `hasPersistedConversationForInitialSession`), so it cannot disagree
+ * with the restore that follows. Same first-connect-only scope as the
+ * flag above, for the same reason.
  */
 export function computeNoticeSession(
 	prev: NoticeSession,
 	currentSessionId: string,
 	prevConversationsSnapshot: PrevConversationsState,
 	hasRestoredPersistedHistory?: boolean,
+	willRestorePersistedConversation?: boolean,
 ): NoticeSession {
-	const isRestoredFirstConnect = prev.id === "" && !!hasRestoredPersistedHistory;
+	const isRestoredFirstConnect =
+		prev.id === "" && (!!hasRestoredPersistedHistory || !!willRestorePersistedConversation);
 	const isNew = !prevConversationsSnapshot?.[currentSessionId] && !isRestoredFirstConnect;
 	const isFirstConnectOfNewConversation = prev.id === "" && prev.isNew && isNew;
 	return {
@@ -72,6 +83,12 @@ export function computeNoticeSession(
  * reconnect the socket and open it — its dialog and focus utterances
  * would cancel the notice; on close, the intro becomes pending again
  * and is announced after the "Connection restored" utterances).
+ *
+ * Eligibility only — WHEN an eligible notice is spoken is the live
+ * region's business (it defers the intro past the screen's focus
+ * utterances). That deferral is why the verdict must be final before the
+ * first connect resolves rather than after it, which is what
+ * `willRestorePersistedConversation` in `computeNoticeSession` provides.
  */
 export function getAIAgentNoticeIntroText(args: {
 	behavior: IWebchatConfig["settings"]["behavior"];

@@ -224,9 +224,132 @@ describe("Screen Reader Live Region", () => {
 				channel: "channel-1",
 			});
 			cy.openWebchat().startConversation();
+
+			// The notice's verdict does not depend on this connect: the
+			// persisted conversation is spotted in storage before it
+			// resolves. So the assertion needs no more than the intro's own
+			// 600ms delay to be conclusive — where the previous fixed
+			// `cy.wait(1500)` was a bet on the connect winning a race
+			// against it, which it regularly lost on CI.
 			cy.contains('You said "hello".').should("be.visible");
-			cy.wait(1500);
+			cy.wait(800);
 			cy.get(noticeRegionSelector).should("not.contain.text", noticeText);
+		});
+
+		it("stays silent for a persisted conversation before the first connect resolves", () => {
+			// The reload test above needs a real endpoint, so it can only
+			// observe the outcome once the connect has restored the history.
+			// This one isolates the actual guarantee: the notice stays
+			// silent from the very first render, because the conversation is
+			// found in storage — no socket involved. Without that, the
+			// notice fires on its 600ms timer and the restore's verdict
+			// arrives too late to take it back, which is the CI flake this
+			// test replaces.
+			const userId = "user-cgy3519-predicted";
+			const sessionId = "session-cgy3519-predicted";
+			// The URLToken comes from initMockWebchat's stubbed endpoint
+			// response; the key shape is getOptionsKey's.
+			const storageKey = JSON.stringify([
+				"webchat-client",
+				userId,
+				sessionId,
+				"fake-url-token",
+			]);
+
+			cy.visitWebchat();
+			cy.window().then(window => {
+				window.localStorage.clear();
+				window.localStorage.setItem(
+					storageKey,
+					JSON.stringify({
+						messages: [
+							{
+								text: "hello",
+								source: "user",
+								id: "persisted-1",
+								timestamp: 1700000000000,
+							},
+						],
+						rating: { hasGivenRating: false, showRatingScreen: false },
+					}),
+				);
+			});
+			// Unroutable origin: the socket can never connect, so nothing
+			// but the storage lookup can make this conversation look
+			// continued.
+			cy.initMockWebchat(
+				{ userId, sessionId, channel: "channel-1" },
+				undefined,
+				"http://mock-endpoint.invalid/asdfqwer",
+			);
+			cy.openWebchat().startConversation();
+
+			cy.wait(1200);
+			cy.get(noticeRegionSelector).should("be.empty");
+		});
+
+		it("announces a new conversation started from previous conversations before the first connect", () => {
+			// The pinned session HAS stored history, so the page load
+			// predicts a continuation — but the user never connects to it:
+			// from the home screen they open the conversations list (which
+			// fills without a socket) and start a NEW conversation, which
+			// mints a fresh session id. That is a brand-new conversation and
+			// must be announced; inheriting the pinned session's verdict
+			// would lose the notice entirely, the mirror image of the bug
+			// this suite guards.
+			const options = {
+				userId: "user-cgy3519-new-before-connect",
+				sessionId: "session-cgy3519-new-before-connect",
+				channel: "channel-1",
+			};
+
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.visitWebchat();
+			cy.initWebchat(options);
+			cy.openWebchat().startConversation();
+
+			// Give the pinned session something to persist.
+			cy.sendMessage("hello");
+			cy.contains('You said "hello".').should("be.visible");
+
+			// Reload and stay on the home screen: no connect happens, so the
+			// pinned session's stored conversation is still only a prediction.
+			cy.visitWebchat();
+			cy.initWebchat(options);
+			cy.openWebchat();
+
+			cy.get("button").contains("Previous conversations").click();
+			cy.get("[data-testid='webchat-start-chat-button']").click();
+
+			// A fresh session id — announced (after the session-switch
+			// disconnect overlay has closed).
+			cy.get(noticeRegionSelector, { timeout: 10000 }).should("contain.text", noticeText);
+		});
+
+		it("announces for a pinned session with nothing stored for it", () => {
+			// The counterpart: the storage lookup must not silence a
+			// brand-new conversation. Same shape as the test above — pinned
+			// `sessionId`, no socket — but with an empty storage, so the
+			// notice announces on its normal schedule.
+			cy.visitWebchat();
+			cy.window().then(window => {
+				window.localStorage.clear();
+			});
+			cy.initMockWebchat(
+				{
+					userId: "user-cgy3519-nothing-stored",
+					sessionId: "session-cgy3519-nothing-stored",
+					channel: "channel-1",
+				},
+				undefined,
+				"http://mock-endpoint.invalid/asdfqwer",
+			);
+			cy.openWebchat().startConversation();
+
+			cy.wait(800);
+			cy.get(noticeRegionSelector).should("contain.text", noticeText);
 		});
 
 		it("does not announce anything when the notice is disabled", () => {
