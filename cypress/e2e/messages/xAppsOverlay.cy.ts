@@ -249,6 +249,24 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 	});
 
+	it("treats a whitespace-only title as absent", () => {
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "   ", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should("exist");
+		cy.get("[data-xapp-overlay] h2").should("not.exist");
+		cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Embedded app");
+		cy.get("[data-xapp-overlay]")
+			.should("have.attr", "aria-label", "Embedded app")
+			.should("not.have.attr", "aria-labelledby");
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
 	it("moves focus to the close button on open and traps Tab inside the dialog (SC 2.4.3, 2.1.2)", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 			// Deferred focus on the first control, so screen readers announce

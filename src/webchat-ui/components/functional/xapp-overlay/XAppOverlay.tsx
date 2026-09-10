@@ -83,6 +83,9 @@ const xAppOverlay: FC = () => {
 	} = useOverlaySettingsByUrl(url);
 
 	const ariaLabels = useSelector(state => state.config.settings.customTranslations?.ariaLabels);
+	// A whitespace-only screen title has no accessible text: it would render
+	// an empty heading and name the dialog after it. Treat it as absent.
+	const title = screenTitle?.trim() ?? "";
 	// Names the dialog and its frame when the xApp has no screen title.
 	const fallbackName = ariaLabels?.xAppOverlay ?? "Embedded app";
 	const closeButtonAriaLabel = ariaLabels?.closeDialog ?? "Close dialog";
@@ -224,15 +227,15 @@ const xAppOverlay: FC = () => {
 		target?.focus();
 	};
 
-	const showHeader = screenTitle || showCloseIcon;
+	const showHeader = title || showCloseIcon;
 
 	return (
 		<Root
 			ref={rootRef}
 			role="dialog"
 			aria-modal="true"
-			aria-labelledby={screenTitle ? TITLE_ID : undefined}
-			aria-label={screenTitle ? undefined : fallbackName}
+			aria-labelledby={title ? TITLE_ID : undefined}
+			aria-label={title ? undefined : fallbackName}
 			className="webchat-xapp-overlay-root"
 			data-xapp-overlay
 		>
@@ -243,7 +246,7 @@ const xAppOverlay: FC = () => {
 			/>
 			{showHeader && (
 				<Header
-					title={screenTitle}
+					title={title}
 					titleId={TITLE_ID}
 					hideBackButton
 					onClose={showCloseIcon ? handleCloseIconClick : undefined}
@@ -254,7 +257,7 @@ const xAppOverlay: FC = () => {
 			<Iframe
 				ref={iframeRef}
 				src={url}
-				title={screenTitle || fallbackName}
+				title={title || fallbackName}
 				allow="
   accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera;
   cross-origin-isolated; display-capture; document-domain; encrypted-media;

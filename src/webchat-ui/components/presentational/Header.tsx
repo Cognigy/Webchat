@@ -213,11 +213,11 @@ const Header: FC<HeaderProps> = props => {
 								className={classnames("webchat-header-cognigy-logo")}
 							/>
 						))}
-					{/* Not rendered for an empty title: an empty heading is a
-					    structural defect for screen-reader users (axe
+					{/* Not rendered for an empty or whitespace-only title: an empty
+					    heading is a structural defect for screen-reader users (axe
 					    `empty-heading`) — e.g. an xApp overlay configured with a
 					    close icon but no screen title. */}
-					{title && (
+					{title?.trim() && (
 						<HeaderText
 							ref={headerTextRef}
 							variant="h2-semibold"
