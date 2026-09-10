@@ -260,11 +260,11 @@ export const sanitizeHTML = (text: string) => {
 	let configToUse = config;
 	if (customAllowedHtmlTags) {
 		// Pre-filter the tenant-supplied list before passing to DOMPurify (defence-in-depth).
-		// FORBID_TAGS in the base config already blocks these at the DOMPurify level,
-		// but filtering here makes the guarantee explicit and avoids passing dangerous
-		// tag names into DOMPurify's ALLOWED_TAGS at all.
-		const safeTags = customAllowedHtmlTags.filter(
-			tag => !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase()),
+		// config-reducer already strips blocked tags and non-strings at config-load time, but
+		// we guard here too in case sanitizeHTML is ever called outside the normal config path.
+		const list = Array.isArray(customAllowedHtmlTags) ? customAllowedHtmlTags : [];
+		const safeTags = list.filter(
+			tag => typeof tag === "string" && !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase().trim()),
 		);
 		configToUse = { ...config, ALLOWED_TAGS: safeTags };
 	}
