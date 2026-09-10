@@ -1,20 +1,22 @@
 import DOMPurify, { Config } from "dompurify";
 import { storeRef } from "../store/store";
 
-// Tags that are always blocked regardless of caller configuration (WCH-SI10-001).
-// These were previously present in the allow-list but are explicitly excluded by
-// DOMPurify's own secure defaults because they enable XSS, URL hijacking, CSS
-// exfiltration, phishing, or arbitrary plugin execution:
-//   applet  — Java applet execution
-//   base    — rewrites all relative URLs on the host page
-//   embed   — loads arbitrary external content / plugins
-//   form    — posts user data to attacker-controlled URLs
+// Tags removed from the previous allow-list to align with DOMPurify's secure defaults
+// (WCH-SI10-001). Each tag enables a distinct attack vector:
+//   applet          — Java applet execution
+//   base            — rewrites all relative URLs on the host page
+//   body / html / head — structural document elements; no legitimate use in sanitised fragments
+//   embed           — loads arbitrary external content / plugins
+//   form            — posts user data to attacker-controlled URLs
 //   frame / frameset / noframes — clickjacking and legacy frame injection
-//   iframe  — inline HTML documents; srcdoc = direct XSS vector
-//   link    — loads external stylesheets
-//   meta    — HTTP redirects and CSP bypass via http-equiv
-//   object  — loads Flash, PDFs, and arbitrary external content
-//   style   — CSS injection and attribute-value exfiltration
+//   iframe          — inline HTML documents; srcdoc = direct XSS vector
+//   link            — loads external stylesheets
+//   meta            — HTTP redirects and CSP bypass via http-equiv
+//   object          — loads Flash, PDFs, and arbitrary external content
+//   style           — CSS injection and attribute-value exfiltration
+// These tags are blocked by default when no custom tag list is configured.
+// Tenants can supply a replacement list via widgetSettings.customAllowedHtmlTags,
+// but dangerous tags are always stripped from that list before it is applied (PR #309).
 export const allowedHtmlTags = [
 	"a",
 	"abbr",
@@ -62,10 +64,8 @@ export const allowedHtmlTags = [
 	"h4",
 	"h5",
 	"h6",
-	"head",
 	"header",
 	"hr",
-	"html",
 	"i",
 	"img",
 	"input",
