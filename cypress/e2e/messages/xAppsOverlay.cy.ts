@@ -105,45 +105,14 @@ describe("xApps Overlay", () => {
  * The fix uses `new URL(url).origin === event.origin` which compares the canonical
  * scheme+host+port extracted from both sides — the correct cross-origin boundary.
  *
- * Test strategy: in the Cypress environment, postMessages sent from the test page
- * carry origin "http://localhost:8787". Setting the xApp URL to that same origin
- * lets us exercise the acceptance path; using a different URL origin exercises the
- * rejection path. Both cases are observable via the closeOnSubmit behaviour.
+ * Test strategy: WCH-SI10-003 rejects same-origin xApp URLs, so localhost-based
+ * xApp URLs can no longer be used to exercise the postMessage acceptance path in
+ * Cypress (the component returns null before rendering). The rejection path is
+ * covered below using a cross-origin URL (https://example.com).
  */
 describe("postMessage origin validation (WCH-SI10-004)", () => {
 	beforeEach(() => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
-	});
-
-	it("closes overlay when postMessage origin exactly matches the xApp URL origin", () => {
-		// xApp URL uses localhost:8787 — the same origin as the Cypress test runner —
-		// so postMessages dispatched from the test page have a matching origin.
-		cy.receiveMessage(null, {
-			_cognigy: {
-				_app: {
-					overlaySettings: {
-						autoOpen: true,
-						closeOnSubmit: true,
-						feedbackMessage: "",
-						screenTitle: "Local xApp",
-						sendEventOnCloseIconClick: false,
-						showCloseIcon: false,
-					},
-					url: "http://localhost:8787/xapp-test",
-				},
-			},
-		});
-
-		cy.get(".webchat-header-logo-name-container").contains("Local xApp");
-
-		// postMessage from the test page — event.origin will be "http://localhost:8787".
-		// new URL("http://localhost:8787/xapp-test").origin === "http://localhost:8787" → accepted.
-		cy.window().then(win => {
-			win.postMessage({ type: "x-app-submit", success: true }, "*");
-		});
-
-		// closeOnSubmit is true and origin matched → overlay must close.
-		cy.get(".webchat-header-logo-name-container").should("not.contain", "Local xApp");
 	});
 
 	it("keeps overlay open when postMessage origin does not match the xApp URL origin", () => {
@@ -178,7 +147,9 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 		cy.get(".webchat-header-logo-name-container").should("contain", "External xApp");
 	});
 
-	it("ignores postMessage with a non-xapp-submit type even from a matching origin", () => {
+	it("ignores postMessage with an unrecognised type from a non-matching origin", () => {
+		// xApp at https://example.com; test runner is http://localhost:8787.
+		// Both origin mismatch AND wrong type — overlay must stay open.
 		cy.receiveMessage(null, {
 			_cognigy: {
 				_app: {
@@ -190,14 +161,13 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 						sendEventOnCloseIconClick: false,
 						showCloseIcon: true,
 					},
-					url: "http://localhost:8787/xapp-test",
+					url: "https://example.com/xapp-form",
 				},
 			},
 		});
 
 		cy.get(".webchat-header-logo-name-container").contains("Type-check xApp");
 
-		// Origin matches but type is wrong — overlay must stay open.
 		cy.window().then(win => {
 			win.postMessage({ type: "some-other-event", payload: "data" }, "*");
 		});
