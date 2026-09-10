@@ -346,6 +346,7 @@ export interface IWebchatSettings {
 			minimizeChat?: string;
 			closeChat?: string;
 			openChat?: string;
+			/** @deprecated No longer read. The badge is decorative (`aria-hidden`); its count is conveyed by the toggle button's name (`unreadMessageSingularText` / `unreadMessagePluralText`) and announced live through the same two labels (CGY-3163). */
 			unreadMessages?: string;
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
