@@ -358,6 +358,9 @@ export interface IWebchatSettings {
 			newMessagePreview?: string;
 			opensInNewTab?: string;
 			typingIndicator?: string;
+			/** Name of the xApp overlay dialog and its frame when the xApp has
+			 *  no screen title. */
+			xAppOverlay?: string;
 			// The following is used by chat components
 			audioPlaybackProgress?: string;
 			pauseAudio?: string;

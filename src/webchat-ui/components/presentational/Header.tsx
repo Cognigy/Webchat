@@ -126,6 +126,14 @@ interface HeaderProps {
 	deleteIconColor?: string;
 	showChatScreen?: boolean;
 	autoFocusScreenTitle?: boolean;
+	/** Id of the title heading (an `aria-labelledby` target). Defaults to
+	 *  "webchatHeaderTitle"; pass a distinct id when the header names a
+	 *  surface other than the chat window (e.g. the xApp overlay dialog). */
+	titleId?: string;
+	/** Accessible name for the close (X) button. Defaults to the `closeChat`
+	 *  translation — override when the button closes something other than
+	 *  the chat window. */
+	closeButtonAriaLabel?: string;
 }
 
 const Header: FC<HeaderProps> = props => {
@@ -144,6 +152,8 @@ const Header: FC<HeaderProps> = props => {
 		showChatScreen,
 		autoFocusScreenTitle,
 		onDeleteAllConversations,
+		titleId = "webchatHeaderTitle",
+		closeButtonAriaLabel,
 		...rest
 	} = props;
 
@@ -203,16 +213,22 @@ const Header: FC<HeaderProps> = props => {
 								className={classnames("webchat-header-cognigy-logo")}
 							/>
 						))}
-					<HeaderText
-						ref={headerTextRef}
-						variant="h2-semibold"
-						id="webchatHeaderTitle"
-						className="webchat-header-title"
-						margin={0}
-						tabIndex={-1}
-					>
-						{title}
-					</HeaderText>
+					{/* Not rendered for an empty title: an empty heading is a
+					    structural defect for screen-reader users (axe
+					    `empty-heading`) — e.g. an xApp overlay configured with a
+					    close icon but no screen title. */}
+					{title && (
+						<HeaderText
+							ref={headerTextRef}
+							variant="h2-semibold"
+							id={titleId}
+							className="webchat-header-title"
+							margin={0}
+							tabIndex={-1}
+						>
+							{title}
+						</HeaderText>
+					)}
 				</div>
 				<HeaderIconsWrapper>
 					{rest.isDeleteAllConversationsButtonVisible && (
@@ -263,7 +279,9 @@ const Header: FC<HeaderProps> = props => {
 								data-header-close-button
 								onClick={handleCloseClick}
 								className="webchat-header-close-button"
-								aria-label={ariaLabels?.closeChat ?? "Close chat"}
+								aria-label={
+									closeButtonAriaLabel ?? ariaLabels?.closeChat ?? "Close chat"
+								}
 								ref={closeButtonRef}
 							>
 								<CloseIcon />
