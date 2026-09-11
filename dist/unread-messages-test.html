@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Unread-message announcement test (CGY-3163)</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				margin: 24px;
+				max-width: 720px;
+			}
+			fieldset {
+				margin-bottom: 16px;
+			}
+			button,
+			input {
+				font-size: 16px;
+				padding: 6px 10px;
+				margin: 4px 4px 4px 0;
+			}
+			pre {
+				background: #f3f3f3;
+				padding: 12px;
+				white-space: pre-wrap;
+			}
+			code {
+				background: #eee;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h1>CGY-3163 — unread-message announcement test page</h1>
+		<p>
+			Query params (reload to apply): <code>?badge=0</code> <code>?indicator=0</code>
+			<code>?preview=1</code> <code>?sound=1</code>. Defaults: badge on, indicator on, preview
+			off. The chat stays closed on load.
+		</p>
+
+		<fieldset>
+			<legend>Host page controls</legend>
+			<button type="button" id="injectNow">Inject bot message now</button>
+			<button type="button" id="injectDelayed">
+				Inject bot message in 5 seconds (move focus away first)
+			</button>
+			<button type="button" id="injectTwo">Inject two bot messages</button>
+			<br />
+			<label for="hostInput">Host page text field (park focus here)</label>
+			<input id="hostInput" type="text" />
+		</fieldset>
+
+		<fieldset aria-hidden="true">
+			<legend>Readout (not exposed to screen readers)</legend>
+			<pre id="state">loading…</pre>
+			<strong>Announcement log (#webchatUnreadMessagesLiveRegion)</strong>
+			<pre id="log">(nothing yet)</pre>
+		</fieldset>
+
+		<script src="./webchat.js"></script>
+		<script>
+			const q = new URLSearchParams(location.search);
+			const flag = (name, def) => (q.has(name) ? q.get(name) !== "0" : def);
+
+			const settings = {
+				unreadMessages: {
+					enableBadge: flag("badge", true),
+					enableIndicator: flag("indicator", true),
+					enablePreview: flag("preview", false),
+					enableSound: flag("sound", false),
+				},
+			};
+
+			let counter = 0;
+			const inject = () => {
+				counter += 1;
+				window.cognigyWebchat._handleOutput({
+					id: "local-" + Date.now() + "-" + counter,
+					text: "Bot message " + counter + " injected from the host page",
+					data: {},
+					source: "bot",
+				});
+			};
+
+			document.getElementById("injectNow").onclick = inject;
+			document.getElementById("injectDelayed").onclick = () => setTimeout(inject, 5000);
+			document.getElementById("injectTwo").onclick = () => {
+				inject();
+				setTimeout(inject, 800);
+			};
+
+			const readout = () => {
+				const region = document.querySelector("#webchatUnreadMessagesLiveRegion");
+				const teaser = document.querySelector("#webchatTeaserMessageLiveRegion");
+				const fab = document.querySelector("[data-cognigy-webchat-toggle]");
+				const badge = document.querySelector(".webchat-unread-message-badge");
+				document.getElementById("state").textContent = [
+					"document.title:            " + JSON.stringify(document.title),
+					"unread region role/live:   " +
+						(region
+							? region.getAttribute("role") + " / " + region.getAttribute("aria-live")
+							: "(not mounted)"),
+					"unread region text:        " + JSON.stringify(region?.textContent ?? null),
+					"teaser region text:        " + JSON.stringify(teaser?.textContent ?? null),
+					"toggle button aria-label:  " +
+						JSON.stringify(fab?.getAttribute("aria-label") ?? null),
+					"badge:                     " +
+						(badge
+							? "text=" +
+								JSON.stringify(badge.textContent) +
+								" aria-hidden=" +
+								badge.getAttribute("aria-hidden") +
+								" aria-label=" +
+								badge.getAttribute("aria-label")
+							: "(not rendered)"),
+					"settings.unreadMessages:   " + JSON.stringify(settings.unreadMessages),
+				].join("\n");
+			};
+
+			const watchRegion = () => {
+				const region = document.querySelector("#webchatUnreadMessagesLiveRegion");
+				if (!region) return setTimeout(watchRegion, 200);
+				const log = document.getElementById("log");
+				new MutationObserver(() => {
+					const text = region.textContent;
+					const line =
+						new Date().toLocaleTimeString() +
+						"  " +
+						(text ? JSON.stringify(text) : "(cleared)");
+					log.textContent =
+						log.textContent === "(nothing yet)" ? line : log.textContent + "\n" + line;
+				}).observe(region, { childList: true, subtree: true, characterData: true });
+			};
+
+			initWebchat(
+				"https://endpoint-dev.cognigy.ai/07d6ad7cf42f699d91db0a245dfa621381de0debfa412ffdc2e2e3a3c3bef443",
+				{ settings },
+			).then(function (webchat) {
+				window.cognigyWebchat = webchat;
+				// Deliberately NOT opening: unread messages only accumulate while
+				// the window is closed (or the page is hidden).
+				watchRegion();
+				setInterval(readout, 500);
+			});
+		</script>
+	</body>
+</html>
