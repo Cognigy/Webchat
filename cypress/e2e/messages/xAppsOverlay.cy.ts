@@ -275,19 +275,31 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
 			cy.get("#webchatXAppOverlayTitle").should("not.have.focus");
 
-			// Forward tab order: close button → frame
-			cy.realPress("Tab");
+			// Native tabbing needs real key events (cypress-real-events is
+			// CDP-based, so Chromium only). The Firefox run relies on the
+			// guard assertions below, which exercise the same wrap logic.
+			if (Cypress.isBrowser({ family: "chromium" })) {
+				// Forward tab order: close button → frame
+				cy.realPress("Tab");
+				cy.get("[data-xapp-overlay] iframe").should("have.focus");
+
+				// Shift+Tab off the first control lands on the start guard,
+				// which wraps to the last tab stop (the frame) instead of the
+				// host page
+				cy.get("[data-xapp-overlay] .webchat-header-close-button").focus();
+				cy.realPress(["Shift", "Tab"]);
+				cy.get("[data-xapp-overlay] iframe").should("have.focus");
+			}
+
+			// The guards are what the trap is built on, so exercise them
+			// directly in every browser: landing on the start guard wraps to
+			// the last tab stop (the frame) …
+			cy.get("[data-xapp-overlay-focus-guard='start']").focus();
 			cy.get("[data-xapp-overlay] iframe").should("have.focus");
 
-			// Shift+Tab off the first control lands on the start guard, which
-			// wraps to the last tab stop (the frame) instead of the host page
-			cy.get("[data-xapp-overlay] .webchat-header-close-button").focus();
-			cy.realPress(["Shift", "Tab"]);
-			cy.get("[data-xapp-overlay] iframe").should("have.focus");
-
-			// Tabbing out of the frame lands on the end guard, which wraps to
-			// the first control (keydown inside the frame is invisible here,
-			// so the guard is exercised directly)
+			// … and landing on the end guard (as native Tab out of the frame
+			// does — keydown inside the frame is invisible here) wraps to the
+			// first control
 			cy.get("[data-xapp-overlay-focus-guard='end']").focus();
 			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
 		});
@@ -301,8 +313,11 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 	it("closes on Escape when a close icon is shown and focus returns to the chat input", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
-			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
-			cy.realPress("Escape");
+			// Synthetic keydown bubbles to the document-level handler, so this
+			// works in Firefox too (realPress is Chromium-only)
+			cy.get("[data-xapp-overlay] .webchat-header-close-button")
+				.should("have.focus")
+				.type("{esc}");
 			cy.get("[data-xapp-overlay]").should("not.exist");
 			cy.get(".webchat-input-message-input").should("have.focus");
 		});
