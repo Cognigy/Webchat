@@ -401,7 +401,6 @@ describe("Endpoint settings — Accessibility (WCAG 2.2 AA)", () => {
 			thumbsDown: "Custom dislike",
 			closeDialog: "Custom close dialog",
 			closeTeaserMessage: "Custom close teaser",
-			unreadMessages: "custom unread",
 			unreadMessageSingularText: "Custom one unread message",
 			unreadMessagePluralText: "custom unread messages",
 		};
@@ -430,11 +429,14 @@ describe("Endpoint settings — Accessibility (WCAG 2.2 AA)", () => {
 				"aria-label",
 				LABELS.unreadMessageSingularText,
 			);
-			cy.get(".webchat-unread-message-badge").should(
-				"have.attr",
-				"aria-label",
-				`1 ${LABELS.unreadMessages}`,
-			);
+			// Since CGY-3163 (#327) the badge is decorative: the count is already
+			// the toggle button's name (asserted above) and is announced through
+			// the unread-messages status region, so the badge carries no
+			// aria-label (prohibited on a generic <span>) and is hidden from AT.
+			cy.get(".webchat-unread-message-badge")
+				.should("be.visible")
+				.and("have.attr", "aria-hidden", "true")
+				.and("not.have.attr", "aria-label");
 
 			cy.receiveMessage("second message");
 			cy.get("#webchatWindowToggleButton").should(
