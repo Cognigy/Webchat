@@ -6,7 +6,16 @@ import { itChromiumOnly } from "../../support/browser";
 
 describe("Date Picker", () => {
 	beforeEach(() => {
-		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
+		// The message input focuses itself again 200 ms after it mounts (the
+		// BaseInput autofocus timer). These tests open and close the dialog well
+		// inside that window, so the timer would fire after Escape and pull focus
+		// off the opener button — a product race recorded in docs/accessibility.md
+		// ("Follow-ups"). Autofocus is not what this spec exercises, so it is
+		// switched off to keep the dialog's focus hand-offs deterministic.
+		cy.visitWebchat()
+			.initMockWebchat({ settings: { widgetSettings: { disableInputAutofocus: true } } })
+			.openWebchat()
+			.startConversation();
 	});
 
 	it("should render plugin open button", () => {
