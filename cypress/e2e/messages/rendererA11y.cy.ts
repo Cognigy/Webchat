@@ -19,6 +19,7 @@
 describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 	const ROOT = "[data-cognigy-webchat-root]";
 	const CALENDAR = ".flatpickr-calendar";
+	const CALENDAR_GRID = ".flatpickr-rContainer";
 
 	beforeEach(() => {
 		cy.visitWebchat()
@@ -147,14 +148,17 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 			// through visually hidden role="row" elements that own their cells via
 			// aria-owns. axe-core does not model aria-owns precedence over DOM
 			// parentage, so the grid (.flatpickr-rContainer) and the .flatpickr-days
-			// rowgroup still fail aria-required-children — the same two nodes
-			// chat-components allowlists in its own axe gate. aria-required-parent
-			// no longer fires (verified in a real browser on 0.81.0).
-			// Two scans keep the exclusion confined to the calendar: the rest of
-			// the widget — dialog header and footer buttons, message input —
-			// keeps the full rule set, the calendar drops only that one rule.
+			// rowgroup inside it still fail aria-required-children — the same two
+			// nodes chat-components allowlists in its own axe gate.
+			// aria-required-parent no longer fires (verified in a real browser on
+			// 0.81.0). Three scans keep the exclusion node-granular: the widget
+			// without the calendar, then the calendar chrome (month/year controls,
+			// time fields) without the grid container — both on the full rule set —
+			// and finally the grid container (weekday header + day cells) alone
+			// with just that one rule off.
 			cy.checkA11yCompliance(ROOT, { exclude: [CALENDAR] });
-			cy.checkA11yCompliance(CALENDAR, { disabledRules: ["aria-required-children"] });
+			cy.checkA11yCompliance(CALENDAR, { exclude: [CALENDAR_GRID] });
+			cy.checkA11yCompliance(CALENDAR_GRID, { disabledRules: ["aria-required-children"] });
 		});
 	});
 });
