@@ -18,7 +18,6 @@
 
 describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 	const ROOT = "[data-cognigy-webchat-root]";
-	const GALLERY = ".webchat-carousel-template-root";
 	const CALENDAR = ".flatpickr-calendar";
 
 	beforeEach(() => {
@@ -72,21 +71,13 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 		});
 	});
 
-	it("gallery message has no detectable a11y violations (known upstream findings excluded)", () => {
+	it("gallery message has no detectable a11y violations", () => {
 		cy.withMessageFixture("gallery", () => {
 			cy.get(".gallery-button-next").should("exist");
-			// Two findings live inside the upstream carousel renderer
-			// (@cognigy/chat-components Gallery) and are excluded here until they
-			// are fixed there — tracked as CGY-37634 (see docs/accessibility.md,
-			// "Known upstream findings"):
-			//  - color-contrast: a card without an image renders its white title
-			//    over the #cccccc placeholder (1.6:1, SC 1.4.3 needs 4.5:1)
-			//  - target-size: swiper pagination bullets are 6×6px focusable
-			//    buttons (SC 2.5.8 needs 24×24 CSS px)
-			// Two scans keep the exclusion confined to the gallery: the rest of
-			// the widget keeps the full rule set, the gallery drops only those two.
-			cy.checkA11yCompliance(ROOT, { exclude: [GALLERY] });
-			cy.checkA11yCompliance(GALLERY, { disabledRules: ["color-contrast", "target-size"] });
+			// Full rule set: the color-contrast (placeholder title) and target-size
+			// (6x6 px pagination bullets) findings were fixed upstream in
+			// @cognigy/chat-components 0.81.0 (CGY-37634).
+			cy.checkA11yCompliance(ROOT);
 		});
 	});
 
@@ -98,7 +89,7 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 	});
 
 	it("downloadable image thumbnail has no detectable a11y violations", () => {
-		cy.withMessageFixture("downloadableImage-with-alt", () => {
+		cy.withMessageFixture("downloadableImage", () => {
 			cy.get(".webchat-media-template-image[role=button]").should("be.visible");
 			cy.checkA11yCompliance(ROOT);
 		});
@@ -106,10 +97,11 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 
 	// The lightbox is an APG dialog rendered by chat-components; in the full
 	// widget it must take focus on open and hand it back to the thumbnail on
-	// Escape (SC 2.4.3). Uses the fixture WITH alt text: without it the lightbox
-	// <img> renders no alt attribute at all (upstream finding, CGY-37634).
+	// Escape (SC 2.4.3). The fixture carries no alt text on purpose: since
+	// chat-components 0.81.0 (CGY-37634) the lightbox <img> renders alt="" in
+	// that case, so the image-alt rule must stay green here.
 	it("open image lightbox has no detectable a11y violations and returns focus to the thumbnail on Escape", () => {
-		cy.withMessageFixture("downloadableImage-with-alt", () => {
+		cy.withMessageFixture("downloadableImage", () => {
 			cy.get(".webchat-media-template-image[role=button]").click();
 			cy.get('[role="dialog"]').should("be.visible");
 			cy.focused().should("have.attr", "aria-label", "Download full-size image");
@@ -147,23 +139,22 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 		});
 	});
 
-	it("open date picker dialog has no detectable a11y violations (known upstream findings excluded)", () => {
+	it("open date picker dialog has no detectable a11y violations (known upstream finding excluded)", () => {
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
 			cy.get(".webchat-plugin-date-picker").should("be.visible");
-			// flatpickr's calendar DOM (chat-components DatePicker) has two
-			// ticketed findings tracked upstream as AB#144248 and allowlisted in
-			// chat-components' own axe gate (0.80.0): grid/rowgroup without
-			// role=row children, and gridcells outside role=row parents. (The
-			// unnamed readonly <input class="flatpickr-input"> that gate also
-			// lists is display:none in the widget, so axe does not flag it here.)
+			// chat-components 0.81.0 (CGY-30560) exposes the calendar's row level
+			// through visually hidden role="row" elements that own their cells via
+			// aria-owns. axe-core does not model aria-owns precedence over DOM
+			// parentage, so the grid (.flatpickr-rContainer) and the .flatpickr-days
+			// rowgroup still fail aria-required-children — the same two nodes
+			// chat-components allowlists in its own axe gate. aria-required-parent
+			// no longer fires (verified in a real browser on 0.81.0).
 			// Two scans keep the exclusion confined to the calendar: the rest of
 			// the widget — dialog header and footer buttons, message input —
-			// keeps the full rule set, the calendar drops only the two grid rules.
+			// keeps the full rule set, the calendar drops only that one rule.
 			cy.checkA11yCompliance(ROOT, { exclude: [CALENDAR] });
-			cy.checkA11yCompliance(CALENDAR, {
-				disabledRules: ["aria-required-children", "aria-required-parent"],
-			});
+			cy.checkA11yCompliance(CALENDAR, { disabledRules: ["aria-required-children"] });
 		});
 	});
 });
