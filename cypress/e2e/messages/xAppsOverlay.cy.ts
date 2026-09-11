@@ -7,24 +7,34 @@ describe("xApps Overlay", () => {
 	});
 
 	describe("Security (WCH-SI10-003)", () => {
-		it("xApp iframe has sandbox attribute restricting default capabilities", () => {
+		it("xApp iframe has sandbox attribute with required tokens", () => {
 			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 				cy.get("iframe").should("have.attr", "sandbox");
 				cy.get("iframe")
 					.invoke("attr", "sandbox")
 					.should("include", "allow-scripts")
-					.and("include", "allow-same-origin")
 					.and("include", "allow-forms")
 					.and("include", "allow-popups")
-					.and("not.include", "allow-top-navigation");
+					.and("include", "allow-popups-to-escape-sandbox")
+					.and("include", "allow-modals")
+					.and("include", "allow-downloads")
+					.and("include", "allow-top-navigation-by-user-activation")
+					// allow-top-navigation (without user-activation) is not allowed;
+					// use a regex to avoid substring matching allow-top-navigation-by-user-activation
+					.and("not.match", /(?:^|\s)allow-top-navigation(?:\s|$)/);
 			});
 		});
 
-		it("xApp iframe allow= list does not contain high-risk device APIs", () => {
+		it("xApp iframe allow= list includes required capabilities and excludes high-risk device APIs", () => {
 			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 				cy.get("iframe")
 					.invoke("attr", "allow")
-					.should("not.include", "payment")
+					// payment, publickey-credentials-get, otp-credentials are required for
+					// documented xApp use cases (Stripe payment, WebAuthn/biometric auth, SMS OTP)
+					.should("include", "payment")
+					.and("include", "publickey-credentials-get")
+					.and("include", "otp-credentials")
+					// high-risk device APIs are excluded
 					.and("not.include", "usb")
 					.and("not.include", "bluetooth")
 					.and("not.include", "serial")
@@ -33,27 +43,34 @@ describe("xApps Overlay", () => {
 			});
 		});
 
-		it("xApp iframe sandbox includes allow-modals so alert/confirm/prompt work", () => {
-			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
-				cy.get("iframe")
-					.invoke("attr", "sandbox")
-					.should("include", "allow-modals")
-					.and("not.include", "allow-top-navigation");
-			});
-		});
-
-		it("does not render iframe for a same-origin xApp URL to prevent sandbox escape", () => {
+		it("omits allow-same-origin for same-origin xApp URLs to prevent sandbox escape", () => {
 			// allow-scripts + allow-same-origin together allow a same-origin iframe to
-			// remove its own sandbox via frameElement; reject same-origin URLs at render time.
+			// remove its own sandbox via frameElement. For same-origin URLs, allow-same-origin
+			// is dropped so the frame is treated as cross-origin within the sandbox.
+			// autoOpen:true is required — the reducer only opens when explicitly set.
 			cy.receiveMessage(null, {
 				_cognigy: {
 					_app: {
-						overlaySettings: {},
+						overlaySettings: {
+							autoOpen: true,
+							screenTitle: "Same-Origin xApp",
+							showCloseIcon: true,
+						},
 						url: "http://localhost:8787/same-origin-xapp",
 					},
 				},
 			});
-			cy.get("iframe").should("not.exist");
+			// The overlay renders (not dead-ended), but without allow-same-origin
+			cy.get(".webchat-header-logo-name-container").contains("Same-Origin xApp");
+			cy.get("iframe").should("have.attr", "sandbox").and("not.include", "allow-same-origin");
+		});
+
+		it("cross-origin xApp URL includes allow-same-origin in sandbox", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe")
+					.invoke("attr", "sandbox")
+					.should("include", "allow-same-origin");
+			});
 		});
 	});
 
@@ -107,7 +124,8 @@ describe("xApps Overlay", () => {
  *
  * Test strategy: WCH-SI10-003 rejects same-origin xApp URLs, so localhost-based
  * xApp URLs can no longer be used to exercise the postMessage acceptance path in
- * Cypress (the component returns null before rendering). The rejection path is
+ * Cypress (the component omits allow-same-origin for those URLs, making origin
+ * matching irrelevant for the sandbox escape path). The rejection path is
  * covered below using a cross-origin URL (https://example.com).
  */
 describe("postMessage origin validation (WCH-SI10-004)", () => {
