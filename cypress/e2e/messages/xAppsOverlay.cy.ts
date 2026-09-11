@@ -10,6 +10,8 @@ describe("xApps Overlay", () => {
 		it("xApp iframe has sandbox attribute with required tokens", () => {
 			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 				cy.get("iframe").should("have.attr", "sandbox");
+				// Regex anchor prevents "allow-top-navigation-by-user-activation" matching
+				// the "not.include" for bare "allow-top-navigation".
 				cy.get("iframe")
 					.invoke("attr", "sandbox")
 					.should("include", "allow-scripts")
@@ -19,22 +21,19 @@ describe("xApps Overlay", () => {
 					.and("include", "allow-modals")
 					.and("include", "allow-downloads")
 					.and("include", "allow-top-navigation-by-user-activation")
-					// allow-top-navigation (without user-activation) is not allowed;
-					// use a regex to avoid substring matching allow-top-navigation-by-user-activation
 					.and("not.match", /(?:^|\s)allow-top-navigation(?:\s|$)/);
 			});
 		});
 
-		it("xApp iframe allow= list includes required capabilities and excludes high-risk device APIs", () => {
+		it("xApp iframe allow= includes payment and auth, excludes high-risk device APIs", () => {
 			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				// payment, publickey-credentials-get, otp-credentials required for documented
+				// xApp use cases (Stripe payment, WebAuthn/biometric auth, SMS OTP).
 				cy.get("iframe")
 					.invoke("attr", "allow")
-					// payment, publickey-credentials-get, otp-credentials are required for
-					// documented xApp use cases (Stripe payment, WebAuthn/biometric auth, SMS OTP)
 					.should("include", "payment")
 					.and("include", "publickey-credentials-get")
 					.and("include", "otp-credentials")
-					// high-risk device APIs are excluded
 					.and("not.include", "usb")
 					.and("not.include", "bluetooth")
 					.and("not.include", "serial")
