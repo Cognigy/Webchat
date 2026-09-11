@@ -67,6 +67,7 @@ import { IFile } from "../../webchat/store/input/input-reducer";
 import { CSSTransition } from "react-transition-group";
 import { TeaserMessage } from "./presentational/TeaserMessage";
 import TeaserMessageAnnouncer from "./presentational/TeaserMessageAnnouncer";
+import UnreadMessagesAnnouncer from "./presentational/UnreadMessagesAnnouncer";
 import XAppOverlay from "./functional/xapp-overlay/XAppOverlay";
 import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
@@ -1495,6 +1496,29 @@ export class WebchatUI extends React.PureComponent<
 												/>
 											</WebchatRoot>
 										)}
+									{/* Outside the toggle-button block: the page-title indicator
+									    runs without a toggle button too. Mounted for the page
+									    lifetime so the region pre-exists the first count change.
+									    Placed BEFORE the teaser announcer on purpose: both regions
+									    update in the same commit and are voiced in tree order, so
+									    the count is heard first, then the preview text. */}
+									<UnreadMessagesAnnouncer
+										active={
+											config.settings.unreadMessages.enableBadge ||
+											config.settings.unreadMessages.enableIndicator
+										}
+										count={unseenMessages.length}
+										singularText={
+											config.settings.customTranslations?.ariaLabels
+												?.unreadMessageSingularText ??
+											"One unread message in chat."
+										}
+										pluralText={
+											config.settings.customTranslations?.ariaLabels
+												?.unreadMessagePluralText ??
+											"unread messages in chat."
+										}
+									/>
 									{!disableToggleButton && (
 										<div>
 											{/* Mounted for the page lifetime (the teaser shows while
@@ -1569,14 +1593,15 @@ export class WebchatUI extends React.PureComponent<
 														<ChatIcon config={config} />
 													)}
 													{config.settings.unreadMessages.enableBadge ? (
+														// The count is already in the button's
+														// accessible name (and announced live by
+														// UnreadMessagesAnnouncer); the badge is a
+														// visual duplicate. aria-label is prohibited
+														// on a generic <span>.
 														<Badge
 															_content={unseenMessages.length}
 															className="webchat-unread-message-badge"
-															aria-label={`${unseenMessages.length} ${
-																config.settings.customTranslations
-																	?.ariaLabels?.unreadMessages ??
-																"unread messages"
-															}`}
+															aria-hidden="true"
 														/>
 													) : null}
 												</FAB>
