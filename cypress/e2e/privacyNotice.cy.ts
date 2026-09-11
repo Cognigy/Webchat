@@ -1,3 +1,5 @@
+import { itChromiumOnly } from "../support/browser";
+
 describe("Privacy Notice", () => {
 	beforeEach(() => {
 		cy.visitWebchat();
@@ -86,9 +88,6 @@ describe("Privacy Notice", () => {
 
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
 	describe("Accessibility (WCAG 2.2 AA)", () => {
-		// cypress-real-events dispatches real key events over CDP — Chromium only.
-		const itChromiumOnly = Cypress.isBrowser({ family: "chromium" }) ? it : it.skip;
-
 		const privacyNotice = {
 			enabled: true,
 			text: "Please read our [terms of use](https://example.com/terms) before you start.",

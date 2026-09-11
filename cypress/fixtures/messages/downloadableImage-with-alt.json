@@ -5,13 +5,13 @@
 			"_default": {
 				"_image": {
 					"type": "image",
-					"imageUrl": "https://placewaifu.com/image/300/300",
+					"imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='%230B6E4F'/></svg>",
 					"imageAltText": "A sample picture",
 					"buttons": [
 						{
 							"type": "web_url",
 							"title": "Download",
-							"url": "https://placewaifu.com/image/300/300"
+							"url": "https://example.com/sample-image.png"
 						}
 					]
 				}
@@ -21,13 +21,13 @@
 					"attachment": {
 						"type": "image",
 						"payload": {
-							"url": "https://placewaifu.com/image/300/300",
+							"url": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><rect width='300' height='300' fill='%230B6E4F'/></svg>",
 							"altText": "A sample picture",
 							"buttons": [
 								{
 									"type": "web_url",
 									"title": "Download",
-									"url": "https://placewaifu.com/image/300/300"
+									"url": "https://example.com/sample-image.png"
 								}
 							]
 						}

@@ -297,23 +297,32 @@ Cypress.Commands.add("focusInput", () => {
 
 Cypress.Commands.add(
 	"checkA11yCompliance",
-	(selector?: string, options?: { disabledRules?: string[] }) => {
+	(selector?: string, options?: { disabledRules?: string[]; exclude?: string[] }) => {
 		cy.injectAxe();
 
 		const targetElement = selector || "Entire page";
-		cy.task("log", `\nChecking accessibility for: ${targetElement}`);
+		const excluded = options?.exclude?.length
+			? ` (excluding ${options.exclude.join(", ")})`
+			: "";
+		cy.task("log", `\nChecking accessibility for: ${targetElement}${excluded}`);
 
-		// Per-call rule exclusions for documented findings that live upstream
-		// (e.g. inside a @cognigy/chat-components renderer). Every exclusion must
-		// be justified at the call site with the tracking reference; the goal
-		// state is no exclusions at all.
+		// Per-call exclusions for documented findings that live upstream (e.g.
+		// inside a @cognigy/chat-components renderer). `exclude` leaves only the
+		// offending subtree out of this scan and keeps every rule active on the
+		// rest of the surface; `disabledRules` switches a rule off for the whole
+		// scanned context, so pair it with a `selector` scoped to the renderer in
+		// question. Every exclusion must be justified at the call site with the
+		// tracking reference; the goal state is no exclusions at all.
 		const rules: Record<string, { enabled: boolean }> = {};
 		(options?.disabledRules ?? []).forEach(ruleId => {
 			rules[ruleId] = { enabled: false };
 		});
+		const context = options?.exclude?.length
+			? { ...(selector ? { include: selector } : {}), exclude: options.exclude }
+			: selector || null;
 
 		cy.checkA11y(
-			selector || null,
+			context,
 			{
 				runOnly: {
 					type: "tag",

@@ -1,3 +1,5 @@
+import { itChromiumOnly } from "../support/browser";
+
 describe("File Attachement", () => {
 	beforeEach(() => {
 		cy.visitWebchat();
@@ -228,11 +230,11 @@ describe("File Attachement", () => {
 		cy.get("#dropzoneContent").contains("Please drop here");
 	});
 
+	// TODO: Add test for a successful file upload being sent with the message
+	// (the a11y block below mocks the upload, but stops short of sending).
+
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
 	describe("Accessibility (WCAG 2.2 AA)", () => {
-		// cypress-real-events dispatches real key events over CDP — Chromium only.
-		const itChromiumOnly = Cypress.isBrowser({ family: "chromium" }) ? it : it.skip;
-
 		const initWithFileStorage = (settings: Record<string, unknown> = {}) =>
 			cy.initMockWebchat({
 				settings: {

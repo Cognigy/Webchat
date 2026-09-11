@@ -1,8 +1,6 @@
-describe("Webchat Message Input", () => {
-	// cypress-real-events dispatches real key events over CDP — Chromium only. The
-	// Firefox run keeps every assertion that does not need a native key press.
-	const itChromiumOnly = Cypress.isBrowser({ family: "chromium" }) ? it : it.skip;
+import { itChromiumOnly } from "../support/browser";
 
+describe("Webchat Message Input", () => {
 	const persistentMenuOptions = {
 		settings: {
 			homeScreen: { enabled: false },

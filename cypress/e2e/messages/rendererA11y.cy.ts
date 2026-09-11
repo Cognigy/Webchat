@@ -18,17 +18,8 @@
 
 describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 	const ROOT = "[data-cognigy-webchat-root]";
-
-	// Writes document.activeElement to the runner log (cy.task("log")) so CI
-	// output shows where focus actually is around key presses.
-	const logActiveElement = (label: string) =>
-		cy.document().then(doc => {
-			const el = doc.activeElement;
-			const description = el
-				? `${el.tagName.toLowerCase()}#${el.id} .${String(el.className).slice(0, 60)} [${el.getAttribute("aria-label") ?? el.getAttribute("data-testid") ?? ""}]`
-				: "null";
-			cy.task("log", `[focus] ${label}: ${description}`);
-		});
+	const GALLERY = ".webchat-carousel-template-root";
+	const CALENDAR = ".flatpickr-calendar";
 
 	beforeEach(() => {
 		cy.visitWebchat()
@@ -92,7 +83,10 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 			//    over the #cccccc placeholder (1.6:1, SC 1.4.3 needs 4.5:1)
 			//  - target-size: swiper pagination bullets are 6×6px focusable
 			//    buttons (SC 2.5.8 needs 24×24 CSS px)
-			cy.checkA11yCompliance(ROOT, { disabledRules: ["color-contrast", "target-size"] });
+			// Two scans keep the exclusion confined to the gallery: the rest of
+			// the widget keeps the full rule set, the gallery drops only those two.
+			cy.checkA11yCompliance(ROOT, { exclude: [GALLERY] });
+			cy.checkA11yCompliance(GALLERY, { disabledRules: ["color-contrast", "target-size"] });
 		});
 	});
 
@@ -120,7 +114,6 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 			cy.get('[role="dialog"]').should("be.visible");
 			cy.focused().should("have.attr", "aria-label", "Download full-size image");
 			cy.checkA11yCompliance(ROOT);
-			logActiveElement("lightbox: after axe sweep");
 
 			// Hand the focus to Cypress before the key press (see datePicker.cy.ts):
 			// in headless runs focus set by the app is not reliably the target of
@@ -158,13 +151,18 @@ describe("Message renderers — Accessibility (WCAG 2.2 AA)", () => {
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
 			cy.get(".webchat-plugin-date-picker").should("be.visible");
-			// flatpickr's calendar DOM (chat-components DatePicker) has three
-			// ticketed findings tracked upstream as AB#144248 — the same allowlist
-			// chat-components' own axe gate carries: grid/rowgroup without
-			// role=row children, gridcells outside role=row parents, and the
-			// original readonly <input class="flatpickr-input"> without a name.
-			cy.checkA11yCompliance(ROOT, {
-				disabledRules: ["aria-required-children", "aria-required-parent", "label"],
+			// flatpickr's calendar DOM (chat-components DatePicker) has two
+			// ticketed findings tracked upstream as AB#144248 and allowlisted in
+			// chat-components' own axe gate (0.80.0): grid/rowgroup without
+			// role=row children, and gridcells outside role=row parents. (The
+			// unnamed readonly <input class="flatpickr-input"> that gate also
+			// lists is display:none in the widget, so axe does not flag it here.)
+			// Two scans keep the exclusion confined to the calendar: the rest of
+			// the widget — dialog header and footer buttons, message input —
+			// keeps the full rule set, the calendar drops only the two grid rules.
+			cy.checkA11yCompliance(ROOT, { exclude: [CALENDAR] });
+			cy.checkA11yCompliance(CALENDAR, {
+				disabledRules: ["aria-required-children", "aria-required-parent"],
 			});
 		});
 	});

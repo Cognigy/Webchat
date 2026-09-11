@@ -13,11 +13,9 @@
  * rating.cy.ts, reconnection.cy.ts, privacyNotice.cy.ts).
  */
 
-describe("Focus management (WCAG 2.2 AA)", () => {
-	// cypress-real-events dispatches real key events over CDP — Chromium only. The
-	// Firefox run keeps every assertion that does not need a native Tab key.
-	const itChromiumOnly = Cypress.isBrowser({ family: "chromium" }) ? it : it.skip;
+import { itChromiumOnly } from "../support/browser";
 
+describe("Focus management (WCAG 2.2 AA)", () => {
 	const TOGGLE = "#webchatWindowToggleButton";
 
 	// Mirrors getKeyboardFocusableElements (src/webchat-ui/utils/find-focusable.ts):
