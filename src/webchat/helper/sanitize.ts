@@ -225,18 +225,49 @@ export const allowedHtmlAttributes = [
 	"wrap",
 ];
 
+// Hard deny-list: these tags are never permitted regardless of tenant configuration.
+// Allowing any of these opens XSS, clickjacking, HTML-injection, or data-exfiltration
+// vectors even when ALLOWED_ATTR is otherwise constrained.
+// Applied via both FORBID_TAGS (DOMPurify-level, unconditional) and a pre-filter on
+// customAllowedHtmlTags (defence-in-depth before DOMPurify is even invoked).
+export const ALWAYS_BLOCKED_TAGS = new Set([
+	"script",
+	"iframe",
+	"object",
+	"embed",
+	"applet",
+	"frame",
+	"frameset",
+	"meta",
+	"base",
+	"link",
+	"style",
+	"form",
+]);
+
 const config: Config = {
 	ALLOWED_TAGS: allowedHtmlTags,
 	ALLOWED_ATTR: allowedHtmlAttributes,
+	// FORBID_TAGS overrides ALLOWED_TAGS inside DOMPurify — tags listed here are
+	// stripped unconditionally, whether the default allow-list or a custom one is used.
+	FORBID_TAGS: [...ALWAYS_BLOCKED_TAGS],
 };
 
 export const sanitizeHTML = (text: string) => {
 	const customAllowedHtmlTags =
 		storeRef?.getState().config.settings.widgetSettings.customAllowedHtmlTags;
 
-	const configToUse = customAllowedHtmlTags
-		? { ...config, ALLOWED_TAGS: customAllowedHtmlTags }
-		: config;
+	let configToUse = config;
+	if (customAllowedHtmlTags) {
+		// Pre-filter the tenant-supplied list before passing to DOMPurify (defence-in-depth).
+		// config-reducer already strips blocked tags and non-strings at config-load time, but
+		// we guard here too in case sanitizeHTML is ever called outside the normal config path.
+		const list = Array.isArray(customAllowedHtmlTags) ? customAllowedHtmlTags : [];
+		const safeTags = list.filter(
+			tag => typeof tag === "string" && !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase().trim()),
+		);
+		configToUse = { ...config, ALLOWED_TAGS: safeTags };
+	}
 
 	return DOMPurify.sanitize(text, configToUse).toString();
 };
