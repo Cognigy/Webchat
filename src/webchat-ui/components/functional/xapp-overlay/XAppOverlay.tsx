@@ -100,21 +100,11 @@ const xAppOverlay: FC = () => {
 	};
 
 	const handleSubmit = (event: MessageEvent) => {
-		// WCH-SI10-004: compare canonical origins, not raw URL strings.
-		// The previous url.startsWith(event.origin) check was semantically backwards —
-		// a domain that is a string-prefix of url (e.g. "https://xapp.cognigy.a" for
-		// "https://xapp.cognigy.ai/form") could pass the check despite being a different
-		// origin. new URL(url).origin extracts the canonical scheme+host+port for an
-		// exact match, which is the correct cross-origin security boundary.
-		let urlOrigin: string;
-		try {
-			urlOrigin = new URL(url).origin;
-		} catch {
-			// url is empty or not a valid absolute URL — reject all postMessages.
-			return;
-		}
-
-		if (urlOrigin !== event.origin) {
+		// Reuse xAppOrigin from render scope (includes the http(s)-only scheme guard
+		// from getXAppOrigin). This prevents opaque-origin ("null") postMessages from
+		// data:/about:/blob: URLs — which stay in Redux until the cleanup effect fires —
+		// from matching via event.origin === "null" between render and effect execution.
+		if (xAppOrigin === null || xAppOrigin !== event.origin) {
 			return;
 		}
 

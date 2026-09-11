@@ -119,15 +119,44 @@ describe("xApps Overlay", () => {
  * The fix uses `new URL(url).origin === event.origin` which compares the canonical
  * scheme+host+port extracted from both sides — the correct cross-origin boundary.
  *
- * Test strategy: WCH-SI10-003 rejects same-origin xApp URLs, so localhost-based
- * xApp URLs can no longer be used to exercise the postMessage acceptance path in
- * Cypress (the component omits allow-same-origin for those URLs, making origin
- * matching irrelevant for the sandbox escape path). The rejection path is
- * covered below using a cross-origin URL (https://example.com).
+ * Test strategy: WCH-SI10-003 omits allow-same-origin for same-origin xApp URLs
+ * (rather than refusing to render). Same-origin xApps still render, so localhost-
+ * based URLs can be used for the acceptance-path test: the Cypress test runner posts
+ * from http://localhost:8787, xAppOrigin is http://localhost:8787 — they match.
  */
 describe("postMessage origin validation (WCH-SI10-004)", () => {
 	beforeEach(() => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
+	});
+
+	it("closes overlay when x-app-submit postMessage origin matches the xApp URL origin", () => {
+		// xApp URL uses localhost:8787 — same origin as the Cypress test runner.
+		// WCH-SI10-003 renders same-origin xApps without allow-same-origin; postMessage
+		// still works (it does not require allow-same-origin). xAppOrigin === event.origin → accepted.
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: {
+						autoOpen: true,
+						closeOnSubmit: true,
+						feedbackMessage: "",
+						screenTitle: "Local xApp",
+						sendEventOnCloseIconClick: false,
+						showCloseIcon: false,
+					},
+					url: "http://localhost:8787/xapp-test",
+				},
+			},
+		});
+
+		cy.get(".webchat-header-logo-name-container").contains("Local xApp");
+
+		cy.window().then(win => {
+			win.postMessage({ type: "x-app-submit", success: true }, "*");
+		});
+
+		// closeOnSubmit is true and origin matched → overlay must close.
+		cy.get(".webchat-header-logo-name-container").should("not.contain", "Local xApp");
 	});
 
 	it("keeps overlay open when postMessage origin does not match the xApp URL origin", () => {
