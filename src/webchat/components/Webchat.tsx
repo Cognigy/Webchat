@@ -8,6 +8,7 @@ import { sendMessage } from "../store/messages/message-middleware";
 import { MessageSender } from "../../webchat-ui/interfaces";
 import {
 	setHasAcceptedTerms,
+	setHasAcceptedSystemUseNotification,
 	setOpen,
 	setShowHomeScreen,
 	showChatScreen,
@@ -26,7 +27,7 @@ import { setInitialSessionId, updateSettings } from "../store/config/config-redu
 import { createOutputHandler } from "../store/messages/message-handler";
 import { createNotification } from "../../webchat-ui/components/presentational/Notifications";
 import { getStorage } from "../helper/storage";
-import { hasAcceptedTermsInStorage } from "../helper/privacyPolicy";
+import { hasAcceptedTermsInStorage, hasAcceptedSunInStorage } from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
 import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { clearMessages } from "../store/messages/message-reducer";
@@ -75,8 +76,20 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 			this.store.dispatch(setHasAcceptedTerms(userId));
 		}
 
+		// System Use Notification (AC-8 / FedRAMP): restore per-session acceptance.
+		// If the current sessionId was already accepted in this browser session, skip the notice.
+		const sessionId = this.client.socketOptions.sessionId || "";
+		if (sessionId && hasAcceptedSunInStorage(browserStorage, sessionId)) {
+			this.store.dispatch(setHasAcceptedSystemUseNotification(sessionId));
+		}
+
 		this.store.dispatch(loadConfig());
-		if (this.props.options?.sessionId) {
+		// Always sync the Redux options.sessionId from the socket client so that
+		// handleAcceptSystemUseNotification in WebchatUI reads the same sessionId
+		// that was used to check SUN acceptance in storage above.
+		if (sessionId) {
+			this.store.dispatch(setInitialSessionId(sessionId));
+		} else if (this.props.options?.sessionId) {
 			this.store.dispatch(setInitialSessionId(this.props.options.sessionId));
 		}
 		if (this.props.options?.userId) {
