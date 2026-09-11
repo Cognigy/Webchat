@@ -295,43 +295,66 @@ Cypress.Commands.add("focusInput", () => {
 	return cy.then(() => {});
 });
 
-Cypress.Commands.add("checkA11yCompliance", (selector?: string) => {
-	cy.injectAxe();
+Cypress.Commands.add(
+	"checkA11yCompliance",
+	(selector?: string, options?: { disabledRules?: string[]; exclude?: string[] }) => {
+		cy.injectAxe();
 
-	const targetElement = selector || "Entire page";
-	cy.task("log", `\nChecking accessibility for: ${targetElement}`);
+		const targetElement = selector || "Entire page";
+		const excluded = options?.exclude?.length
+			? ` (excluding ${options.exclude.join(", ")})`
+			: "";
+		cy.task("log", `\nChecking accessibility for: ${targetElement}${excluded}`);
 
-	cy.checkA11y(
-		selector || null,
-		{
-			runOnly: {
-				type: "tag",
-				values: [
-					"wcag2a",
-					"wcag2aa",
-					"wcag21a",
-					"wcag21aa",
-					"wcag22a",
-					"wcag22aa",
-					"best-practice",
-				],
+		// Per-call exclusions for documented findings that live upstream (e.g.
+		// inside a @cognigy/chat-components renderer). `exclude` leaves only the
+		// offending subtree out of this scan and keeps every rule active on the
+		// rest of the surface; `disabledRules` switches a rule off for the whole
+		// scanned context, so pair it with a `selector` scoped to the renderer in
+		// question. Every exclusion must be justified at the call site with the
+		// tracking reference; the goal state is no exclusions at all.
+		const rules: Record<string, { enabled: boolean }> = {};
+		(options?.disabledRules ?? []).forEach(ruleId => {
+			rules[ruleId] = { enabled: false };
+		});
+		const context = options?.exclude?.length
+			? { ...(selector ? { include: selector } : {}), exclude: options.exclude }
+			: selector || null;
+
+		cy.checkA11y(
+			context,
+			{
+				runOnly: {
+					type: "tag",
+					// axe-core has no `wcag22a` tag — the WCAG 2.2 additions it
+					// automates are all Level AA (`wcag22aa`).
+					values: [
+						"wcag2a",
+						"wcag2aa",
+						"wcag21a",
+						"wcag21aa",
+						"wcag22aa",
+						"best-practice",
+					],
+				},
+				rules,
+				includedImpacts: ["minor", "moderate", "serious", "critical"],
 			},
-			includedImpacts: ["minor", "moderate", "serious", "critical"],
-		},
-		violations => {
-			if (violations.length > 0) {
-				violations.forEach((violation, index) => {
-					cy.task(
-						"log",
-						`${index + 1}. ${violation.impact} - ${violation.id}: ${violation.description}`,
-					);
-					violation.nodes.forEach(node => {
-						cy.task("log", `   HTML: ${node.html}`);
+			violations => {
+				if (violations.length > 0) {
+					violations.forEach((violation, index) => {
+						cy.task(
+							"log",
+							`${index + 1}. ${violation.impact} - ${violation.id}: ${violation.description}`,
+						);
+						violation.nodes.forEach(node => {
+							cy.task("log", `   HTML: ${node.html}`);
+						});
 					});
-				});
-			}
-		},
-	);
+				}
+			},
+		);
 
-	return cy.then(() => {});
-});
+		return cy.then(() => {});
+	},
+);
