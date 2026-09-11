@@ -152,6 +152,13 @@ export interface WebchatUIProps {
 	prevConversations: PrevConversationsState;
 	/** True once a non-empty persisted history was restored (page reload of a stored conversation) — see MessageState. */
 	hasRestoredPersistedHistory?: boolean;
+	/**
+	 * Whether the page load's first connect is going to restore a
+	 * persisted conversation — known from storage before that connect
+	 * resolves, which is what keeps the AI-agent notice from announcing
+	 * for a continued conversation on a slow connect (CGY-3519).
+	 */
+	willRestorePersistedConversation?: boolean;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 
 	showChatOptionsScreen: boolean;
@@ -566,6 +573,7 @@ export class WebchatUI extends React.PureComponent<
 				id,
 				prevConversationsSnapshot,
 				this.props.hasRestoredPersistedHistory,
+				this.props.willRestorePersistedConversation,
 			),
 		}));
 	}
@@ -682,6 +690,28 @@ export class WebchatUI extends React.PureComponent<
 
 		if (prevProps.currentSession !== this.props.currentSession) {
 			this.evaluateNoticeSession(prevProps.prevConversations);
+		}
+
+		// The persisted-conversation prediction is read from storage under a
+		// key that contains the endpoint config's URLToken, so it only
+		// becomes meaningful once that config has loaded — after this
+		// component has already mounted. Re-evaluating on the flip is in
+		// time for every case the notice can observe, and normally with
+		// room to spare: `open()` waits for the config before showing
+		// anything, and even if it gives up waiting (~1s by default, then
+		// it opens regardless) the flip still lands within the intro's own
+		// 600ms delay and its effect cleanup cancels the pending timer. A
+		// config slower than roughly the sum of the two would let the
+		// notice announce before the prediction arrives — the remaining
+		// gap, and the reason the notice is not gated on the connect on
+		// top of this. No session id exists yet at this point, so current
+		// props are the pre-change snapshot.
+		if (
+			prevProps.willRestorePersistedConversation !==
+				this.props.willRestorePersistedConversation &&
+			!this.props.currentSession
+		) {
+			this.evaluateNoticeSession(this.props.prevConversations);
 		}
 
 		if (
