@@ -163,7 +163,184 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 	it("xApps overlay passes axe audit", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			cy.get("[data-xapp-overlay]").should("exist");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
+
+	it("xApps overlay without title and close icon passes axe audit", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay]").should("exist");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
+
+	it("is a modal dialog named by its visible title, with a titled frame (SC 4.1.2)", () => {
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			cy.get("[data-xapp-overlay]")
+				.should("have.attr", "role", "dialog")
+				.should("have.attr", "aria-modal", "true")
+				.should("have.attr", "aria-labelledby", "webchatXAppOverlayTitle")
+				// A non-interactive container must not be a tab stop
+				.should("not.have.attr", "tabindex");
+			cy.get("#webchatXAppOverlayTitle").should("have.text", "XApp Title 1");
+			cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "XApp Title 1");
+			// The close icon closes the app, not the chat
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should(
+				"have.attr",
+				"aria-label",
+				"Close dialog",
+			);
+		});
+	});
+
+	it("falls back to a configurable name when the xApp has no screen title", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay]")
+				.should("have.attr", "aria-label", "Embedded app")
+				.should("not.have.attr", "aria-labelledby");
+			cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Embedded app");
+		});
+	});
+
+	it("uses the xAppOverlay aria-label translation", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: {
+					customTranslations: {
+						ariaLabels: {
+							xAppOverlay: "Eingebettete App",
+							closeDialog: "Dialog schließen",
+						},
+					},
+				},
+			})
+			.openWebchat()
+			.startConversation();
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay]").should("have.attr", "aria-label", "Eingebettete App");
+		cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Eingebettete App");
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should(
+			"have.attr",
+			"aria-label",
+			"Dialog schließen",
+		);
+	});
+
+	it("renders no empty heading when a close icon is shown without a title", () => {
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should("exist");
+		cy.get("[data-xapp-overlay] .webchat-header-title").should("not.exist");
+		cy.get("[data-xapp-overlay] h2").should("not.exist");
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
+	it("treats a whitespace-only title as absent", () => {
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "   ", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should("exist");
+		cy.get("[data-xapp-overlay] h2").should("not.exist");
+		cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Embedded app");
+		cy.get("[data-xapp-overlay]")
+			.should("have.attr", "aria-label", "Embedded app")
+			.should("not.have.attr", "aria-labelledby");
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
+	it("moves focus to the close button on open and traps Tab inside the dialog (SC 2.4.3, 2.1.2)", () => {
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			// Deferred focus on the first control, so screen readers announce
+			// the dialog name once and then the button — not the title heading,
+			// which would repeat the dialog name
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
+			cy.get("#webchatXAppOverlayTitle").should("not.have.focus");
+
+			// Native tabbing needs real key events (cypress-real-events is
+			// CDP-based, so Chromium only). The Firefox run relies on the
+			// guard assertions below, which exercise the same wrap logic.
+			if (Cypress.isBrowser({ family: "chromium" })) {
+				// Forward tab order: close button → frame
+				cy.realPress("Tab");
+				cy.get("[data-xapp-overlay] iframe").should("have.focus");
+
+				// Shift+Tab off the first control lands on the start guard,
+				// which wraps to the last tab stop (the frame) instead of the
+				// host page
+				cy.get("[data-xapp-overlay] .webchat-header-close-button").focus();
+				cy.realPress(["Shift", "Tab"]);
+				cy.get("[data-xapp-overlay] iframe").should("have.focus");
+			}
+
+			// The guards are what the trap is built on, so exercise them
+			// directly in every browser: landing on the start guard wraps to
+			// the last tab stop (the frame) …
+			cy.get("[data-xapp-overlay-focus-guard='start']").focus();
+			cy.get("[data-xapp-overlay] iframe").should("have.focus");
+
+			// … and landing on the end guard (as native Tab out of the frame
+			// does — keydown inside the frame is invisible here) wraps to the
+			// first control
+			cy.get("[data-xapp-overlay-focus-guard='end']").focus();
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
+		});
+	});
+
+	it("focuses the frame on open when the xApp has neither title nor close icon", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay] iframe").should("have.focus");
+		});
+	});
+
+	it("closes on Escape when a close icon is shown and focus returns to the chat input", () => {
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			// Synthetic keydown bubbles to the document-level handler, so this
+			// works in Firefox too (realPress is Chromium-only)
+			cy.get("[data-xapp-overlay] .webchat-header-close-button")
+				.should("have.focus")
+				.type("{esc}");
+			cy.get("[data-xapp-overlay]").should("not.exist");
+			cy.get(".webchat-input-message-input").should("have.focus");
+		});
+	});
+
+	it("ignores Escape when the xApp has no close icon", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay]").should("exist");
+			cy.get("body").trigger("keydown", { key: "Escape" });
+			cy.wait(300);
+			cy.get("[data-xapp-overlay]").should("exist");
+		});
+	});
+
+	it("moves focus to the header title on close when input autofocus is disabled", () => {
+		cy.visitWebchat()
+			.initMockWebchat({ settings: { widgetSettings: { disableInputAutofocus: true } } })
+			.openWebchat()
+			.startConversation();
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus").click();
+			cy.get("[data-xapp-overlay]").should("not.exist");
+			cy.get(".webchat-header-bar .webchat-header-title").should("have.focus");
 		});
 	});
 });

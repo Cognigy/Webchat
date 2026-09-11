@@ -4,9 +4,11 @@
  * @returns {Array}
  */
 const getKeyboardFocusableElements = (element: HTMLElement) => {
-	// Get all interactive elements in given element
+	// Get all interactive elements in given element. An <iframe> is a
+	// sequential-focus stop in every browser (Tab enters the frame's
+	// document), so it counts as focusable — e.g. the xApp overlay's frame.
 	const interactiveEls = element?.querySelectorAll(
-		'a[href], button, input, textarea, select, details,[tabindex]:not([tabindex="-1"])',
+		'a[href], button, input, textarea, select, details, iframe, [tabindex]:not([tabindex="-1"])',
 	);
 	const interactiveElsArray = interactiveEls && Array.from(interactiveEls);
 
