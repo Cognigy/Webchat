@@ -66,9 +66,7 @@ describe("xApps Overlay", () => {
 
 		it("cross-origin xApp URL includes allow-same-origin in sandbox", () => {
 			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
-				cy.get("iframe")
-					.invoke("attr", "sandbox")
-					.should("include", "allow-same-origin");
+				cy.get("iframe").invoke("attr", "sandbox").should("include", "allow-same-origin");
 			});
 		});
 	});
