@@ -6,6 +6,71 @@ describe("xApps Overlay", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 	});
 
+	describe("Security (WCH-SI10-003)", () => {
+		it("xApp iframe has sandbox attribute with required tokens", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe").should("have.attr", "sandbox");
+				// Regex anchor prevents "allow-top-navigation-by-user-activation" matching
+				// the "not.include" for bare "allow-top-navigation".
+				cy.get("iframe")
+					.invoke("attr", "sandbox")
+					.should("include", "allow-scripts")
+					.and("include", "allow-forms")
+					.and("include", "allow-popups")
+					.and("include", "allow-popups-to-escape-sandbox")
+					.and("include", "allow-modals")
+					.and("include", "allow-downloads")
+					.and("include", "allow-top-navigation-by-user-activation")
+					.and("not.match", /(?:^|\s)allow-top-navigation(?:\s|$)/);
+			});
+		});
+
+		it("xApp iframe allow= includes payment and auth, excludes high-risk device APIs", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				// payment, publickey-credentials-get, otp-credentials required for documented
+				// xApp use cases (Stripe payment, WebAuthn/biometric auth, SMS OTP).
+				cy.get("iframe")
+					.invoke("attr", "allow")
+					.should("include", "payment")
+					.and("include", "publickey-credentials-get")
+					.and("include", "otp-credentials")
+					.and("not.include", "usb")
+					.and("not.include", "bluetooth")
+					.and("not.include", "serial")
+					.and("not.include", "hid")
+					.and("not.include", "xr-spatial-tracking");
+			});
+		});
+
+		it("omits allow-same-origin for same-origin xApp URLs to prevent sandbox escape", () => {
+			// allow-scripts + allow-same-origin together allow a same-origin iframe to
+			// remove its own sandbox via frameElement. For same-origin URLs, allow-same-origin
+			// is dropped so the frame is treated as cross-origin within the sandbox.
+			// autoOpen:true is required — the reducer only opens when explicitly set.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: {
+							autoOpen: true,
+							screenTitle: "Same-Origin xApp",
+							showCloseIcon: true,
+						},
+						url: "http://localhost:8787/same-origin-xapp",
+					},
+				},
+			});
+			// The overlay renders (not dead-ended), but without allow-same-origin
+			cy.get(".webchat-header-logo-name-container").contains("Same-Origin xApp");
+			cy.get("iframe").should("have.attr", "sandbox").and("not.include", "allow-same-origin");
+		});
+
+		it("cross-origin xApp URL includes allow-same-origin in sandbox", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe").invoke("attr", "sandbox").should("include", "allow-same-origin");
+			});
+		});
+	});
+
 	it("opens overlay automatically", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 			cy.get(".webchat-header-logo-name-container").contains("XApp Title 1");
@@ -54,19 +119,20 @@ describe("xApps Overlay", () => {
  * The fix uses `new URL(url).origin === event.origin` which compares the canonical
  * scheme+host+port extracted from both sides — the correct cross-origin boundary.
  *
- * Test strategy: in the Cypress environment, postMessages sent from the test page
- * carry origin "http://localhost:8787". Setting the xApp URL to that same origin
- * lets us exercise the acceptance path; using a different URL origin exercises the
- * rejection path. Both cases are observable via the closeOnSubmit behaviour.
+ * Test strategy: WCH-SI10-003 omits allow-same-origin for same-origin xApp URLs
+ * (rather than refusing to render). Same-origin xApps still render, so localhost-
+ * based URLs can be used for the acceptance-path test: the Cypress test runner posts
+ * from http://localhost:8787, xAppOrigin is http://localhost:8787 — they match.
  */
 describe("postMessage origin validation (WCH-SI10-004)", () => {
 	beforeEach(() => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 	});
 
-	it("closes overlay when postMessage origin exactly matches the xApp URL origin", () => {
-		// xApp URL uses localhost:8787 — the same origin as the Cypress test runner —
-		// so postMessages dispatched from the test page have a matching origin.
+	it("closes overlay when x-app-submit postMessage origin matches the xApp URL origin", () => {
+		// xApp URL uses localhost:8787 — same origin as the Cypress test runner.
+		// WCH-SI10-003 renders same-origin xApps without allow-same-origin; postMessage
+		// still works (it does not require allow-same-origin). xAppOrigin === event.origin → accepted.
 		cy.receiveMessage(null, {
 			_cognigy: {
 				_app: {
@@ -85,8 +151,6 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 
 		cy.get(".webchat-header-logo-name-container").contains("Local xApp");
 
-		// postMessage from the test page — event.origin will be "http://localhost:8787".
-		// new URL("http://localhost:8787/xapp-test").origin === "http://localhost:8787" → accepted.
 		cy.window().then(win => {
 			win.postMessage({ type: "x-app-submit", success: true }, "*");
 		});
@@ -127,7 +191,9 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 		cy.get(".webchat-header-logo-name-container").should("contain", "External xApp");
 	});
 
-	it("ignores postMessage with a non-xapp-submit type even from a matching origin", () => {
+	it("ignores postMessage with an unrecognised type from a non-matching origin", () => {
+		// xApp at https://example.com; test runner is http://localhost:8787.
+		// Both origin mismatch AND wrong type — overlay must stay open.
 		cy.receiveMessage(null, {
 			_cognigy: {
 				_app: {
@@ -139,14 +205,13 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 						sendEventOnCloseIconClick: false,
 						showCloseIcon: true,
 					},
-					url: "http://localhost:8787/xapp-test",
+					url: "https://example.com/xapp-form",
 				},
 			},
 		});
 
 		cy.get(".webchat-header-logo-name-container").contains("Type-check xApp");
 
-		// Origin matches but type is wrong — overlay must stay open.
 		cy.window().then(win => {
 			win.postMessage({ type: "some-other-event", payload: "data" }, "*");
 		});

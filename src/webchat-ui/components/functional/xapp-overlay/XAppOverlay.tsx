@@ -47,6 +47,20 @@ const Iframe = styled.iframe(() => ({
 	},
 }));
 
+// Derive the canonical http(s) origin from an xApp URL, or null if the URL is
+// unparseable or uses a non-http(s) scheme. data:/about:/blob: URLs produce the
+// string "null" from new URL().origin — accepting them would let bot-supplied
+// data: xApps forge postMessages accepted by the handleSubmit origin check.
+const getXAppOrigin = (url: string): string | null => {
+	try {
+		const parsed = new URL(url);
+		if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+		return parsed.origin;
+	} catch {
+		return null;
+	}
+};
+
 const xAppOverlay: FC = () => {
 	const url = useSelector(state => state.xAppOverlay.currentUrl) || "";
 	const {
@@ -58,6 +72,18 @@ const xAppOverlay: FC = () => {
 	} = useOverlaySettingsByUrl(url);
 
 	const dispatch = useDispatch();
+
+	const xAppOrigin = getXAppOrigin(url);
+
+	// For invalid or non-http(s) URLs close the overlay immediately so Redux
+	// state is cleaned up and the widget does not dead-end. Dispatch must happen
+	// in an effect — not during render — to satisfy React's rules.
+	useEffect(() => {
+		if (url && xAppOrigin === null) {
+			console.error("[xApp] Invalid xApp URL — must be an absolute http(s) URL:", url);
+			dispatch(closeOverlay());
+		}
+	}, [url, xAppOrigin]);
 
 	const handleClose = () => {
 		if (closeOnSubmit) {
@@ -74,21 +100,11 @@ const xAppOverlay: FC = () => {
 	};
 
 	const handleSubmit = (event: MessageEvent) => {
-		// WCH-SI10-004: compare canonical origins, not raw URL strings.
-		// The previous url.startsWith(event.origin) check was semantically backwards —
-		// a domain that is a string-prefix of url (e.g. "https://xapp.cognigy.a" for
-		// "https://xapp.cognigy.ai/form") could pass the check despite being a different
-		// origin. new URL(url).origin extracts the canonical scheme+host+port for an
-		// exact match, which is the correct cross-origin security boundary.
-		let urlOrigin: string;
-		try {
-			urlOrigin = new URL(url).origin;
-		} catch {
-			// url is empty or not a valid absolute URL — reject all postMessages.
-			return;
-		}
-
-		if (urlOrigin !== event.origin) {
+		// Reuse xAppOrigin from render scope (includes the http(s)-only scheme guard
+		// from getXAppOrigin). This prevents opaque-origin ("null") postMessages from
+		// data:/about:/blob: URLs — which stay in Redux until the cleanup effect fires —
+		// from matching via event.origin === "null" between render and effect execution.
+		if (xAppOrigin === null || xAppOrigin !== event.origin) {
 			return;
 		}
 
@@ -136,6 +152,33 @@ const xAppOverlay: FC = () => {
 		};
 	}, [closeOnSubmit, url, feedbackMessage]);
 
+	if (xAppOrigin === null) {
+		return null;
+	}
+
+	// WCH-SI10-003: allow-scripts + allow-same-origin together let a same-origin
+	// iframe remove its own sandbox via frameElement. Omitting allow-same-origin
+	// for same-origin URLs blocks that escape while still rendering the xApp.
+	// Cross-origin URLs include it so the frame can access same-origin resources
+	// on its own host (cookies, localStorage, etc.).
+	const isSameOrigin = xAppOrigin === window.location.origin;
+	const sandboxValue = [
+		"allow-scripts",
+		...(isSameOrigin ? [] : ["allow-same-origin"]),
+		"allow-forms",
+		"allow-popups",
+		// Popups must not inherit the creator's sandbox flags — OAuth, SSO, and
+		// payment-provider windows run under constraints they were never tested against.
+		"allow-popups-to-escape-sandbox",
+		"allow-modals",
+		// Boarding-pass (.pkpass), signature, PDF, and other download-generating xApps.
+		"allow-downloads",
+		// Redirect-based payment flows (3DS, iDEAL, Bancontact) and SSO return URLs.
+		"allow-top-navigation-by-user-activation",
+		// Storage Access API in a third-party frame context (Safari ITP, Chrome 3P-cookie rules).
+		"allow-storage-access-by-user-activation",
+	].join(" ");
+
 	const showHeader = screenTitle || showCloseIcon;
 
 	return (
@@ -150,15 +193,8 @@ const xAppOverlay: FC = () => {
 			<Iframe
 				src={url}
 				title={screenTitle || "xApp"}
-				allow="
-  accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera;
-  cross-origin-isolated; display-capture; document-domain; encrypted-media;
-  execution-while-not-rendered; execution-while-out-of-viewport;
-  fullscreen; gamepad; geolocation; gyroscope; hid; idle-detection;
-  interest-cohort; local-fonts; magnetometer; microphone; midi;
-  otp-credentials; payment; picture-in-picture; publickey-credentials-get;
-  screen-wake-lock; serial; speaker-selection; usb; web-share;
-  xr-spatial-tracking"
+				sandbox={sandboxValue}
+				allow="autoplay; camera; display-capture; encrypted-media; fullscreen; geolocation; microphone; picture-in-picture; web-share; payment; publickey-credentials-get; otp-credentials; accelerometer; gyroscope; magnetometer; screen-wake-lock; speaker-selection"
 			/>
 		</Root>
 	);
