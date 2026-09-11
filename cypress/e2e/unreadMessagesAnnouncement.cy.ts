@@ -102,6 +102,22 @@ describe("Unread Messages Announcement", () => {
 		cy.get(regionSelector).should("be.empty");
 	});
 
+	it("announces with the toggle button disabled (title indicator only)", () => {
+		cy.visitWebchat().initMockWebchat({
+			settings: {
+				unreadMessages: { enableIndicator: true },
+				widgetSettings: { disableToggleButton: true },
+			},
+		});
+
+		// The region is mounted outside the toggle-button block: the title
+		// indicator runs without a toggle button, so the announcement must too.
+		cy.get(regionSelector).should("exist").and("be.empty");
+		cy.get("[data-cognigy-webchat-toggle]").should("not.exist");
+		cy.receiveMessage("first bot message");
+		cy.get(regionSelector).should("have.text", "One unread message in chat.");
+	});
+
 	it("announces alongside the teaser preview when both are enabled", () => {
 		cy.visitWebchat().initMockWebchat({
 			settings: {

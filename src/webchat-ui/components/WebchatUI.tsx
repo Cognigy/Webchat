@@ -1498,7 +1498,10 @@ export class WebchatUI extends React.PureComponent<
 										)}
 									{/* Outside the toggle-button block: the page-title indicator
 									    runs without a toggle button too. Mounted for the page
-									    lifetime so the region pre-exists the first count change. */}
+									    lifetime so the region pre-exists the first count change.
+									    Placed BEFORE the teaser announcer on purpose: both regions
+									    update in the same commit and are voiced in tree order, so
+									    the count is heard first, then the preview text. */}
 									<UnreadMessagesAnnouncer
 										active={
 											config.settings.unreadMessages.enableBadge ||
