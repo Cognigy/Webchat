@@ -69,6 +69,35 @@ describe("xApps Overlay", () => {
 				cy.get("iframe").invoke("attr", "sandbox").should("include", "allow-same-origin");
 			});
 		});
+
+		it("closes overlay automatically for a malformed xApp URL", () => {
+			// getXAppOrigin returns null for unparseable URLs; the cleanup effect
+			// must dispatch closeOverlay() so the widget does not dead-end.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: { autoOpen: true, screenTitle: "Bad URL xApp" },
+						url: "not-a-valid-url",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
+
+		it("closes overlay automatically for a non-http(s) xApp URL", () => {
+			// data: URLs produce origin "null" — accepting them could let forged
+			// postMessages bypass the origin check. The cleanup effect must close
+			// the overlay before the user can interact with it.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: { autoOpen: true, screenTitle: "Data URL xApp" },
+						url: "data:text/html,<h1>hi</h1>",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
 	});
 
 	it("opens overlay automatically", () => {

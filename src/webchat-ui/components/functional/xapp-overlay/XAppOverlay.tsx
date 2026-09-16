@@ -140,7 +140,18 @@ const xAppOverlay: FC = () => {
 		// from getXAppOrigin). This prevents opaque-origin ("null") postMessages from
 		// data:/about:/blob: URLs — which stay in Redux until the cleanup effect fires —
 		// from matching via event.origin === "null" between render and effect execution.
-		if (xAppOrigin === null || xAppOrigin !== event.origin) {
+		//
+		// Same-origin xApps omit allow-same-origin in the sandbox, so the browser
+		// assigns the iframe an opaque origin — postMessages arrive with event.origin
+		// === "null" rather than the actual URL origin. We accept those only when
+		// event.source matches our iframe element, authenticating the sender without
+		// relying on the (opaque) origin string.
+		const fromOurSameOriginIframe =
+			isSameOrigin &&
+			event.origin === "null" &&
+			event.source === iframeRef.current?.contentWindow;
+
+		if (xAppOrigin === null || (xAppOrigin !== event.origin && !fromOurSameOriginIframe)) {
 			return;
 		}
 
@@ -193,10 +204,17 @@ const xAppOverlay: FC = () => {
 	// for same-origin URLs blocks that escape while still rendering the xApp.
 	// Cross-origin URLs include it so the frame can access same-origin resources
 	// on its own host (cookies, localStorage, etc.).
+	// NOTE: a cross-origin xApp that navigates itself to the embedding origin will
+	// then have both allow-scripts and allow-same-origin and could access frameElement.
+	// Fully preventing this requires removing allow-same-origin entirely (breaking
+	// same-origin xApp resource access) — tracked as a follow-up security hardening.
 	const isSameOrigin = xAppOrigin !== null && xAppOrigin === window.location.origin;
 	const sandboxValue = [
 		"allow-scripts",
-		...(isSameOrigin ? [] : ["allow-same-origin"]),
+		// Only include allow-same-origin when the URL is a valid, cross-origin http(s)
+		// URL. When xAppOrigin is null the iframe is still rendered briefly before the
+		// cleanup effect closes it — don't grant allow-same-origin during that window.
+		...(xAppOrigin !== null && !isSameOrigin ? ["allow-same-origin"] : []),
 		"allow-forms",
 		"allow-popups",
 		// Popups must not inherit the creator's sandbox flags — OAuth, SSO, and
