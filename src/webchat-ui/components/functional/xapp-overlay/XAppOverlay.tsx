@@ -141,17 +141,21 @@ const xAppOverlay: FC = () => {
 		// data:/about:/blob: URLs — which stay in Redux until the cleanup effect fires —
 		// from matching via event.origin === "null" between render and effect execution.
 		//
-		// Same-origin xApps omit allow-same-origin in the sandbox, so the browser
-		// assigns the iframe an opaque origin — postMessages arrive with event.origin
-		// === "null" rather than the actual URL origin. We accept those only when
-		// event.source matches our iframe element, authenticating the sender without
-		// relying on the (opaque) origin string.
-		const fromOurSameOriginIframe =
-			isSameOrigin &&
-			event.origin === "null" &&
-			event.source === iframeRef.current?.contentWindow;
-
-		if (xAppOrigin === null || (xAppOrigin !== event.origin && !fromOurSameOriginIframe)) {
+		// NOTE — known limitation: cross-origin xApps receive allow-same-origin in the
+		// sandbox so their postMessages carry the real origin and this check is sound.
+		// However, a cross-origin xApp document could navigate itself to the embedding
+		// origin and then use frameElement to remove the sandbox (the allow-top-navigation
+		// restriction covers top-level navigation only, not self-navigation). A proper fix
+		// requires a token-based handshake or CSP headers on the xApp host to prevent
+		// cross-origin-to-same-origin navigation; tracked as a follow-up hardening.
+		//
+		// Same-origin xApps omit allow-same-origin so they run with an opaque origin;
+		// their postMessages arrive with event.origin === "null" and are rejected here.
+		// Accepting opaque-origin messages via event.source (WindowProxy) is also unsafe:
+		// a navigated iframe retains the same WindowProxy, so an attacker document loaded
+		// via navigation passes both checks. Same-origin xApp x-app-submit therefore
+		// requires the xApp to be hosted at a cross-origin URL.
+		if (xAppOrigin === null || xAppOrigin !== event.origin) {
 			return;
 		}
 
@@ -201,13 +205,13 @@ const xAppOverlay: FC = () => {
 
 	// WCH-SI10-003: allow-scripts + allow-same-origin together let a same-origin
 	// iframe remove its own sandbox via frameElement. Omitting allow-same-origin
-	// for same-origin URLs blocks that escape while still rendering the xApp.
-	// Cross-origin URLs include it so the frame can access same-origin resources
-	// on its own host (cookies, localStorage, etc.).
-	// NOTE: a cross-origin xApp that navigates itself to the embedding origin will
-	// then have both allow-scripts and allow-same-origin and could access frameElement.
-	// Fully preventing this requires removing allow-same-origin entirely (breaking
-	// same-origin xApp resource access) — tracked as a follow-up security hardening.
+	// for same-origin xApp URLs prevents that escape; the trade-off is that
+	// same-origin xApp iframes run with an opaque origin, so their postMessage
+	// x-app-submit events are rejected (event.origin === "null"). Tenants whose
+	// xApps are hosted on the same domain as the embedding page must move them to
+	// a cross-origin host to use the submit flow.
+	// Cross-origin URLs include allow-same-origin so the frame can access its own
+	// host's resources (cookies, localStorage) and postMessages carry the real origin.
 	const isSameOrigin = xAppOrigin !== null && xAppOrigin === window.location.origin;
 	const sandboxValue = [
 		"allow-scripts",
@@ -313,7 +317,7 @@ const xAppOverlay: FC = () => {
 			)}
 			<Iframe
 				ref={iframeRef}
-				src={url}
+				src={xAppOrigin === null ? undefined : url}
 				title={title || fallbackName}
 				sandbox={sandboxValue}
 				allow="autoplay; camera; display-capture; encrypted-media; fullscreen; geolocation; microphone; picture-in-picture; web-share; payment; publickey-credentials-get; otp-credentials; accelerometer; gyroscope; magnetometer; screen-wake-lock; speaker-selection"
