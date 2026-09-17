@@ -57,6 +57,20 @@ const Iframe = styled.iframe(() => ({
 	},
 }));
 
+// Derive the canonical http(s) origin from an xApp URL, or null if the URL is
+// unparseable or uses a non-http(s) scheme. data:/about:/blob: URLs produce the
+// string "null" from new URL().origin — accepting them would let bot-supplied
+// data: xApps forge postMessages accepted by the handleSubmit origin check.
+const getXAppOrigin = (url: string): string | null => {
+	try {
+		const parsed = new URL(url);
+		if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+		return parsed.origin;
+	} catch {
+		return null;
+	}
+};
+
 // Visually hidden but reachable by sequential focus navigation. Not
 // `aria-hidden`: a focusable aria-hidden node is an axe violation
 // (aria-hidden-focus) — and focus never rests here anyway, the onFocus
@@ -95,6 +109,18 @@ const xAppOverlay: FC = () => {
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 
+	const xAppOrigin = getXAppOrigin(url);
+
+	// For invalid or non-http(s) URLs close the overlay immediately so Redux
+	// state is cleaned up and the widget does not dead-end. Dispatch must happen
+	// in an effect — not during render — to satisfy React's rules.
+	useEffect(() => {
+		if (url && xAppOrigin === null) {
+			console.error("[xApp] Invalid xApp URL — must be an absolute http(s) URL:", url);
+			dispatch(closeOverlay());
+		}
+	}, [url, xAppOrigin]);
+
 	const handleClose = () => {
 		if (closeOnSubmit) {
 			dispatch(closeOverlay());
@@ -110,21 +136,26 @@ const xAppOverlay: FC = () => {
 	};
 
 	const handleSubmit = (event: MessageEvent) => {
-		// WCH-SI10-004: compare canonical origins, not raw URL strings.
-		// The previous url.startsWith(event.origin) check was semantically backwards —
-		// a domain that is a string-prefix of url (e.g. "https://xapp.cognigy.a" for
-		// "https://xapp.cognigy.ai/form") could pass the check despite being a different
-		// origin. new URL(url).origin extracts the canonical scheme+host+port for an
-		// exact match, which is the correct cross-origin security boundary.
-		let urlOrigin: string;
-		try {
-			urlOrigin = new URL(url).origin;
-		} catch {
-			// url is empty or not a valid absolute URL — reject all postMessages.
-			return;
-		}
-
-		if (urlOrigin !== event.origin) {
+		// Reuse xAppOrigin from render scope (includes the http(s)-only scheme guard
+		// from getXAppOrigin). This prevents opaque-origin ("null") postMessages from
+		// data:/about:/blob: URLs — which stay in Redux until the cleanup effect fires —
+		// from matching via event.origin === "null" between render and effect execution.
+		//
+		// NOTE — known limitation: cross-origin xApps receive allow-same-origin in the
+		// sandbox so their postMessages carry the real origin and this check is sound.
+		// However, a cross-origin xApp document could navigate itself to the embedding
+		// origin and then use frameElement to remove the sandbox (the allow-top-navigation
+		// restriction covers top-level navigation only, not self-navigation). A proper fix
+		// requires a token-based handshake or CSP headers on the xApp host to prevent
+		// cross-origin-to-same-origin navigation; tracked as a follow-up hardening.
+		//
+		// Same-origin xApps omit allow-same-origin so they run with an opaque origin;
+		// their postMessages arrive with event.origin === "null" and are rejected here.
+		// Accepting opaque-origin messages via event.source (WindowProxy) is also unsafe:
+		// a navigated iframe retains the same WindowProxy, so an attacker document loaded
+		// via navigation passes both checks. Same-origin xApp x-app-submit therefore
+		// requires the xApp to be hosted at a cross-origin URL.
+		if (xAppOrigin === null || xAppOrigin !== event.origin) {
 			return;
 		}
 
@@ -171,6 +202,36 @@ const xAppOverlay: FC = () => {
 			unsubscribe();
 		};
 	}, [closeOnSubmit, url, feedbackMessage]);
+
+	// WCH-SI10-003: allow-scripts + allow-same-origin together let a same-origin
+	// iframe remove its own sandbox via frameElement. Omitting allow-same-origin
+	// for same-origin xApp URLs prevents that escape; the trade-off is that
+	// same-origin xApp iframes run with an opaque origin, so their postMessage
+	// x-app-submit events are rejected (event.origin === "null"). Tenants whose
+	// xApps are hosted on the same domain as the embedding page must move them to
+	// a cross-origin host to use the submit flow.
+	// Cross-origin URLs include allow-same-origin so the frame can access its own
+	// host's resources (cookies, localStorage) and postMessages carry the real origin.
+	const isSameOrigin = xAppOrigin !== null && xAppOrigin === window.location.origin;
+	const sandboxValue = [
+		"allow-scripts",
+		// Only include allow-same-origin when the URL is a valid, cross-origin http(s)
+		// URL. When xAppOrigin is null the iframe is still rendered briefly before the
+		// cleanup effect closes it — don't grant allow-same-origin during that window.
+		...(xAppOrigin !== null && !isSameOrigin ? ["allow-same-origin"] : []),
+		"allow-forms",
+		"allow-popups",
+		// Popups must not inherit the creator's sandbox flags — OAuth, SSO, and
+		// payment-provider windows run under constraints they were never tested against.
+		"allow-popups-to-escape-sandbox",
+		"allow-modals",
+		// Boarding-pass (.pkpass), signature, PDF, and other download-generating xApps.
+		"allow-downloads",
+		// Redirect-based payment flows (3DS, iDEAL, Bancontact) and SSO return URLs.
+		"allow-top-navigation-by-user-activation",
+		// Storage Access API in a third-party frame context (Safari ITP, Chrome 3P-cookie rules).
+		"allow-storage-access-by-user-activation",
+	].join(" ");
 
 	// APG modal dialog: move focus into the dialog once on open — to the
 	// close button (the first control, as Modal does), else the frame itself.
@@ -256,17 +317,10 @@ const xAppOverlay: FC = () => {
 			)}
 			<Iframe
 				ref={iframeRef}
-				src={url}
+				src={xAppOrigin === null ? undefined : url}
 				title={title || fallbackName}
-				allow="
-  accelerometer; ambient-light-sensor; autoplay; battery; bluetooth; camera;
-  cross-origin-isolated; display-capture; document-domain; encrypted-media;
-  execution-while-not-rendered; execution-while-out-of-viewport;
-  fullscreen; gamepad; geolocation; gyroscope; hid; idle-detection;
-  interest-cohort; local-fonts; magnetometer; microphone; midi;
-  otp-credentials; payment; picture-in-picture; publickey-credentials-get;
-  screen-wake-lock; serial; speaker-selection; usb; web-share;
-  xr-spatial-tracking"
+				sandbox={sandboxValue}
+				allow="autoplay; camera; display-capture; encrypted-media; fullscreen; geolocation; microphone; picture-in-picture; web-share; payment; publickey-credentials-get; otp-credentials; accelerometer; gyroscope; magnetometer; screen-wake-lock; speaker-selection"
 			/>
 			<FocusGuard
 				tabIndex={0}
