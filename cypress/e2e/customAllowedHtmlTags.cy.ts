@@ -7,8 +7,12 @@
  * The fix adds ALWAYS_BLOCKED_TAGS — a hard deny-list enforced at two layers:
  *   1. FORBID_TAGS in the DOMPurify base config (unconditional, both default and
  *      custom-tags paths).
- *   2. A pre-filter on the tenant-supplied customAllowedHtmlTags array before it
- *      reaches DOMPurify (defence-in-depth).
+ *   2. A pre-filter on the tenant-supplied customAllowedHtmlTags array applied in
+ *      config-reducer before the value reaches the Redux store (protects both
+ *      webchat's sanitizeHTML() and @cognigy/chat-components, which reads the
+ *      same settings.widgetSettings.customAllowedHtmlTags from the store).
+ *   3. A second pre-filter in sanitizeHTML() as defence-in-depth for calls made
+ *      outside the normal config path.
  *
  * Tests exercise sanitizeHTML() via the SEND_MESSAGE path (message-middleware.ts:123)
  * where the sanitized text is written into the Redux message store, giving a
@@ -33,7 +37,7 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 			return userMessages[userMessages.length - 1]?.text ?? "";
 		});
 
-	const initWithCustomTags = (customAllowedHtmlTags: string[]) =>
+	const initWithCustomTags = (customAllowedHtmlTags: unknown) =>
 		cy
 			.visitWebchat()
 			.initMockWebchat({
@@ -97,7 +101,7 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 		});
 	});
 
-	it("strips all 12 ALWAYS_BLOCKED_TAGS even when all are listed", () => {
+	it("strips all 16 ALWAYS_BLOCKED_TAGS even when all are listed in customAllowedHtmlTags", () => {
 		const blockedTags = [
 			"script",
 			"iframe",
@@ -106,19 +110,42 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 			"applet",
 			"frame",
 			"frameset",
+			"noframes",
 			"meta",
 			"base",
 			"link",
 			"style",
 			"form",
+			"body",
+			"html",
+			"head",
 		];
 		initWithCustomTags(blockedTags);
 
-		typeAndSend("<script>x</script><iframe></iframe><form></form><object></object>safe");
+		// Payload contains all 16 blocked tags so each assertion is non-vacuous.
+		typeAndSend(
+			"<script>x</script>" +
+				"<iframe src='x'></iframe>" +
+				"<object data='x'></object>" +
+				"<embed src='x'>" +
+				"<applet></applet>" +
+				"<frame></frame>" +
+				"<frameset></frameset>" +
+				"<noframes></noframes>" +
+				"<meta http-equiv='refresh'>" +
+				"<base href='x'>" +
+				"<link rel='stylesheet' href='x'>" +
+				"<style>body{}</style>" +
+				"<form action='x'></form>" +
+				"<body></body>" +
+				"<html></html>" +
+				"<head></head>" +
+				"safe",
+		);
 
 		getLastUserMessageText().then(text => {
 			blockedTags.forEach(tag => {
-				expect(text).not.to.contain(`<${tag}`);
+				expect(text, `<${tag}> must be stripped`).not.to.contain(`<${tag}`);
 			});
 		});
 	});
@@ -153,6 +180,85 @@ describe("customAllowedHtmlTags deny-list (WCH-SI10-002)", () => {
 
 		getLastUserMessageText().then(text => {
 			expect(text).to.contain("hello world");
+		});
+	});
+
+	describe("Malformed customAllowedHtmlTags inputs", () => {
+		it("treats a non-array value (plain string) as absent — falls back to default allow-list", () => {
+			// Both config-reducer and sanitizeHTML() return undefined / use default config
+			// when the value is not an array. A plain string must not strip all HTML.
+			initWithCustomTags("p,br" as any);
+
+			typeAndSend("<b>bold</b>");
+
+			// Default allow-list includes <b>, so it must survive
+			getLastUserMessageText().then(text => {
+				expect(text).to.contain("<b>bold</b>");
+			});
+		});
+
+		it("silently drops null entries in customAllowedHtmlTags array", () => {
+			// Array with a null item: only the valid string tags apply.
+			initWithCustomTags(["p", null] as any);
+
+			typeAndSend("<p>paragraph</p><b>bold</b>");
+
+			getLastUserMessageText().then(text => {
+				expect(text).to.contain("<p>paragraph</p>");
+				// <b> is not in the custom list ["p"] (null filtered out), so it is stripped
+				expect(text).not.to.contain("<b>");
+			});
+		});
+
+		it("silently drops numeric entries in customAllowedHtmlTags array", () => {
+			initWithCustomTags(["p", 42] as any);
+
+			typeAndSend("<p>paragraph</p><b>bold</b>");
+
+			getLastUserMessageText().then(text => {
+				expect(text).to.contain("<p>paragraph</p>");
+				expect(text).not.to.contain("<b>");
+			});
+		});
+
+		it("trims whitespace from tag names — ' script ' is still blocked", () => {
+			initWithCustomTags([" script ", "p"]);
+
+			typeAndSend("<script>window.__xss3=true</script><p>safe</p>");
+
+			cy.window().then((win: any) => expect(win.__xss3).to.be.undefined);
+			getLastUserMessageText().then(text => {
+				expect(text).not.to.contain("<script");
+			});
+		});
+	});
+
+	describe("config-reducer pre-filter (protects @cognigy/chat-components)", () => {
+		it("blocked tags are removed from the stored customAllowedHtmlTags before any render", () => {
+			// The config-reducer filters the list before it enters the Redux store.
+			// @cognigy/chat-components reads from the store directly, so it receives
+			// the already-sanitised list and cannot render blocked tags.
+			initWithCustomTags(["iframe", "script", "p"]);
+
+			cy.get("@webchat").then((webchat: any) => {
+				const stored =
+					webchat.store.getState().config.settings.widgetSettings.customAllowedHtmlTags;
+				// iframe and script must have been removed by config-reducer
+				expect(stored).not.to.include("iframe");
+				expect(stored).not.to.include("script");
+				// safe tag preserved
+				expect(stored).to.include("p");
+			});
+		});
+
+		it("non-array customAllowedHtmlTags is stored as undefined", () => {
+			initWithCustomTags("p,br" as any);
+
+			cy.get("@webchat").then((webchat: any) => {
+				const stored =
+					webchat.store.getState().config.settings.widgetSettings.customAllowedHtmlTags;
+				expect(stored).to.be.undefined;
+			});
 		});
 	});
 

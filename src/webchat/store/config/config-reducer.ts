@@ -1,29 +1,13 @@
 import { Reducer } from "redux";
 import { IWebchatConfig, IWebchatSettings } from "../../../common/interfaces/webchat-config";
 import merge from "lodash/merge";
-
-// Mirror of ALWAYS_BLOCKED_TAGS in sanitize.ts. Defined here to avoid a circular dependency
-// (sanitize.ts imports storeRef which imports config-reducer). Both sets must stay in sync.
-const BLOCKED_TAGS = new Set([
-	"script",
-	"iframe",
-	"object",
-	"embed",
-	"applet",
-	"frame",
-	"frameset",
-	"meta",
-	"base",
-	"link",
-	"style",
-	"form",
-]);
+import { ALWAYS_BLOCKED_TAGS } from "../../../common/constants/blocked-tags";
 
 function sanitizeCustomAllowedHtmlTags(tags: unknown): string[] | undefined {
 	if (!Array.isArray(tags)) return undefined;
 	return tags.filter(
 		(tag): tag is string =>
-			typeof tag === "string" && !BLOCKED_TAGS.has(tag.toLowerCase().trim()),
+			typeof tag === "string" && !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase().trim()),
 	);
 }
 

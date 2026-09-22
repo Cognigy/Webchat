@@ -1,5 +1,9 @@
 import DOMPurify, { Config } from "dompurify";
 import { storeRef } from "../store/store";
+import { ALWAYS_BLOCKED_TAGS } from "../../common/constants/blocked-tags";
+
+// Re-export so existing consumers of sanitize.ts do not need a path change.
+export { ALWAYS_BLOCKED_TAGS };
 
 // Tags removed from the previous allow-list to align with DOMPurify's secure defaults
 // (WCH-SI10-001). Each tag enables a distinct attack vector:
@@ -225,26 +229,6 @@ export const allowedHtmlAttributes = [
 	"wrap",
 ];
 
-// Hard deny-list: these tags are never permitted regardless of tenant configuration.
-// Allowing any of these opens XSS, clickjacking, HTML-injection, or data-exfiltration
-// vectors even when ALLOWED_ATTR is otherwise constrained.
-// Applied via both FORBID_TAGS (DOMPurify-level, unconditional) and a pre-filter on
-// customAllowedHtmlTags (defence-in-depth before DOMPurify is even invoked).
-export const ALWAYS_BLOCKED_TAGS = new Set([
-	"script",
-	"iframe",
-	"object",
-	"embed",
-	"applet",
-	"frame",
-	"frameset",
-	"meta",
-	"base",
-	"link",
-	"style",
-	"form",
-]);
-
 const config: Config = {
 	ALLOWED_TAGS: allowedHtmlTags,
 	ALLOWED_ATTR: allowedHtmlAttributes,
@@ -258,13 +242,15 @@ export const sanitizeHTML = (text: string) => {
 		storeRef?.getState().config.settings.widgetSettings.customAllowedHtmlTags;
 
 	let configToUse = config;
-	if (customAllowedHtmlTags) {
+	if (Array.isArray(customAllowedHtmlTags)) {
 		// Pre-filter the tenant-supplied list before passing to DOMPurify (defence-in-depth).
 		// config-reducer already strips blocked tags and non-strings at config-load time, but
 		// we guard here too in case sanitizeHTML is ever called outside the normal config path.
-		const list = Array.isArray(customAllowedHtmlTags) ? customAllowedHtmlTags : [];
-		const safeTags = list.filter(
-			tag => typeof tag === "string" && !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase().trim()),
+		// Non-array values (e.g. a plain string) fall through to the default config — same
+		// permissive fallback as config-reducer's sanitizeCustomAllowedHtmlTags().
+		const safeTags = customAllowedHtmlTags.filter(
+			(tag): tag is string =>
+				typeof tag === "string" && !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase().trim()),
 		);
 		configToUse = { ...config, ALLOWED_TAGS: safeTags };
 	}
