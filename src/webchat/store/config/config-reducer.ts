@@ -1,6 +1,15 @@
 import { Reducer } from "redux";
 import { IWebchatConfig, IWebchatSettings } from "../../../common/interfaces/webchat-config";
 import merge from "lodash/merge";
+import { ALWAYS_BLOCKED_TAGS } from "../../../common/constants/blocked-tags";
+
+function sanitizeCustomAllowedHtmlTags(tags: unknown): string[] | undefined {
+	if (!Array.isArray(tags)) return undefined;
+	return tags.filter(
+		(tag): tag is string =>
+			typeof tag === "string" && !ALWAYS_BLOCKED_TAGS.has(tag.toLowerCase().trim()),
+	);
+}
 
 export type ConfigState = IWebchatConfig;
 
@@ -253,6 +262,14 @@ export const config: Reducer<
 			// deepMerge the settings since we have nested settings since v3
 			const mergedSettings = merge({}, state.settings, action.config.settings);
 
+			// Strip dangerous tags from the tenant-supplied allow-list before storing so both
+			// webchat's sanitizeHTML and @cognigy/chat-components receive the safe list.
+			if (mergedSettings.widgetSettings?.customAllowedHtmlTags !== undefined) {
+				mergedSettings.widgetSettings.customAllowedHtmlTags = sanitizeCustomAllowedHtmlTags(
+					mergedSettings.widgetSettings.customAllowedHtmlTags,
+				);
+			}
+
 			return {
 				...state,
 				...action.config,
@@ -264,6 +281,13 @@ export const config: Reducer<
 		case "UPDATE_SETTINGS": {
 			// deepMerge the settings since we have nested settings since v3
 			const mergedSettings = merge({}, state.settings, action.payload);
+
+			// Same safety filter as SET_CONFIG — keep the stored list clean.
+			if (mergedSettings.widgetSettings?.customAllowedHtmlTags !== undefined) {
+				mergedSettings.widgetSettings.customAllowedHtmlTags = sanitizeCustomAllowedHtmlTags(
+					mergedSettings.widgetSettings.customAllowedHtmlTags,
+				);
+			}
 
 			return {
 				...state,
