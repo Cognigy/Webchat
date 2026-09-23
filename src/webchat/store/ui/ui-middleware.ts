@@ -7,10 +7,17 @@ import {
 	ShowChatScreenAction,
 	SetPageVisibleAction,
 	SetHasAcceptedTermsAction,
+	SetHasAcceptedSystemUseNotificationAction,
 	SetOpenAction,
 } from "./ui-reducer";
 import { getStorage } from "../../helper/storage";
-import { setHasAcceptedTermsInStorage } from "../../helper/privacyPolicy";
+import {
+	setHasAcceptedTermsInStorage,
+	setHasAcceptedSunInStorage,
+	hasAcceptedSunInStorage,
+} from "../../helper/privacyPolicy";
+import { setHasAcceptedSystemUseNotification } from "./ui-reducer";
+import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 export const uiMiddleware: Middleware<object, StoreState> =
 	store =>
@@ -21,7 +28,9 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			| SetOpenAction
 			| ShowChatScreenAction
 			| SetPageVisibleAction
-			| SetHasAcceptedTermsAction,
+			| SetHasAcceptedTermsAction
+			| SetHasAcceptedSystemUseNotificationAction
+			| SwitchSessionAction,
 	) => {
 		const { disableLocalStorage, useSessionStorage } =
 			store.getState().config.settings.embeddingConfiguration;
@@ -78,7 +87,31 @@ export const uiMiddleware: Middleware<object, StoreState> =
 
 				break;
 			}
+
+			// System Use Notification (AC-8 / FedRAMP) — store accepted sessionId.
+			// If no storage is available the notice will re-appear on the next page load,
+			// which is the correct FedRAMP behaviour (no silent bypass).
+			case "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION": {
+				if (browserStorage) {
+					setHasAcceptedSunInStorage(browserStorage, action.sessionId);
+				}
+
+				break;
+			}
 		}
 
-		return next(action);
+		// Run the reducer (and all downstream middleware) first so the state is updated.
+		const result = next(action);
+
+		// After SWITCH_SESSION the reducer has reset hasAcceptedSystemUseNotification to false.
+		// Re-check storage: if the incoming sessionId was already accepted in a prior page visit
+		// (e.g. user returns to an existing conversation), restore the acceptance so the notice
+		// does not re-appear for that session.
+		if (action.type === "SWITCH_SESSION" && action.sessionId) {
+			if (hasAcceptedSunInStorage(browserStorage, action.sessionId)) {
+				store.dispatch(setHasAcceptedSystemUseNotification(action.sessionId));
+			}
+		}
+
+		return result;
 	};

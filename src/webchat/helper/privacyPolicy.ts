@@ -1,4 +1,26 @@
 const STORAGE_KEY = "hasAcceptedTerms";
+const SUN_STORAGE_KEY = "acceptedSunSessionId";
+
+/**
+ * System Use Notification (AC-8 / FedRAMP) — per-session acceptance.
+ * Keyed by sessionId rather than userId: acceptance resets with every new
+ * conversation session. Unlike privacyNotice, returns false (show notice)
+ * when no storage is available, rather than assuming accepted.
+ */
+export function hasAcceptedSunInStorage(
+	browserStorage: Storage | null,
+	sessionId: string,
+): boolean {
+	if (!browserStorage) {
+		// No storage means we cannot record acceptance — always show the notice.
+		return false;
+	}
+	return browserStorage.getItem(SUN_STORAGE_KEY) === sessionId;
+}
+
+export function setHasAcceptedSunInStorage(browserStorage: Storage, sessionId: string): void {
+	browserStorage?.setItem?.(SUN_STORAGE_KEY, sessionId);
+}
 
 function getHasAcceptedTermsIds(browserStorage: Storage): string[] {
 	let userIds: string[] = [];

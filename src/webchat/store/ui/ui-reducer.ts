@@ -3,6 +3,7 @@ import { IMessage } from "../../../common/interfaces/message";
 import { TTyping } from "../../../common/interfaces/typing";
 import { isPageVisible } from "../../helper/page-visibility";
 import { ISendMessageOptions } from "../messages/message-middleware";
+import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 export interface UIState {
 	open: boolean;
@@ -16,6 +17,7 @@ export interface UIState {
 	showPrevConversations: boolean;
 	showChatOptionsScreen: boolean;
 	hasAcceptedTerms: boolean;
+	hasAcceptedSystemUseNotification: boolean;
 	storedMessage: {
 		text?: string;
 		data?: any;
@@ -120,6 +122,15 @@ export const setHasAcceptedTerms = (userId: string) => ({
 });
 export type SetHasAcceptedTermsAction = ReturnType<typeof setHasAcceptedTerms>;
 
+const SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION = "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION";
+export const setHasAcceptedSystemUseNotification = (sessionId: string) => ({
+	type: SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION as "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION",
+	sessionId,
+});
+export type SetHasAcceptedSystemUseNotificationAction = ReturnType<
+	typeof setHasAcceptedSystemUseNotification
+>;
+
 const SET_STORED_MESSAGE = "SET_STORED_MESSAGE";
 export const setStoredMessage = (message: UIState["storedMessage"]) => ({
 	type: SET_STORED_MESSAGE as "SET_STORED_MESSAGE",
@@ -153,6 +164,7 @@ const getInitialState = (): UIState => ({
 	showPrevConversations: false,
 	showChatOptionsScreen: false,
 	hasAcceptedTerms: false,
+	hasAcceptedSystemUseNotification: false,
 	storedMessage: null,
 	ttsActive: false,
 	lastInputId: "",
@@ -171,9 +183,11 @@ type UIAction =
 	| SetShowPrevConversationsAction
 	| SetShowChatOptionsScreenAction
 	| SetHasAcceptedTermsAction
+	| SetHasAcceptedSystemUseNotificationAction
 	| SetStoredMessageAction
 	| SetTTSActiveAction
-	| SetLastInputIdAction;
+	| SetLastInputIdAction
+	| SwitchSessionAction;
 
 export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action) => {
 	switch (action.type) {
@@ -258,6 +272,22 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				hasAcceptedTerms: true,
+			};
+		}
+
+		case SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION: {
+			return {
+				...state,
+				hasAcceptedSystemUseNotification: true,
+			};
+		}
+
+		// When a new conversation session starts the acceptance must be re-evaluated
+		// so the notice shows for the new sessionId if it has not yet been accepted.
+		case "SWITCH_SESSION": {
+			return {
+				...state,
+				hasAcceptedSystemUseNotification: false,
 			};
 		}
 
