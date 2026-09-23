@@ -250,7 +250,7 @@ export const createWebchatTheme = (theme: Partial<IWebchatTheme> = {}): IWebchat
 	const red10 = "#FFE5E5";
 	const red20 = "#E55050";
 	// Used as the destructive-action button background (e.g. "Delete anyway").
-	// #E02E2E gave white text only 4.57:1 — right on the WCAG AA 4.5:1 floor,
+	// #E02E2E gave white text only 4.57:1 — right on the WCAG AA 4.5:1 threshold,
 	// so cross-browser text rendering tipped it below 4.5 in Firefox's axe scan.
 	// #D32222 keeps the same red hue but lifts white-text contrast to ~5.2:1.
 	const red30 = "#D32222";

@@ -2,6 +2,9 @@ name: Lint
 
 on: [pull_request]
 
+permissions:
+    contents: read
+
 jobs:
     # Dependency vulnerability gate for pull requests (CGY-36979). Audits
     # package-lock.json, so no install is needed. Limited to production dependencies,
