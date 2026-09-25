@@ -83,7 +83,7 @@ describe("Webchat Message Input", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
-		it("persistent menu toggle is a native button that exposes its expanded state and returns focus to the input on close", () => {
+		it("persistent menu toggle is a native button that exposes its expanded state and keeps focus on close (CGY-39786)", () => {
 			cy.visitWebchat().initMockWebchat(persistentMenuOptions);
 			cy.openWebchat().startConversation();
 			cy.get(".webchat-input-message-input").should("be.focused");
@@ -114,7 +114,8 @@ describe("Webchat Message Input", () => {
 				.should("have.length", 2)
 				.each($item => expect($item[0].tagName).to.equal("BUTTON"));
 
-			// closing via the toggle hands focus back to the message input (SC 2.4.3)
+			// closing via the toggle leaves focus on the toggle (APG disclosure,
+			// SC 2.4.3) — it must not jump to the remounted message input
 			cy.get(".webchat-input-persistent-menu-button").click();
 			cy.get(".webchat-input-persistent-menu-button").should(
 				"have.attr",
@@ -122,8 +123,35 @@ describe("Webchat Message Input", () => {
 				"false",
 			);
 			cy.get(".webchat-input-persistent-menu").should("not.exist");
-			cy.focused().should("have.class", "webchat-input-message-input");
+			cy.get(".webchat-input-message-input").should("exist");
+			cy.focused().should("have.class", "webchat-input-persistent-menu-button");
 		});
+
+		itChromiumOnly(
+			"persistent menu opened and closed with the keyboard keeps focus on the toggle (CGY-39786)",
+			() => {
+				cy.visitWebchat().initMockWebchat(persistentMenuOptions);
+				cy.openWebchat().startConversation();
+				cy.get(".webchat-input-message-input").should("be.focused");
+
+				cy.get(".webchat-input-persistent-menu-button").focus();
+				cy.realPress("Enter");
+				cy.get(".webchat-input-persistent-menu-button").should(
+					"have.attr",
+					"aria-expanded",
+					"true",
+				);
+				cy.focused().should("have.class", "webchat-input-persistent-menu-button");
+
+				cy.realPress("Space");
+				cy.get(".webchat-input-persistent-menu-button").should(
+					"have.attr",
+					"aria-expanded",
+					"false",
+				);
+				cy.focused().should("have.class", "webchat-input-persistent-menu-button");
+			},
+		);
 
 		itChromiumOnly(
 			"persistent menu is keyboard-operable: Tab reaches the items, Enter sends one and focus returns to the input",

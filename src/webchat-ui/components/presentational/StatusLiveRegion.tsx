@@ -8,14 +8,29 @@ import { SrOnlyLiveRegion, LiveRegionMessage } from "./SrOnlyLiveRegion";
 // mounted instance would announce every other instance's statuses.
 type StatusListener = (text: string) => void;
 const statusListeners = new Set<StatusListener>();
+const pendingAnnouncements = new Set<ReturnType<typeof setTimeout>>();
 let statusCounter = 0;
 
 /**
  * Announces arbitrary status text (e.g. a screen change) through the
  * <StatusLiveRegion>. No-op while the region is not mounted (webchat closed).
+ *
+ * `delayMs` defers the announcement, e.g. past a focus move that would
+ * otherwise cancel it. Pending delayed announcements belong to the region:
+ * they are dropped when it unmounts (webchat closed), so a result from a
+ * previous chat window is never voiced in the next one — and the caller
+ * (typically a screen that unmounts right away) owns no timer.
  */
-export function announceStatus(text: string) {
-	statusListeners.forEach(listener => listener(text));
+export function announceStatus(text: string, options?: { delayMs?: number }) {
+	if (!options?.delayMs) {
+		statusListeners.forEach(listener => listener(text));
+		return;
+	}
+	const handle = setTimeout(() => {
+		pendingAnnouncements.delete(handle);
+		statusListeners.forEach(listener => listener(text));
+	}, options.delayMs);
+	pendingAnnouncements.add(handle);
 }
 
 /**
@@ -43,6 +58,8 @@ export const StatusLiveRegion: FC = () => {
 		statusListeners.add(listener);
 		return () => {
 			statusListeners.delete(listener);
+			pendingAnnouncements.forEach(clearTimeout);
+			pendingAnnouncements.clear();
 		};
 	}, []);
 

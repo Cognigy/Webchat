@@ -37,6 +37,7 @@ export const getInitialState = (): ConfigState => ({
 			enableGenericHTMLStyling: false,
 			disableHtmlContentSanitization: false,
 			disableUrlButtonSanitization: false,
+			enableIconAnimationPauseButton: false,
 			watermark: "default",
 			watermarkText: "Powered by Cognigy.AI",
 			watermarkUrl: "",

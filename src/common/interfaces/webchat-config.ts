@@ -153,6 +153,10 @@ export interface IWebchatSettings {
 		iconAnimation?: string;
 		iconAnimationSpeed?: number;
 		iconAnimationInterval?: number;
+		/** Renders a pause/resume control next to the launcher while
+		 *  `iconAnimation` is set, so users can stop the motion without opening
+		 *  the chat (WCAG 2.2.2, CGY-39786). Opt-in; default false. */
+		enableIconAnimationPauseButton?: boolean;
 		watermark: "default" | "custom" | "none";
 		watermarkText: string;
 		watermarkUrl: string;
@@ -230,6 +234,9 @@ export interface IWebchatSettings {
 			enabled: boolean;
 			buttonText: string;
 			title: string;
+			/** Shown in the list when there are no previous conversations; also
+			 *  the text focus lands on after "Delete all conversations" (CGY-39786). */
+			emptyListText?: string;
 		};
 		conversationStarters: {
 			enabled: boolean;
@@ -320,6 +327,9 @@ export interface IWebchatSettings {
 		delete: string;
 		delete_anyway: string;
 		cancel: string;
+		/** Status message announced after a conversation is deleted from the chat
+		 *  options screen (SC 4.1.3, CGY-39786). */
+		conversation_deleted?: string;
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
 		/** Shown when the microphone is blocked for the page (SC 3.3.1). */
@@ -351,6 +361,11 @@ export interface IWebchatSettings {
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
 			closeTeaserMessage?: string;
+			/** Name of the webchat toggle (launcher) animation control while the
+			 *  animation plays; it switches to `resumeWebchatToggleAnimation`
+			 *  once paused (CGY-39786). */
+			pauseWebchatToggleAnimation?: string;
+			resumeWebchatToggleAnimation?: string;
 			thumbsUp?: string;
 			thumbsDown?: string;
 			openConversation?: string;
