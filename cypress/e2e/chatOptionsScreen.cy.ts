@@ -498,6 +498,29 @@ describe("Chat Options Screen", () => {
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "Conversation deleted");
 		});
 
+		it("drops the pending announcement when the chat window is closed within the delay (CGY-39786)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+			// Close right away (well inside the 600ms delay): unmounting the
+			// live region cancels its pending announcements
+			cy.getWebchat().then(webchat => webchat.close());
+			cy.get("#webchatStatusLiveRegion").should("not.exist");
+			cy.wait(800);
+
+			cy.openWebchat();
+			cy.get("#webchatStatusLiveRegion")
+				.should("exist")
+				.and("not.contain.text", "Conversation deleted");
+		});
+
 		it("honors the configurable conversation_deleted status text (CGY-39786)", () => {
 			cy.initMockWebchat({
 				settings: {

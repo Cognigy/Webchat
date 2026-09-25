@@ -622,7 +622,9 @@ export class WebchatUI extends React.PureComponent<
 			isMobile: isMobileViewport(),
 			isIconAnimationPaused: this.readIconAnimationPaused(),
 		});
-		this.setupIconAnimationInterval();
+		// After the state above is committed: the interval is only started
+		// when the animation is not paused.
+		this.setState({}, () => this.setupIconAnimationInterval());
 
 		// No pre-change snapshot exists on mount; the current map predates
 		// any message activity of this page load.
@@ -951,15 +953,18 @@ export class WebchatUI extends React.PureComponent<
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
 		}
-		// If there is no animation configured, do not start the timer
-		if (!isIconAnimationConfigured(this.props?.config?.settings?.layout?.iconAnimation)) {
+		// No timer without an animation, or while the user has paused it
+		// (handleToggleIconAnimationPause re-runs this on every change)
+		if (
+			!isIconAnimationConfigured(this.props?.config?.settings?.layout?.iconAnimation) ||
+			this.state.isIconAnimationPaused
+		) {
 			return;
 		}
 		const intervalSec = this.props.config?.settings?.layout?.iconAnimationInterval ?? 5;
 		const intervalMs = Math.max(0, intervalSec) * 1000;
 		if (intervalMs === 0) return;
 		this.iconAnimationIntervalHandle = setInterval(() => {
-			if (this.state.isIconAnimationPaused) return;
 			const buttonEl = this.chatToggleButtonRef?.current as HTMLElement | null;
 			if (!buttonEl) return;
 			const container = buttonEl.querySelector(".iconAnimationContainer") as Element | null;
@@ -997,7 +1002,8 @@ export class WebchatUI extends React.PureComponent<
 
 	handleToggleIconAnimationPause = () => {
 		const paused = !this.state.isIconAnimationPaused;
-		this.setState({ isIconAnimationPaused: paused });
+		// Stops (or restarts) the interval itself once the state is committed
+		this.setState({ isIconAnimationPaused: paused }, () => this.setupIconAnimationInterval());
 		this.persistIconAnimationPaused(paused);
 		if (paused) {
 			// Stop a burst that is playing right now instead of letting it finish

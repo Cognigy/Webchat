@@ -70,11 +70,14 @@ const FAB = styled(IconButton)(({ theme }) => ({
 			opacity: 1,
 		},
 
-	// SC 2.3.3 / project rule: no launcher motion under reduced motion.
+	// SC 2.3.3 / project rule: no launcher motion under reduced motion. Same
+	// selectors as the burst rules above (equal specificity, declared later),
+	// so this wins; a shorter selector would lose to them.
 	"@media (prefers-reduced-motion: reduce)": {
-		"& .iconAnimationContainer.optionActive": {
-			animationName: "none",
-		},
+		"&.burst.bounce .iconAnimationContainer.optionActive, &.burst.swing .iconAnimationContainer.optionActive, &.burst.pulse .iconAnimationContainer.optionActive":
+			{
+				animationName: "none",
+			},
 	},
 
 	"@keyframes bounceBurst": {
