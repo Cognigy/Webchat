@@ -222,6 +222,15 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	}
 
 	inputRef = React.createRef<HTMLTextAreaElement | HTMLInputElement>();
+
+	/**
+	 * The textarea's `autoFocus` is meant for the first mount of this input
+	 * (entering the chat screen). The textarea also re-mounts every time the
+	 * persistent menu closes (the menu replaces it while open); on those
+	 * re-mounts it must not pull focus off the menu toggle (SC 2.4.3,
+	 * CGY-39786), so autoFocus is limited to the first mount.
+	 */
+	private hasMountedInput = false;
 	menuRef = React.createRef<HTMLDivElement>();
 	fileInputRef = React.createRef<HTMLInputElement>();
 
@@ -266,6 +275,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	private restartPending = false;
 
 	componentDidMount(): void {
+		this.hasMountedInput = true;
 		// Global handler to modify the input text
 		window.WebChatInputTextCallback = (text: string) => {
 			this.setState({ text });
@@ -715,27 +725,29 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		});
 	};
 
+	// Opening or closing via the toggle does not move focus: the toggle keeps
+	// it (APG disclosure pattern, SC 2.4.3 — CGY-39786). The message input
+	// unmounts while the menu is open and remounts on close, but focus never
+	// left the toggle, so nothing needs restoring here.
 	togglePeristentMenu = () => {
-		this.setState(
-			prevState => ({
-				isMenuOpen: !prevState.isMenuOpen,
-			}),
-			() => {
-				if (!this.state.isMenuOpen) {
-					if (this.inputRef.current) {
-						this.inputRef.current?.setSelectionRange(
-							this.state.selectionStart,
-							this.state.selectionEnd,
-						);
-						this.inputRef.current.focus();
-					}
-				}
-			},
-		);
+		this.setState(prevState => ({
+			isMenuOpen: !prevState.isMenuOpen,
+		}));
 	};
 
 	onSelectPersistentMenuItem = (item: IPersistentMenuItem) => {
-		this.togglePeristentMenu();
+		// The selected item unmounts together with the menu, so focus would fall
+		// back to <body>. Hand it to the message input (remounted by this state
+		// change) and restore the caret position recorded on its last blur.
+		this.setState({ isMenuOpen: false }, () => {
+			if (this.inputRef.current) {
+				this.inputRef.current.setSelectionRange(
+					this.state.selectionStart,
+					this.state.selectionEnd,
+				);
+				this.inputRef.current.focus();
+			}
+		});
 		this.props.onSendMessage(item.payload, null, {
 			label: item.title,
 		});
@@ -841,7 +853,10 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 													// users can type right away. Opt-out is exposed via
 													// the `disableInputAutofocus` setting.
 													// eslint-disable-next-line jsx-a11y/no-autofocus
-													autoFocus={!disableInputAutofocus}
+													autoFocus={
+														!disableInputAutofocus &&
+														!this.hasMountedInput
+													}
 													value={combineStrings(text, speechInterim)}
 													onChange={this.handleChangeTextValue}
 													onFocus={this.handleFocus}

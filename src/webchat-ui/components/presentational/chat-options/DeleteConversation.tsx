@@ -13,6 +13,13 @@ import DeleteConfirmModal, {
 } from "../../Modal/DeleteConfirmModal";
 import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getOptionsKey } from "../../../../webchat/store/options/options";
+import { announceStatus } from "../StatusLiveRegion";
+
+// The chat screen that replaces this one autofocuses the message input 200ms
+// after it mounts; the announcement is delayed past that so it follows the
+// focus utterance instead of being cancelled by it (same reasoning as
+// HomeScreenAnnouncer's 600ms).
+const ANNOUNCE_DELAY_MS = 600;
 
 const Container = styled.div({
 	display: "flex",
@@ -65,6 +72,12 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 		onDeleteModalStateChange(false);
 		deleteButtonRef.current?.focus();
 		dispatch(setShowChatOptionsScreen(false));
+		// Status message for the completed deletion (SC 4.1.3, CGY-39786). The
+		// live region lives in the open chat window and survives this screen's
+		// unmount; announceStatus is a no-op if the window was closed meanwhile.
+		const conversationDeletedText =
+			config.settings.customTranslations?.conversation_deleted ?? "Conversation deleted";
+		window.setTimeout(() => announceStatus(conversationDeletedText), ANNOUNCE_DELAY_MS);
 	};
 
 	return (
