@@ -7,6 +7,7 @@ interface ScreenVisibilityProps {
 	showRatingScreen: boolean;
 	showPrevConversations: boolean;
 	hasAcceptedTerms: boolean;
+	hasAcceptedSystemUseNotification: boolean;
 }
 
 /**
@@ -24,7 +25,10 @@ export function getScreenVisibility(props: ScreenVisibilityProps, isInforming: b
 		showRatingScreen,
 		showPrevConversations,
 		hasAcceptedTerms,
+		hasAcceptedSystemUseNotification,
 	} = props;
+
+	const sunEnabled = !!config.settings.systemUseNotification?.enabled;
 
 	const showEnabledHomeScreen = !!(config.settings.homeScreen.enabled && showHomeScreen);
 	const showHomeScreenView = showEnabledHomeScreen && !isInforming;
@@ -34,7 +38,9 @@ export function getScreenVisibility(props: ScreenVisibilityProps, isInforming: b
 		!showChatOptionsScreen &&
 		!showRatingScreen &&
 		!showPrevConversations &&
-		(hasAcceptedTerms || !config.settings.privacyNotice.enabled);
+		(hasAcceptedTerms || !config.settings.privacyNotice.enabled) &&
+		(hasAcceptedSystemUseNotification || !sunEnabled);
 
 	return { showEnabledHomeScreen, showHomeScreenView, showChatScreen };
 }
+
