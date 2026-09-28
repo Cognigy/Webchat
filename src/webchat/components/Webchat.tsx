@@ -27,7 +27,11 @@ import { setInitialSessionId, updateSettings } from "../store/config/config-redu
 import { createOutputHandler } from "../store/messages/message-handler";
 import { createNotification } from "../../webchat-ui/components/presentational/Notifications";
 import { getStorage } from "../helper/storage";
-import { hasAcceptedTermsInStorage, hasAcceptedSunInStorage } from "../helper/privacyPolicy";
+import {
+	hasAcceptedTermsInStorage,
+	hasAcceptedSunInStorage,
+	isNoticePending,
+} from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
 import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { clearMessages } from "../store/messages/message-reducer";
@@ -140,18 +144,11 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	// TODO: move the logic to middleware
 	_open = () => {
 		const { settings } = this.store.getState().config;
-
-		const disableLocalStorage = settings?.embeddingConfiguration?.disableLocalStorage ?? false;
-		const useSessionStorage = settings?.embeddingConfiguration?.useSessionStorage ?? false;
-		const browserStorage = getStorage({ disableLocalStorage, useSessionStorage });
-		const userId = this.client.socketOptions.userId;
+		const ui = this.store.getState().ui;
 
 		const homeScreenEnabled = settings?.homeScreen?.enabled === true;
-		const privacyNoticeEnabled = settings?.privacyNotice?.enabled === true;
-		const skipPrivacyNotice =
-			!privacyNoticeEnabled || hasAcceptedTermsInStorage(browserStorage, userId);
 
-		if (!homeScreenEnabled && skipPrivacyNotice) {
+		if (!homeScreenEnabled && !isNoticePending(settings, ui)) {
 			this.store.dispatch(setShowHomeScreen(false));
 			this.store.dispatch(setShowChatOptionsScreen(false));
 			this.store.dispatch(showChatScreen());

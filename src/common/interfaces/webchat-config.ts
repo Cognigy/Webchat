@@ -352,6 +352,7 @@ export interface IWebchatSettings {
 			minimizeChat?: string;
 			closeChat?: string;
 			openChat?: string;
+			/** @deprecated No longer read. The badge is decorative (`aria-hidden`); its count is conveyed by the toggle button's name (`unreadMessageSingularText` / `unreadMessagePluralText`) and announced live through the same two labels (CGY-3163). */
 			unreadMessages?: string;
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
@@ -364,6 +365,9 @@ export interface IWebchatSettings {
 			newMessagePreview?: string;
 			opensInNewTab?: string;
 			typingIndicator?: string;
+			/** Name of the xApp overlay dialog and its frame when the xApp has
+			 *  no screen title. */
+			xAppOverlay?: string;
 			// The following is used by chat components
 			audioPlaybackProgress?: string;
 			pauseAudio?: string;
@@ -379,6 +383,10 @@ export interface IWebchatSettings {
 			datePickerNextMonth?: string;
 			datePickerGridLabel?: string;
 			datePickerGridDescription?: string;
+			datePickerRangeStart?: string;
+			datePickerRangeEnd?: string;
+			datePickerWeekNumber?: string;
+			datePickerAmPm?: string;
 			actionButtonPositionText?: string;
 			buttonGroupLabel?: string;
 			slidesCountText?: string;

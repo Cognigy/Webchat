@@ -29,6 +29,7 @@ import { IWebchatConfig } from "../../common/interfaces/webchat-config";
 import { TTyping } from "../../common/interfaces/typing";
 import Badge from "./presentational/Badge";
 import getTextFromMessage from "../../webchat/helper/message";
+import { isNoticePending } from "../../webchat/helper/privacyPolicy";
 import getKeyboardFocusableElements from "../utils/find-focusable";
 import { InertProps } from "../utils/inert-props";
 import notificationSound from "../utils/notification-sound";
@@ -68,6 +69,7 @@ import { IFile } from "../../webchat/store/input/input-reducer";
 import { CSSTransition } from "react-transition-group";
 import { TeaserMessage } from "./presentational/TeaserMessage";
 import TeaserMessageAnnouncer from "./presentational/TeaserMessageAnnouncer";
+import UnreadMessagesAnnouncer from "./presentational/UnreadMessagesAnnouncer";
 import XAppOverlay from "./functional/xapp-overlay/XAppOverlay";
 import { getSourceBackgroundColor } from "../utils/sourceMapping";
 import type { Options } from "@cognigy/socket-client/lib/interfaces/options";
@@ -327,6 +329,7 @@ export class WebchatUI extends React.PureComponent<
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 	private homeScreenExitFocusTimeout: ReturnType<typeof setTimeout> | null = null;
+	private xAppOverlayCloseFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Disarms the pending home-screen exit focus fallback. Also registered as
 	// a capture-phase document pointerdown listener while the fallback is
@@ -691,6 +694,32 @@ export class WebchatUI extends React.PureComponent<
 			}, 450);
 		}
 
+		// Closing the xApp overlay unmounts the dialog together with whatever
+		// was focused in it (its close button, or the frame), and the screen it
+		// covered re-mounts — so focus cannot be "restored" to a surviving
+		// element and would drop to document.body (SC 2.4.3). The chat screen
+		// re-focuses itself via the message input's 200ms autofocus; when that
+		// is disabled (`disableInputAutofocus`), or for any other view, this
+		// late check moves focus to the re-mounted header title, mirroring the
+		// home-screen exit fallback above. It never overrides focus that
+		// landed anywhere else.
+		if (prevProps.isXAppOverlayOpen && !this.props.isXAppOverlayOpen) {
+			if (this.xAppOverlayCloseFocusTimeout) clearTimeout(this.xAppOverlayCloseFocusTimeout);
+			this.xAppOverlayCloseFocusTimeout = setTimeout(() => {
+				this.xAppOverlayCloseFocusTimeout = null;
+				const webchatWindowEl = this.webchatWindowRef?.current;
+				if (!webchatWindowEl) return;
+				const active = document.activeElement;
+				if (active === document.body || active === null) {
+					(
+						webchatWindowEl.querySelector<HTMLElement>(
+							".webchat-header-bar .webchat-header-title",
+						) ?? getKeyboardFocusableElements(webchatWindowEl).firstFocusable
+					)?.focus();
+				}
+			}, 450);
+		}
+
 		if (prevProps.currentSession !== this.props.currentSession) {
 			this.evaluateNoticeSession(prevProps.prevConversations);
 		}
@@ -879,6 +908,11 @@ export class WebchatUI extends React.PureComponent<
 		// also removes the fallback's document pointerdown listener
 		this.cancelHomeScreenExitFocusFallback();
 
+		if (this.xAppOverlayCloseFocusTimeout) {
+			clearTimeout(this.xAppOverlayCloseFocusTimeout);
+			this.xAppOverlayCloseFocusTimeout = null;
+		}
+
 		// Teardown icon animation interval
 		if (this.iconAnimationIntervalHandle) {
 			clearInterval(this.iconAnimationIntervalHandle);
@@ -1036,7 +1070,10 @@ export class WebchatUI extends React.PureComponent<
 			// behind it is inert, so this trap would agree with it only by virtue
 			// of getKeyboardFocusableElements skipping inert subtrees. Excluded
 			// explicitly instead of relying on that coupling.
-			!this.showDisconnectOverlay
+			!this.showDisconnectOverlay &&
+			// The xApp overlay dialog traps focus with its own focus guards
+			// (Tab presses inside its cross-origin frame are invisible here).
+			!this.props.isXAppOverlayOpen
 		) {
 			// Get the first and last focusable elements within the webchat window and add focus
 			const webchatWindowEl = this.webchatWindowRef?.current as HTMLElement;
@@ -1235,13 +1272,12 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		const showSunScreen =
-			this.props.config.settings.systemUseNotification?.enabled &&
-			!this.props.hasAcceptedSystemUseNotification;
-		const showPrivacyScreen =
-			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
-
-		if (showSunScreen || showPrivacyScreen) {
+		if (
+			isNoticePending(this.props.config.settings, {
+				hasAcceptedSystemUseNotification: this.props.hasAcceptedSystemUseNotification,
+				hasAcceptedTerms: this.props.hasAcceptedTerms,
+			})
+		) {
 			this.setState({ lastUnseenMessageText: "" });
 		} else {
 			this.props.onShowChatScreen();
@@ -1516,6 +1552,29 @@ export class WebchatUI extends React.PureComponent<
 												/>
 											</WebchatRoot>
 										)}
+									{/* Outside the toggle-button block: the page-title indicator
+									    runs without a toggle button too. Mounted for the page
+									    lifetime so the region pre-exists the first count change.
+									    Placed BEFORE the teaser announcer on purpose: both regions
+									    update in the same commit and are voiced in tree order, so
+									    the count is heard first, then the preview text. */}
+									<UnreadMessagesAnnouncer
+										active={
+											config.settings.unreadMessages.enableBadge ||
+											config.settings.unreadMessages.enableIndicator
+										}
+										count={unseenMessages.length}
+										singularText={
+											config.settings.customTranslations?.ariaLabels
+												?.unreadMessageSingularText ??
+											"One unread message in chat."
+										}
+										pluralText={
+											config.settings.customTranslations?.ariaLabels
+												?.unreadMessagePluralText ??
+											"unread messages in chat."
+										}
+									/>
 									{!disableToggleButton && (
 										<div>
 											{/* Mounted for the page lifetime (the teaser shows while
@@ -1590,14 +1649,15 @@ export class WebchatUI extends React.PureComponent<
 														<ChatIcon config={config} />
 													)}
 													{config.settings.unreadMessages.enableBadge ? (
+														// The count is already in the button's
+														// accessible name (and announced live by
+														// UnreadMessagesAnnouncer); the badge is a
+														// visual duplicate. aria-label is prohibited
+														// on a generic <span>.
 														<Badge
 															_content={unseenMessages.length}
 															className="webchat-unread-message-badge"
-															aria-label={`${unseenMessages.length} ${
-																config.settings.customTranslations
-																	?.ariaLabels?.unreadMessages ??
-																"unread messages"
-															}`}
+															aria-hidden="true"
 														/>
 													) : null}
 												</FAB>
@@ -1749,9 +1809,12 @@ export class WebchatUI extends React.PureComponent<
 
 		const sun = config.settings.systemUseNotification;
 		const handleAcceptSystemUseNotification = () => {
-			// Use currentSession (synced from the socket client's sessionId) so the
-			// recorded sessionId matches what Webchat.tsx checks on page reload.
-			onAcceptSystemUseNotification(currentSession || "");
+			// Use config.initialSessionId (populated from client.socketOptions.sessionId
+			// in Webchat.tsx before the first connect) so the recorded sessionId matches
+			// what Webchat.tsx checks on page reload. state.options.sessionId is only
+			// populated after the first connect, which happens after SUN acceptance —
+			// using it would always persist "" as the accepted sessionId.
+			onAcceptSystemUseNotification(config.initialSessionId || "");
 			// If the privacy notice also needs to be shown, let it render next naturally.
 			// Otherwise connect immediately so storedMessage is flushed.
 			if (!config.settings.privacyNotice.enabled || hasAcceptedTerms) {
@@ -1900,8 +1963,10 @@ export class WebchatUI extends React.PureComponent<
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
 
 		const showDeleteAllConversationButton = !!(
-			((config.settings.privacyNotice.enabled && this.props.hasAcceptedTerms) ||
-				!config.settings.privacyNotice.enabled) &&
+			!isNoticePending(config.settings, {
+				hasAcceptedSystemUseNotification,
+				hasAcceptedTerms,
+			}) &&
 			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&
 			showPrevConversations &&
 			Object.keys(this.props.prevConversations).length

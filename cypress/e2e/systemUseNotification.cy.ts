@@ -143,7 +143,11 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.visitWebchat().initMockWebchat({
 				settings: {
 					...sunSettings,
-					privacyNotice: { enabled: true, title: "Privacy notice", text: "GDPR text" },
+					privacyNotice: {
+						enabled: true,
+						title: "Privacy notice",
+						text: "GDPR text",
+					},
 				},
 			});
 			cy.openWebchat();
@@ -164,74 +168,97 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.visitWebchat().initMockWebchat({ settings: sunSettings });
 			cy.openWebchat();
 			cy.startConversation();
+
+			// Accept SUN for the first session
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("#webchatChatHistory").should("exist");
 
-			// Switch to a new session (simulates switching conversations)
+			// Start a new conversation (triggers SWITCH_SESSION internally).
+			// The harness exposes the Webchat instance as window.webchat (commands.ts).
 			cy.window().then(win => {
-				win.cognigyWebchat.switchSession();
+				(win as any).webchat.endSession();
 			});
 
-			// SUN should appear again
+			// SUN must appear again for the new session
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
+
+			// Chat history must not be visible — socket has not switched yet
 			cy.get("#webchatChatHistory").should("not.exist");
+
+			// Accept SUN for the new session — socket switch completes, chat resumes
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
 		});
 	});
 
 	describe("Previous Conversations interaction", () => {
-		it("does not show the delete-all-conversations button while SUN is pending", () => {
-			cy.visitWebchat().initMockWebchat({
-				settings: {
-					...sunSettings,
-					homeScreen: { enabled: true, previousConversations: { enableDeleteAllConversations: true } },
+		const prevConvSettings = {
+			...sunSettings,
+			homeScreen: {
+				enabled: true,
+				previousConversations: {
+					enabled: true,
+					buttonText: "Previous conversations",
+					enableDeleteAllConversations: true,
 				},
-			});
+			},
+		};
+
+		it("does not show the delete-all-conversations button while SUN is pending", () => {
+			// The delete-all button in the header must be hidden whenever SUN has not yet
+			// been accepted — regardless of whether the previous-conversations screen is
+			// active — so the user cannot delete history while the access gate is pending.
+			cy.visitWebchat().initMockWebchat({ settings: prevConvSettings });
 			cy.openWebchat();
 			cy.startConversation();
-			// SUN is visible — delete button should not be visible yet
+
+			// SUN is showing — delete-all must be absent
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
-			cy.get(".webchat-delete-all-conversations-button").should("not.exist");
+			cy.get(".webchat-header-delete-all-conversations-button").should("not.exist");
+
+			// After acceptance, the button may appear once there are conversations
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
 		});
 
 		it("re-hides the delete-all button after switchSession resets SUN acceptance", () => {
-			cy.visitWebchat().initMockWebchat({
-				settings: {
-					...sunSettings,
-					homeScreen: { enabled: true, previousConversations: { enableDeleteAllConversations: true } },
-				},
-			});
+			cy.visitWebchat().initMockWebchat({ settings: prevConvSettings });
 			cy.openWebchat();
 			cy.startConversation();
+
+			// Accept SUN for the first session
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("#webchatChatHistory").should("exist");
-			cy.get(".webchat-delete-all-conversations-button").should("be.visible");
 
-			// Switch session
+			// Start a new conversation (SWITCH_SESSION resets hasAcceptedSystemUseNotification)
 			cy.window().then(win => {
-				win.cognigyWebchat.switchSession();
+				(win as any).webchat.endSession();
 			});
 
-			// SUN shows again, delete button should be hidden
+			// SUN reappears — delete-all must be hidden again
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
-			cy.get(".webchat-delete-all-conversations-button").should("not.exist");
+			cy.get(".webchat-header-delete-all-conversations-button").should("not.exist");
 		});
 
 		it("opening from teaser shows SUN, not chat history", () => {
-			cy.visitWebchat().initMockWebchat({ settings: sunSettings });
-			// Close the webchat so teaser can be shown
-			cy.openWebchat();
-			cy.startConversation();
-			cy.get(".webchat-system-use-notification-accept-button").click();
-			cy.get("#webchatChatHistory").should("exist");
-			// Send a message so there's something to show in the teaser
-			cy.get(".webchat-message-input").type("test message");
-			cy.get(".webchat-message-input").parent().find("button[type='submit']").click();
-			cy.get(".webchat-toggle-button").click(); // Close the webchat
+			// openConversationFromTeaser uses isNoticePending; when SUN is pending it
+			// must NOT dispatch SHOW_CHAT_SCREEN (which would connect the socket).
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					...sunSettings,
+					teaserMessage: {
+						text: "Need help? Chat with us",
+						teaserMessageDelay: 0,
+					},
+				},
+			});
 
-			// Now open from teaser
-			cy.get(".webchat-teaser-message-root").should("be.visible");
-			cy.get(".webchat-teaser-message-bubble").click(); // Click the teaser
-			// SUN should show again because it's a new session
+			// Wait for the teaser to appear, then click the teaser bubble itself —
+			// this invokes openConversationFromTeaser (the FAB toggle routes through
+			// Webchat._open() instead, which is a different code path).
+			cy.contains("Need help? Chat with us", { timeout: 6000 }).should("be.visible").click();
+
+			// SUN must be shown — socket must not have connected
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 			cy.get("#webchatChatHistory").should("not.exist");
 		});

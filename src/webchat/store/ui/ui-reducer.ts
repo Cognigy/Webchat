@@ -3,7 +3,10 @@ import { IMessage } from "../../../common/interfaces/message";
 import { TTyping } from "../../../common/interfaces/typing";
 import { isPageVisible } from "../../helper/page-visibility";
 import { ISendMessageOptions } from "../messages/message-middleware";
-import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
+import {
+	SwitchSessionAction,
+	PrevConversationsState,
+} from "../previous-conversations/previous-conversations-reducer";
 
 export interface UIState {
 	open: boolean;
@@ -18,6 +21,16 @@ export interface UIState {
 	showChatOptionsScreen: boolean;
 	hasAcceptedTerms: boolean;
 	hasAcceptedSystemUseNotification: boolean;
+	/**
+	 * When SUN is enabled and a SWITCH_SESSION is dispatched before the user
+	 * has accepted for the new session, the socket switch is deferred here.
+	 * The switch is completed by completeDeferredSessionSwitch() once the user
+	 * accepts the notice (SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION).
+	 */
+	pendingSessionSwitch: {
+		sessionId: string;
+		conversation: PrevConversationsState[string];
+	} | null;
 	storedMessage: {
 		text?: string;
 		data?: any;
@@ -131,6 +144,34 @@ export type SetHasAcceptedSystemUseNotificationAction = ReturnType<
 	typeof setHasAcceptedSystemUseNotification
 >;
 
+const SET_PENDING_SESSION_SWITCH = "SET_PENDING_SESSION_SWITCH" as const;
+export const setPendingSessionSwitch = (
+	sessionId: string,
+	conversation: PrevConversationsState[string],
+) => ({
+	type: SET_PENDING_SESSION_SWITCH,
+	sessionId,
+	conversation,
+});
+export type SetPendingSessionSwitchAction = ReturnType<typeof setPendingSessionSwitch>;
+
+/**
+ * Completes a deferred session switch after SUN acceptance.
+ * Handled by previous-conversations-middleware (which calls client.switchSession).
+ * Deliberately NOT handled as SWITCH_SESSION so the reducer never resets
+ * hasAcceptedSystemUseNotification for this completion step.
+ */
+const COMPLETE_DEFERRED_SESSION_SWITCH = "COMPLETE_DEFERRED_SESSION_SWITCH" as const;
+export const completeDeferredSessionSwitch = (
+	sessionId: string,
+	conversation: PrevConversationsState[string],
+) => ({
+	type: COMPLETE_DEFERRED_SESSION_SWITCH,
+	sessionId,
+	conversation,
+});
+export type CompleteDeferredSessionSwitchAction = ReturnType<typeof completeDeferredSessionSwitch>;
+
 const SET_STORED_MESSAGE = "SET_STORED_MESSAGE";
 export const setStoredMessage = (message: UIState["storedMessage"]) => ({
 	type: SET_STORED_MESSAGE as "SET_STORED_MESSAGE",
@@ -165,6 +206,7 @@ const getInitialState = (): UIState => ({
 	showChatOptionsScreen: false,
 	hasAcceptedTerms: false,
 	hasAcceptedSystemUseNotification: false,
+	pendingSessionSwitch: null,
 	storedMessage: null,
 	ttsActive: false,
 	lastInputId: "",
@@ -187,7 +229,9 @@ type UIAction =
 	| SetStoredMessageAction
 	| SetTTSActiveAction
 	| SetLastInputIdAction
-	| SwitchSessionAction;
+	| SwitchSessionAction
+	| SetPendingSessionSwitchAction
+	| CompleteDeferredSessionSwitchAction;
 
 export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action) => {
 	switch (action.type) {
@@ -288,6 +332,25 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				hasAcceptedSystemUseNotification: false,
+			};
+		}
+
+		case SET_PENDING_SESSION_SWITCH: {
+			return {
+				...state,
+				pendingSessionSwitch: {
+					sessionId: action.sessionId,
+					conversation: action.conversation,
+				},
+			};
+		}
+
+		// Clears the pending switch once the deferred socket switch is underway.
+		// Does NOT reset hasAcceptedSystemUseNotification — the user has already accepted.
+		case COMPLETE_DEFERRED_SESSION_SWITCH: {
+			return {
+				...state,
+				pendingSessionSwitch: null,
 			};
 		}
 
