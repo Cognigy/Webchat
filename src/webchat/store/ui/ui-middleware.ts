@@ -16,7 +16,10 @@ import {
 	setHasAcceptedSunInStorage,
 	hasAcceptedSunInStorage,
 } from "../../helper/privacyPolicy";
-import { setHasAcceptedSystemUseNotification } from "./ui-reducer";
+import {
+	setHasAcceptedSystemUseNotification,
+	completeDeferredSessionSwitch,
+} from "./ui-reducer";
 import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 export const uiMiddleware: Middleware<object, StoreState> =
@@ -88,15 +91,30 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				break;
 			}
 
-			// System Use Notification (AC-8 / FedRAMP) — store accepted sessionId.
-			// If no storage is available the notice will re-appear on the next page load,
-			// which is the correct FedRAMP behaviour (no silent bypass).
+			// System Use Notification (AC-8 / FedRAMP) — store accepted sessionId and
+			// complete any deferred session switch that was waiting for acceptance.
 			case "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION": {
+				// Read the pending switch BEFORE next() — the reducer clears it afterward.
+				const pendingSwitch = store.getState().ui.pendingSessionSwitch;
+
 				if (browserStorage) {
 					setHasAcceptedSunInStorage(browserStorage, action.sessionId);
+					// Also record the target session so page-reloads within that session skip the notice.
+					if (pendingSwitch?.sessionId) {
+						setHasAcceptedSunInStorage(browserStorage, pendingSwitch.sessionId);
+					}
 				}
 
-				break;
+				const result = next(action);
+
+				// Complete the deferred socket switch now that SUN is accepted.
+				if (pendingSwitch) {
+					store.dispatch(
+						completeDeferredSessionSwitch(pendingSwitch.sessionId, pendingSwitch.conversation),
+					);
+				}
+
+				return result;
 			}
 		}
 
@@ -115,3 +133,4 @@ export const uiMiddleware: Middleware<object, StoreState> =
 
 		return result;
 	};
+
