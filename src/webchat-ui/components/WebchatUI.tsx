@@ -1745,9 +1745,12 @@ export class WebchatUI extends React.PureComponent<
 
 		const sun = config.settings.systemUseNotification;
 		const handleAcceptSystemUseNotification = () => {
-			// Use currentSession (synced from the socket client's sessionId) so the
-			// recorded sessionId matches what Webchat.tsx checks on page reload.
-			onAcceptSystemUseNotification(currentSession || "");
+			// Use config.initialSessionId (populated from client.socketOptions.sessionId
+			// in Webchat.tsx before the first connect) so the recorded sessionId matches
+			// what Webchat.tsx checks on page reload. state.options.sessionId is only
+			// populated after the first connect, which happens after SUN acceptance —
+			// using it would always persist "" as the accepted sessionId.
+			onAcceptSystemUseNotification(config.initialSessionId || "");
 			// If the privacy notice also needs to be shown, let it render next naturally.
 			// Otherwise connect immediately so storedMessage is flushed.
 			if (!config.settings.privacyNotice.enabled || hasAcceptedTerms) {
@@ -2164,3 +2167,4 @@ export class WebchatUI extends React.PureComponent<
 		);
 	}
 }
+
