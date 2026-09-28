@@ -173,9 +173,10 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("#webchatChatHistory").should("exist");
 
-			// Start a new conversation (triggers SWITCH_SESSION internally)
+			// Start a new conversation (triggers SWITCH_SESSION internally).
+			// The harness exposes the Webchat instance as window.webchat (commands.ts).
 			cy.window().then(win => {
-				(win as any).cognigyWebchat.endSession();
+				(win as any).webchat.endSession();
 			});
 
 			// SUN must appear again for the new session
@@ -231,7 +232,7 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 
 			// Start a new conversation (SWITCH_SESSION resets hasAcceptedSystemUseNotification)
 			cy.window().then(win => {
-				(win as any).cognigyWebchat.endSession();
+				(win as any).webchat.endSession();
 			});
 
 			// SUN reappears — delete-all must be hidden again
@@ -252,9 +253,10 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 				},
 			});
 
-			// Wait for teaser to appear, then click to open from teaser
-			cy.window().contains("Need help? Chat with us", { timeout: 6000 }).should("be.visible");
-			cy.get("[data-cognigy-webchat-toggle]").click();
+			// Wait for the teaser to appear, then click the teaser bubble itself —
+			// this invokes openConversationFromTeaser (the FAB toggle routes through
+			// Webchat._open() instead, which is a different code path).
+			cy.contains("Need help? Chat with us", { timeout: 6000 }).should("be.visible").click();
 
 			// SUN must be shown — socket must not have connected
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
