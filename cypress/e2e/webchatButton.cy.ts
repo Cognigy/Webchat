@@ -73,6 +73,25 @@ describe("Webchat Button", () => {
 			.should("not.exist");
 	});
 
+	// CGY-3163: the count is already in the button's accessible name; the badge is a
+	// visual duplicate. aria-label is prohibited on a generic <span>.
+	it("renders the unread badge as decorative, without an aria-label", () => {
+		cy.visitWebchat().initMockWebchat({
+			settings: {
+				unreadMessages: { enableBadge: true },
+			},
+		});
+
+		cy.get('[aria-label="Open chat"]').should("be.visible");
+		cy.receiveMessage("first bot message");
+		cy.get('[aria-label="One unread message in chat. Open chat"]').should("be.visible");
+		cy.get(".webchat-unread-message-badge")
+			.should("be.visible")
+			.and("have.text", "1")
+			.and("have.attr", "aria-hidden", "true")
+			.and("not.have.attr", "aria-label");
+	});
+
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
 	describe("Accessibility (WCAG 2.2 AA)", () => {
 		it("closed chat toggle button has no detectable a11y violations", () => {

@@ -2,10 +2,20 @@
 /// <reference path="../../support/index.d.ts" />
 
 import * as moment from "moment";
+import { itChromiumOnly } from "../../support/browser";
 
 describe("Date Picker", () => {
 	beforeEach(() => {
-		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
+		// The message input focuses itself again 200 ms after it mounts (the
+		// BaseInput autofocus timer). These tests open and close the dialog well
+		// inside that window, so the timer would fire after Escape and pull focus
+		// off the opener button — a product race recorded in docs/accessibility.md
+		// ("Follow-ups"). Autofocus is not what this spec exercises, so it is
+		// switched off to keep the dialog's focus hand-offs deterministic.
+		cy.visitWebchat()
+			.initMockWebchat({ settings: { widgetSettings: { disableInputAutofocus: true } } })
+			.openWebchat()
+			.startConversation();
 	});
 
 	it("should render plugin open button", () => {
@@ -72,13 +82,40 @@ describe("Date Picker", () => {
 		});
 	});
 
-	xit("should trap focus", () => {
+	// APG modal dialog: Tab focus stays inside while open. The wrap is driven by
+	// real key events (cypress-real-events, CDP), so it runs in Chromium only.
+	// Heading -> Shift+Tab wraps to the last control (the submit button, enabled
+	// because the fixture's minDate preselects today); Tab from there wraps to
+	// the first control (the close button).
+	itChromiumOnly("traps Tab focus inside the dialog (APG dialog pattern)", () => {
+		const heading = ".webchat-plugin-date-picker-header .webchat-list-template-header-title";
 		cy.withMessageFixture("date-picker", () => {
 			cy.contains("foobar012b1").click();
-			// cy.realPress("Tab")
-			//     .contains("foobar012b2").should("be.focused");
-			cy.realPress("Tab").contains("foobar012b3").should("be.focused");
-			cy.realPress("Tab").get(".flatpickr-calendar ").should("be.focused");
+			cy.get(heading).should("be.focused");
+
+			// Hand the focus to Cypress before the real key press: in headless runs
+			// the CDP key event is not reliably routed to an element the app focused
+			// programmatically (the runner's focus polyfill), while an element
+			// focused through cy.focus() always receives it.
+			cy.get(heading).focus();
+			cy.realPress(["Shift", "Tab"]);
+			cy.focused().should("have.attr", "data-testid", "button-submit");
+
+			cy.realPress("Tab");
+			cy.focused().should("have.attr", "data-testid", "button-close");
+		});
+	});
+
+	it("closes on Escape and returns focus to the button that opened it (SC 2.4.3)", () => {
+		cy.withMessageFixture("date-picker", () => {
+			cy.contains("foobar012b1").click();
+			cy.get(".webchat-plugin-date-picker-header .webchat-list-template-header-title").should(
+				"be.focused",
+			);
+
+			cy.focused().type("{esc}");
+			cy.get(".webchat-plugin-date-picker").should("not.exist");
+			cy.focused().should("have.attr", "data-testid", "button-open");
 		});
 	});
 

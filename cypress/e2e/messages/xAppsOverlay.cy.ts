@@ -6,6 +6,100 @@ describe("xApps Overlay", () => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 	});
 
+	describe("Security (WCH-SI10-003)", () => {
+		it("xApp iframe has sandbox attribute with required tokens", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe").should("have.attr", "sandbox");
+				// Regex anchor prevents "allow-top-navigation-by-user-activation" matching
+				// the "not.include" for bare "allow-top-navigation".
+				cy.get("iframe")
+					.invoke("attr", "sandbox")
+					.should("include", "allow-scripts")
+					.and("include", "allow-forms")
+					.and("include", "allow-popups")
+					.and("include", "allow-popups-to-escape-sandbox")
+					.and("include", "allow-modals")
+					.and("include", "allow-downloads")
+					.and("include", "allow-top-navigation-by-user-activation")
+					.and("not.match", /(?:^|\s)allow-top-navigation(?:\s|$)/);
+			});
+		});
+
+		it("xApp iframe allow= includes payment and auth, excludes high-risk device APIs", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				// payment, publickey-credentials-get, otp-credentials required for documented
+				// xApp use cases (Stripe payment, WebAuthn/biometric auth, SMS OTP).
+				cy.get("iframe")
+					.invoke("attr", "allow")
+					.should("include", "payment")
+					.and("include", "publickey-credentials-get")
+					.and("include", "otp-credentials")
+					.and("not.include", "usb")
+					.and("not.include", "bluetooth")
+					.and("not.include", "serial")
+					.and("not.include", "hid")
+					.and("not.include", "xr-spatial-tracking");
+			});
+		});
+
+		it("omits allow-same-origin for same-origin xApp URLs to prevent sandbox escape", () => {
+			// allow-scripts + allow-same-origin together allow a same-origin iframe to
+			// remove its own sandbox via frameElement. For same-origin URLs, allow-same-origin
+			// is dropped so the frame is treated as cross-origin within the sandbox.
+			// autoOpen:true is required — the reducer only opens when explicitly set.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: {
+							autoOpen: true,
+							screenTitle: "Same-Origin xApp",
+							showCloseIcon: true,
+						},
+						url: "http://localhost:8787/same-origin-xapp",
+					},
+				},
+			});
+			// The overlay renders (not dead-ended), but without allow-same-origin
+			cy.get(".webchat-header-logo-name-container").contains("Same-Origin xApp");
+			cy.get("iframe").should("have.attr", "sandbox").and("not.include", "allow-same-origin");
+		});
+
+		it("cross-origin xApp URL includes allow-same-origin in sandbox", () => {
+			cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+				cy.get("iframe").invoke("attr", "sandbox").should("include", "allow-same-origin");
+			});
+		});
+
+		it("closes overlay automatically for a malformed xApp URL", () => {
+			// getXAppOrigin returns null for unparseable URLs; the cleanup effect
+			// must dispatch closeOverlay() so the widget does not dead-end.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: { autoOpen: true, screenTitle: "Bad URL xApp" },
+						url: "not-a-valid-url",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
+
+		it("closes overlay automatically for a non-http(s) xApp URL", () => {
+			// data: URLs produce origin "null" — accepting them could let forged
+			// postMessages bypass the origin check. The cleanup effect must close
+			// the overlay before the user can interact with it.
+			cy.receiveMessage(null, {
+				_cognigy: {
+					_app: {
+						overlaySettings: { autoOpen: true, screenTitle: "Data URL xApp" },
+						url: "data:text/html,<h1>hi</h1>",
+					},
+				},
+			});
+			cy.get("iframe").should("not.exist");
+		});
+	});
+
 	it("opens overlay automatically", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
 			cy.get(".webchat-header-logo-name-container").contains("XApp Title 1");
@@ -54,19 +148,20 @@ describe("xApps Overlay", () => {
  * The fix uses `new URL(url).origin === event.origin` which compares the canonical
  * scheme+host+port extracted from both sides — the correct cross-origin boundary.
  *
- * Test strategy: in the Cypress environment, postMessages sent from the test page
- * carry origin "http://localhost:8787". Setting the xApp URL to that same origin
- * lets us exercise the acceptance path; using a different URL origin exercises the
- * rejection path. Both cases are observable via the closeOnSubmit behaviour.
+ * Test strategy: WCH-SI10-003 omits allow-same-origin for same-origin xApp URLs
+ * (rather than refusing to render). Same-origin xApps still render, so localhost-
+ * based URLs can be used for the acceptance-path test: the Cypress test runner posts
+ * from http://localhost:8787, xAppOrigin is http://localhost:8787 — they match.
  */
 describe("postMessage origin validation (WCH-SI10-004)", () => {
 	beforeEach(() => {
 		cy.visitWebchat().initMockWebchat().openWebchat().startConversation();
 	});
 
-	it("closes overlay when postMessage origin exactly matches the xApp URL origin", () => {
-		// xApp URL uses localhost:8787 — the same origin as the Cypress test runner —
-		// so postMessages dispatched from the test page have a matching origin.
+	it("closes overlay when x-app-submit postMessage origin matches the xApp URL origin", () => {
+		// xApp URL uses localhost:8787 — same origin as the Cypress test runner.
+		// WCH-SI10-003 renders same-origin xApps without allow-same-origin; postMessage
+		// still works (it does not require allow-same-origin). xAppOrigin === event.origin → accepted.
 		cy.receiveMessage(null, {
 			_cognigy: {
 				_app: {
@@ -85,8 +180,6 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 
 		cy.get(".webchat-header-logo-name-container").contains("Local xApp");
 
-		// postMessage from the test page — event.origin will be "http://localhost:8787".
-		// new URL("http://localhost:8787/xapp-test").origin === "http://localhost:8787" → accepted.
 		cy.window().then(win => {
 			win.postMessage({ type: "x-app-submit", success: true }, "*");
 		});
@@ -127,7 +220,9 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 		cy.get(".webchat-header-logo-name-container").should("contain", "External xApp");
 	});
 
-	it("ignores postMessage with a non-xapp-submit type even from a matching origin", () => {
+	it("ignores postMessage with an unrecognised type from a non-matching origin", () => {
+		// xApp at https://example.com; test runner is http://localhost:8787.
+		// Both origin mismatch AND wrong type — overlay must stay open.
 		cy.receiveMessage(null, {
 			_cognigy: {
 				_app: {
@@ -139,14 +234,13 @@ describe("postMessage origin validation (WCH-SI10-004)", () => {
 						sendEventOnCloseIconClick: false,
 						showCloseIcon: true,
 					},
-					url: "http://localhost:8787/xapp-test",
+					url: "https://example.com/xapp-form",
 				},
 			},
 		});
 
 		cy.get(".webchat-header-logo-name-container").contains("Type-check xApp");
 
-		// Origin matches but type is wrong — overlay must stay open.
 		cy.window().then(win => {
 			win.postMessage({ type: "some-other-event", payload: "data" }, "*");
 		});
@@ -163,7 +257,184 @@ describe("Accessibility (WCAG 2.2 AA)", () => {
 
 	it("xApps overlay passes axe audit", () => {
 		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			cy.get("[data-xapp-overlay]").should("exist");
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
+
+	it("xApps overlay without title and close icon passes axe audit", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay]").should("exist");
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+	});
+
+	it("is a modal dialog named by its visible title, with a titled frame (SC 4.1.2)", () => {
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			cy.get("[data-xapp-overlay]")
+				.should("have.attr", "role", "dialog")
+				.should("have.attr", "aria-modal", "true")
+				.should("have.attr", "aria-labelledby", "webchatXAppOverlayTitle")
+				// A non-interactive container must not be a tab stop
+				.should("not.have.attr", "tabindex");
+			cy.get("#webchatXAppOverlayTitle").should("have.text", "XApp Title 1");
+			cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "XApp Title 1");
+			// The close icon closes the app, not the chat
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should(
+				"have.attr",
+				"aria-label",
+				"Close dialog",
+			);
+		});
+	});
+
+	it("falls back to a configurable name when the xApp has no screen title", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay]")
+				.should("have.attr", "aria-label", "Embedded app")
+				.should("not.have.attr", "aria-labelledby");
+			cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Embedded app");
+		});
+	});
+
+	it("uses the xAppOverlay aria-label translation", () => {
+		cy.visitWebchat()
+			.initMockWebchat({
+				settings: {
+					customTranslations: {
+						ariaLabels: {
+							xAppOverlay: "Eingebettete App",
+							closeDialog: "Dialog schließen",
+						},
+					},
+				},
+			})
+			.openWebchat()
+			.startConversation();
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay]").should("have.attr", "aria-label", "Eingebettete App");
+		cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Eingebettete App");
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should(
+			"have.attr",
+			"aria-label",
+			"Dialog schließen",
+		);
+	});
+
+	it("renders no empty heading when a close icon is shown without a title", () => {
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should("exist");
+		cy.get("[data-xapp-overlay] .webchat-header-title").should("not.exist");
+		cy.get("[data-xapp-overlay] h2").should("not.exist");
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
+	it("treats a whitespace-only title as absent", () => {
+		cy.receiveMessage(null, {
+			_cognigy: {
+				_app: {
+					overlaySettings: { autoOpen: true, screenTitle: "   ", showCloseIcon: true },
+					url: "https://example.com",
+				},
+			},
+		});
+		cy.get("[data-xapp-overlay] .webchat-header-close-button").should("exist");
+		cy.get("[data-xapp-overlay] h2").should("not.exist");
+		cy.get("[data-xapp-overlay] iframe").should("have.attr", "title", "Embedded app");
+		cy.get("[data-xapp-overlay]")
+			.should("have.attr", "aria-label", "Embedded app")
+			.should("not.have.attr", "aria-labelledby");
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
+	it("moves focus to the close button on open and traps Tab inside the dialog (SC 2.4.3, 2.1.2)", () => {
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			// Deferred focus on the first control, so screen readers announce
+			// the dialog name once and then the button — not the title heading,
+			// which would repeat the dialog name
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
+			cy.get("#webchatXAppOverlayTitle").should("not.have.focus");
+
+			// Native tabbing needs real key events (cypress-real-events is
+			// CDP-based, so Chromium only). The Firefox run relies on the
+			// guard assertions below, which exercise the same wrap logic.
+			if (Cypress.isBrowser({ family: "chromium" })) {
+				// Forward tab order: close button → frame
+				cy.realPress("Tab");
+				cy.get("[data-xapp-overlay] iframe").should("have.focus");
+
+				// Shift+Tab off the first control lands on the start guard,
+				// which wraps to the last tab stop (the frame) instead of the
+				// host page
+				cy.get("[data-xapp-overlay] .webchat-header-close-button").focus();
+				cy.realPress(["Shift", "Tab"]);
+				cy.get("[data-xapp-overlay] iframe").should("have.focus");
+			}
+
+			// The guards are what the trap is built on, so exercise them
+			// directly in every browser: landing on the start guard wraps to
+			// the last tab stop (the frame) …
+			cy.get("[data-xapp-overlay-focus-guard='start']").focus();
+			cy.get("[data-xapp-overlay] iframe").should("have.focus");
+
+			// … and landing on the end guard (as native Tab out of the frame
+			// does — keydown inside the frame is invisible here) wraps to the
+			// first control
+			cy.get("[data-xapp-overlay-focus-guard='end']").focus();
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus");
+		});
+	});
+
+	it("focuses the frame on open when the xApp has neither title nor close icon", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay] iframe").should("have.focus");
+		});
+	});
+
+	it("closes on Escape when a close icon is shown and focus returns to the chat input", () => {
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			// Synthetic keydown bubbles to the document-level handler, so this
+			// works in Firefox too (realPress is Chromium-only)
+			cy.get("[data-xapp-overlay] .webchat-header-close-button")
+				.should("have.focus")
+				.type("{esc}");
+			cy.get("[data-xapp-overlay]").should("not.exist");
+			cy.get(".webchat-input-message-input").should("have.focus");
+		});
+	});
+
+	it("ignores Escape when the xApp has no close icon", () => {
+		cy.withMessageFixture("xApps-overlay-noClose", () => {
+			cy.get("[data-xapp-overlay]").should("exist");
+			cy.get("body").trigger("keydown", { key: "Escape" });
+			cy.wait(300);
+			cy.get("[data-xapp-overlay]").should("exist");
+		});
+	});
+
+	it("moves focus to the header title on close when input autofocus is disabled", () => {
+		cy.visitWebchat()
+			.initMockWebchat({ settings: { widgetSettings: { disableInputAutofocus: true } } })
+			.openWebchat()
+			.startConversation();
+		cy.withMessageFixture("xApps-overlay-autoOpen", () => {
+			cy.get("[data-xapp-overlay] .webchat-header-close-button").should("have.focus").click();
+			cy.get("[data-xapp-overlay]").should("not.exist");
+			cy.get(".webchat-header-bar .webchat-header-title").should("have.focus");
 		});
 	});
 });
