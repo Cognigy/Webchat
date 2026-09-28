@@ -27,7 +27,11 @@ import { setInitialSessionId, updateSettings } from "../store/config/config-redu
 import { createOutputHandler } from "../store/messages/message-handler";
 import { createNotification } from "../../webchat-ui/components/presentational/Notifications";
 import { getStorage } from "../helper/storage";
-import { hasAcceptedTermsInStorage, hasAcceptedSunInStorage, isNoticePending } from "../helper/privacyPolicy";
+import {
+	hasAcceptedTermsInStorage,
+	hasAcceptedSunInStorage,
+	isNoticePending,
+} from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
 import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { clearMessages } from "../store/messages/message-reducer";
@@ -234,4 +238,3 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 		);
 	}
 }
-

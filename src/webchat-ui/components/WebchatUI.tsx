@@ -1236,10 +1236,12 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		if (isNoticePending(this.props.config.settings, {
-			hasAcceptedSystemUseNotification: this.props.hasAcceptedSystemUseNotification,
-			hasAcceptedTerms: this.props.hasAcceptedTerms,
-		})) {
+		if (
+			isNoticePending(this.props.config.settings, {
+				hasAcceptedSystemUseNotification: this.props.hasAcceptedSystemUseNotification,
+				hasAcceptedTerms: this.props.hasAcceptedTerms,
+			})
+		) {
 			this.setState({ lastUnseenMessageText: "" });
 		} else {
 			this.props.onShowChatScreen();
@@ -2171,5 +2173,3 @@ export class WebchatUI extends React.PureComponent<
 		);
 	}
 }
-
-

@@ -338,7 +338,10 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 		case SET_PENDING_SESSION_SWITCH: {
 			return {
 				...state,
-				pendingSessionSwitch: { sessionId: action.sessionId, conversation: action.conversation },
+				pendingSessionSwitch: {
+					sessionId: action.sessionId,
+					conversation: action.conversation,
+				},
 			};
 		}
 
@@ -375,4 +378,3 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 
 	return state;
 };
-

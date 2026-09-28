@@ -16,10 +16,7 @@ import {
 	setHasAcceptedSunInStorage,
 	hasAcceptedSunInStorage,
 } from "../../helper/privacyPolicy";
-import {
-	setHasAcceptedSystemUseNotification,
-	completeDeferredSessionSwitch,
-} from "./ui-reducer";
+import { setHasAcceptedSystemUseNotification, completeDeferredSessionSwitch } from "./ui-reducer";
 import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 export const uiMiddleware: Middleware<object, StoreState> =
@@ -110,7 +107,10 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				// Complete the deferred socket switch now that SUN is accepted.
 				if (pendingSwitch) {
 					store.dispatch(
-						completeDeferredSessionSwitch(pendingSwitch.sessionId, pendingSwitch.conversation),
+						completeDeferredSessionSwitch(
+							pendingSwitch.sessionId,
+							pendingSwitch.conversation,
+						),
 					);
 				}
 
@@ -133,4 +133,3 @@ export const uiMiddleware: Middleware<object, StoreState> =
 
 		return result;
 	};
-

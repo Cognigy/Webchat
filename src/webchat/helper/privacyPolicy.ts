@@ -92,4 +92,3 @@ export function isNoticePending(
 	const privacyPending = settings.privacyNotice.enabled && !ui.hasAcceptedTerms;
 	return sunPending || privacyPending;
 }
-

@@ -9,10 +9,7 @@ import { SocketClient } from "@cognigy/socket-client";
 import { autoInjectHandledReset, triggerAutoInject } from "../autoinject/autoinject-reducer";
 import { setConnecting } from "../connection/connection-reducer";
 import { setOptions } from "../options/options-reducer";
-import {
-	CompleteDeferredSessionSwitchAction,
-	setPendingSessionSwitch,
-} from "../ui/ui-reducer";
+import { CompleteDeferredSessionSwitchAction, setPendingSessionSwitch } from "../ui/ui-reducer";
 
 type Actions =
 	| SwitchSessionAction
@@ -105,4 +102,3 @@ function doSwitchSession(
 			dispatch(setConnecting(false));
 		});
 }
-

@@ -43,4 +43,3 @@ export function getScreenVisibility(props: ScreenVisibilityProps, isInforming: b
 
 	return { showEnabledHomeScreen, showHomeScreenView, showChatScreen };
 }
-
