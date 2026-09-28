@@ -1235,9 +1235,13 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
+		const showSunScreen =
+			this.props.config.settings.systemUseNotification?.enabled &&
+			!this.props.hasAcceptedSystemUseNotification;
 		const showPrivacyScreen =
 			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
-		if (showPrivacyScreen) {
+
+		if (showSunScreen || showPrivacyScreen) {
 			this.setState({ lastUnseenMessageText: "" });
 		} else {
 			this.props.onShowChatScreen();
