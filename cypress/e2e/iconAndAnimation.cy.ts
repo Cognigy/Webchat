@@ -214,6 +214,15 @@ describe("Launcher icon and animation", () => {
 			"is revealed while the launcher is hovered or holds focus and stays focusable meanwhile",
 			() => {
 				cy.visitWebchat().initMockWebchat({ settings: animatedSettings });
+				// Headless Chromium reports `(hover: none)` on a CI runner without a
+				// mouse; cypress.config.ts overrides that at browser launch. Fail
+				// loudly here rather than on the opacity assertions if that breaks.
+				cy.window().should(win => {
+					expect(
+						win.matchMedia("(hover: hover)").matches,
+						"browser reports (hover: hover) — see before:browser:launch in cypress.config.ts",
+					).to.equal(true);
+				});
 				// Fine pointer: hidden until hover/focus, but always in the DOM
 				cy.get(PAUSE).should("have.css", "opacity", "0");
 
