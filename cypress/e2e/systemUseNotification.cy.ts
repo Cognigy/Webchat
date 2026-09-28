@@ -159,6 +159,33 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 		});
 	});
 
+	describe("Session switch", () => {
+		it("shows SUN again after switchSession and defers socket switch until acceptance", () => {
+			cy.visitWebchat().initMockWebchat({ settings: sunSettings });
+			cy.openWebchat();
+			cy.startConversation();
+
+			// Accept SUN for the first session
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
+
+			// Start a new conversation (triggers SWITCH_SESSION internally)
+			cy.window().then(win => {
+				(win as any).cognigyWebchat.endSession();
+			});
+
+			// SUN must appear again for the new session
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+
+			// Chat history must not be visible — socket has not switched yet
+			cy.get("#webchatChatHistory").should("not.exist");
+
+			// Accept SUN for the new session — socket switch completes, chat resumes
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
+		});
+	});
+
 	describe("Accessibility (WCAG 2.2 AA)", () => {
 		it("SUN surface has no detectable a11y violations", () => {
 			cy.visitWebchat().initMockWebchat({ settings: sunSettings });
@@ -178,3 +205,4 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 		});
 	});
 });
+
