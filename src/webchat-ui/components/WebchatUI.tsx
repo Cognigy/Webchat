@@ -29,6 +29,7 @@ import { IWebchatConfig } from "../../common/interfaces/webchat-config";
 import { TTyping } from "../../common/interfaces/typing";
 import Badge from "./presentational/Badge";
 import getTextFromMessage from "../../webchat/helper/message";
+import { isNoticePending } from "../../webchat/helper/privacyPolicy";
 import getKeyboardFocusableElements from "../utils/find-focusable";
 import { InertProps } from "../utils/inert-props";
 import notificationSound from "../utils/notification-sound";
@@ -1235,9 +1236,10 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		const showPrivacyScreen =
-			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
-		if (showPrivacyScreen) {
+		if (isNoticePending(this.props.config.settings, {
+			hasAcceptedSystemUseNotification: this.props.hasAcceptedSystemUseNotification,
+			hasAcceptedTerms: this.props.hasAcceptedTerms,
+		})) {
 			this.setState({ lastUnseenMessageText: "" });
 		} else {
 			this.props.onShowChatScreen();
