@@ -1629,6 +1629,9 @@ export class WebchatUI extends React.PureComponent<
 										<FAB
 											data-cognigy-webchat-toggle
 											onClick={this.handleFabClick}
+											// The toggle renders outside the keydown-handling root, so the
+											// focus trap must be wired to it directly (Tab / Shift+Tab into the window).
+											onKeyDown={this.handleKeydown}
 											{...webchatToggleProps}
 											type="button"
 											className={classNames(
