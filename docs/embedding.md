@@ -115,6 +115,7 @@ See it in action:
 | disableBotOutputBorder         | boolean | `false`                                 | Enabling this will hide the chat bubble around AI Agent text Messages                                                                                                                                                                             |
 | botOutputMaxWidthPercentage    | number  | `73`                                    | Use to set a number that will be used as a percentage value for the max-width of AI Agent text Messages                                                                                                                                           |
 | chatWindowWidth                | number  | `460`                                   | Configure the width of the Webchat in px                                                                                                                                                                                                          |
+| galleryCardTitleBelowImage     | boolean | `false`                                 | Renders a gallery card's title in the text block beneath the image instead of overlaying it on the image. Requires `@cognigy/chat-components` 0.78.0 or later; when unset the legacy overlay layout is used.                                      |
 | iconUrl                        | string  | `default-1`                             | Configure launcher icon, set either default-1..3 or a data uri of type svg or png                                                                                                                                                                 |
 | iconAnimation                  | string  | `none`                                  | Set icon animation `"pulse" \| "bounce" \| "swing" \| "none"`                                                                                                                                                                                     |
 | iconAnimationSpeed             | number  | `1`                                     | Speed at which the animation is played. A value of 1 implies normal speed (1x), 2 implies double speed, and 0.5 implies half the normal speed. You can use any value from 0.1 to 5, but sticking to normal, double, or half speed is recommended. |
@@ -487,6 +488,9 @@ The following table defines the default texts used throughout the Webchat for ac
 | audioPlaybackProgress     | string   | "Audio playback progress"                  | This text is used to indicate the audio playback progress.                                                                                                                                                                                                                                                                                                     |
 | pauseAudio                | string   | "Pause audio"                              | This text is used for the pause audio button.                                                                                                                                                                                                                                                                                                                  |
 | playAudio                 | string   | "Play audio"                               | This text is used for the play audio button.                                                                                                                                                                                                                                                                                                                   |
+| muteAudio                 | string   | "Mute audio"                               | This text is used for the mute button of an audio message.                                                                                                                                                                                                                                                                                                     |
+| unmuteAudio               | string   | "Unmute audio"                             | This text is used for the unmute button of an audio message.                                                                                                                                                                                                                                                                                                   |
+| audioVolume               | string   | "Audio volume"                             | This text is used as the ARIA label of the volume slider of an audio message.                                                                                                                                                                                                                                                                                  |
 | playVideo                 | string   | "Play video"                               | This text is used for the play video button.                                                                                                                                                                                                                                                                                                                   |
 | downloadTranscript        | string   | "Download transcript"                      | This text is used for the download transcript button in the audio player.                                                                                                                                                                                                                                                                                      |
 | closeDatePicker           | string   | "Close date-picker"                        | This text is used for the close date-picker button.                                                                                                                                                                                                                                                                                                            |
@@ -502,6 +506,8 @@ The following table defines the default texts used throughout the Webchat for ac
 | datePickerRangeEnd        | string   | "end of range"                             | Appended to a day's ARIA label in range-selection date-pickers to mark the last selected day, announced to screen-reader users.                                                                                                                                                                                                                                |
 | datePickerWeekNumber      | string   | "Week"                                     | This text is used as the ARIA label for the week-number column header and row headers ("Week 37") when week numbers are enabled in the date-picker.                                                                                                                                                                                                            |
 | datePickerAmPm            | string   | "AM/PM"                                    | This text is used as the ARIA label for the AM/PM spinbutton in date-pickers with time selection.                                                                                                                                                                                                                                                              |
+| datePickerHour            | string   | "Hour"                                     | This text is used as the ARIA label for the hour field in date-pickers with time selection. Falls back to flatpickr's locale text. Requires `@cognigy/chat-components` 0.82.0 or later.                                                                                                                                                                        |
+| datePickerMinute          | string   | "Minute"                                   | This text is used as the ARIA label for the minute field in date-pickers with time selection. Falls back to flatpickr's locale text. Requires `@cognigy/chat-components` 0.82.0 or later.                                                                                                                                                                      |
 | actionButtonPositionText  | string   | "{position} of {total}"                    | This text is used to indicate the position of a button among the total number of buttons in quick reply messages and also to indicate the position of a slide in a gallery message.                                                                                                                                                                            |
 | buttonGroupLabel          | string   | "Available actions:"                       | This text is used for live message announcements of text with buttons, quick replies messages and gallery messages.                                                                                                                                                                                                                                            |
 | slidesCountText           | string   | "{slidesCount} slides."                    | This text is used for live message announcements of number of slides present in a gallery message.                                                                                                                                                                                                                                                             |
@@ -513,6 +519,9 @@ The following table defines the default texts used throughout the Webchat for ac
 | fileContent               | `Object` | [See File content](#file-content)          | File content related aria live announcements by screen readers                                                                                                                                                                                                                                                                                                 |
 | messageHeader             | `Object` | [See Message Header](#message-header)      | Labels for message headers in conversation                                                                                                                                                                                                                                                                                                                     |
 | audioTimeRemaining        | string   | "{time} remaining"                         | This text is used by aria-valuetext attribute of input element in an audio message indicating the remaning time left in the Audio playback                                                                                                                                                                                                                     |
+| audioMoreOptions          | string   | "More options"                             | This text is used for the button that opens the additional options menu (e.g. playback speed) of an audio message.                                                                                                                                                                                                                                             |
+| audioPlaybackSpeed        | string   | "Playback speed"                           | This text is used as the label of the playback speed selection in the audio message options menu.                                                                                                                                                                                                                                                              |
+| audioNormalSpeed          | string   | "Normal"                                   | This text is used for the default (1x) playback speed option in the audio message options menu.                                                                                                                                                                                                                                                                |
 
 ##### Image Content
 
@@ -595,6 +604,7 @@ interface IWebchatSettings {
 		disableBotOutputBorder: boolean;
 		botOutputMaxWidthPercentage: number;
 		chatWindowWidth: number;
+		galleryCardTitleBelowImage?: boolean;
 	};
 	colors: {
 		primaryColor: string;
@@ -807,6 +817,9 @@ interface IWebchatSettings {
 			audioPlaybackProgress?: string;
 			pauseAudio?: string;
 			playAudio?: string;
+			muteAudio?: string;
+			unmuteAudio?: string;
+			audioVolume?: string;
 			playVideo?: string;
 			downloadTranscript?: string;
 			closeDatePicker?: string;
@@ -822,6 +835,8 @@ interface IWebchatSettings {
 			datePickerRangeEnd?: string;
 			datePickerWeekNumber?: string;
 			datePickerAmPm?: string;
+			datePickerHour?: string;
+			datePickerMinute?: string;
 			actionButtonPositionText?: string;
 			buttonGroupLabel?: string;
 			slidesCountText?: string;
@@ -851,6 +866,9 @@ interface IWebchatSettings {
 				timestamp?: string;
 			};
 			audioTimeRemaining?: string;
+			audioMoreOptions?: string;
+			audioPlaybackSpeed?: string;
+			audioNormalSpeed?: string;
 		};
 	};
 
