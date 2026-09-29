@@ -15,7 +15,7 @@
 	z-index: 2;
 }
 
-button[data-cognigy-webchat-toggle] {
+[data-cognigy-webchat-root] button[data-cognigy-webchat-toggle] {
 	position: fixed;
 
 	right: 20px;
@@ -25,15 +25,15 @@ button[data-cognigy-webchat-toggle] {
 		0 5px 18px 0 rgba(151, 124, 156, 0.2),
 		0 5px 32px 0 rgba(203, 195, 212, 0.2),
 		0 8px 58px 0 rgba(216, 212, 221, 0.1);
-	z-index: 99999;
+	z-index: 1;
 }
 
-button[data-cognigy-webchat-toggle]:dir(rtl) {
+[data-cognigy-webchat-root] button[data-cognigy-webchat-toggle]:dir(rtl) {
 	left: 20px;
 	right: unset;
 }
 
-button[data-cognigy-webchat-toggle]:focus {
+[data-cognigy-webchat-root] button[data-cognigy-webchat-toggle]:focus {
 	box-shadow: 0 0 4px 3px rgb(0, 0, 0, 0.2);
 }
 

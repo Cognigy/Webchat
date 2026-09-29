@@ -9,8 +9,6 @@ const UnreadMessagePreview = styled.div(({ theme }) => ({
 	border: "1px solid rgba(26, 26, 26, 0.10)",
 
 	cursor: "pointer",
-	position: "relative",
-	zIndex: 1,
 
 	display: "flex",
 	flexDirection: "column",

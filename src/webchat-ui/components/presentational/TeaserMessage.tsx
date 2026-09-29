@@ -16,7 +16,6 @@ const TeaserMessageRoot = styled.div({
 	position: "fixed",
 	right: "20px",
 	bottom: "84px",
-	zIndex: 100000,
 
 	display: "flex",
 	flexDirection: "column",
@@ -65,15 +64,6 @@ const ButtonContainer = styled.div({
 	},
 });
 
-const TeaserMessageOpenTrigger = styled.div(({ theme }) => ({
-	alignSelf: "stretch",
-	borderRadius: 4,
-	"&:focus-visible": {
-		outline: `2px solid ${theme.primaryColorFocus}`,
-		outlineOffset: 2,
-	},
-}));
-
 const HeaderLogo = styled(Logo)(() => ({
 	marginInline: 0,
 }));
@@ -105,22 +95,8 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 
 	const isDesktopMedia = useMediaQuery({ query: "(min-width: 576px)" });
 
-	const handleMessageClick = (e: React.MouseEvent) => {
-		// Ignore clicks on the close button (which will have stopPropagation)
-		if ((e.target as HTMLElement).closest(".webchat-teaser-message-header-close-button")) {
-			return;
-		}
+	const handleMessageClick = () => {
 		onClick?.();
-	};
-
-	// Keyboard equivalent of clicking the teaser (APG button pattern: Enter / Space).
-	// Only fires for the trigger itself, so the close button keeps its own behavior.
-	const handleOpenKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-		if (e.target !== e.currentTarget) return;
-		if (e.key === "Enter" || e.key === " ") {
-			e.preventDefault();
-			onClick?.();
-		}
 	};
 
 	const handleActionButtonClick = (
@@ -139,11 +115,14 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 	};
 
 	return (
-		<TeaserMessageRoot className="webchat-teaser-message-root" onClick={handleMessageClick}>
+		<TeaserMessageRoot className="webchat-teaser-message-root">
 			{/* No aria-live here: the bubble mounts together with its content, which
 			    live-region processing ignores. The announcement comes from the
 			    always-mounted <TeaserMessageAnnouncer> region instead (CGY-3270). */}
-			<UnreadMessagePreview className="webchat-teaser-message-bubble">
+			<UnreadMessagePreview
+				className="webchat-teaser-message-bubble"
+				onClick={handleMessageClick}
+			>
 				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
 						<HeaderLogo
@@ -175,24 +154,17 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 						</CloseIconWrapper>
 					</TeaserMessageHeaderContent>
 				</TeaserMessageHeader>
-				<TeaserMessageOpenTrigger
-					role="button"
-					tabIndex={0}
-					className="webchat-teaser-message-open-trigger"
-					onKeyDown={handleOpenKeyDown}
+				<span className="sr-only">
+					{config.settings.customTranslations?.ariaLabels?.newMessagePreview ??
+						"New message preview"}
+				</span>
+				<Typography
+					variant="body-regular"
+					className="webchat-unread-message-preview-text"
+					margin={0}
 				>
-					<span className="sr-only">
-						{config.settings.customTranslations?.ariaLabels?.newMessagePreview ??
-							"New message preview"}
-					</span>
-					<Typography
-						variant="body-regular"
-						className="webchat-unread-message-preview-text"
-						margin={0}
-					>
-						{messageText}
-					</Typography>
-				</TeaserMessageOpenTrigger>
+					{messageText}
+				</Typography>
 			</UnreadMessagePreview>
 			{!wasOpen && teaserMessage?.conversationStarters?.enabled && (
 				<ButtonContainer className="webchat-teaser-message-action-buttons">
