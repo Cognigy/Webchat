@@ -123,14 +123,6 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 			<UnreadMessagePreview
 				className="webchat-teaser-message-bubble"
 				onClick={handleMessageClick}
-				role="button"
-				tabIndex={0}
-				onKeyDown={e => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-						handleMessageClick();
-					}
-				}}
 			>
 				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
