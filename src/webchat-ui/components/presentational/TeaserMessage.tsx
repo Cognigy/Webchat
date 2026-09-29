@@ -15,7 +15,7 @@ import { Logo } from "./Header";
 const TeaserMessageRoot = styled.div({
 	position: "fixed",
 	right: "20px",
-	bottom: "84px",
+	bottom: "95px",
 	zIndex: 100000,
 
 	display: "flex",
