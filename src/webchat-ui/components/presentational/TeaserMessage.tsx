@@ -96,7 +96,11 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 
 	const isDesktopMedia = useMediaQuery({ query: "(min-width: 576px)" });
 
-	const handleMessageClick = () => {
+	const handleMessageClick = (e: React.MouseEvent) => {
+		// Ignore clicks on the close button (which will have stopPropagation)
+		if ((e.target as HTMLElement).closest(".webchat-teaser-message-header-close-button")) {
+			return;
+		}
 		onClick?.();
 	};
 
@@ -116,14 +120,11 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 	};
 
 	return (
-		<TeaserMessageRoot className="webchat-teaser-message-root">
+		<TeaserMessageRoot className="webchat-teaser-message-root" onClick={handleMessageClick}>
 			{/* No aria-live here: the bubble mounts together with its content, which
 			    live-region processing ignores. The announcement comes from the
 			    always-mounted <TeaserMessageAnnouncer> region instead (CGY-3270). */}
-			<UnreadMessagePreview
-				className="webchat-teaser-message-bubble"
-				onClick={handleMessageClick}
-			>
+			<UnreadMessagePreview className="webchat-teaser-message-bubble">
 				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
 						<HeaderLogo
