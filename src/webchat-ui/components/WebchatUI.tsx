@@ -1599,8 +1599,7 @@ export class WebchatUI extends React.PureComponent<
 												config={config}
 												onEmitAnalytics={onEmitAnalytics}
 												onSendActionButtonMessage={
-													this
-														.handleSendActionButtonMessageFromTeaser
+													this.handleSendActionButtonMessageFromTeaser
 												}
 												onHideTeaserMessage={onHideTeaserMessage}
 												wasOpen={wasOpen}
@@ -1645,11 +1644,7 @@ export class WebchatUI extends React.PureComponent<
 												} as React.CSSProperties
 											}
 										>
-											{open ? (
-												<CollapseIcon />
-											) : (
-												<ChatIcon config={config} />
-											)}
+											{open ? <CollapseIcon /> : <ChatIcon config={config} />}
 											{config.settings.unreadMessages.enableBadge ? (
 												// The count is already in the button's
 												// accessible name (and announced live by
