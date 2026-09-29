@@ -1575,97 +1575,97 @@ export class WebchatUI extends React.PureComponent<
 											"unread messages in chat."
 										}
 									/>
-									{!disableToggleButton && (
-										<div>
-											{/* Mounted for the page lifetime (the teaser shows while
-											    the chat window — and its StatusLiveRegion — is closed),
-											    so the region pre-exists the teaser it announces. */}
-											<TeaserMessageAnnouncer
-												active={!!lastUnseenMessageText && !open}
-												text={lastUnseenMessageText}
-												label={
-													config.settings.customTranslations?.ariaLabels
-														?.newMessagePreview ?? "New message preview"
-												}
-											/>
-											{
-												// Show the message teaser if there is a last bot message and the webchat is closed
-												lastUnseenMessageText && !open && (
-													<TeaserMessage
-														messageText={lastUnseenMessageText}
-														onClick={this.openConversationFromTeaser}
-														config={config}
-														onEmitAnalytics={onEmitAnalytics}
-														onSendActionButtonMessage={
-															this
-																.handleSendActionButtonMessageFromTeaser
-														}
-														onHideTeaserMessage={onHideTeaserMessage}
-														wasOpen={wasOpen}
-													/>
-												)
-											}
-											{isDisabled ? (
-												<div
-													title={getDisabledMessage()}
-													tabIndex={-1}
-													aria-disabled
-												>
-													<FABDisabled
-														data-cognigy-webchat-toggle
-														{...webchatToggleProps}
-														type="button"
-														className="webchat-toggle-button-disabled"
-														aria-label={getDisabledMessage()}
-														ref={this.chatToggleButtonRef}
-														id="webchatWindowToggleButton"
-														disabled
-													>
-														<ChatIcon config={config} />
-													</FABDisabled>
-												</div>
-											) : (
-												<FAB
-													data-cognigy-webchat-toggle
-													onClick={this.handleFabClick}
-													{...webchatToggleProps}
-													type="button"
-													className={classNames(
-														"webchat-toggle-button burst",
-														config.settings?.layout?.iconAnimation,
-													)}
-													id="webchatWindowToggleButton"
-													aria-label={openChatAriaLabel()}
-													ref={this.chatToggleButtonRef}
-													style={
-														{
-															"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1))}s`,
-														} as React.CSSProperties
-													}
-												>
-													{open ? (
-														<CollapseIcon />
-													) : (
-														<ChatIcon config={config} />
-													)}
-													{config.settings.unreadMessages.enableBadge ? (
-														// The count is already in the button's
-														// accessible name (and announced live by
-														// UnreadMessagesAnnouncer); the badge is a
-														// visual duplicate. aria-label is prohibited
-														// on a generic <span>.
-														<Badge
-															_content={unseenMessages.length}
-															className="webchat-unread-message-badge"
-															aria-hidden="true"
-														/>
-													) : null}
-												</FAB>
-											)}
-										</div>
-									)}
 								</CacheProvider>
 							</WebchatWrapper>
+							{!disableToggleButton && (
+								<div>
+									{/* Mounted for the page lifetime (the teaser shows while
+									    the chat window — and its StatusLiveRegion — is closed),
+									    so the region pre-exists the teaser it announces. */}
+									<TeaserMessageAnnouncer
+										active={!!lastUnseenMessageText && !open}
+										text={lastUnseenMessageText}
+										label={
+											config.settings.customTranslations?.ariaLabels
+												?.newMessagePreview ?? "New message preview"
+										}
+									/>
+									{
+										// Show the message teaser if there is a last bot message and the webchat is closed
+										lastUnseenMessageText && !open && (
+											<TeaserMessage
+												messageText={lastUnseenMessageText}
+												onClick={this.openConversationFromTeaser}
+												config={config}
+												onEmitAnalytics={onEmitAnalytics}
+												onSendActionButtonMessage={
+													this
+														.handleSendActionButtonMessageFromTeaser
+												}
+												onHideTeaserMessage={onHideTeaserMessage}
+												wasOpen={wasOpen}
+											/>
+										)
+									}
+									{isDisabled ? (
+										<div
+											title={getDisabledMessage()}
+											tabIndex={-1}
+											aria-disabled
+										>
+											<FABDisabled
+												data-cognigy-webchat-toggle
+												{...webchatToggleProps}
+												type="button"
+												className="webchat-toggle-button-disabled"
+												aria-label={getDisabledMessage()}
+												ref={this.chatToggleButtonRef}
+												id="webchatWindowToggleButton"
+												disabled
+											>
+												<ChatIcon config={config} />
+											</FABDisabled>
+										</div>
+									) : (
+										<FAB
+											data-cognigy-webchat-toggle
+											onClick={this.handleFabClick}
+											{...webchatToggleProps}
+											type="button"
+											className={classNames(
+												"webchat-toggle-button burst",
+												config.settings?.layout?.iconAnimation,
+											)}
+											id="webchatWindowToggleButton"
+											aria-label={openChatAriaLabel()}
+											ref={this.chatToggleButtonRef}
+											style={
+												{
+													"--icon-burst-duration": `${Math.max(0.2, 1 / Math.max(0.1, config.settings?.layout?.iconAnimationSpeed || 1))}s`,
+												} as React.CSSProperties
+											}
+										>
+											{open ? (
+												<CollapseIcon />
+											) : (
+												<ChatIcon config={config} />
+											)}
+											{config.settings.unreadMessages.enableBadge ? (
+												// The count is already in the button's
+												// accessible name (and announced live by
+												// UnreadMessagesAnnouncer); the badge is a
+												// visual duplicate. aria-label is prohibited
+												// on a generic <span>.
+												<Badge
+													_content={unseenMessages.length}
+													className="webchat-unread-message-badge"
+													aria-hidden="true"
+												/>
+											) : null}
+										</FAB>
+									)}
+								</div>
+							)}
 						</MobileScrollLock>
 					</>
 				</ThemeProvider>
