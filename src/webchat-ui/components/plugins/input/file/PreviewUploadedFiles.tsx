@@ -49,7 +49,8 @@ const FilePreviewWrapper = styled.div(({ theme }) => ({
 	maxWidth: 200,
 	borderRadius: 15,
 	height: CHIP_HEIGHT,
-	// Flex items may shrink along the cross axis in an overflow container.
+	// A lone chip wider than its line could still shrink (and collapse its
+	// name) — never shrink; maxWidth above keeps it fitting instead.
 	flexShrink: 0,
 	backgroundColor: theme.black95,
 }));
@@ -117,7 +118,8 @@ const PreviewUploadedFiles: FC = () => {
 	// the neighbouring chip instead — the one that takes the removed chip's
 	// position, or the previous one when the last chip was removed — and to the
 	// attach button once the list is empty, where a user would add the next
-	// file. Only when the removed button actually held focus, so a removal
+	// file (persistent-menu toggle / message input when that is not rendered).
+	// Only when the removed button actually held focus, so a removal
 	// triggered while focus is elsewhere does not yank it.
 	const pendingFocusIndexRef = useRef<number | null>(null);
 
@@ -129,8 +131,14 @@ const PreviewUploadedFiles: FC = () => {
 				pendingFocusIndexRef.current = Math.min(index, remaining - 1);
 			} else {
 				// This component unmounts with the last chip, so its effect can't
-				// run any more; the attach button already exists — focus it now.
-				document.getElementById("webchatInputMessageAttachFileButton")?.focus();
+				// run any more — focus the successor now. The attach button is
+				// replaced by the persistent menu while that menu is open (its
+				// toggle stays), and the message input is the last resort.
+				const successor =
+					document.getElementById("webchatInputMessageAttachFileButton") ??
+					document.getElementById("webchatInputButtonMenu") ??
+					document.getElementById("webchatInputMessageInputInTextMode");
+				successor?.focus();
 			}
 		}
 		dispatch(removeFileFromList(index));

@@ -340,10 +340,7 @@ describe("File Attachement", () => {
 			}).as("fileUpload");
 		};
 
-		// The file-input middleware re-dispatches its own snapshot of the list at
-		// +100ms and again when every upload has settled, so a removal issued while
-		// an upload is still in flight is overwritten (see docs/accessibility.md,
-		// follow-ups). Wait until each chip has dropped its progress bar (100%).
+		// Wait until each chip has dropped its progress bar (100%).
 		const waitForUploadsToSettle = (count: number) => {
 			for (let i = 0; i < count; i++) {
 				cy.wait("@fileUpload");
@@ -713,6 +710,104 @@ describe("File Attachement", () => {
 			cy.get("#filePreview0").should("not.exist");
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt removed");
 		});
+
+		// Regression: the middleware used to re-dispatch its captured file list
+		// (+100ms and once the uploads settled), resurrecting a chip removed while
+		// its upload was in flight — and, with this PR, announcing it as attached
+		// right after it had been announced as removed.
+		it("a chip removed while its upload is in flight stays removed and is not announced as attached", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			cy.intercept("POST", "**/mock-upload", req => {
+				req.reply({
+					delay: 1500,
+					body: {
+						runtimeFileId: "mock-file-id",
+						status: "scanned",
+						mimeType: "text/plain",
+						size: 13,
+					},
+				});
+			}).as("slowUpload");
+			cy.openWebchat().startConversation();
+
+			selectFiles(["keep.txt", "drop.txt"]);
+			cy.get("#filePreview1").should("contain.text", "drop.txt");
+			// still uploading: the progress bar is the chip's second child
+			cy.get("#filePreview1 > div").should("have.length", 2);
+			cy.get("#filePreview1 button").click();
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "drop.txt removed");
+
+			cy.wait("@slowUpload");
+			// give the settle dispatch time to land, then assert nothing came back
+			cy.get("#filePreview0 > div").should("have.length", 1);
+			cy.get("#filePreview1").should("not.exist");
+			cy.get("#filePreview0").should("contain.text", "keep.txt");
+			cy.get("#webchatStatusLiveRegion")
+				.should("contain.text", "keep.txt attached")
+				.and("not.contain.text", "drop.txt attached");
+			cy.get("#webchatInputMessageSendMessageButton").should("not.be.disabled");
+		});
+
+		it("a message sent while an upload is in flight does not get its chips back", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			cy.intercept("POST", "**/mock-upload", req => {
+				req.reply({
+					delay: 1500,
+					body: {
+						runtimeFileId: "mock-file-id",
+						status: "scanned",
+						mimeType: "text/plain",
+						size: 13,
+					},
+				});
+			}).as("slowUpload");
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0 > div").should("have.length", 2);
+			cy.get("#webchatInputMessageInputInTextMode").type("hello{enter}");
+			cy.get("#filePreview0").should("not.exist");
+
+			cy.wait("@slowUpload");
+			cy.wait(300);
+			cy.get("#filePreview0").should("not.exist");
+		});
+
+		// With the persistent menu open, BaseInput renders the menu instead of the
+		// attach button / input row; the hand-off then targets the menu toggle.
+		itChromiumOnly(
+			"removing the last chip while the persistent menu is open moves focus to the menu toggle",
+			() => {
+				initWithFileStorage({
+					layout: {
+						enablePersistentMenu: true,
+						persistentMenu: {
+							title: "Chat menu",
+							menuItems: [{ title: "Option 1", payload: "option 1" }],
+						},
+					},
+				});
+				mockSuccessfulUpload();
+				cy.openWebchat().startConversation();
+
+				selectFiles(["myfile.txt"]);
+				waitForUploadsToSettle(1);
+				cy.get("#webchatInputButtonMenu").click();
+				cy.get("#webchatInputButtonMenu").should("have.attr", "aria-expanded", "true");
+				cy.get("#webchatInputMessageAttachFileButton").should("not.exist");
+
+				cy.get("#filePreview0 button").focus();
+				cy.realPress("Enter");
+				cy.get("#filePreview0").should("not.exist");
+				cy.focused().should("have.id", "webchatInputButtonMenu");
+			},
+		);
 
 		// SC 2.4.3: removing a chip unmounts the focused remove button; focus must
 		// not drop to <body>. It moves to the neighbouring chip's remove button

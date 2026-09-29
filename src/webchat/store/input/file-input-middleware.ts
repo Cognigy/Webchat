@@ -56,6 +56,16 @@ export const createFileInputMiddleware =
 
 				store.dispatch(setFileList(existingFileList.concat(newFileList)));
 
+				// The items are mutated in place below; the later dispatches only have
+				// to re-render the CURRENT list. Re-dispatching the snapshot captured
+				// above would resurrect chips the user removed (or a message sent) in
+				// the meantime — and a removed file must not be uploaded or flag an
+				// error either.
+				const isStillListed = (fileItem: IFile) =>
+					store.getState().input.fileList.includes(fileItem);
+				const refreshFileList = () =>
+					store.dispatch(setFileList([...store.getState().input.fileList]));
+
 				const fileUploadTokenApiUrl = `${_endpointTokenUrl}/fileuploadtoken`;
 				let response;
 				let hasError = false;
@@ -75,47 +85,45 @@ export const createFileInputMiddleware =
 					}
 					return fileItem;
 				});
-				setTimeout(() => {
-					store.dispatch(setFileList(existingFileList.concat(newFileList)));
-				}, 100);
+				setTimeout(refreshFileList, 100);
 
-				newFileList = (
-					await Promise.all(
-						newFileList.map(async fileItem => {
-							try {
-								if (!fileItem.hasUploadError && !fileItem.isCancelled) {
-									fileItem.abortController = new AbortController();
-									fileItem.uploadFileMeta = await uploadFile(
-										fileItem.file,
-										response.fileUploadUrl,
-										response.token,
-										fileItem.abortController,
-									);
-									if (fileItem.uploadFileMeta.status === "infected") {
-										fileItem.hasUploadError = true;
-										fileItem.uploadErrorReason = uploadInfectedText;
-										store.dispatch(setFileUploadError(true));
-									}
-									fileItem.uploadFileMeta.fileName = fileItem.file.name;
-									fileItem.progressPercentage = 100;
-								} else {
-									store.dispatch(setFileUploadError(true));
-								}
-							} catch (err) {
-								if (err.code === "ERR_CANCELED") {
-									fileItem.isCancelled = true;
-									return;
-								} else {
+				await Promise.all(
+					newFileList.map(async fileItem => {
+						if (!isStillListed(fileItem)) return;
+						try {
+							if (!fileItem.hasUploadError && !fileItem.isCancelled) {
+								fileItem.abortController = new AbortController();
+								fileItem.uploadFileMeta = await uploadFile(
+									fileItem.file,
+									response.fileUploadUrl,
+									response.token,
+									fileItem.abortController,
+								);
+								if (fileItem.uploadFileMeta.status === "infected") {
 									fileItem.hasUploadError = true;
-									fileItem.uploadErrorReason = uploadFailedText;
-									store.dispatch(setFileUploadError(true));
+									fileItem.uploadErrorReason = uploadInfectedText;
+									if (isStillListed(fileItem))
+										store.dispatch(setFileUploadError(true));
 								}
+								fileItem.uploadFileMeta.fileName = fileItem.file.name;
+								fileItem.progressPercentage = 100;
+							} else {
+								store.dispatch(setFileUploadError(true));
 							}
-							return fileItem;
-						}),
-					)
-				).filter(Boolean) as IFile[];
-				store.dispatch(setFileList(existingFileList.concat(newFileList)));
+						} catch (err) {
+							if (err.code === "ERR_CANCELED") {
+								fileItem.isCancelled = true;
+								return;
+							} else {
+								fileItem.hasUploadError = true;
+								fileItem.uploadErrorReason = uploadFailedText;
+								if (isStillListed(fileItem))
+									store.dispatch(setFileUploadError(true));
+							}
+						}
+					}),
+				);
+				refreshFileList();
 				break;
 			}
 		}
