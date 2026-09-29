@@ -124,7 +124,10 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 			{/* No aria-live here: the bubble mounts together with its content, which
 			    live-region processing ignores. The announcement comes from the
 			    always-mounted <TeaserMessageAnnouncer> region instead (CGY-3270). */}
-			<UnreadMessagePreview className="webchat-teaser-message-bubble">
+			<UnreadMessagePreview
+				className="webchat-teaser-message-bubble"
+				onClick={handleMessageClick}
+			>
 				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
 						<HeaderLogo
