@@ -16,7 +16,7 @@ const TeaserMessageRoot = styled.div({
 	position: "fixed",
 	right: "20px",
 	bottom: "84px",
-	zIndex: 99998,
+	zIndex: 100000,
 
 	display: "flex",
 	flexDirection: "column",
