@@ -256,7 +256,12 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			// Wait for the teaser to appear, then click the teaser bubble itself —
 			// this invokes openConversationFromTeaser (the FAB toggle routes through
 			// Webchat._open() instead, which is a different code path).
-			cy.contains("Need help? Chat with us", { timeout: 6000 }).should("be.visible").click();
+			// Target the bubble by class: cy.contains would match the sr-only live-region copy of the
+			// text (earlier in the DOM), and clicking that never triggers the teaser.
+			cy.get(".webchat-teaser-message-bubble", { timeout: 6000 })
+				.should("be.visible")
+				.and("contain.text", "Need help? Chat with us")
+				.click();
 
 			// SUN must be shown — socket must not have connected
 			cy.get(".webchat-system-use-notification-root").should("be.visible");

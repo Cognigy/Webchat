@@ -65,6 +65,15 @@ const ButtonContainer = styled.div({
 	},
 });
 
+const TeaserMessageOpenTrigger = styled.div(({ theme }) => ({
+	alignSelf: "stretch",
+	borderRadius: 4,
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColorFocus}`,
+		outlineOffset: 2,
+	},
+}));
+
 const HeaderLogo = styled(Logo)(() => ({
 	marginInline: 0,
 }));
@@ -104,6 +113,16 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 		onClick?.();
 	};
 
+	// Keyboard equivalent of clicking the teaser (APG button pattern: Enter / Space).
+	// Only fires for the trigger itself, so the close button keeps its own behavior.
+	const handleOpenKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (e.target !== e.currentTarget) return;
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			onClick?.();
+		}
+	};
+
 	const handleActionButtonClick = (
 		text?: string,
 		data?: any,
@@ -124,10 +143,7 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 			{/* No aria-live here: the bubble mounts together with its content, which
 			    live-region processing ignores. The announcement comes from the
 			    always-mounted <TeaserMessageAnnouncer> region instead (CGY-3270). */}
-			<UnreadMessagePreview
-				className="webchat-teaser-message-bubble"
-				onClick={handleMessageClick}
-			>
+			<UnreadMessagePreview className="webchat-teaser-message-bubble">
 				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
 						<HeaderLogo
@@ -159,17 +175,24 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 						</CloseIconWrapper>
 					</TeaserMessageHeaderContent>
 				</TeaserMessageHeader>
-				<span className="sr-only">
-					{config.settings.customTranslations?.ariaLabels?.newMessagePreview ??
-						"New message preview"}
-				</span>
-				<Typography
-					variant="body-regular"
-					className="webchat-unread-message-preview-text"
-					margin={0}
+				<TeaserMessageOpenTrigger
+					role="button"
+					tabIndex={0}
+					className="webchat-teaser-message-open-trigger"
+					onKeyDown={handleOpenKeyDown}
 				>
-					{messageText}
-				</Typography>
+					<span className="sr-only">
+						{config.settings.customTranslations?.ariaLabels?.newMessagePreview ??
+							"New message preview"}
+					</span>
+					<Typography
+						variant="body-regular"
+						className="webchat-unread-message-preview-text"
+						margin={0}
+					>
+						{messageText}
+					</Typography>
+				</TeaserMessageOpenTrigger>
 			</UnreadMessagePreview>
 			{!wasOpen && teaserMessage?.conversationStarters?.enabled && (
 				<ButtonContainer className="webchat-teaser-message-action-buttons">
