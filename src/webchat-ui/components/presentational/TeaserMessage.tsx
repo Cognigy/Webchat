@@ -15,7 +15,7 @@ import { Logo } from "./Header";
 const TeaserMessageRoot = styled.div({
 	position: "fixed",
 	right: "20px",
-	bottom: "95px",
+	bottom: "84px",
 	zIndex: 100000,
 
 	display: "flex",
@@ -123,6 +123,14 @@ export const TeaserMessage = (props: ITeaserMessageProps) => {
 			<UnreadMessagePreview
 				className="webchat-teaser-message-bubble"
 				onClick={handleMessageClick}
+				role="button"
+				tabIndex={0}
+				onKeyDown={e => {
+					if (e.key === "Enter" || e.key === " ") {
+						e.preventDefault();
+						handleMessageClick();
+					}
+				}}
 			>
 				<TeaserMessageHeader className="webchat-teaser-message-header">
 					{config?.settings?.layout?.logoUrl ? (
