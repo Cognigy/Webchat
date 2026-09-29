@@ -1490,6 +1490,7 @@ export class WebchatUI extends React.PureComponent<
 								aria-label={chatRegionAriaLabel}
 								role="region"
 								onKeyDown={this.handleKeydown}
+								style={{ pointerEvents: open ? "auto" : "none" }}
 							>
 								<CacheProvider value={styleCache}>
 									{open &&
