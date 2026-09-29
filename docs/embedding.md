@@ -450,6 +450,9 @@ In the above example only the texts outside the `{}` braces needs to be translat
 | speech_recognition_no_microphone      | string | "No microphone was found. Connect one to use speech input."                                 | Shown when no capture device is available for speech input.                                        |
 | speech_recognition_no_speech          | string | "No speech was detected. Please try again."                                                 | Shown when a dictation ended without the engine recognizing anything.                              |
 | speech_recognition_error              | string | "Speech input is currently unavailable. Please type your message instead."                  | Shown for any other speech-recognition failure, e.g. the speech service being unreachable.         |
+| file_upload_failed                    | string | "Upload Failed"                                                                             | Attachment chip text (also announced to screen readers) when a file could not be uploaded.         |
+| file_upload_infected                  | string | "Infected File"                                                                             | Attachment chip text when the malware scan rejected the uploaded file.                             |
+| file_upload_too_large                 | string | "File size > {maxSizeInMb}MB"                                                               | Attachment chip text when a file exceeds `fileAttachmentMaxSize`; `{maxSizeInMb}` is interpolated. |
 | ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements.                              |
 
 #### Aria Labels
@@ -466,6 +469,9 @@ The following table defines the default texts used throughout the Webchat for ac
 | speechToText              | string   | "Speech to text"                           | Label for the speech-to-text control button.                                                                                                                                                                                                                                                                                                                   |
 | sendMessage               | string   | "Send message"                             | Label for the send message button.                                                                                                                                                                                                                                                                                                                             |
 | removeFileAttachment      | string   | "Remove file attachment"                   | Label for the button to remove a file attachment.                                                                                                                                                                                                                                                                                                              |
+| fileAttachmentUploaded    | string   | "{fileName} attached"                      | Announced to screen readers when one attachment finished uploading; `{fileName}` is interpolated.                                                                                                                                                                                                                                                              |
+| fileAttachmentsUploaded   | string   | "{count} files attached"                   | Announced to screen readers when several attachments finished uploading together; `{count}` is interpolated.                                                                                                                                                                                                                                                   |
+| fileAttachmentFailed      | string   | "{fileName}: {reason}"                     | Announced to screen readers when an attachment could not be uploaded; `{fileName}` and `{reason}` (the chip text, e.g. `file_upload_failed`) are interpolated.                                                                                                                                                                                                 |
 | closeConnectionWarning    | string   | "Close chat window"                        | Label for the close button of the connection-lost overlay (closing it closes the chat window).                                                                                                                                                                                                                                                                 |
 | goBack                    | string   | "Go back"                                  | Label for buttons allowing the user to go back.                                                                                                                                                                                                                                                                                                                |
 | deleteAllConversations    | string   | "Delete all conversations"                 | Label for the button to delete all conversations in the previous conversation screen.                                                                                                                                                                                                                                                                          |
@@ -786,6 +792,10 @@ interface IWebchatSettings {
 		speech_recognition_no_microphone?: string;
 		speech_recognition_no_speech?: string;
 		speech_recognition_error?: string;
+		// File attachment chip texts
+		file_upload_failed?: string;
+		file_upload_infected?: string;
+		file_upload_too_large?: string;
 		ariaLabels?: {
 			chatRegion?: string;
 			scrollToBottom?: string;
@@ -795,6 +805,9 @@ interface IWebchatSettings {
 			speechToText?: string;
 			sendMessage?: string;
 			removeFileAttachment?: string;
+			fileAttachmentUploaded?: string;
+			fileAttachmentsUploaded?: string;
+			fileAttachmentFailed?: string;
 			closeConnectionWarning?: string;
 			goBack?: string;
 			deleteAllConversations?: string;

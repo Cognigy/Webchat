@@ -2,6 +2,7 @@ import { Middleware } from "redux";
 import { StoreState } from "../store";
 import { IFile, setFileList, setFileUploadError } from "./input-reducer";
 import { fetchFileUploadToken, uploadFile } from "../../helper/endpoint";
+import { formatTemplate } from "@cognigy/chat-components";
 
 const ADD_FILES_TO_LIST = "ADD_FILES_TO_LIST";
 export const addFilesToList = (newFiles: File[]) => ({
@@ -19,19 +20,31 @@ export const createFileInputMiddleware =
 				const {
 					fileAttachmentMaxSize,
 					embeddingConfiguration: { _endpointTokenUrl },
+					customTranslations,
 				} = store.getState().config.settings;
 
 				const existingFileList = store.getState().input.fileList;
 				let newFileList: IFile[] = [];
 				const fileAttachmentMaxSizeInMb =
 					fileAttachmentMaxSize > 0 ? fileAttachmentMaxSize / (1024 * 1024) : 0;
+
+				// The reason is shown in the attachment chip and read out through
+				// the status live region (FileUploadAnnouncer), so it is configurable
+				// like every other user-facing string.
+				const uploadFailedText = customTranslations?.file_upload_failed ?? "Upload Failed";
+				const uploadInfectedText =
+					customTranslations?.file_upload_infected ?? "Infected File";
+				const uploadTooLargeText = formatTemplate(
+					customTranslations?.file_upload_too_large ?? "File size > {maxSizeInMb}MB",
+					{ maxSizeInMb: String(fileAttachmentMaxSizeInMb) },
+				);
 				action.newFiles?.forEach(file => {
 					if (file.size > fileAttachmentMaxSize) {
 						newFileList.push({
 							file: file,
 							progressPercentage: 10,
 							hasUploadError: true,
-							uploadErrorReason: `File size > ${fileAttachmentMaxSizeInMb}MB`,
+							uploadErrorReason: uploadTooLargeText,
 						});
 					} else {
 						newFileList.push({
@@ -57,7 +70,7 @@ export const createFileInputMiddleware =
 						fileItem.progressPercentage = 50;
 						fileItem.hasUploadError = hasError;
 						fileItem.uploadErrorReason = hasError
-							? "Upload Failed"
+							? uploadFailedText
 							: fileItem.uploadErrorReason;
 					}
 					return fileItem;
@@ -80,7 +93,7 @@ export const createFileInputMiddleware =
 									);
 									if (fileItem.uploadFileMeta.status === "infected") {
 										fileItem.hasUploadError = true;
-										fileItem.uploadErrorReason = "Infected File";
+										fileItem.uploadErrorReason = uploadInfectedText;
 										store.dispatch(setFileUploadError(true));
 									}
 									fileItem.uploadFileMeta.fileName = fileItem.file.name;
@@ -94,7 +107,7 @@ export const createFileInputMiddleware =
 									return;
 								} else {
 									fileItem.hasUploadError = true;
-									fileItem.uploadErrorReason = "Failed Upload!";
+									fileItem.uploadErrorReason = uploadFailedText;
 									store.dispatch(setFileUploadError(true));
 								}
 							}

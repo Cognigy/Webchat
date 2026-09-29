@@ -351,6 +351,127 @@ describe("File Attachement", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
+		// SC 4.1.3 Status Messages: the outcome of an upload is announced through
+		// the always-mounted status live region (#webchatStatusLiveRegion,
+		// role="status" — see docs/accessibility.md for why not role="alert"),
+		// never by a live region around the chips themselves.
+		it("announces a finished upload through the status live region", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#webchatStatusLiveRegion")
+				.should("have.attr", "role", "status")
+				.and("contain.text", "myfile.txt attached");
+
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
+		it("announces several uploads that finish together as one count", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt", "second.txt"]);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "2 files attached");
+		});
+
+		it("announces a failed upload with the file name and the reason shown in the chip", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Upload Failed");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt: Upload Failed");
+		});
+
+		it("announces a rejected oversized file at once and a mixed batch as one message, failures first", () => {
+			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			// Rejected client-side before any request: announced without waiting.
+			cy.get("input[type=file]").selectFile(
+				{
+					contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
+					fileName: "big.bin",
+					mimeType: "application/octet-stream",
+					lastModified: Date.now(),
+				},
+				{ force: true },
+			);
+			cy.get("#filePreview0").should("contain.text", "File size > 1MB");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "big.bin: File size > 1MB");
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+
+			// Oversized file next to a real upload: one message once both settled.
+			cy.get("input[type=file]").selectFile(
+				[
+					{
+						contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
+						fileName: "big2.bin",
+						mimeType: "application/octet-stream",
+						lastModified: Date.now(),
+					},
+					{
+						contents: Cypress.Buffer.from("file contents"),
+						fileName: "myfile.txt",
+						mimeType: "text/plain",
+						lastModified: Date.now(),
+					},
+				],
+				{ force: true },
+			);
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"big2.bin: File size > 1MB. myfile.txt attached",
+			);
+		});
+
+		it("announces each outcome once although the middleware re-dispatches its file list snapshot", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#webchatStatusLiveRegion > div")
+				.should("have.length", 1)
+				.and("contain.text", "myfile.txt attached")
+				.then($announced => {
+					// The middleware's +100ms snapshot (same items, same outcome)
+					// must not remount the announcement node, which would re-announce it.
+					cy.wait(400);
+					cy.get("#webchatStatusLiveRegion > div").should($after => {
+						expect($after).to.have.length(1);
+						expect($after[0]).to.equal($announced[0]);
+					});
+				});
+		});
+
+		it("honors the configurable upload failure text and announcement templates", () => {
+			initWithFileStorage({
+				customTranslations: {
+					file_upload_failed: "Hochladen fehlgeschlagen",
+					ariaLabels: {
+						fileAttachmentFailed:
+							"{fileName} konnte nicht hochgeladen werden: {reason}",
+					},
+				},
+			});
+			cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Hochladen fehlgeschlagen");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"myfile.txt konnte nicht hochgeladen werden: Hochladen fehlgeschlagen",
+			);
+		});
+
 		itChromiumOnly(
 			"remove button is keyboard-operable (Enter removes exactly that attachment)",
 			() => {
