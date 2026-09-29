@@ -348,6 +348,7 @@ export interface IWebchatSettings {
 			addAttachment?: string;
 			speechToText?: string;
 			sendMessage?: string;
+			/** Name of each chip's remove button, followed by the chip's position and file name ("Remove file attachment 1, report.pdf"). */
 			removeFileAttachment?: string;
 			/** Announced (SC 4.1.3) when one attachment finished uploading; `{fileName}` is interpolated. */
 			fileAttachmentUploaded?: string;
@@ -355,6 +356,8 @@ export interface IWebchatSettings {
 			fileAttachmentsUploaded?: string;
 			/** Announced when an attachment could not be uploaded; `{fileName}` and `{reason}` (the chip text) are interpolated. */
 			fileAttachmentFailed?: string;
+			/** Announced when an attachment is removed from the list; `{fileName}` is interpolated. */
+			fileAttachmentRemoved?: string;
 			closeConnectionWarning?: string;
 			goBack?: string;
 			deleteAllConversations?: string;
