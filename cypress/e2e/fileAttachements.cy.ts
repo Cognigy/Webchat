@@ -873,8 +873,9 @@ describe("File Attachement", () => {
 				cy.get("#filePreview0").then($chip => {
 					const idleBackground = getComputedStyle($chip[0]).backgroundColor;
 
-					// Tab from the send button lands on the first remove button
-					cy.get("#webchatInputMessageSendMessageButton").focus();
+					// Tab from the message input lands on the first remove button (the
+					// disabled Send button is skipped; no speech button by default)
+					cy.get("#webchatInputMessageInputInTextMode").focus();
 					cy.realPress("Tab");
 					cy.focused()
 						.should("have.attr", "aria-label", "Remove file attachment 1, myfile.txt")
