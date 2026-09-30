@@ -426,6 +426,39 @@ describe("File Attachement", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
+		// SC 1.4.1: on its own, "File size > 1MB" next to the file's actual size
+		// reads as a fact about the file, not as the reason it was not attached
+		// (and Send disabled) — so the reason is prefixed with the failure text,
+		// and the failed chip is exempt from the 200px cap so none of it is
+		// ellipsised.
+		it("oversized file is conveyed as a failure in the chip text, not only by colour", () => {
+			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
+			cy.openWebchat().startConversation();
+
+			cy.get("input[type=file]").selectFile(
+				{
+					contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
+					fileName: "big.bin",
+					mimeType: "application/octet-stream",
+					lastModified: Date.now(),
+				},
+				{ force: true },
+			);
+			cy.get("#filePreview0")
+				.should("contain.text", "Upload Failed: File size > 1MB")
+				.and("contain.text", "2.10 MB");
+			cy.get("#filePreview0")
+				.contains("span", "Upload Failed: File size > 1MB")
+				.then($reason => {
+					expect($reason[0].scrollWidth, "reason is not truncated").to.be.at.most(
+						$reason[0].clientWidth,
+					);
+				});
+			cy.get("#webchatInputMessageSendMessageButton").should("be.disabled");
+
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
 		// SC 4.1.3 Status Messages: the outcome of an upload is announced through
 		// the always-mounted status live region (#webchatStatusLiveRegion,
 		// role="status" — see docs/accessibility.md for why not role="alert"),
@@ -491,8 +524,11 @@ describe("File Attachement", () => {
 
 			// Rejected client-side before any request: announced without waiting.
 			cy.get("input[type=file]").selectFile(oversized("big.bin"), { force: true });
-			cy.get("#filePreview0").should("contain.text", "File size > 1MB");
-			cy.get("#webchatStatusLiveRegion").should("contain.text", "big.bin: File size > 1MB");
+			cy.get("#filePreview0").should("contain.text", "Upload Failed: File size > 1MB");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"big.bin: Upload Failed: File size > 1MB",
+			);
 			cy.get("#filePreview0 button").click();
 			cy.get("#filePreview0").should("not.exist");
 
@@ -510,7 +546,10 @@ describe("File Attachement", () => {
 				],
 				{ force: true },
 			);
-			cy.get("#webchatStatusLiveRegion").should("contain.text", "big2.bin: File size > 1MB");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"big2.bin: Upload Failed: File size > 1MB",
+			);
 			// … while the sibling still shows its progress bar (the chip's second child)
 			cy.get("#filePreview1 > div").should("have.length", 2);
 			cy.get("#webchatStatusLiveRegion").should("not.contain.text", "myfile.txt attached");
@@ -522,9 +561,9 @@ describe("File Attachement", () => {
 			cy.get("#filePreview1 > div").should("have.length", 1);
 			cy.get("#webchatStatusLiveRegion > div").should($nodes => {
 				const texts = $nodes.toArray().map(node => node.textContent);
-				expect(texts).to.include("big2.bin: File size > 1MB");
+				expect(texts).to.include("big2.bin: Upload Failed: File size > 1MB");
 				expect(texts).to.include("myfile.txt attached");
-				expect(texts.indexOf("big2.bin: File size > 1MB")).to.be.lessThan(
+				expect(texts.indexOf("big2.bin: Upload Failed: File size > 1MB")).to.be.lessThan(
 					texts.indexOf("myfile.txt attached"),
 				);
 			});
@@ -584,6 +623,8 @@ describe("File Attachement", () => {
 			);
 		});
 
+		// SC 1.4.1: "Infected File" alone reads as a fact about the file, so the
+		// reason is prefixed with the failure text like the size-limit one.
 		it("announces a file rejected by the malware scan with the chip reason and disables Send", () => {
 			initWithFileStorage();
 			cy.intercept("GET", "**/fileuploadtoken", {
@@ -600,9 +641,12 @@ describe("File Attachement", () => {
 			cy.openWebchat().startConversation();
 
 			selectFiles(["myfile.txt"]);
-			cy.get("#filePreview0").should("contain.text", "Infected File");
+			cy.get("#filePreview0").should("contain.text", "Upload Failed: Infected File");
 			cy.get("#webchatInputMessageSendMessageButton").should("be.disabled");
-			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt: Infected File");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"myfile.txt: Upload Failed: Infected File",
+			);
 		});
 
 		it("announces an upload whose POST fails (token succeeded) as Upload Failed", () => {
@@ -660,10 +704,10 @@ describe("File Attachement", () => {
 				},
 				{ force: true },
 			);
-			cy.get("#filePreview0").should("contain.text", "Datei größer als 1 MB");
+			cy.get("#filePreview0").should("contain.text", "Upload Failed: Datei größer als 1 MB");
 			cy.get("#webchatStatusLiveRegion").should(
 				"contain.text",
-				"big.bin: Datei größer als 1 MB",
+				"big.bin: Upload Failed: Datei größer als 1 MB",
 			);
 			cy.get("#filePreview0 button").click();
 			cy.get("#filePreview0").should("not.exist");
@@ -678,10 +722,10 @@ describe("File Attachement", () => {
 				},
 			});
 			selectFiles(["virus.txt"]);
-			cy.get("#filePreview0").should("contain.text", "Infizierte Datei");
+			cy.get("#filePreview0").should("contain.text", "Upload Failed: Infizierte Datei");
 			cy.get("#webchatStatusLiveRegion").should(
 				"contain.text",
-				"virus.txt: Infizierte Datei",
+				"virus.txt: Upload Failed: Infizierte Datei",
 			);
 		});
 

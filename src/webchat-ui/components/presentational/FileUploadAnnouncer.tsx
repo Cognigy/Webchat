@@ -20,7 +20,8 @@ const hasSettled = (item: IFile) =>
  * Announces the outcome of file uploads through the status live region
  * (WCAG 4.1.3 Status Messages, techniques ARIA22 / ARIA19). Sighted users see
  * the attachment chip drop its progress bar, or turn red with the reason
- * ("Upload Failed", "File size > 10MB", …); neither reaches a screen reader,
+ * ("Upload Failed", "Upload Failed: File size > 10MB", "Upload Failed:
+ * Infected File"); neither reaches a screen reader,
  * and the failure additionally disables Send without saying why.
  *
  * Announced politely via <StatusLiveRegion> (role="status") — deliberately

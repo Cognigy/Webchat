@@ -40,20 +40,26 @@ const UploadedFilesContainer = styled.div(({ theme }) => ({
 	},
 }));
 
-const FilePreviewWrapper = styled.div(({ theme }) => ({
-	position: "relative",
-	// Clips the progress bar's corners. Note a flex item with overflow:hidden
-	// may shrink to 0 — the wrapping row above never asks it to, and maxWidth
-	// caps long names to the FileName ellipsis instead of one huge chip.
-	overflow: "hidden",
-	maxWidth: 200,
-	borderRadius: 15,
-	height: CHIP_HEIGHT,
-	// A lone chip wider than its line could still shrink (and collapse its
-	// name) — never shrink; maxWidth above keeps it fitting instead.
-	flexShrink: 0,
-	backgroundColor: theme.black95,
-}));
+const FilePreviewWrapper = styled.div<Pick<IFile, "hasUploadError">>(
+	({ hasUploadError, theme }) => ({
+		position: "relative",
+		// Clips the progress bar's corners. Note a flex item with overflow:hidden
+		// may shrink to 0 — the wrapping row above never asks it to, and maxWidth
+		// caps long names to the FileName ellipsis instead of one huge chip.
+		// A failed chip shows the failure reason instead of the name ("Upload
+		// Failed: File size > 10MB" is ~160px at the default font); that text is
+		// the only non-colour cue of the failure (SC 1.4.1) and must not be
+		// ellipsised, so the cap is lifted to the row's width.
+		overflow: "hidden",
+		maxWidth: hasUploadError ? "100%" : 200,
+		borderRadius: 15,
+		height: CHIP_HEIGHT,
+		// A lone chip wider than its line could still shrink (and collapse its
+		// name) — never shrink; maxWidth above keeps it fitting instead.
+		flexShrink: 0,
+		backgroundColor: theme.black95,
+	}),
+);
 
 const UploadedFilePreview = styled.div(() => ({
 	display: "flex",
@@ -162,7 +168,11 @@ const PreviewUploadedFiles: FC = () => {
 	return (
 		<UploadedFilesContainer>
 			{fileList?.map((item, index) => (
-				<FilePreviewWrapper key={index} id={`filePreview${index}`}>
+				<FilePreviewWrapper
+					key={index}
+					id={`filePreview${index}`}
+					hasUploadError={item.hasUploadError}
+				>
 					<UploadedFilePreview>
 						<RemoveFileButton
 							type="button"

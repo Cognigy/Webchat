@@ -334,11 +334,11 @@ export interface IWebchatSettings {
 		speech_recognition_no_speech?: string;
 		/** Shown for any other speech-recognition failure. */
 		speech_recognition_error?: string;
-		/** Attachment chip text when a file could not be uploaded (token request or upload failed). */
+		/** Attachment chip text when a file could not be uploaded (token request or upload failed). Also prefixes `file_upload_too_large` and `file_upload_infected` ("Upload Failed: File size > 10MB"). */
 		file_upload_failed?: string;
-		/** Attachment chip text when the malware scan rejected the uploaded file. */
+		/** Reason appended to `file_upload_failed` in the attachment chip when the malware scan rejected the uploaded file ("Upload Failed: Infected File"). */
 		file_upload_infected?: string;
-		/** Attachment chip text when a file exceeds `fileAttachmentMaxSize`; `{maxSizeInMb}` is interpolated. */
+		/** Reason appended to `file_upload_failed` in the attachment chip when a file exceeds `fileAttachmentMaxSize` ("Upload Failed: File size > 10MB"); `{maxSizeInMb}` is interpolated. */
 		file_upload_too_large?: string;
 		ariaLabels?: {
 			chatRegion?: string;
