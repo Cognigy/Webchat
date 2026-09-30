@@ -82,6 +82,7 @@ import ScreenReaderLiveRegion from "./presentational/ScreenReaderLiveRegion";
 import { StatusLiveRegion } from "./presentational/StatusLiveRegion";
 import FreezeOnExit from "./presentational/FreezeOnExit";
 import HomeScreenAnnouncer from "./presentational/HomeScreenAnnouncer";
+import FileUploadAnnouncer from "./presentational/FileUploadAnnouncer";
 import {
 	computeNoticeSession,
 	getAIAgentNoticeIntroText,
@@ -1607,6 +1608,8 @@ export class WebchatUI extends React.PureComponent<
 														"Chat window home screen"
 													}
 												/>
+												{/* Announce upload outcomes (success / failure reason) through the same region (WCAG 4.1.3) */}
+												<FileUploadAnnouncer />
 												<DisconnectOverlay
 													isOpen={showDisconnectOverlay}
 													onConnect={onConnect}

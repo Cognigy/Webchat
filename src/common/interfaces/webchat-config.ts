@@ -344,6 +344,12 @@ export interface IWebchatSettings {
 		speech_recognition_no_speech?: string;
 		/** Shown for any other speech-recognition failure. */
 		speech_recognition_error?: string;
+		/** Attachment chip text when a file could not be uploaded (token request or upload failed). */
+		file_upload_failed?: string;
+		/** Attachment chip text when the malware scan rejected the uploaded file. */
+		file_upload_infected?: string;
+		/** Attachment chip text when a file exceeds `fileAttachmentMaxSize`; `{maxSizeInMb}` is interpolated. */
+		file_upload_too_large?: string;
 		ariaLabels?: {
 			chatRegion?: string;
 			scrollToBottom?: string;
@@ -352,7 +358,16 @@ export interface IWebchatSettings {
 			addAttachment?: string;
 			speechToText?: string;
 			sendMessage?: string;
+			/** Name of each chip's remove button, followed by the chip's position and file name ("Remove file attachment 1, report.pdf"). */
 			removeFileAttachment?: string;
+			/** Announced (SC 4.1.3) when one attachment finished uploading; `{fileName}` is interpolated. */
+			fileAttachmentUploaded?: string;
+			/** Announced when several attachments finished uploading together; `{count}` is interpolated. */
+			fileAttachmentsUploaded?: string;
+			/** Announced when an attachment could not be uploaded; `{fileName}` and `{reason}` (the chip text) are interpolated. */
+			fileAttachmentFailed?: string;
+			/** Announced when an attachment is removed from the list; `{fileName}` is interpolated. */
+			fileAttachmentRemoved?: string;
 			closeConnectionWarning?: string;
 			goBack?: string;
 			deleteAllConversations?: string;

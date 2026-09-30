@@ -118,7 +118,7 @@ describe("File Attachement", () => {
 
 		// Removing the failed attachment clears `fileUploadError`, so Enter works
 		// again: the block is specific to the error, it does not disable Enter.
-		cy.get("[aria-label='Remove file attachment 1']").click();
+		cy.get("#filePreview0 button").click();
 		cy.get("#filePreview0").should("not.exist");
 		cy.get("textarea.webchat-input-message-input").type("{enter}");
 		cy.getMessageFromHistory({ text: "hi", source: "user" });
@@ -155,6 +155,74 @@ describe("File Attachement", () => {
 		cy.get("#filePreview1").contains("Upload Failed");
 	});
 
+	// Regression (PR #447, 3.0.0): the chips shrank into a single row, collapsing
+	// the file names and then clipping the sizes. The row now wraps, and past
+	// three rows the area scrolls vertically.
+	it("many attachments keep their file names readable by wrapping, capped at three rows", () => {
+		cy.initMockWebchat({
+			settings: {
+				homeScreen: { enabled: false },
+				fileStorageSettings: { enabled: true },
+			},
+		});
+		cy.intercept("GET", "**/fileuploadtoken", {
+			body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+		});
+		cy.intercept("POST", "**/mock-upload", {
+			body: {
+				runtimeFileId: "mock-file-id",
+				status: "scanned",
+				mimeType: "text/plain",
+				size: 13,
+			},
+		});
+		cy.openWebchat().startConversation();
+
+		const fileNames = Array.from({ length: 8 }, (_, i) => `document-${i + 1}.pdf`);
+		cy.get("input[type=file]").selectFile(
+			fileNames.map(fileName => ({
+				contents: Cypress.Buffer.from("file contents"),
+				fileName,
+				mimeType: "text/plain",
+				lastModified: Date.now(),
+			})),
+			{ force: true },
+		);
+		cy.get("#filePreview7").should("contain.text", "document-8.pdf");
+
+		// Every chip keeps its natural width (the name span is not collapsed) …
+		fileNames.forEach((fileName, i) => {
+			cy.get(`#filePreview${i}`)
+				.contains("span", fileName)
+				.then($name => {
+					expect(
+						$name[0].getBoundingClientRect().width,
+						`${fileName} width`,
+					).to.be.greaterThan(60);
+				});
+		});
+		// … because the row wraps: no horizontal overflow, several chip rows, and
+		// beyond three rows the area scrolls vertically instead of growing further.
+		cy.get("#filePreview0")
+			.parent()
+			.then($area => {
+				const area = $area[0];
+				expect(area.scrollWidth, "no horizontal overflow").to.equal(area.clientWidth);
+				const tops = new Set(
+					Array.from(area.children).map(chip =>
+						Math.round(chip.getBoundingClientRect().top),
+					),
+				);
+				expect(tops.size, "number of chip rows").to.be.greaterThan(3);
+				expect(area.clientHeight, "visible height (3 rows)").to.be.at.most(3 * 33 + 2 * 12);
+				expect(area.scrollHeight, "scrollable").to.be.greaterThan(area.clientHeight);
+				expect(getComputedStyle(area).overflowY).to.equal("auto");
+			});
+
+		// the wrapped, scrolling attachment area is a changed surface
+		cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+	});
+
 	it("should be removable from the list by clicking remove button", () => {
 		cy.initMockWebchat({
 			settings: {
@@ -176,7 +244,7 @@ describe("File Attachement", () => {
 			)
 			.then(() => {
 				cy.get("#filePreview0").contains("myfile.txt");
-				cy.get("[aria-label='Remove file attachment 1']").click();
+				cy.get("#filePreview0 button").click();
 				cy.get("#filePreview0").should("not.exist");
 			});
 	});
@@ -272,10 +340,7 @@ describe("File Attachement", () => {
 			}).as("fileUpload");
 		};
 
-		// The file-input middleware re-dispatches its own snapshot of the list at
-		// +100ms and again when every upload has settled, so a removal issued while
-		// an upload is still in flight is overwritten (see docs/accessibility.md,
-		// follow-ups). Wait until each chip has dropped its progress bar (100%).
+		// Wait until each chip has dropped its progress bar (100%).
 		const waitForUploadsToSettle = (count: number) => {
 			for (let i = 0; i < count; i++) {
 				cy.wait("@fileUpload");
@@ -301,6 +366,7 @@ describe("File Attachement", () => {
 					ariaLabels: {
 						addAttachment: "Datei anhängen",
 						removeFileAttachment: "Anhang entfernen",
+						fileAttachmentRemoved: "{fileName} entfernt",
 					},
 				},
 			});
@@ -313,7 +379,15 @@ describe("File Attachement", () => {
 				"Datei anhängen",
 			);
 			selectFiles(["myfile.txt"]);
-			cy.get("#filePreview0 button").should("have.attr", "aria-label", "Anhang entfernen 1");
+			cy.get("#filePreview0 button").should(
+				"have.attr",
+				"aria-label",
+				"Anhang entfernen 1, myfile.txt",
+			);
+			waitForUploadsToSettle(1);
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt entfernt");
 		});
 
 		it("queued attachments have no detectable a11y violations and each remove button is named by position", () => {
@@ -325,12 +399,13 @@ describe("File Attachement", () => {
 			cy.get("#filePreview0").should("contain.text", "myfile.txt");
 			cy.get("#filePreview1").should("contain.text", "second.txt");
 
+			// named by position and file name — the chip text is not part of the name
 			cy.get("#filePreview0 button")
 				.should("match", "button")
-				.and("have.attr", "aria-label", "Remove file attachment 1");
+				.and("have.attr", "aria-label", "Remove file attachment 1, myfile.txt");
 			cy.get("#filePreview1 button")
 				.should("match", "button")
-				.and("have.attr", "aria-label", "Remove file attachment 2");
+				.and("have.attr", "aria-label", "Remove file attachment 2, second.txt");
 			// a queued upload makes the message sendable without text
 			cy.get("#webchatInputMessageSendMessageButton").should("not.be.disabled");
 
@@ -351,6 +426,533 @@ describe("File Attachement", () => {
 			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 		});
 
+		// SC 4.1.3 Status Messages: the outcome of an upload is announced through
+		// the always-mounted status live region (#webchatStatusLiveRegion,
+		// role="status" — see docs/accessibility.md for why not role="alert"),
+		// never by a live region around the chips themselves.
+		it("announces a finished upload through the status live region", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#webchatStatusLiveRegion")
+				.should("have.attr", "role", "status")
+				.and("contain.text", "myfile.txt attached");
+
+			cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+		});
+
+		it("announces several uploads that finish together as one count", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt", "second.txt"]);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "2 files attached");
+		});
+
+		it("announces a failed upload with the file name and the reason shown in the chip", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Upload Failed");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt: Upload Failed");
+		});
+
+		it("announces a rejected oversized file at once, also while a sibling upload is still in flight", () => {
+			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			// The upload request has no timeout, so a stalled POST may never
+			// settle — the sibling's rejection must not wait for it.
+			cy.intercept("POST", "**/mock-upload", req => {
+				req.reply({
+					delay: 2000,
+					body: {
+						runtimeFileId: "mock-file-id",
+						status: "scanned",
+						mimeType: "text/plain",
+						size: 13,
+					},
+				});
+			}).as("slowUpload");
+			cy.openWebchat().startConversation();
+
+			const oversized = (fileName: string) => ({
+				contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
+				fileName,
+				mimeType: "application/octet-stream",
+				lastModified: Date.now(),
+			});
+
+			// Rejected client-side before any request: announced without waiting.
+			cy.get("input[type=file]").selectFile(oversized("big.bin"), { force: true });
+			cy.get("#filePreview0").should("contain.text", "File size > 1MB");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "big.bin: File size > 1MB");
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+
+			// Oversized file next to an upload in progress: the rejection is
+			// announced right away — it already disables Send — …
+			cy.get("input[type=file]").selectFile(
+				[
+					oversized("big2.bin"),
+					{
+						contents: Cypress.Buffer.from("file contents"),
+						fileName: "myfile.txt",
+						mimeType: "text/plain",
+						lastModified: Date.now(),
+					},
+				],
+				{ force: true },
+			);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "big2.bin: File size > 1MB");
+			// … while the sibling still shows its progress bar (the chip's second child)
+			cy.get("#filePreview1 > div").should("have.length", 2);
+			cy.get("#webchatStatusLiveRegion").should("not.contain.text", "myfile.txt attached");
+			cy.get("#webchatInputMessageSendMessageButton").should("be.disabled");
+
+			// … and the sibling's outcome follows as a message of its own, with
+			// the rejection still in the region (appended, not replaced).
+			cy.wait("@slowUpload");
+			cy.get("#filePreview1 > div").should("have.length", 1);
+			cy.get("#webchatStatusLiveRegion > div").should($nodes => {
+				const texts = $nodes.toArray().map(node => node.textContent);
+				expect(texts).to.include("big2.bin: File size > 1MB");
+				expect(texts).to.include("myfile.txt attached");
+				expect(texts.indexOf("big2.bin: File size > 1MB")).to.be.lessThan(
+					texts.indexOf("myfile.txt attached"),
+				);
+			});
+		});
+
+		it("announces outcomes that settle together as one message, failures first", () => {
+			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
+			cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+			cy.openWebchat().startConversation();
+
+			// Both files fail on the same (token) request, so they settle in
+			// the same store update and are read as a single message.
+			selectFiles(["first.txt", "second.txt"]);
+			cy.get("#webchatStatusLiveRegion > div")
+				.should("have.length", 1)
+				.and("contain.text", "first.txt: Upload Failed. second.txt: Upload Failed");
+		});
+
+		it("announces each outcome once although the middleware re-dispatches its file list snapshot", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#webchatStatusLiveRegion > div")
+				.should("have.length", 1)
+				.and("contain.text", "myfile.txt attached")
+				.then($announced => {
+					// The middleware's +100ms snapshot (same items, same outcome)
+					// must not remount the announcement node, which would re-announce it.
+					cy.wait(400);
+					cy.get("#webchatStatusLiveRegion > div").should($after => {
+						expect($after).to.have.length(1);
+						expect($after[0]).to.equal($announced[0]);
+					});
+				});
+		});
+
+		it("honors the configurable upload failure text and announcement templates", () => {
+			initWithFileStorage({
+				customTranslations: {
+					file_upload_failed: "Hochladen fehlgeschlagen",
+					ariaLabels: {
+						fileAttachmentFailed:
+							"{fileName} konnte nicht hochgeladen werden: {reason}",
+					},
+				},
+			});
+			cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Hochladen fehlgeschlagen");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"myfile.txt konnte nicht hochgeladen werden: Hochladen fehlgeschlagen",
+			);
+		});
+
+		it("announces a file rejected by the malware scan with the chip reason and disables Send", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			cy.intercept("POST", "**/mock-upload", {
+				body: {
+					runtimeFileId: "mock-file-id",
+					status: "infected",
+					mimeType: "text/plain",
+					size: 13,
+				},
+			});
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Infected File");
+			cy.get("#webchatInputMessageSendMessageButton").should("be.disabled");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt: Infected File");
+		});
+
+		it("announces an upload whose POST fails (token succeeded) as Upload Failed", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			cy.intercept("POST", "**/mock-upload", { statusCode: 500, body: {} });
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Upload Failed");
+			cy.get("#webchatInputMessageSendMessageButton").should("be.disabled");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt: Upload Failed");
+		});
+
+		it("honors the configurable success, count, oversized and infected texts", () => {
+			initWithFileStorage({
+				fileAttachmentMaxSize: 1024 * 1024,
+				customTranslations: {
+					file_upload_too_large: "Datei größer als {maxSizeInMb} MB",
+					file_upload_infected: "Infizierte Datei",
+					ariaLabels: {
+						fileAttachmentUploaded: "{fileName} angehängt",
+						fileAttachmentsUploaded: "{count} Dateien angehängt",
+						fileAttachmentFailed: "{fileName}: {reason}",
+					},
+				},
+			});
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			// one success
+			selectFiles(["myfile.txt"]);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt angehängt");
+			waitForUploadsToSettle(1);
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+
+			// several successes -> count
+			selectFiles(["a.txt", "b.txt"]);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "2 Dateien angehängt");
+			waitForUploadsToSettle(2);
+			cy.get("#filePreview1 button").click();
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+
+			// oversized -> interpolated size limit in the chip and the announcement
+			cy.get("input[type=file]").selectFile(
+				{
+					contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
+					fileName: "big.bin",
+					mimeType: "application/octet-stream",
+					lastModified: Date.now(),
+				},
+				{ force: true },
+			);
+			cy.get("#filePreview0").should("contain.text", "Datei größer als 1 MB");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"big.bin: Datei größer als 1 MB",
+			);
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+
+			// infected
+			cy.intercept("POST", "**/mock-upload", {
+				body: {
+					runtimeFileId: "mock-file-id",
+					status: "infected",
+					mimeType: "text/plain",
+					size: 13,
+				},
+			});
+			selectFiles(["virus.txt"]);
+			cy.get("#filePreview0").should("contain.text", "Infizierte Datei");
+			cy.get("#webchatStatusLiveRegion").should(
+				"contain.text",
+				"virus.txt: Infizierte Datei",
+			);
+		});
+
+		// Outcomes are tracked per File object: a file attached again after the
+		// previous message was sent is a new File and must be announced again.
+		it("announces an attachment again when a same-named file is attached after sending", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt attached");
+			waitForUploadsToSettle(1);
+			cy.get("#webchatStatusLiveRegion > div").then($first => {
+				cy.get("#webchatInputMessageSendMessageButton").click();
+				cy.get("#filePreview0").should("not.exist");
+
+				selectFiles(["myfile.txt"]);
+				// a new announcement node next to the earlier one (the region
+				// appends; earlier nodes stay until their own 15s clear)
+				cy.get("#webchatStatusLiveRegion > div").should($now => {
+					const fresh = $now.toArray().filter(node => !$first.toArray().includes(node));
+					expect(fresh).to.have.length(1);
+					expect(fresh[0].textContent).to.contain("myfile.txt attached");
+				});
+			});
+		});
+
+		// A long name is truncated with an ellipsis inside a capped chip rather
+		// than stretching the chip (the chip keeps its 200px maximum).
+		it("truncates a long file name inside the chip instead of stretching it", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			const longName = "a-very-long-quarterly-financial-report-final-v3.pdf";
+			selectFiles([longName]);
+			cy.get("#filePreview0")
+				.should("contain.text", longName)
+				.then($chip => {
+					expect($chip[0].getBoundingClientRect().width).to.be.at.most(200);
+				});
+			cy.get("#filePreview0")
+				.contains("span", longName)
+				.then($name => {
+					expect(getComputedStyle($name[0]).textOverflow).to.equal("ellipsis");
+					expect($name[0].scrollWidth, "name is truncated").to.be.greaterThan(
+						$name[0].clientWidth,
+					);
+				});
+		});
+
+		// SC 4.1.3: the chip disappearing is the only visible feedback of a removal.
+		it("removing an attachment is announced through the status live region", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0").should("contain.text", "myfile.txt");
+			waitForUploadsToSettle(1);
+
+			cy.get("#filePreview0 button").click();
+			cy.get("#filePreview0").should("not.exist");
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt removed");
+		});
+
+		// Regression: the middleware used to re-dispatch its captured file list
+		// (+100ms and once the uploads settled), resurrecting a chip removed while
+		// its upload was in flight — and, with this PR, announcing it as attached
+		// right after it had been announced as removed.
+		it("a chip removed while its upload is in flight stays removed and is not announced as attached", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			cy.intercept("POST", "**/mock-upload", req => {
+				req.reply({
+					delay: 1500,
+					body: {
+						runtimeFileId: "mock-file-id",
+						status: "scanned",
+						mimeType: "text/plain",
+						size: 13,
+					},
+				});
+			}).as("slowUpload");
+			cy.openWebchat().startConversation();
+
+			selectFiles(["keep.txt", "drop.txt"]);
+			cy.get("#filePreview1").should("contain.text", "drop.txt");
+			// still uploading: the progress bar is the chip's second child
+			cy.get("#filePreview1 > div").should("have.length", 2);
+			cy.get("#filePreview1 button").click();
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "drop.txt removed");
+
+			cy.wait("@slowUpload");
+			// give the settle dispatch time to land, then assert nothing came back
+			cy.get("#filePreview0 > div").should("have.length", 1);
+			cy.get("#filePreview1").should("not.exist");
+			cy.get("#filePreview0").should("contain.text", "keep.txt");
+			cy.get("#webchatStatusLiveRegion")
+				.should("contain.text", "keep.txt attached")
+				.and("not.contain.text", "drop.txt attached");
+			cy.get("#webchatInputMessageSendMessageButton").should("not.be.disabled");
+		});
+
+		it("a message sent while an upload is in flight does not get its chips back", () => {
+			initWithFileStorage();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			cy.intercept("POST", "**/mock-upload", req => {
+				req.reply({
+					delay: 1500,
+					body: {
+						runtimeFileId: "mock-file-id",
+						status: "scanned",
+						mimeType: "text/plain",
+						size: 13,
+					},
+				});
+			}).as("slowUpload");
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			cy.get("#filePreview0 > div").should("have.length", 2);
+			cy.get("#webchatInputMessageInputInTextMode").type("hello{enter}");
+			cy.get("#filePreview0").should("not.exist");
+
+			cy.wait("@slowUpload");
+			cy.wait(300);
+			cy.get("#filePreview0").should("not.exist");
+		});
+
+		// With the persistent menu open, BaseInput renders the menu instead of the
+		// attach button / input row; the hand-off then targets the menu toggle.
+		itChromiumOnly(
+			"removing the last chip while the persistent menu is open moves focus to the menu toggle",
+			() => {
+				initWithFileStorage({
+					layout: {
+						enablePersistentMenu: true,
+						persistentMenu: {
+							title: "Chat menu",
+							menuItems: [{ title: "Option 1", payload: "option 1" }],
+						},
+					},
+				});
+				mockSuccessfulUpload();
+				cy.openWebchat().startConversation();
+
+				selectFiles(["myfile.txt"]);
+				waitForUploadsToSettle(1);
+				cy.get("#webchatInputButtonMenu").click();
+				cy.get("#webchatInputButtonMenu").should("have.attr", "aria-expanded", "true");
+				cy.get("#webchatInputMessageAttachFileButton").should("not.exist");
+
+				cy.get("#filePreview0 button").focus();
+				cy.realPress("Enter");
+				cy.get("#filePreview0").should("not.exist");
+				cy.focused().should("have.id", "webchatInputButtonMenu");
+			},
+		);
+
+		// SC 2.4.3: removing a chip unmounts the focused remove button; focus must
+		// not drop to <body>. It moves to the neighbouring chip's remove button
+		// (the one taking the removed chip's position, or the previous one when
+		// the last chip went) and to the attach button once the list is empty.
+		itChromiumOnly(
+			"removing an attachment with the keyboard moves focus to the neighbouring chip, then to the attach button",
+			() => {
+				initWithFileStorage();
+				mockSuccessfulUpload();
+				cy.openWebchat().startConversation();
+
+				selectFiles(["first.txt", "second.txt", "third.txt"]);
+				cy.get("#filePreview2").should("contain.text", "third.txt");
+				waitForUploadsToSettle(3);
+
+				// last chip removed -> previous chip's remove button
+				cy.get("#filePreview2 button")
+					.should("have.attr", "aria-label", "Remove file attachment 3, third.txt")
+					.focus();
+				cy.realPress("Enter");
+				cy.get("#filePreview2").should("not.exist");
+				cy.focused().should(
+					"have.attr",
+					"aria-label",
+					"Remove file attachment 2, second.txt",
+				);
+				cy.get("#webchatStatusLiveRegion").should("contain.text", "third.txt removed");
+
+				// first chip removed -> the chip that took its position
+				cy.get("#filePreview0 button").focus();
+				cy.realPress("Enter");
+				cy.get("#filePreview1").should("not.exist");
+				cy.get("#filePreview0").should("contain.text", "second.txt");
+				cy.focused().should(
+					"have.attr",
+					"aria-label",
+					"Remove file attachment 1, second.txt",
+				);
+				cy.get("#webchatStatusLiveRegion").should("contain.text", "first.txt removed");
+
+				// only chip removed -> attach button
+				cy.realPress("Enter");
+				cy.get("#filePreview0").should("not.exist");
+				cy.focused().should("have.id", "webchatInputMessageAttachFileButton");
+				cy.get("#webchatStatusLiveRegion").should("contain.text", "second.txt removed");
+			},
+		);
+
+		// SC 2.4.7 / 1.4.11: keyboard focus on a remove button is shown as two
+		// rings (primary focus variant + its contrast colour) on the button itself.
+		// The chip background must not change, so its size / error texts keep
+		// their idle contrast — axe runs with the button focused to prove it.
+		itChromiumOnly(
+			"remove button shows a two-ring focus indicator and the focused chip stays a11y-clean",
+			() => {
+				initWithFileStorage();
+				cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+				cy.openWebchat().startConversation();
+
+				selectFiles(["myfile.txt"]);
+				cy.get("#filePreview0").should("contain.text", "Upload Failed");
+				cy.get("#filePreview0").then($chip => {
+					const idleBackground = getComputedStyle($chip[0]).backgroundColor;
+
+					// Tab from the message input lands on the first remove button (the
+					// disabled Send button is skipped; no speech button by default)
+					cy.get("#webchatInputMessageInputInTextMode").focus();
+					cy.realPress("Tab");
+					cy.focused()
+						.should("have.attr", "aria-label", "Remove file attachment 1, myfile.txt")
+						.then($button => {
+							const style = getComputedStyle($button[0]);
+							expect(style.outlineStyle, "outer ring").to.equal("solid");
+							expect(style.outlineWidth, "outer ring width").to.equal("2px");
+							expect(style.boxShadow, "inner ring").to.match(/0px 0px 0px 2px/);
+							expect(style.outlineColor, "rings differ").not.to.equal(
+								style.boxShadow.match(/rgba?\([^)]+\)/)?.[0],
+							);
+						});
+					cy.get("#filePreview0").should($focusedChip => {
+						expect(getComputedStyle($focusedChip[0]).backgroundColor).to.equal(
+							idleBackground,
+						);
+					});
+					cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+				});
+			},
+		);
+
+		// The focus hand-off only applies when the removed button held focus: a
+		// removal triggered while focus is elsewhere must not move it.
+		it("does not move focus on removal when the remove button did not have focus", () => {
+			initWithFileStorage();
+			mockSuccessfulUpload();
+			cy.openWebchat().startConversation();
+
+			selectFiles(["myfile.txt"]);
+			waitForUploadsToSettle(1);
+
+			cy.get("#webchatInputMessageInputInTextMode").focus();
+			// a native click does not focus the button (unlike cy.click)
+			cy.get("#filePreview0 button").then($button => $button[0].click());
+			cy.get("#filePreview0").should("not.exist");
+			cy.focused().should("have.id", "webchatInputMessageInputInTextMode");
+		});
+
 		itChromiumOnly(
 			"remove button is keyboard-operable (Enter removes exactly that attachment)",
 			() => {
@@ -362,7 +964,7 @@ describe("File Attachement", () => {
 				cy.get("#filePreview1").should("contain.text", "second.txt");
 				waitForUploadsToSettle(2);
 
-				cy.get("[aria-label='Remove file attachment 2']").focus();
+				cy.get("[aria-label='Remove file attachment 2, second.txt']").focus();
 				cy.realPress("Enter");
 				cy.get("#filePreview1").should("not.exist");
 				cy.get("#filePreview0").should("contain.text", "myfile.txt");
