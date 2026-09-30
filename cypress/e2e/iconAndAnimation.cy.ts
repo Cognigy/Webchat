@@ -182,6 +182,41 @@ describe("Launcher icon and animation", () => {
 			cy.get(`${TOGGLE} .iconAnimationContainer`).should("not.have.class", "optionActive");
 		});
 
+		it("ignores a persisted pause while the pause button is not enabled", () => {
+			// Pause with the opt-in on, so "true" is stored …
+			cy.visitWebchat().initMockWebchat({ settings: animatedSettings });
+			cy.get(PAUSE).click();
+			cy.get(PAUSE).should("have.attr", "aria-label", "Resume webchat toggle animation");
+
+			// … then load the same page without the opt-in: there is no control
+			// to resume with, so the stored value must not stop the animation
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					layout: { ...animatedSettings.layout, enableIconAnimationPauseButton: false },
+				},
+			});
+			cy.get(PAUSE).should("not.exist");
+			cy.wait(1500);
+			cy.get(`${TOGGLE} .iconAnimationContainer`).should("have.class", "optionActive");
+		});
+
+		it("resumes the animation when updateSettings() switches the opt-in off while paused", () => {
+			cy.visitWebchat().initMockWebchat({ settings: animatedSettings });
+			cy.get(PAUSE).click();
+			cy.get(PAUSE).should("have.attr", "aria-label", "Resume webchat toggle animation");
+			cy.get(`${TOGGLE} .iconAnimationContainer`).should("not.have.class", "optionActive");
+
+			cy.updateSettings({ layout: { enableIconAnimationPauseButton: false } });
+			cy.get(PAUSE).should("not.exist");
+			cy.get(`${TOGGLE} .iconAnimationContainer`).should("have.class", "optionActive");
+
+			// Switching it back on offers the control again in its remembered state
+			cy.updateSettings({ layout: { enableIconAnimationPauseButton: true } });
+			cy.get(PAUSE).should("have.attr", "aria-label", "Resume webchat toggle animation");
+			cy.wait(1500);
+			cy.get(`${TOGGLE} .iconAnimationContainer`).should("not.have.class", "optionActive");
+		});
+
 		it("does not persist the choice when browser storage is disabled", () => {
 			const settings = {
 				...animatedSettings,

@@ -115,7 +115,7 @@ Opening or closing the persistent menu with its toggle button does not move focu
 - **Reveal:** `opacity: 0` until the launcher or the button itself is hovered or keyboard-focused (`FAB.tsx`: `&:hover ~ .webchat-toggle-button-animation-pause`, `&:focus-visible ~ …` — the rule sits on the launcher because the stylis isolate plugin prefixes the root selector in front of `&`), always visible under `@media (hover: none)`. It stays in the DOM and focusable at all times, so keyboard users reach it with one Tab from the launcher and screen readers find it. It sits on the launcher's edge, not over its icon, so SC 1.4.13 does not require an Escape dismissal.
 - **State:** `isIconAnimationPaused` in `WebchatUI` tears the interval down while paused and restarts it on resume; the choice is persisted via `getStorage()` (honours `disableLocalStorage` / `useSessionStorage`).
 - **Reduced motion:** `FAB.tsx` sets `animation-name: none` on the burst (with the burst rules' own selectors — a shorter selector loses on specificity) and the button is `display: none` under `prefers-reduced-motion: reduce`.
-- **Opt-in:** without `layout.enableIconAnimationPauseButton` the button is not rendered and the embedding owns SC 2.2.2 conformance for its animated launcher.
+- **Opt-in:** without `layout.enableIconAnimationPauseButton` the button is not rendered and the embedding owns SC 2.2.2 conformance for its animated launcher. A persisted pause is only honoured while the opt-in is on — otherwise a value stored earlier (or an `updateSettings()` call that switches the opt-in off) would leave the animation stopped with no control to resume it. Toggling the opt-in re-evaluates the interval.
 
 ### Pattern: modal dialogs (`Modal`, variant-driven)
 

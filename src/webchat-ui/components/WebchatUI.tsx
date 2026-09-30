@@ -874,7 +874,11 @@ export class WebchatUI extends React.PureComponent<
 			prevProps?.config?.settings?.layout?.iconAnimationSpeed !==
 				this.props?.config?.settings?.layout?.iconAnimationSpeed ||
 			prevProps?.config?.settings?.layout?.iconAnimation !==
-				this.props?.config?.settings?.layout?.iconAnimation
+				this.props?.config?.settings?.layout?.iconAnimation ||
+			// A persisted pause only counts while the control is offered, so
+			// toggling the opt-in must restart (or stop) the timer as well
+			prevProps?.config?.settings?.layout?.enableIconAnimationPauseButton !==
+				this.props?.config?.settings?.layout?.enableIconAnimationPauseButton
 		) {
 			this.setupIconAnimationInterval();
 		}
@@ -953,12 +957,17 @@ export class WebchatUI extends React.PureComponent<
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
 		}
-		// No timer without an animation, or while the user has paused it
-		// (handleToggleIconAnimationPause re-runs this on every change)
-		if (
-			!isIconAnimationConfigured(this.props?.config?.settings?.layout?.iconAnimation) ||
-			this.state.isIconAnimationPaused
-		) {
+		// No timer without an animation
+		if (!isIconAnimationConfigured(this.props?.config?.settings?.layout?.iconAnimation)) {
+			return;
+		}
+		// … nor while the user has paused it (handleToggleIconAnimationPause and
+		// componentDidUpdate re-run this on every change). A burst that is
+		// playing right now is cut short instead of finishing.
+		if (this.isIconAnimationPaused()) {
+			this.chatToggleButtonRef?.current
+				?.querySelector(".iconAnimationContainer")
+				?.classList.remove("optionActive");
 			return;
 		}
 		const intervalSec = this.props.config?.settings?.layout?.iconAnimationInterval ?? 5;
@@ -1000,17 +1009,24 @@ export class WebchatUI extends React.PureComponent<
 		}
 	}
 
+	/**
+	 * A stored pause is only honored while the pause button is offered
+	 * (`layout.enableIconAnimationPauseButton`). Otherwise a value persisted
+	 * earlier, or a later `updateSettings()` that switches the opt-in off,
+	 * would leave the animation stopped with no control to resume it.
+	 */
+	private isIconAnimationPaused(): boolean {
+		return (
+			!!this.props.config?.settings?.layout?.enableIconAnimationPauseButton &&
+			this.state.isIconAnimationPaused
+		);
+	}
+
 	handleToggleIconAnimationPause = () => {
 		const paused = !this.state.isIconAnimationPaused;
 		// Stops (or restarts) the interval itself once the state is committed
 		this.setState({ isIconAnimationPaused: paused }, () => this.setupIconAnimationInterval());
 		this.persistIconAnimationPaused(paused);
-		if (paused) {
-			// Stop a burst that is playing right now instead of letting it finish
-			this.chatToggleButtonRef?.current
-				?.querySelector(".iconAnimationContainer")
-				?.classList.remove("optionActive");
-		}
 	};
 
 	/**
