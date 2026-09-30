@@ -127,6 +127,37 @@ describe("Webchat Message Input", () => {
 			cy.focused().should("have.class", "webchat-input-persistent-menu-button");
 		});
 
+		it("closing the persistent menu before the initial autofocus timer fires keeps focus on the toggle (CGY-39786)", () => {
+			cy.visitWebchat().initMockWebchat(persistentMenuOptions);
+			// Freeze timers so the toggle is used inside the input's 200ms
+			// deferred-autofocus window (BaseInput.componentDidMount), which is
+			// what a user does when opening the menu right after entering the chat
+			cy.clock(Date.now(), ["setTimeout", "clearTimeout"]);
+			cy.openWebchat().startConversation();
+			cy.get(".webchat-input-message-input").should("exist");
+
+			cy.get(".webchat-input-persistent-menu-button").click();
+			cy.get(".webchat-input-persistent-menu-button").should(
+				"have.attr",
+				"aria-expanded",
+				"true",
+			);
+			cy.get(".webchat-input-persistent-menu-button").click();
+			cy.get(".webchat-input-persistent-menu-button").should(
+				"have.attr",
+				"aria-expanded",
+				"false",
+			);
+			cy.get(".webchat-input-message-input").should("exist");
+			cy.focused().should("have.class", "webchat-input-persistent-menu-button");
+
+			// Past the deadline the pending autofocus must not have fired: the
+			// user chose where focus is (SC 2.4.3, SC 3.2.1)
+			cy.tick(300);
+			cy.focused().should("have.class", "webchat-input-persistent-menu-button");
+			cy.get(".webchat-input-message-input").should("not.be.focused");
+		});
+
 		itChromiumOnly(
 			"persistent menu opened and closed with the keyboard keeps focus on the toggle (CGY-39786)",
 			() => {

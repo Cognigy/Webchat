@@ -106,7 +106,7 @@ Two paths, two mechanisms — both satisfy SC 4.1.3 Status Messages:
 
 ### Pattern: disclosure toggle keeps focus (`BaseInput` persistent menu, CGY-39786)
 
-Opening or closing the persistent menu with its toggle button does not move focus — the toggle keeps it (APG disclosure pattern, SC 2.4.3). The message textarea is replaced by the menu while it is open and re-mounts on close; its `autoFocus` is therefore limited to the input's first mount (`hasMountedInput`), otherwise the re-mount would pull focus off the toggle. Only selecting a menu item moves focus to the message input, because the item button unmounts together with the menu and focus would otherwise fall to `<body>`.
+Opening or closing the persistent menu with its toggle button does not move focus — the toggle keeps it (APG disclosure pattern, SC 2.4.3). The message textarea is replaced by the menu while it is open and re-mounts on close; its `autoFocus` is therefore limited to the input's first mount (`hasMountedInput`), otherwise the re-mount would pull focus off the toggle. The input's deferred autofocus timer (200 ms after mount) is cancelled as soon as the toggle is used (`clearAutofocusTimeout`), so opening or closing the menu right after entering the chat cannot be followed by a late focus jump to the textarea. Only selecting a menu item moves focus to the message input, because the item button unmounts together with the menu and focus would otherwise fall to `<body>`.
 
 ### Pattern: pausable launcher animation (`IconAnimationPauseButton`, CGY-39786)
 

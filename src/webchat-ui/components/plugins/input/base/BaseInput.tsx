@@ -231,6 +231,12 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	 * CGY-39786), so autoFocus is limited to the first mount.
 	 */
 	private hasMountedInput = false;
+	/**
+	 * The deferred autofocus armed in componentDidMount. Cancelled when the
+	 * user operates the persistent menu before it fires — otherwise it would
+	 * pull focus off the toggle onto the remounted textarea — and on unmount.
+	 */
+	private autofocusTimeout: ReturnType<typeof setTimeout> | null = null;
 	menuRef = React.createRef<HTMLDivElement>();
 	fileInputRef = React.createRef<HTMLInputElement>();
 
@@ -280,7 +286,8 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 		window.WebChatInputTextCallback = (text: string) => {
 			this.setState({ text });
 		};
-		setTimeout(() => {
+		this.autofocusTimeout = setTimeout(() => {
+			this.autofocusTimeout = null;
 			// Don't pull focus away from a modal dialog the widget has opened in
 			// the meantime (date picker, xApp overlay, Modal). Scoped to the
 			// widget root: a dialog elsewhere on the host page (cookie banner, a
@@ -303,6 +310,7 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 	componentWillUnmount(): void {
 		this.clearSpeechTimeout();
+		this.clearAutofocusTimeout();
 
 		// The input unmounts on every screen change (back to the home screen,
 		// into the previous-conversations list). Without releasing the engine
@@ -356,6 +364,13 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 
 		if (this.speechRecognition && sttLanguage && this.speechRecognition.lang !== sttLanguage) {
 			this.speechRecognition.lang = sttLanguage;
+		}
+	}
+
+	private clearAutofocusTimeout() {
+		if (this.autofocusTimeout) {
+			clearTimeout(this.autofocusTimeout);
+			this.autofocusTimeout = null;
 		}
 	}
 
@@ -728,8 +743,11 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 	// Opening or closing via the toggle does not move focus: the toggle keeps
 	// it (APG disclosure pattern, SC 2.4.3 — CGY-39786). The message input
 	// unmounts while the menu is open and remounts on close, but focus never
-	// left the toggle, so nothing needs restoring here.
+	// left the toggle, so nothing needs restoring here. The user has chosen
+	// where focus is, so the initial deferred autofocus (componentDidMount)
+	// must not fire afterwards and move it to the remounted textarea.
 	togglePeristentMenu = () => {
+		this.clearAutofocusTimeout();
 		this.setState(prevState => ({
 			isMenuOpen: !prevState.isMenuOpen,
 		}));
