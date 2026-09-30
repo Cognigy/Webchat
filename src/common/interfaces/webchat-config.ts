@@ -159,6 +159,10 @@ export interface IWebchatSettings {
 		disableBotOutputBorder: boolean;
 		botOutputMaxWidthPercentage: number;
 		chatWindowWidth: number;
+		/** Render a gallery card's title in the text block beneath the image instead of
+		 *  overlaying it on the image (@cognigy/chat-components >= 0.78.0). Absent/false
+		 *  keeps the legacy overlay. */
+		galleryCardTitleBelowImage?: boolean;
 	};
 	colors: {
 		primaryColor: string;
@@ -346,6 +350,7 @@ export interface IWebchatSettings {
 			minimizeChat?: string;
 			closeChat?: string;
 			openChat?: string;
+			/** @deprecated No longer read. The badge is decorative (`aria-hidden`); its count is conveyed by the toggle button's name (`unreadMessageSingularText` / `unreadMessagePluralText`) and announced live through the same two labels (CGY-3163). */
 			unreadMessages?: string;
 			unreadMessageSingularText?: string;
 			unreadMessagePluralText?: string;
@@ -358,10 +363,16 @@ export interface IWebchatSettings {
 			newMessagePreview?: string;
 			opensInNewTab?: string;
 			typingIndicator?: string;
+			/** Name of the xApp overlay dialog and its frame when the xApp has
+			 *  no screen title. */
+			xAppOverlay?: string;
 			// The following is used by chat components
 			audioPlaybackProgress?: string;
 			pauseAudio?: string;
 			playAudio?: string;
+			muteAudio?: string;
+			unmuteAudio?: string;
+			audioVolume?: string;
 			playVideo?: string;
 			downloadTranscript?: string;
 			closeDatePicker?: string;
@@ -373,6 +384,14 @@ export interface IWebchatSettings {
 			datePickerNextMonth?: string;
 			datePickerGridLabel?: string;
 			datePickerGridDescription?: string;
+			datePickerRangeStart?: string;
+			datePickerRangeEnd?: string;
+			datePickerWeekNumber?: string;
+			datePickerAmPm?: string;
+			/** Names of the hour/minute fields in date-pickers with time selection.
+			 *  Fallback is flatpickr's locale text (@cognigy/chat-components >= 0.82.0). */
+			datePickerHour?: string;
+			datePickerMinute?: string;
 			actionButtonPositionText?: string;
 			buttonGroupLabel?: string;
 			slidesCountText?: string;
@@ -402,6 +421,9 @@ export interface IWebchatSettings {
 				timestamp?: string;
 			};
 			audioTimeRemaining?: string;
+			audioMoreOptions?: string;
+			audioPlaybackSpeed?: string;
+			audioNormalSpeed?: string;
 		};
 	};
 	demoWebchat: {

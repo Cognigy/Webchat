@@ -103,6 +103,7 @@ const PreviewUploadedFiles: FC = () => {
 				<FilePreviewWrapper key={index} id={`filePreview${index}`}>
 					<UploadedFilePreview>
 						<RemoveFileButton
+							type="button"
 							onClick={() => onRemoveFileButtonClick(index)}
 							onFocus={() => {
 								if (removeFileButtonRefs.current[index]) {

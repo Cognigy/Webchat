@@ -271,6 +271,16 @@ export class BaseInput extends React.PureComponent<IBaseInputProps, IBaseInputSt
 			this.setState({ text });
 		};
 		setTimeout(() => {
+			// Don't pull focus away from a modal dialog the widget has opened in
+			// the meantime (date picker, xApp overlay, Modal). Scoped to the
+			// widget root: a dialog elsewhere on the host page (cookie banner, a
+			// modal that embeds the launcher) must not suppress the autofocus.
+			const root = this.inputRef.current?.closest("[data-cognigy-webchat-root]");
+			const hasOpenDialog = !!root?.querySelector(
+				'[role="dialog"][aria-modal="true"], dialog[open]',
+			);
+
+			if (hasOpenDialog) return;
 			if (!this.props.config.settings.widgetSettings.disableInputAutofocus) {
 				this.inputRef.current?.focus?.();
 			}

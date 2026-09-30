@@ -103,8 +103,19 @@ declare namespace Cypress {
 		focusInput(): Chainable<any>;
 
 		/**
-		 * Checks the accessibility compliance of the webchat or its elements.
+		 * Runs axe-core (WCAG 2.2 A/AA + best-practice tags, all impacts) against
+		 * `selector` (default: the whole page). Scope it to the widget root
+		 * `[data-cognigy-webchat-root]` in feature specs.
+		 * @param options.exclude CSS selectors of subtrees to leave out of this
+		 * scan (axe `exclude`) — the surgical way to skip a documented upstream
+		 * finding while every rule stays active on the rest of the surface.
+		 * @param options.disabledRules axe rule ids to skip for this call — only
+		 * for documented findings tracked elsewhere; pair it with a `selector`
+		 * scoped to the renderer in question (justify at the call site).
 		 */
-		checkA11yCompliance(selector?: string): Chainable<void>;
+		checkA11yCompliance(
+			selector?: string,
+			options?: { disabledRules?: string[]; exclude?: string[] },
+		): Chainable<void>;
 	}
 }

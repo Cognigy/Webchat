@@ -1,4 +1,4 @@
-Created on 04-09-2026 at 15:57:41
+Created on 11-09-2026 at 17:45:28
 
 {
   "@babel/code-frame@7.29.0": {
@@ -157,7 +157,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.80.0": {
+  "@cognigy/chat-components@0.81.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
@@ -170,7 +170,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.51.0": {
+  "@cognigy/webchat@3.52.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -721,12 +721,12 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/glob/node_modules/balanced-match/LICENSE.md",
     "copyright": "Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt;"
   },
-  "baseline-browser-mapping@2.10.19": {
+  "baseline-browser-mapping@2.11.21": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/web-platform-dx/baseline-browser-mapping",
     "licenseFile": "node_modules/baseline-browser-mapping/LICENSE.txt"
   },
-  "brace-expansion@1.1.14": {
+  "brace-expansion@1.1.18": {
     "licenses": "MIT",
     "repository": "https://github.com/juliangruber/brace-expansion",
     "publisher": "Julian Gruber",
@@ -735,7 +735,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/glob/node_modules/brace-expansion/LICENSE",
     "copyright": "Copyright (c) 2013 Julian Gruber <julian@juliangruber.com>"
   },
-  "browserslist@4.28.2": {
+  "browserslist@4.28.9": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/browserslist",
     "publisher": "Andrey Sitnik",
@@ -768,7 +768,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/callsites/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
   },
-  "caniuse-lite@1.0.30001788": {
+  "caniuse-lite@1.0.30001810": {
     "licenses": "CC-BY-4.0",
     "repository": "https://github.com/browserslist/caniuse-lite",
     "publisher": "Ben Briggs",
@@ -1069,7 +1069,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/dunder-proto/LICENSE",
     "copyright": "Copyright (c) 2024 ECMAScript Shims"
   },
-  "electron-to-chromium@1.5.340": {
+  "electron-to-chromium@1.5.422": {
     "licenses": "ISC",
     "repository": "https://github.com/Kilian/electron-to-chromium",
     "publisher": "Kilian Valkhof",
@@ -2115,7 +2115,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/ms/license.md",
     "copyright": "Copyright (c) 2020 Vercel, Inc."
   },
-  "node-releases@2.0.37": {
+  "node-releases@2.0.54": {
     "licenses": "MIT",
     "repository": "https://github.com/chicoxyzzy/node-releases",
     "publisher": "Sergey Rubanov",
@@ -2663,7 +2663,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/socket.io-client/LICENSE",
     "copyright": "Copyright (c) 2014 Guillermo Rauch"
   },
-  "socket.io-parser@4.2.6": {
+  "socket.io-parser@4.2.7": {
     "licenses": "MIT",
     "repository": "https://github.com/socketio/socket.io",
     "licenseFile": "node_modules/socket.io-parser/LICENSE",
@@ -2921,13 +2921,13 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/unist-util-visit/license",
     "copyright": "Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>"
   },
-  "update-browserslist-db@1.2.3": {
+  "update-browserslist-db@1.3.2": {
     "licenses": "MIT",
     "repository": "https://github.com/browserslist/update-db",
     "publisher": "Andrey Sitnik",
-    "email": "andrey@sitnik.ru",
+    "email": "andrey@sitnik.es",
     "licenseFile": "node_modules/update-browserslist-db/LICENSE",
-    "copyright": "Copyright 2022 Andrey Sitnik <andrey@sitnik.ru> and other contributors"
+    "copyright": "Copyright 2022 Andrey Sitnik <andrey@sitnik.es> and other contributors"
   },
   "url@0.11.3": {
     "licenses": "MIT",
@@ -3034,7 +3034,7 @@ Created on 04-09-2026 at 15:57:41
     "licenseFile": "node_modules/wrappy/LICENSE",
     "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
   },
-  "ws@8.17.1": {
+  "ws@8.21.3": {
     "licenses": "MIT",
     "repository": "https://github.com/websockets/ws",
     "publisher": "Einar Otto Stangvik",
