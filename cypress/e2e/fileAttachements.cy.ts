@@ -462,35 +462,45 @@ describe("File Attachement", () => {
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "myfile.txt: Upload Failed");
 		});
 
-		it("announces a rejected oversized file at once and a mixed batch as one message, failures first", () => {
+		it("announces a rejected oversized file at once, also while a sibling upload is still in flight", () => {
 			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
-			mockSuccessfulUpload();
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
+			// The upload request has no timeout, so a stalled POST may never
+			// settle — the sibling's rejection must not wait for it.
+			cy.intercept("POST", "**/mock-upload", req => {
+				req.reply({
+					delay: 2000,
+					body: {
+						runtimeFileId: "mock-file-id",
+						status: "scanned",
+						mimeType: "text/plain",
+						size: 13,
+					},
+				});
+			}).as("slowUpload");
 			cy.openWebchat().startConversation();
 
+			const oversized = (fileName: string) => ({
+				contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
+				fileName,
+				mimeType: "application/octet-stream",
+				lastModified: Date.now(),
+			});
+
 			// Rejected client-side before any request: announced without waiting.
-			cy.get("input[type=file]").selectFile(
-				{
-					contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
-					fileName: "big.bin",
-					mimeType: "application/octet-stream",
-					lastModified: Date.now(),
-				},
-				{ force: true },
-			);
+			cy.get("input[type=file]").selectFile(oversized("big.bin"), { force: true });
 			cy.get("#filePreview0").should("contain.text", "File size > 1MB");
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "big.bin: File size > 1MB");
 			cy.get("#filePreview0 button").click();
 			cy.get("#filePreview0").should("not.exist");
 
-			// Oversized file next to a real upload: one message once both settled.
+			// Oversized file next to an upload in progress: the rejection is
+			// announced right away — it already disables Send — …
 			cy.get("input[type=file]").selectFile(
 				[
-					{
-						contents: Cypress.Buffer.alloc(2 * 1024 * 1024),
-						fileName: "big2.bin",
-						mimeType: "application/octet-stream",
-						lastModified: Date.now(),
-					},
+					oversized("big2.bin"),
 					{
 						contents: Cypress.Buffer.from("file contents"),
 						fileName: "myfile.txt",
@@ -500,10 +510,37 @@ describe("File Attachement", () => {
 				],
 				{ force: true },
 			);
-			cy.get("#webchatStatusLiveRegion").should(
-				"contain.text",
-				"big2.bin: File size > 1MB. myfile.txt attached",
-			);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "big2.bin: File size > 1MB");
+			// … while the sibling still shows its progress bar (the chip's second child)
+			cy.get("#filePreview1 > div").should("have.length", 2);
+			cy.get("#webchatStatusLiveRegion").should("not.contain.text", "myfile.txt attached");
+			cy.get("#webchatInputMessageSendMessageButton").should("be.disabled");
+
+			// … and the sibling's outcome follows as a message of its own, with
+			// the rejection still in the region (appended, not replaced).
+			cy.wait("@slowUpload");
+			cy.get("#filePreview1 > div").should("have.length", 1);
+			cy.get("#webchatStatusLiveRegion > div").should($nodes => {
+				const texts = $nodes.toArray().map(node => node.textContent);
+				expect(texts).to.include("big2.bin: File size > 1MB");
+				expect(texts).to.include("myfile.txt attached");
+				expect(texts.indexOf("big2.bin: File size > 1MB")).to.be.lessThan(
+					texts.indexOf("myfile.txt attached"),
+				);
+			});
+		});
+
+		it("announces outcomes that settle together as one message, failures first", () => {
+			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
+			cy.intercept("GET", "**/fileuploadtoken", { forceNetworkError: true });
+			cy.openWebchat().startConversation();
+
+			// Both files fail on the same (token) request, so they settle in
+			// the same store update and are read as a single message.
+			selectFiles(["first.txt", "second.txt"]);
+			cy.get("#webchatStatusLiveRegion > div")
+				.should("have.length", 1)
+				.and("contain.text", "first.txt: Upload Failed. second.txt: Upload Failed");
 		});
 
 		it("announces each outcome once although the middleware re-dispatches its file list snapshot", () => {
@@ -663,11 +700,12 @@ describe("File Attachement", () => {
 				cy.get("#filePreview0").should("not.exist");
 
 				selectFiles(["myfile.txt"]);
-				// a new announcement node, not the stale one still displayed
+				// a new announcement node next to the earlier one (the region
+				// appends; earlier nodes stay until their own 15s clear)
 				cy.get("#webchatStatusLiveRegion > div").should($now => {
-					expect($now).to.have.length(1);
-					expect($now[0]).not.to.equal($first[0]);
-					expect($now.text()).to.contain("myfile.txt attached");
+					const fresh = $now.toArray().filter(node => !$first.toArray().includes(node));
+					expect(fresh).to.have.length(1);
+					expect(fresh[0].textContent).to.contain("myfile.txt attached");
 				});
 			});
 		});

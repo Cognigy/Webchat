@@ -31,13 +31,17 @@ const hasSettled = (item: IFile) =>
  * an assertive one arrives). This matches every other error in the widget
  * (connection and speech-recognition notifications), see docs/accessibility.md.
  *
- * One announcement per batch: when every attachment in the list has an
- * outcome, all not-yet-announced ones are read together, failures first
- * (file name + the reason shown in the chip), then the successes as one count.
- * A file rejected up front (too large) alone is therefore announced at once;
- * next to a sibling still uploading it waits for that sibling, so the two
- * outcomes arrive as one message instead of two updates racing each other
- * in the region.
+ * Each attachment is announced as soon as it has an outcome — a file
+ * rejected up front (too large) at once, even while a sibling is still
+ * uploading: that rejection already disables Send, and the sibling's upload
+ * has no timeout, so waiting for it could delay the announcement without
+ * bound. Outcomes that land in the same store update are still read as one
+ * message, failures first (file name + the reason shown in the chip), then
+ * the successes as one count — several uploads finishing together, or every
+ * file failing on the token request, stay a single sentence. Successive
+ * messages are safe because <StatusLiveRegion> appends rather than replaces
+ * (see SrOnlyLiveRegion's "append" mode), so an earlier outcome is never
+ * pulled from under the screen reader by a later one.
  *
  * The middleware mutates the file items in place and re-dispatches snapshots
  * of the same array (+100ms and once the uploads settle), so the outcome is
@@ -62,10 +66,8 @@ const FileUploadAnnouncer: FC = () => {
 	);
 
 	useEffect(() => {
-		if (!fileList.length || !fileList.every(hasSettled)) return;
-
 		const pending = fileList.filter(
-			item => !item.isCancelled && !announcedFiles.has(item.file),
+			item => hasSettled(item) && !item.isCancelled && !announcedFiles.has(item.file),
 		);
 		if (!pending.length) return;
 		pending.forEach(item => announcedFiles.add(item.file));

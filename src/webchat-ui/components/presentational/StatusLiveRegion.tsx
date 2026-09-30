@@ -31,7 +31,14 @@ export function announceStatus(text: string) {
  *   role="status" wrapper) to the DOM only when the notification fires,
  *   which live-region processing ignores — so toasts are mirrored here and
  *   silenced at the source (see silencedAriaProps in Notifications.tsx);
- * - direct announcements via announceStatus() (e.g. "home screen appeared").
+ * - direct announcements via announceStatus() (e.g. "home screen appeared",
+ *   file upload outcomes and removals).
+ *
+ * Renders in "append" mode: these messages are independent of each other
+ * and can land moments apart (a rejected attachment, then its sibling's
+ * upload finishing), so each keeps its own node until its own 15s clear
+ * instead of being swapped out by the next — a swap would let a screen
+ * reader drop the earlier one before voicing it. See SrOnlyLiveRegion.
  */
 export const StatusLiveRegion: FC = () => {
 	const { toasts } = useToasterStore();
@@ -69,5 +76,12 @@ export const StatusLiveRegion: FC = () => {
 		setStatus({ id: latest.id, text: latest.message as string });
 	}, [toasts]);
 
-	return <SrOnlyLiveRegion id="webchatStatusLiveRegion" role="status" message={status} />;
+	return (
+		<SrOnlyLiveRegion
+			id="webchatStatusLiveRegion"
+			role="status"
+			mode="append"
+			message={status}
+		/>
+	);
 };

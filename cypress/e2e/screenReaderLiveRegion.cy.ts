@@ -15,6 +15,24 @@ describe("Screen Reader Live Region", () => {
 		cy.get(liveRegionSelector).should("contain", "Hello there");
 	});
 
+	it("replaces the previous announcement: one atomic node holding the latest message", () => {
+		// Chat-message announcements supersede each other, so this region keeps
+		// the shared primitive's default "replace" mode — unlike the status
+		// region, which appends (see rating.cy.ts). Guards the default.
+		cy.get(liveRegionSelector).should("have.attr", "aria-atomic", "true");
+
+		cy.receiveMessage("First message");
+		cy.wait(500);
+		cy.get(liveRegionSelector).should("contain.text", "First message");
+
+		cy.receiveMessage("Second message");
+		cy.wait(500);
+		cy.get(`${liveRegionSelector} > div`)
+			.should("have.length", 1)
+			.and("contain.text", "Second message")
+			.and("not.contain.text", "First message");
+	});
+
 	it("does not announce a data-only message that is not rendered in the chat log", () => {
 		// A message with no text and a payload that matches no renderable plugin
 		// is data-only: it produces no <article> in the DOM.
