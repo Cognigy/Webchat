@@ -163,6 +163,10 @@ export interface IWebchatSettings {
 		disableBotOutputBorder: boolean;
 		botOutputMaxWidthPercentage: number;
 		chatWindowWidth: number;
+		/** Render a gallery card's title in the text block beneath the image instead of
+		 *  overlaying it on the image (@cognigy/chat-components >= 0.78.0). Absent/false
+		 *  keeps the legacy overlay. */
+		galleryCardTitleBelowImage?: boolean;
 	};
 	colors: {
 		primaryColor: string;
@@ -381,6 +385,9 @@ export interface IWebchatSettings {
 			audioPlaybackProgress?: string;
 			pauseAudio?: string;
 			playAudio?: string;
+			muteAudio?: string;
+			unmuteAudio?: string;
+			audioVolume?: string;
 			playVideo?: string;
 			downloadTranscript?: string;
 			closeDatePicker?: string;
@@ -396,6 +403,10 @@ export interface IWebchatSettings {
 			datePickerRangeEnd?: string;
 			datePickerWeekNumber?: string;
 			datePickerAmPm?: string;
+			/** Names of the hour/minute fields in date-pickers with time selection.
+			 *  Fallback is flatpickr's locale text (@cognigy/chat-components >= 0.82.0). */
+			datePickerHour?: string;
+			datePickerMinute?: string;
 			actionButtonPositionText?: string;
 			buttonGroupLabel?: string;
 			slidesCountText?: string;
@@ -425,6 +436,9 @@ export interface IWebchatSettings {
 				timestamp?: string;
 			};
 			audioTimeRemaining?: string;
+			audioMoreOptions?: string;
+			audioPlaybackSpeed?: string;
+			audioNormalSpeed?: string;
 		};
 	};
 	demoWebchat: {

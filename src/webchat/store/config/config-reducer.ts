@@ -44,6 +44,7 @@ export const getInitialState = (): ConfigState => ({
 			disableBotOutputBorder: false,
 			botOutputMaxWidthPercentage: 73,
 			chatWindowWidth: 460,
+			galleryCardTitleBelowImage: false,
 		},
 		colors: {
 			primaryColor: "",
