@@ -673,6 +673,9 @@ describe("File Attachement", () => {
 			initWithFileStorage({
 				fileAttachmentMaxSize: 1024 * 1024,
 				customTranslations: {
+					// The prefix must come from the configured failure text too — a
+					// hardcoded "Upload Failed" would otherwise pass unnoticed here.
+					file_upload_failed: "Hochladen fehlgeschlagen",
 					file_upload_too_large: "Datei größer als {maxSizeInMb} MB",
 					file_upload_infected: "Infizierte Datei",
 					ariaLabels: {
@@ -710,10 +713,13 @@ describe("File Attachement", () => {
 				},
 				{ force: true },
 			);
-			cy.get("#filePreview0").should("contain.text", "Upload Failed: Datei größer als 1 MB");
+			cy.get("#filePreview0").should(
+				"contain.text",
+				"Hochladen fehlgeschlagen: Datei größer als 1 MB",
+			);
 			cy.get("#webchatStatusLiveRegion").should(
 				"contain.text",
-				"big.bin: Upload Failed: Datei größer als 1 MB",
+				"big.bin: Hochladen fehlgeschlagen: Datei größer als 1 MB",
 			);
 			cy.get("#filePreview0 button").click();
 			cy.get("#filePreview0").should("not.exist");
@@ -728,10 +734,13 @@ describe("File Attachement", () => {
 				},
 			});
 			selectFiles(["virus.txt"]);
-			cy.get("#filePreview0").should("contain.text", "Upload Failed: Infizierte Datei");
+			cy.get("#filePreview0").should(
+				"contain.text",
+				"Hochladen fehlgeschlagen: Infizierte Datei",
+			);
 			cy.get("#webchatStatusLiveRegion").should(
 				"contain.text",
-				"virus.txt: Upload Failed: Infizierte Datei",
+				"virus.txt: Hochladen fehlgeschlagen: Infizierte Datei",
 			);
 		});
 
