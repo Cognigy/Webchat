@@ -476,5 +476,64 @@ describe("Chat Options Screen", () => {
 			// Focus returns to the trigger (SC 2.4.3)
 			cy.get(".webchat-delete-conversation-button").should("have.focus");
 		});
+
+		it("announces the completed deletion through the status live region (SC 4.1.3, CGY-39786)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+			cy.get("#webchatStatusLiveRegion").should("not.contain.text", "Conversation deleted");
+
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+
+			// The chat options screen is replaced by the (new) chat screen …
+			cy.get(".webchat-chat-options-root").should("not.exist");
+			cy.get(".webchat-input-message-input").should("exist");
+			// … and the outcome is announced once the input autofocus has happened
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "Conversation deleted");
+		});
+
+		it("drops the pending announcement when the chat window is closed within the delay (CGY-39786)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+			// Close right away (well inside the 600ms delay): unmounting the
+			// live region cancels its pending announcements
+			cy.getWebchat().then(webchat => webchat.close());
+			cy.get("#webchatStatusLiveRegion").should("not.exist");
+			cy.wait(800);
+
+			cy.openWebchat();
+			cy.get("#webchatStatusLiveRegion")
+				.should("exist")
+				.and("not.contain.text", "Conversation deleted");
+		});
+
+		it("honors the configurable conversation_deleted status text (CGY-39786)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: { enabled: false },
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+					customTranslations: { conversation_deleted: "Unterhaltung gelöscht" },
+				},
+			});
+			cy.openWebchat();
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "Unterhaltung gelöscht");
+		});
 	});
 });
