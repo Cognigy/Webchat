@@ -32,12 +32,19 @@ export const createFileInputMiddleware =
 				// the status live region (FileUploadAnnouncer), so it is configurable
 				// like every other user-facing string.
 				const uploadFailedText = customTranslations?.file_upload_failed ?? "Upload Failed";
-				const uploadInfectedText =
-					customTranslations?.file_upload_infected ?? "Infected File";
-				const uploadTooLargeText = formatTemplate(
+				// The specific reasons are prefixed with the generic failure text
+				// ("Upload Failed: File size > 10MB", "Upload Failed: Infected
+				// File"): on their own, next to the file's actual size, they read
+				// as information about the file rather than as the reason it was
+				// not attached, leaving the red colour as the only cue (SC 1.4.1)
+				// — in the chip and in the announcement alike.
+				const uploadInfectedText = `${uploadFailedText}: ${
+					customTranslations?.file_upload_infected ?? "Infected File"
+				}`;
+				const uploadTooLargeText = `${uploadFailedText}: ${formatTemplate(
 					customTranslations?.file_upload_too_large ?? "File size > {maxSizeInMb}MB",
 					{ maxSizeInMb: String(fileAttachmentMaxSizeInMb) },
-				);
+				)}`;
 				action.newFiles?.forEach(file => {
 					if (file.size > fileAttachmentMaxSize) {
 						newFileList.push({
