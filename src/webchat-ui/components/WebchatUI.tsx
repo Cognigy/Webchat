@@ -46,6 +46,8 @@ import {
 	isInformingDueToMaintenance,
 } from "../../webchat/helper/maintenance";
 import FABDisabled from "./presentational/FABDisabled";
+import IconAnimationPauseButton from "./presentational/IconAnimationPauseButton";
+import { getStorage } from "../../webchat/helper/storage";
 import {
 	isDisabledDueToConnectivity,
 	isHiddenDueToConnectivity,
@@ -191,6 +193,8 @@ interface WebchatUIState {
 	timedOut: boolean;
 	showDeleteAllConversationsModal: boolean;
 	deleteConversationsModalState: boolean;
+	/** User paused the launcher icon animation (SC 2.2.2, CGY-39786). */
+	isIconAnimationPaused: boolean;
 	liveContent?: Record<string, string>;
 	isMobile: boolean;
 	/** Gates the AI-agent notice announcement (CGY-3519) — see NoticeSession. */
@@ -198,6 +202,12 @@ interface WebchatUIState {
 }
 
 const stylisPlugins = [isolate("[data-cognigy-webchat-root]")];
+
+const ICON_ANIMATION_PAUSED_STORAGE_KEY = "cognigy-webchat-icon-animation-paused";
+
+/** `layout.iconAnimation` names an animation ("bounce" | "pulse" | "swing"). */
+const isIconAnimationConfigured = (animation: unknown): animation is string =>
+	typeof animation === "string" && animation.trim().length > 0 && animation !== "none";
 
 /**
  * for RTL-layout websites, use the stylis-rtl plugin to convert CSS,
@@ -302,6 +312,7 @@ export class WebchatUI extends React.PureComponent<
 		timedOut: false,
 		showDeleteAllConversationsModal: false,
 		deleteConversationsModalState: false,
+		isIconAnimationPaused: false,
 		liveContent: {},
 		isMobile: false,
 		noticeSession: INITIAL_NOTICE_SESSION,
@@ -311,6 +322,7 @@ export class WebchatUI extends React.PureComponent<
 	closeButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	menuButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	deleteButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
+	emptyPrevConversationsTextRef: React.RefObject<HTMLParagraphElement>;
 	startNewConversationButtonRef: React.RefObject<HTMLButtonElement>;
 	ratingButtonInHeaderRef: React.RefObject<HTMLButtonElement>;
 	webchatWindowRef: React.RefObject<HTMLDivElement>;
@@ -325,6 +337,7 @@ export class WebchatUI extends React.PureComponent<
 
 	private engagementMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 	private ratingFocusTimeout: ReturnType<typeof setTimeout> | null = null;
+	private deleteAllFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 	private homeScreenExitFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 	private xAppOverlayCloseFocusTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -353,6 +366,7 @@ export class WebchatUI extends React.PureComponent<
 		this.closeButtonInHeaderRef = React.createRef();
 		this.menuButtonInHeaderRef = React.createRef();
 		this.deleteButtonInHeaderRef = React.createRef();
+		this.emptyPrevConversationsTextRef = React.createRef();
 		this.startNewConversationButtonRef = React.createRef();
 		this.ratingButtonInHeaderRef = React.createRef();
 		this.webchatWindowRef = React.createRef();
@@ -607,8 +621,11 @@ export class WebchatUI extends React.PureComponent<
 			inputPlugins: [...(this.props.inputPlugins || []), baseInputPlugin],
 			messagePlugins: [...(this.props.messagePlugins || []), ...defaultMessagePlugins],
 			isMobile: isMobileViewport(),
+			isIconAnimationPaused: this.readIconAnimationPaused(),
 		});
-		this.setupIconAnimationInterval();
+		// After the state above is committed: the interval is only started
+		// when the animation is not paused.
+		this.setState({}, () => this.setupIconAnimationInterval());
 
 		// No pre-change snapshot exists on mount; the current map predates
 		// any message activity of this page load.
@@ -858,7 +875,11 @@ export class WebchatUI extends React.PureComponent<
 			prevProps?.config?.settings?.layout?.iconAnimationSpeed !==
 				this.props?.config?.settings?.layout?.iconAnimationSpeed ||
 			prevProps?.config?.settings?.layout?.iconAnimation !==
-				this.props?.config?.settings?.layout?.iconAnimation
+				this.props?.config?.settings?.layout?.iconAnimation ||
+			// A persisted pause only counts while the control is offered, so
+			// toggling the opt-in must restart (or stop) the timer as well
+			prevProps?.config?.settings?.layout?.enableIconAnimationPauseButton !==
+				this.props?.config?.settings?.layout?.enableIconAnimationPauseButton
 		) {
 			this.setupIconAnimationInterval();
 		}
@@ -901,6 +922,10 @@ export class WebchatUI extends React.PureComponent<
 			clearTimeout(this.ratingFocusTimeout);
 			this.ratingFocusTimeout = null;
 		}
+		if (this.deleteAllFocusTimeout) {
+			clearTimeout(this.deleteAllFocusTimeout);
+			this.deleteAllFocusTimeout = null;
+		}
 
 		// also removes the fallback's document pointerdown listener
 		this.cancelHomeScreenExitFocusFallback();
@@ -933,9 +958,17 @@ export class WebchatUI extends React.PureComponent<
 			clearInterval(this.iconAnimationIntervalHandle);
 			this.iconAnimationIntervalHandle = null;
 		}
-		const animation = this.props?.config?.settings?.layout?.iconAnimation;
-		// If there is no animation configured, do not start the timer
-		if (!animation || (typeof animation === "string" && animation.trim().length === 0)) {
+		// No timer without an animation
+		if (!isIconAnimationConfigured(this.props?.config?.settings?.layout?.iconAnimation)) {
+			return;
+		}
+		// … nor while the user has paused it (handleToggleIconAnimationPause and
+		// componentDidUpdate re-run this on every change). A burst that is
+		// playing right now is cut short instead of finishing.
+		if (this.isIconAnimationPaused()) {
+			this.chatToggleButtonRef?.current
+				?.querySelector(".iconAnimationContainer")
+				?.classList.remove("optionActive");
 			return;
 		}
 		const intervalSec = this.props.config?.settings?.layout?.iconAnimationInterval ?? 5;
@@ -952,6 +985,50 @@ export class WebchatUI extends React.PureComponent<
 			container.classList.add("optionActive");
 		}, intervalMs);
 	}
+
+	/**
+	 * Pause / resume of the launcher icon animation (WCAG 2.2.2 — CGY-39786).
+	 * The choice is kept in the configured browser storage so it survives a
+	 * reload; with `disableLocalStorage` it lasts for the page lifetime only.
+	 */
+	private readIconAnimationPaused(): boolean {
+		try {
+			const storage = getStorage(this.props.config.settings.embeddingConfiguration);
+			return storage?.getItem(ICON_ANIMATION_PAUSED_STORAGE_KEY) === "true";
+		} catch {
+			return false;
+		}
+	}
+
+	private persistIconAnimationPaused(paused: boolean) {
+		try {
+			const storage = getStorage(this.props.config.settings.embeddingConfiguration);
+			storage?.setItem(ICON_ANIMATION_PAUSED_STORAGE_KEY, String(paused));
+		} catch {
+			// Storage may be unavailable (restricted environments) — the state
+			// still applies for this page load.
+		}
+	}
+
+	/**
+	 * A stored pause is only honored while the pause button is offered
+	 * (`layout.enableIconAnimationPauseButton`). Otherwise a value persisted
+	 * earlier, or a later `updateSettings()` that switches the opt-in off,
+	 * would leave the animation stopped with no control to resume it.
+	 */
+	private isIconAnimationPaused(): boolean {
+		return (
+			!!this.props.config?.settings?.layout?.enableIconAnimationPauseButton &&
+			this.state.isIconAnimationPaused
+		);
+	}
+
+	handleToggleIconAnimationPause = () => {
+		const paused = !this.state.isIconAnimationPaused;
+		// Stops (or restarts) the interval itself once the state is committed
+		this.setState({ isIconAnimationPaused: paused }, () => this.setupIconAnimationInterval());
+		this.persistIconAnimationPaused(paused);
+	};
 
 	/**
 	 * This triggers the engagement message in case the webchat
@@ -1375,6 +1452,15 @@ export class WebchatUI extends React.PureComponent<
 				isDisabledOutOfBusinessHours(config.settings.businessHours) ||
 				isDisabledDueToConnectivity(config.settings, state.timedOut));
 
+		// Opt-in pause control (layout.enableIconAnimationPauseButton), shown only
+		// while the animation can play: chat closed, launcher enabled and an
+		// animation configured (WCAG 2.2.2 — CGY-39786).
+		const showIconAnimationPauseButton =
+			!open &&
+			!isDisabled &&
+			!!config.settings?.layout?.enableIconAnimationPauseButton &&
+			isIconAnimationConfigured(config.settings?.layout?.iconAnimation);
+
 		const isInforming =
 			config.isConfigLoaded &&
 			config.settings.embeddingConfiguration.awaitEndpointConfig &&
@@ -1644,6 +1730,24 @@ export class WebchatUI extends React.PureComponent<
 													) : null}
 												</FAB>
 											)}
+											{showIconAnimationPauseButton && (
+												<IconAnimationPauseButton
+													paused={this.state.isIconAnimationPaused}
+													onToggle={this.handleToggleIconAnimationPause}
+													pauseLabel={
+														config.settings.customTranslations
+															?.ariaLabels
+															?.pauseWebchatToggleAnimation ??
+														"Pause webchat toggle animation"
+													}
+													resumeLabel={
+														config.settings.customTranslations
+															?.ariaLabels
+															?.resumeWebchatToggleAnimation ??
+														"Resume webchat toggle animation"
+													}
+												/>
+											)}
 										</div>
 									)}
 								</CacheProvider>
@@ -1810,6 +1914,7 @@ export class WebchatUI extends React.PureComponent<
 						config={config}
 						currentSession={currentSession}
 						startNewConversationButtonRef={this.startNewConversationButtonRef}
+						emptyListTextRef={this.emptyPrevConversationsTextRef}
 					/>
 				);
 
@@ -2022,15 +2127,29 @@ export class WebchatUI extends React.PureComponent<
 								isOpen={this.state.showDeleteAllConversationsModal}
 								onOpenChange={(open, confirmDelete) => {
 									this.setState({ showDeleteAllConversationsModal: open });
-									if (
-										!open &&
-										this.deleteButtonInHeaderRef.current &&
-										!confirmDelete
-									) {
-										this.deleteButtonInHeaderRef.current.focus();
-									} else {
-										this.startNewConversationButtonRef.current?.focus();
+									if (open || !confirmDelete) {
+										// Cancel / close: the Modal itself returns focus to
+										// the element that opened it (the header delete button).
+										return;
 									}
+									// Confirmed: the header delete button is gone with the
+									// last conversation, so focus the now-rendered empty-state
+									// text and the outcome is read out (SC 4.1.3, CGY-39786).
+									// Deferred like the Modal's own focus moves: focusing a
+									// node in the same task that inserted it is not reliably
+									// announced, and the Modal's close effect restores focus
+									// to whatever was active when it opened (the header title
+									// after a pointer click on browsers that do not focus
+									// buttons on click) — this must run after that.
+									if (this.deleteAllFocusTimeout)
+										clearTimeout(this.deleteAllFocusTimeout);
+									this.deleteAllFocusTimeout = setTimeout(() => {
+										this.deleteAllFocusTimeout = null;
+										(
+											this.emptyPrevConversationsTextRef.current ??
+											this.startNewConversationButtonRef.current
+										)?.focus();
+									}, 200);
 								}}
 							/>
 						</RegularLayoutContentWrapper>
