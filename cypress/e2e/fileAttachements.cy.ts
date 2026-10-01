@@ -433,6 +433,12 @@ describe("File Attachement", () => {
 		// ellipsised.
 		it("oversized file is conveyed as a failure in the chip text, not only by colour", () => {
 			initWithFileStorage({ fileAttachmentMaxSize: 1024 * 1024 });
+			// The rejection itself needs no request, but Send is only disabled
+			// once the (always made) token request has settled — stub it so that
+			// does not depend on the test endpoint's response time.
+			cy.intercept("GET", "**/fileuploadtoken", {
+				body: { fileUploadUrl: "/mock-upload", token: "mock-token" },
+			});
 			cy.openWebchat().startConversation();
 
 			cy.get("input[type=file]").selectFile(
