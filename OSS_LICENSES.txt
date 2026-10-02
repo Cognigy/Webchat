@@ -1,4 +1,4 @@
-Created on 02-10-2026 at 10:02:50
+Created on 02-10-2026 at 16:01:13
 
 {
   "@babel/code-frame@7.29.0": {
@@ -1053,7 +1053,7 @@ Created on 02-10-2026 at 10:02:50
     "licenseFile": "node_modules/dom-helpers/LICENSE",
     "copyright": "Copyright (c) 2015 Jason Quense"
   },
-  "dompurify@3.4.11": {
+  "dompurify@3.4.16": {
     "licenses": "(MPL-2.0 OR Apache-2.0)",
     "repository": "https://github.com/cure53/DOMPurify",
     "publisher": "Dr.-Ing. Mario Heiderich, Cure53",
@@ -2100,14 +2100,11 @@ Created on 02-10-2026 at 10:02:50
     "licenseFile": "node_modules/mkdirp/LICENSE",
     "copyright": "Copyright 2010 James Halliday (mail@substack.net)"
   },
-  "moment@2.30.1": {
+  "moment@2.31.0": {
     "licenses": "MIT",
     "repository": "https://github.com/moment/moment",
-    "publisher": "Iskren Ivov Chernev",
-    "email": "iskren.chernev@gmail.com",
-    "url": "https://github.com/ichernev",
     "licenseFile": "node_modules/moment/LICENSE",
-    "copyright": "Copyright (c) JS Foundation and other contributors"
+    "copyright": "Copyright (c) OpenJS Foundation and other contributors"
   },
   "ms@2.1.3": {
     "licenses": "MIT",
