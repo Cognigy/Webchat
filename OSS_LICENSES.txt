@@ -1,4 +1,4 @@
-Created on 11-09-2026 at 17:45:28
+Created on 02-10-2026 at 10:02:50
 
 {
   "@babel/code-frame@7.29.0": {
@@ -157,7 +157,7 @@ Created on 11-09-2026 at 17:45:28
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.81.0": {
+  "@cognigy/chat-components@0.83.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
@@ -170,7 +170,7 @@ Created on 11-09-2026 at 17:45:28
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.52.0": {
+  "@cognigy/webchat@3.53.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -726,7 +726,7 @@ Created on 11-09-2026 at 17:45:28
     "repository": "https://github.com/web-platform-dx/baseline-browser-mapping",
     "licenseFile": "node_modules/baseline-browser-mapping/LICENSE.txt"
   },
-  "brace-expansion@1.1.18": {
+  "brace-expansion@1.1.21": {
     "licenses": "MIT",
     "repository": "https://github.com/juliangruber/brace-expansion",
     "publisher": "Julian Gruber",

@@ -416,6 +416,9 @@ export interface IWebchatSettings {
 			datePickerGridDescription?: string;
 			datePickerRangeStart?: string;
 			datePickerRangeEnd?: string;
+			/** Appended to the name of every selected day cell, after any range word
+			 *  (default "selected"; @cognigy/chat-components >= 0.83.0). */
+			datePickerSelected?: string;
 			datePickerWeekNumber?: string;
 			datePickerAmPm?: string;
 			/** Names of the hour/minute fields in date-pickers with time selection.
