@@ -41,12 +41,16 @@ export const createPrevConversationsMiddleware =
 						rating: ratingInitialState,
 					};
 
-				// If SUN is enabled and not yet accepted for the new session, defer the
-				// socket switch until the user accepts. The reducer has already reset
-				// hasAcceptedSystemUseNotification to false (showing the SUN screen).
-				const { config, ui } = store.getState();
-				const sunEnabled = !!config.settings?.systemUseNotification?.enabled;
-				if (sunEnabled && !ui.hasAcceptedSystemUseNotification) {
+				// If SUN is enabled, always defer the socket switch until the user accepts
+				// the notice for the target session. Do not consult
+				// ui.hasAcceptedSystemUseNotification here: this middleware runs before the
+				// ui reducer resets it on SWITCH_SESSION, so it still reflects the previous
+				// session. If the target session was already accepted, ui-middleware restores
+				// the acceptance from storage after the reducer runs, which completes the
+				// deferred switch immediately.
+				const sunEnabled =
+					!!store.getState().config.settings?.systemUseNotification?.enabled;
+				if (sunEnabled) {
 					store.dispatch(setPendingSessionSwitch(targetSession, targetConversation));
 					break;
 				}

@@ -173,21 +173,44 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("#webchatChatHistory").should("exist");
 
-			// Start a new conversation (triggers SWITCH_SESSION internally).
 			// The harness exposes the Webchat instance as window.webchat (commands.ts).
-			cy.window().then(win => {
-				(win as any).webchat.endSession();
-			});
+			cy.window()
+				.its("webchat.client.socketOptions.sessionId")
+				.then(firstSessionId => {
+					// Start a new conversation (triggers SWITCH_SESSION internally)
+					// while SUN is already accepted for the current session.
+					cy.window().then(win => {
+						(win as any).webchat.endSession();
+					});
 
-			// SUN must appear again for the new session
-			cy.get(".webchat-system-use-notification-root").should("be.visible");
+					// SUN must appear again for the new session
+					cy.get(".webchat-system-use-notification-root").should("be.visible");
 
-			// Chat history must not be visible — socket has not switched yet
-			cy.get("#webchatChatHistory").should("not.exist");
+					// The socket must not have switched yet: the switch is held as pending
+					// and the client is still on the first session. Asserting on the UI
+					// alone is not enough, as the SUN screen hides the chat history
+					// regardless of the socket state.
+					cy.window()
+						.its("webchat.store")
+						.invoke("getState")
+						.its("ui.pendingSessionSwitch")
+						.should("not.be.null");
+					cy.window()
+						.its("webchat.client.socketOptions.sessionId")
+						.should("equal", firstSessionId);
 
-			// Accept SUN for the new session — socket switch completes, chat resumes
-			cy.get(".webchat-system-use-notification-accept-button").click();
-			cy.get("#webchatChatHistory").should("exist");
+					// Accept SUN for the new session — socket switch completes, chat resumes
+					cy.get(".webchat-system-use-notification-accept-button").click();
+					cy.get("#webchatChatHistory").should("exist");
+					cy.window()
+						.its("webchat.store")
+						.invoke("getState")
+						.its("ui.pendingSessionSwitch")
+						.should("be.null");
+					cy.window()
+						.its("webchat.client.socketOptions.sessionId")
+						.should("not.equal", firstSessionId);
+				});
 		});
 	});
 
