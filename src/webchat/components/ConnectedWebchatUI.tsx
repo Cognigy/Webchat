@@ -12,6 +12,7 @@ import {
 	setShowPrevConversations,
 	setShowChatOptionsScreen,
 	setHasAcceptedTerms,
+	setHasAcceptedSystemUseNotification,
 	UIState,
 	setStoredMessage,
 	setMinimize,
@@ -88,6 +89,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 				showPrevConversations,
 				showChatOptionsScreen,
 				hasAcceptedTerms,
+				hasAcceptedSystemUseNotification,
 				ttsActive,
 				lastInputId,
 			},
@@ -139,6 +141,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			showPrevConversations,
 			showChatOptionsScreen,
 			hasAcceptedTerms,
+			hasAcceptedSystemUseNotification,
 			isXAppOverlayOpen,
 			userId,
 			ttsActive,
@@ -164,6 +167,8 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 		onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) =>
 			dispatch(switchSession(sessionId, conversation)),
 		onAcceptTerms: (userId: string) => dispatch(setHasAcceptedTerms(userId)),
+		onAcceptSystemUseNotification: (sessionId: string) =>
+			dispatch(setHasAcceptedSystemUseNotification(sessionId)),
 		onSetStoredMessage: (message: UIState["storedMessage"]) =>
 			dispatch(setStoredMessage(message)),
 		onSetDropZoneVisible: (isVisible: boolean) => dispatch(setDropZoneVisible(isVisible)),

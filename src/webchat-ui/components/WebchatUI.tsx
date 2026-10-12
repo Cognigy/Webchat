@@ -29,6 +29,7 @@ import { IWebchatConfig } from "../../common/interfaces/webchat-config";
 import { TTyping } from "../../common/interfaces/typing";
 import Badge from "./presentational/Badge";
 import getTextFromMessage from "../../webchat/helper/message";
+import { isNoticePending } from "../../webchat/helper/privacyPolicy";
 import getKeyboardFocusableElements from "../utils/find-focusable";
 import { InertProps } from "../utils/inert-props";
 import notificationSound from "../utils/notification-sound";
@@ -61,6 +62,7 @@ import { isConversationEnded } from "./presentational/previous-conversations/hel
 import { ISendMessageOptions } from "../../webchat/store/messages/message-middleware";
 import { InformationMessage } from "./presentational/InformationMessage";
 import { PrivacyNotice } from "./presentational/PrivacyNotice";
+import { SystemUseNotification } from "./presentational/SystemUseNotification";
 import { ChatOptions } from "./presentational/chat-options/ChatOptions";
 import QueueUpdates from "./history/QueueUpdates";
 import { UIState } from "../../webchat/store/ui/ui-reducer";
@@ -170,6 +172,8 @@ export interface WebchatUIProps {
 
 	hasAcceptedTerms: boolean;
 	onAcceptTerms: (userId: string) => void;
+	hasAcceptedSystemUseNotification: boolean;
+	onAcceptSystemUseNotification: (sessionId: string) => void;
 	onSetStoredMessage: (message: UIState["storedMessage"]) => void;
 	isXAppOverlayOpen: boolean;
 	openXAppOverlay: (message: string | undefined) => void;
@@ -1251,7 +1255,11 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		if (this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms) {
+		if (
+			(this.props.config.settings.systemUseNotification?.enabled &&
+				!this.props.hasAcceptedSystemUseNotification) ||
+			(this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms)
+		) {
 			this.props.onSetStoredMessage({
 				text,
 				data,
@@ -1271,7 +1279,11 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		if (this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms) {
+		if (
+			(this.props.config.settings.systemUseNotification?.enabled &&
+				!this.props.hasAcceptedSystemUseNotification) ||
+			(this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms)
+		) {
 			this.props.onSetStoredMessage({
 				text,
 				data,
@@ -1290,7 +1302,11 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		if (this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms) {
+		if (
+			(this.props.config.settings.systemUseNotification?.enabled &&
+				!this.props.hasAcceptedSystemUseNotification) ||
+			(this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms)
+		) {
 			this.props.onSetStoredMessage({
 				text,
 				data,
@@ -1307,9 +1323,11 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		const showPrivacyScreen =
-			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
-		if (!showPrivacyScreen) {
+		const showNoticeScreen =
+			(this.props.config.settings.systemUseNotification?.enabled &&
+				!this.props.hasAcceptedSystemUseNotification) ||
+			(this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms);
+		if (!showNoticeScreen) {
 			this.props.onShowChatScreen();
 		}
 	};
@@ -1332,9 +1350,12 @@ export class WebchatUI extends React.PureComponent<
 		this.props.onSetShowHomeScreen(false);
 		this.props.onSetShowChatOptionsScreen(false);
 
-		const showPrivacyScreen =
-			this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms;
-		if (showPrivacyScreen) {
+		if (
+			isNoticePending(this.props.config.settings, {
+				hasAcceptedSystemUseNotification: this.props.hasAcceptedSystemUseNotification,
+				hasAcceptedTerms: this.props.hasAcceptedTerms,
+			})
+		) {
 			this.setState({ lastUnseenMessageText: "" });
 		} else {
 			this.props.onShowChatScreen();
@@ -1788,6 +1809,8 @@ export class WebchatUI extends React.PureComponent<
 			onSendMessage,
 			hasAcceptedTerms,
 			onAcceptTerms,
+			hasAcceptedSystemUseNotification,
+			onAcceptSystemUseNotification,
 			onSetStoredMessage,
 			isDropZoneVisible,
 			isXAppOverlayOpen,
@@ -1891,8 +1914,33 @@ export class WebchatUI extends React.PureComponent<
 			}
 		};
 
+		const sun = config.settings.systemUseNotification;
+		const handleAcceptSystemUseNotification = () => {
+			// Use config.initialSessionId (populated from client.socketOptions.sessionId
+			// in Webchat.tsx before the first connect) so the recorded sessionId matches
+			// what Webchat.tsx checks on page reload. state.options.sessionId is only
+			// populated after the first connect, which happens after SUN acceptance —
+			// using it would always persist "" as the accepted sessionId.
+			onAcceptSystemUseNotification(config.initialSessionId || "");
+			// If the privacy notice also needs to be shown, let it render next naturally.
+			// Otherwise connect immediately so storedMessage is flushed.
+			if (!config.settings.privacyNotice.enabled || hasAcceptedTerms) {
+				onShowChatScreen();
+			}
+		};
+
 		const getRegularLayoutContent = () => {
 			if (showInformationMessage) return <InformationMessage message={informMessage} />;
+
+			// System Use Notification (AC-8 / FedRAMP) is shown BEFORE the privacy notice.
+			// It is gated per session: a new conversation (new sessionId) requires re-acceptance.
+			if (sun?.enabled && !hasAcceptedSystemUseNotification)
+				return (
+					<SystemUseNotification
+						systemUseNotification={sun}
+						onAccept={handleAcceptSystemUseNotification}
+					/>
+				);
 
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled)
 				return (
@@ -1988,6 +2036,9 @@ export class WebchatUI extends React.PureComponent<
 			if (showInformationMessage && informTitle) {
 				return informTitle;
 			}
+			if (sun?.enabled && !hasAcceptedSystemUseNotification) {
+				return sun.title || "System Use Notification";
+			}
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled) {
 				return config.settings.privacyNotice.title || "Privacy notice";
 			}
@@ -2020,8 +2071,10 @@ export class WebchatUI extends React.PureComponent<
 		const hideBackButton = showChatScreen && !isHomeScreenEnabled;
 
 		const showDeleteAllConversationButton = !!(
-			((config.settings.privacyNotice.enabled && this.props.hasAcceptedTerms) ||
-				!config.settings.privacyNotice.enabled) &&
+			!isNoticePending(config.settings, {
+				hasAcceptedSystemUseNotification,
+				hasAcceptedTerms,
+			}) &&
 			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&
 			showPrevConversations &&
 			Object.keys(this.props.prevConversations).length
