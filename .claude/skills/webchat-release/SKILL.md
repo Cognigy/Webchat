@@ -1,6 +1,6 @@
 ---
 name: webchat-release
-description: Cut, build, and ship a new @cognigy/webchat release in this repo — version bump, dependency updates (axios, @cognigy/chat-components, @cognigy/socket-client), OSS license regeneration, the release PR, tagging, the Automatic Draft Release workflow, the changelog, and publishing as a pre-release to npm. Use whenever the user wants to release Webchat, cut/prepare a new version, bump the version, "do a webchat release", update a core dependency and ship it, create or fill a draft release, publish a pre-release, or asks about the release/draft/publish CI workflows. Also covers the upstream pre-flight — detecting merged-but-unreleased @cognigy/chat-components work and cutting a chat-components release first so the Webchat release can include it ("include the latest chat-components"). Also use when diagnosing release CI failures (E2E specs broken by a dependency bump, Format/Prettier check, OSS license version mismatch).
+description: Cut, build, and ship a new @cognigy/webchat release in this repo — version bump, dependency updates (axios, @cognigy/chat-components, @cognigy/socket-client), OSS license regeneration, the release PR, tagging, the Automatic Draft Release workflow, the changelog, and publishing as a pre-release to npm. Use whenever the user wants to release Webchat, cut/prepare a new version, bump the version, "do a webchat release", update a core dependency and ship it, create or fill a draft release, publish a pre-release, or asks about the release/draft/publish CI workflows. Also covers the upstream pre-flight — detecting merged-but-unreleased @cognigy/chat-components work and cutting a chat-components release first so the Webchat release can include it ("include the latest chat-components") — and the downstream demo-webchat bump in the Cognigy/cognigy monorepo (service-webchat), which happens right after publishing and is not gated on promotion to latest. Also use when diagnosing release CI failures (E2E specs broken by a dependency bump, Format/Prettier check, OSS license version mismatch).
 ---
 
 # Releasing @cognigy/webchat
@@ -70,6 +70,15 @@ Watch it land, then confirm npm actually has it before touching Webchat:
 gh run list --repo Cognigy/chat-components --limit 5
 npm view @cognigy/chat-components version    # must show 0.NN.0 before step 1
 ```
+
+**Known failure: the tag push creates no release.** `release.yml` authenticates with a hand-managed `RELEASE_ACTION_TOKEN` PAT, and when it expires the run fails with `##[error]Bad credentials` — the tag exists, but no GitHub release is created, so `publish.yml` (on `release: published`) never fires and **nothing reaches npm**. Silent unless you check, because the tag push itself succeeds. Diagnose and unblock:
+
+```bash
+gh run view <run-id> --repo Cognigy/chat-components --log-failed | grep -iE 'bad credentials|error'
+gh release create v0.NN.0 --repo Cognigy/chat-components --title "v0.NN.0" --generate-notes --verify-tag
+```
+
+That manual create is equivalent to what the workflow does (non-draft, non-prerelease, generated notes) and fires `publish.yml` normally. It unblocks the release but does **not** fix the cause — the secret needs rotating by a repo admin, or every future release fails the same way. Note the trap if someone proposes switching to `GITHUB_TOKEN`: releases created by `GITHUB_TOKEN` don't trigger other workflows, so `publish.yml` would stop firing entirely.
 
 **This blocks the Webchat release.** `npm install` in Webchat can only resolve `0.NN.0` once it's live on npm, so the Webchat half waits on the upstream PR being merged and published — a human-gated step in another repo. Don't try to route around it with a `file:`/tarball dependency; that is not shippable.
 
@@ -203,15 +212,65 @@ gh release edit v3.NN.0 --repo Cognigy/Webchat --notes-file notes.md
 
 ## 8. Publish as a pre-release, then the post-release checklist
 
-Publishing is the point of no return — `.github/workflows/publish.yml` runs `on: release: published` and does `npm publish --tag pre-release`, so the version lands on npm under the **`pre-release`** dist-tag (never `latest` automatically). **Confirm with the user before publishing.** When publishing, **check "Set as a pre-release"** on the GitHub release.
+Publishing is the point of no return — `.github/workflows/publish.yml` (named **"Publish to NPM (with pre-release tag)"**, so `gh run list --workflow Publish` won't match it) runs `on: release: published` and does `npm publish --tag pre-release`, so the version lands on npm under the **`pre-release`** dist-tag (never `latest` automatically). **Confirm with the user before publishing.** When publishing, **check "Set as a pre-release"** on the GitHub release — or `gh release edit v3.NN.0 --draft=false --prerelease`. Afterwards confirm `npm view @cognigy/webchat dist-tags` shows `latest` still on the _previous_ version and `pre-release` on the new one.
 
-After publishing (per the Confluence runbook):
+The checklist splits into what happens **now** and what genuinely waits for QA — the two are independent, and conflating them is what strands the demo-webchat bump (§8b).
+
+### 8a. Immediately after publishing — none of this waits for promotion
 
 1. Verify the new version loads on the **Testing Webchat** page.
-2. Tag this release's tickets with `webchat-3.NN`, plus the release tech-story.
-3. Create a QA tech-story; await QA approval (~1 week). For a patch, ask QA to prioritize.
-4. After the green light, promote to latest by running the **Promote Release to Latest** workflow (`promote-to-latest.yml`) — Actions → Run workflow → input the release tag `v3.NN.0`. It marks the GitHub release `--latest`, runs `npm dist-tag add @cognigy/webchat@3.NN.0 latest`, and removes the `pre-release` dist-tag if it still points there. (Editing the GitHub release in the UI alone does **not** update npm — there's no `release: edited` automation; this workflow is the mechanism.) Then re-verify on the Testing Webchat page and confirm `npm view @cognigy/webchat dist-tags`.
-5. Update the demo-webchat version in `service-webchat` (`services/service-webchat/package.json`), `npm i`, commit, push.
+2. **Bump demo-webchat** in `Cognigy/cognigy` — see §8b. Do it here, not after promotion.
+3. Tag this release's tickets with `webchat-3.NN`, plus the release tech-story.
+4. Create a QA tech-story, then await QA approval (~1 week) before §8c. For a patch, ask QA to prioritize.
+
+Only step 4 involves waiting; steps 1–3 are all same-day work.
+
+### 8b. Bump demo-webchat — a `Cognigy/cognigy` PR, decoupled from promotion
+
+The demo webchat served by `service-webchat` lives in the **`Cognigy/cognigy`** monorepo at `services/service-webchat/package.json`, pinned to an **exact** version (no caret).
+
+**This is not gated on promotion to `latest`.** Pointing the demo at the freshly published **pre-release** version is precisely what gives QA something to exercise during the ~1 week promotion window; waiting for promotion would invert the dependency and defeat the purpose. The exact pin resolves fine regardless of dist-tag, so `pre-release` is not an obstacle. Existing practice confirms it: the 3.47.0 demo bump ([cognigy#13417](https://github.com/Cognigy/cognigy/pull/13417)) landed **2026-07-13**, the same day 3.47.0 was published, while promotion to `latest` ran **2026-07-22** — nine days later.
+
+Because `Cognigy/cognigy`'s `main` is protected (1 approving review, a required team review, squash-only), this is a PR — not a direct push. From a worktree so you don't disturb whatever branch the monorepo checkout is on:
+
+```bash
+cd ~/repos/cognigy && git fetch origin main
+git worktree add /tmp/demo-bump -b chore/demo-webchat-3.NN.0 origin/main
+```
+
+Edit the pin by hand, then sync **only** the lockfile:
+
+```bash
+cd /tmp/demo-bump/services/service-webchat
+npm install --package-lock-only      # updates package-lock.json without touching package.json
+```
+
+- **Edit `package.json` by hand, don't let npm rewrite it.** The file has **no trailing newline** and uses tabs; `npm install <pkg>@<ver>` reformats it and appends a newline, adding diff noise. Hand-editing plus `--package-lock-only` keeps `package.json` to a single changed line.
+- **Audit the lockfile churn before committing.** `@cognigy/webchat` must be the _only_ changed **direct** dependency. Everything else should be transitive — `@cognigy/chat-components` via webchat, and the caret-ranged `@radix-ui/*` tree via chat-components' `react-popover`. A changed direct dep that isn't webchat means unrelated drift got pulled in; drop it. Verify rather than eyeball a ~200-line diff:
+
+Run this from `services/service-webchat` — the same directory as the `npm install` above. All three paths are relative to it, including git's `HEAD:./` prefix:
+
+```bash
+python3 - <<'EOF'
+import json, subprocess
+old = json.loads(subprocess.run(['git', 'show', 'HEAD:./package-lock.json'],
+                                capture_output=True, text=True).stdout)
+new = json.loads(open('package-lock.json').read())
+po, pn = old['packages'], new['packages']
+changed = {k for k in set(po) | set(pn) if po.get(k, {}).get('version') != pn.get(k, {}).get('version')}
+direct = set(json.loads(open('package.json').read()).get('dependencies', {}))
+print("direct deps changed:", sorted(k for k in changed if k.replace('node_modules/','') in direct))
+print("total changed:", len(changed))
+EOF
+```
+
+Expect exactly `['node_modules/@cognigy/webchat']` as the direct change, against a total in the low tens.
+
+The monorepo's pre-commit hooks (`pretty-quick`, `lint-staged`) only target `services/service-ui/**`, so they no-op here — but they do run, so don't mistake their output for an error. Open the PR titled `chore(service-webchat): update demo webchat to 3.NN.0`.
+
+### 8c. After the QA green light — promote to `latest`
+
+Run the **Promote Release to Latest** workflow (`promote-to-latest.yml`) — Actions → Run workflow → input the release tag `v3.NN.0`. It marks the GitHub release `--latest`, runs `npm dist-tag add @cognigy/webchat@3.NN.0 latest`, and removes the `pre-release` dist-tag if it still points there. (Editing the GitHub release in the UI alone does **not** update npm — there's no `release: edited` automation; this workflow is the mechanism.) Then re-verify on the Testing Webchat page and confirm `npm view @cognigy/webchat dist-tags`.
 
 ## Quick reference — gotchas
 
@@ -225,3 +284,4 @@ After publishing (per the Confluence runbook):
 - Squash merges orphan the `npm version` tag — re-point `v3.NN.0` to the `main` squash commit before pushing it.
 - Changelog range is between `Release/*` commits on `main`, not between `vX.Y.Z` tags.
 - Pushing the tag → draft release. Publishing the release → npm `pre-release` dist-tag. The **Promote Release to Latest** workflow (manual dispatch) → npm `latest` (and drops `pre-release`). Editing the release in the UI does not touch npm.
+- The demo-webchat bump in `Cognigy/cognigy` is **not** gated on promotion to `latest` — do it right after publishing, so QA can exercise the pre-release during the promotion window (§8b).
