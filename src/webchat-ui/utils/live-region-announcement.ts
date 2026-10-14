@@ -1,24 +1,26 @@
 /**
  * Cleans up a given text string by:
  * - Removing emojis
- * - Stripping HTML tags
- * - Replacing non-breaking spaces with regular spaces
- * - Collapsing multiple spaces into a single space
+ * - Stripping HTML tags and decoding HTML entities
+ * - Collapsing whitespace (including non-breaking spaces) into a single space
  * - Trimming leading and trailing spaces
+ *
+ * Message text from chat-components is HTML, so entities must be decoded:
+ * otherwise a user's "foo & bar" (escaped to "foo &amp; bar" for rendering)
+ * is announced as "foo amp bar". DOMParser is inert: no scripts run and no
+ * resources load.
  *
  * @param text - The input text to clean up
  * @returns The cleaned-up text
  */
 export const cleanUpText = (text: string): string => {
-	return text
-		.replace(
-			/([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF]|\uFE0F|\u200D)+/gu,
-			"",
-		)
-		.replace(/<\/?[^>]+(>|$)/g, "")
-		.replace(/&nbsp;/g, " ")
-		.replace(/\s+/g, " ")
-		.trim();
+	const withoutEmojis = text.replace(
+		/([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF]|\uFE0F|\u200D)+/gu,
+		"",
+	);
+	const plainText =
+		new DOMParser().parseFromString(withoutEmojis, "text/html").body.textContent || "";
+	return plainText.replace(/\s+/g, " ").trim();
 };
 
 /**

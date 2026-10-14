@@ -15,6 +15,29 @@ describe("Screen Reader Live Region", () => {
 		cy.get(liveRegionSelector).should("contain", "Hello there");
 	});
 
+	// The announced text comes from chat-components as HTML. User text in the
+	// default plain text mode (disableHtmlInput) is escaped for rendering, so
+	// "&" arrives as "&amp;". The live region must decode entities, or screen
+	// readers say "foo amp bar" (CGY-36060).
+	it("announces a user message with & and < as typed, not as entities", () => {
+		cy.sendMessage("foo & bar < baz");
+
+		cy.wait(500);
+		cy.get(liveRegionSelector)
+			.should("contain.text", "foo & bar < baz")
+			.and("not.contain.text", "&amp;")
+			.and("not.contain.text", "&lt;");
+	});
+
+	it("announces entities in a bot message as the characters they encode", () => {
+		cy.receiveMessage("Terms &amp; Conditions");
+
+		cy.wait(500);
+		cy.get(liveRegionSelector)
+			.should("contain.text", "Terms & Conditions")
+			.and("not.contain.text", "&amp;");
+	});
+
 	it("replaces the previous announcement: one atomic node holding the latest message", () => {
 		// Chat-message announcements supersede each other, so this region keeps
 		// the shared primitive's default "replace" mode — unlike the status

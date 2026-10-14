@@ -3,7 +3,12 @@
 
 // WCH-SI10-001: verifies dangerous tags and attributes removed from the DOMPurify
 // allow-list no longer survive sanitization. disableHtmlInput:false so HTML reaches
-// sanitizeHTML rather than being pre-stripped by stripHtmlToInertText.
+// sanitizeHTML rather than being pre-stripped by stripHtmlTags.
+
+// The part of the Webchat instance these tests use.
+type WebchatWithClient = {
+	client: { sendMessage: (text: string, data: object | null) => void };
+};
 
 describe("sanitize — DOMPurify allow-list hardening (WCH-SI10-001)", () => {
 	const init = () =>
@@ -115,6 +120,34 @@ describe("sanitize — DOMPurify allow-list hardening (WCH-SI10-001)", () => {
 		init();
 		typeAndSend('<a href="https://cognigy.com">Cognigy</a>');
 		cy.get(".webchat-chat-history").contains("Cognigy");
+	});
+
+	// HTML mode (disableHtmlInput: false) sends sanitized HTML. DOMPurify returns
+	// text without "<" unchanged, so a plain "&" reaches the flow as "&". This is
+	// the documented workaround for CGY-36060 until the plain text mode fix
+	// ships, so pin it. Text that also contains markup is HTML and is sent with
+	// entities ("&amp;"), which is correct for an HTML payload.
+	describe("wire payload in HTML mode", () => {
+		const stubSendMessage = () =>
+			cy.getWebchat().then(webchat => {
+				cy.stub((webchat as unknown as WebchatWithClient).client, "sendMessage").as(
+					"sendMessage",
+				);
+			});
+
+		it("sends a plain & unchanged", () => {
+			init();
+			stubSendMessage();
+			typeAndSend("foo & bar");
+			cy.get("@sendMessage").should("have.been.calledOnceWith", "foo & bar", null);
+		});
+
+		it("sends markup as sanitized HTML", () => {
+			init();
+			stubSendMessage();
+			typeAndSend("<b>bold</b> & co");
+			cy.get("@sendMessage").should("have.been.calledOnceWith", "<b>bold</b> &amp; co", null);
+		});
 	});
 
 	describe("Accessibility (WCAG 2.2 AA)", () => {
