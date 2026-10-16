@@ -1,3 +1,10 @@
+// Built with RegExp rather than a literal: Cypress specs import this module and
+// type-check it against an ES5 target, which rejects the "u" flag in literals.
+const EMOJI_REGEX = new RegExp(
+	"([\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]|\\uFE0F|\\u200D)+",
+	"gu",
+);
+
 /**
  * Cleans up a given text string by:
  * - Removing emojis
@@ -6,19 +13,37 @@
  * - Collapsing multiple spaces into a single space
  * - Trimming leading and trailing spaces
  *
+ * For plain text (DOM text, configured notice text). It does not decode
+ * entities: visible text such as "?a=1&region=eu" must be announced as shown.
+ * For chat-components live text, which is HTML, use htmlToAnnouncementText.
+ *
  * @param text - The input text to clean up
  * @returns The cleaned-up text
  */
 export const cleanUpText = (text: string): string => {
 	return text
-		.replace(
-			/([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF]|\uFE0F|\u200D)+/gu,
-			"",
-		)
+		.replace(EMOJI_REGEX, "")
 		.replace(/<\/?[^>]+(>|$)/g, "")
 		.replace(/&nbsp;/g, " ")
 		.replace(/\s+/g, " ")
 		.trim();
+};
+
+/**
+ * Announcement text for an HTML string, such as the live text chat-components
+ * reports for a message. Tags are removed and entities decoded exactly once,
+ * so a user's "foo & bar" (escaped to "foo &amp; bar" for rendering) is
+ * announced as "foo & bar", not "foo amp bar". DOMParser is inert: no scripts
+ * run and no resources load.
+ *
+ * @param html - The HTML to convert
+ * @returns The cleaned-up text
+ */
+export const htmlToAnnouncementText = (html: string): string => {
+	const text =
+		new DOMParser().parseFromString(html.replace(EMOJI_REGEX, ""), "text/html").body
+			.textContent || "";
+	return text.replace(/\s+/g, " ").trim();
 };
 
 /**
