@@ -101,6 +101,22 @@ describe("disableHtmlInput", () => {
 			expectSent("&#60;img src=x onerror=alert(1)&#62;");
 		});
 
+		// The HTML parser does not decode entities inside raw-text elements such
+		// as <script> and <style>. Escaping "&" before parsing therefore leaked
+		// "&amp;" into the payload from inside them: "&" must survive there too.
+		const rawTextCases: [string, string][] = [
+			["before<script>Tom & Jerry</script> after", "beforeTom & Jerry after"],
+			["x<style>a & b</style>y", "xa & by"],
+		];
+		rawTextCases.forEach(([typed, sent]) => {
+			it(`keeps & as typed inside a raw-text element: ${typed}`, () => {
+				init();
+				stubSendMessage();
+				typeAndSend(typed);
+				expectSent(sent);
+			});
+		});
+
 		// One strip pass would turn "<<b>img …>" into a real "<img …>" tag.
 		it("does not let nested tags reassemble into markup", () => {
 			init();

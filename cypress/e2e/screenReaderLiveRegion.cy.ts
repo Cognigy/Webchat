@@ -1,3 +1,9 @@
+import {
+	cleanUpText,
+	extractTextForScreenReader,
+	htmlToAnnouncementText,
+} from "../../src/webchat-ui/utils/live-region-announcement";
+
 describe("Screen Reader Live Region", () => {
 	const liveRegionSelector = "#webchatMessageContainerScreenReaderLiveRegion";
 
@@ -438,5 +444,34 @@ describe("Screen Reader Live Region", () => {
 		cy.get(liveRegionSelector).should("contain", "Second message");
 		// ...and the data-only message never triggered the generic fallback.
 		cy.get(liveRegionSelector).should("not.contain", "A new message");
+	});
+
+	// Two kinds of text reach the live region, and they must be cleaned
+	// differently. chat-components reports HTML, whose entities must be decoded
+	// once ("&amp;" is an "&"). Text read from the DOM is already what the user
+	// sees, so decoding it again would change it: "&region" would be read as
+	// "®ion" (CGY-36060 review).
+	describe("announcement text helpers", () => {
+		it("decodes entities in chat-components HTML exactly once", () => {
+			expect(htmlToAnnouncementText("foo &amp; bar &lt; baz")).to.equal("foo & bar < baz");
+			expect(htmlToAnnouncementText("Tom &amp;amp; Jerry")).to.equal("Tom &amp; Jerry");
+			expect(htmlToAnnouncementText("<p>Hello <b>there</b></p>")).to.equal("Hello there");
+		});
+
+		it("does not decode visible DOM text (DOM fallback path)", () => {
+			const root = document.createElement("div");
+			const paragraph = document.createElement("p");
+			// textContent: these characters are shown literally on screen
+			paragraph.textContent = "?a=1&region=eu and &lt;account&gt;";
+			root.appendChild(paragraph);
+			document.body.appendChild(root);
+
+			const domText = extractTextForScreenReader(root);
+			expect(domText).to.equal("?a=1&region=eu and &lt;account&gt;");
+			// ScreenReaderLiveRegion cleans the fallback text once more
+			expect(cleanUpText(domText)).to.equal("?a=1&region=eu and &lt;account&gt;");
+
+			root.remove();
+		});
 	});
 });

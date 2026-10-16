@@ -264,15 +264,29 @@ const textContentOf = (html: string): string =>
 
 const MAX_STRIP_PASSES = 10;
 
+// A Private Use Area character that does not occur in the text. The HTML parser
+// treats it as plain text everywhere, so it can stand in for "&". Returns
+// undefined only if the text contains all 6400 of them.
+const unusedPrivateUseCharacter = (text: string): string | undefined => {
+	for (let code = 0xe000; code <= 0xf8ff; code++) {
+		const character = String.fromCharCode(code);
+		if (!text.includes(character)) return character;
+	}
+	return undefined;
+};
+
 /**
  * Removes HTML tags from user input and keeps everything else exactly as typed
  * (used for disableHtmlInput). This is the text the endpoint, flows and intents
  * receive (CGY-36060, CGY-40199):
  *
  * - No escaping: a typed "&" stays "&" (Webchat 3.48–3.53 sent "&amp;").
- * - No entity decoding: "&" is escaped before parsing, so "?a=1&region=eu"
- *   does not become "?a=1®ion=eu", and a typed "&#60;img…&#62;" stays that
- *   inert text instead of turning into a real "<img…>" tag.
+ * - No entity decoding: every "&" is swapped for a placeholder before parsing
+ *   and restored after, so "?a=1&region=eu" does not become "?a=1®ion=eu",
+ *   and a typed "&#60;img…&#62;" stays that inert text instead of turning into
+ *   a real "<img…>" tag. A placeholder, not "&amp;", because the parser does
+ *   not decode entities inside raw-text elements such as <script> and <style>:
+ *   "<script>a & b</script>" would otherwise come out as "a &amp; b".
  * - Repeated until stable: one pass turns "<<b>img …>" into "<img …>".
  *
  * The result contains no markup, but can contain "<" or ">" characters
@@ -282,7 +296,10 @@ const MAX_STRIP_PASSES = 10;
 export const stripHtmlTags = (text: string): string => {
 	let result = text;
 	for (let pass = 0; pass < MAX_STRIP_PASSES; pass++) {
-		const stripped = textContentOf(result.replace(/&/g, "&amp;"));
+		const placeholder = unusedPrivateUseCharacter(result);
+		const stripped = placeholder
+			? textContentOf(result.split("&").join(placeholder)).split(placeholder).join("&")
+			: textContentOf(result.replace(/&/g, "&amp;"));
 		if (stripped === result) return result;
 		result = stripped;
 	}
