@@ -1,4 +1,4 @@
-Created on 02-10-2026 at 10:02:50
+Created on 19-10-2026 at 09:29:23
 
 {
   "@babel/code-frame@7.29.0": {
@@ -157,7 +157,7 @@ Created on 02-10-2026 at 10:02:50
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.83.0": {
+  "@cognigy/chat-components@0.84.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
@@ -170,7 +170,7 @@ Created on 02-10-2026 at 10:02:50
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.53.0": {
+  "@cognigy/webchat@3.54.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -2554,6 +2554,14 @@ Created on 02-10-2026 at 10:02:50
     "repository": "https://github.com/jonschlinkert/remarkable",
     "licenseFile": "node_modules/remarkable/LICENSE",
     "copyright": "Copyright (c) 2014-2016, Jon Schlinkert. Copyright (c) 2014 Jon Schlinkert, Vitaly Puzrin."
+  },
+  "remend@1.3.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/vercel/streamdown",
+    "publisher": "Hayden Bleasel",
+    "email": "hayden.bleasel@vercel.com",
+    "licenseFile": "node_modules/remend/LICENSE",
+    "copyright": "Copyright 2023 Vercel, Inc."
   },
   "reselect@5.1.1": {
     "licenses": "MIT",
