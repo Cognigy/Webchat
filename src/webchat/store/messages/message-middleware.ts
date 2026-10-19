@@ -5,7 +5,7 @@ import { addMessage, addMessageEvent } from "./message-reducer";
 import { Omit } from "react-redux";
 import { setFullscreenMessage, setLastInputId } from "../ui/ui-reducer";
 import { receiveMessage, ReceiveMessageAction } from "./message-handler";
-import { sanitizeHTML, stripHtmlToInertText } from "../../helper/sanitize";
+import { htmlToPlainText, sanitizeHTML, stripHtmlTags } from "../../helper/sanitize";
 import { SocketClient } from "@cognigy/socket-client";
 import { IMessageEvent } from "../../../common/interfaces/event";
 import bellSound from "../../../webchat-ui/utils/bell-sound";
@@ -119,12 +119,17 @@ export const createMessageMiddleware =
 				const { message, options } = action;
 				let { text, data } = message;
 
-				if (!store.getState().config.settings.widgetSettings.disableTextInputSanitization) {
-					text = sanitizeHTML(text || "");
-				}
+				const { disableHtmlInput, disableTextInputSanitization } =
+					store.getState().config.settings.widgetSettings;
 
-				if (store.getState().config.settings.widgetSettings.disableHtmlInput) {
-					text = stripHtmlToInertText(text || "");
+				// The two modes are exclusive. Plain text mode (disableHtmlInput) sends
+				// the typed text without tags and without added entities; the renderer
+				// escapes it. HTML mode sends sanitized HTML. Mixing them (sanitize, then
+				// strip, then re-escape) made flows receive "&amp;" for "&" (CGY-36060).
+				if (disableHtmlInput) {
+					text = stripHtmlTags(text || "");
+				} else if (!disableTextInputSanitization) {
+					text = sanitizeHTML(text || "");
 				}
 
 				// data is either a non-empty object or null
@@ -142,7 +147,15 @@ export const createMessageMiddleware =
 
 				const displayMessage = { ...message, text, id: messageId };
 
-				if (typeof options.label === "string") displayMessage.text = options.label;
+				// A postback shows the button label instead of the payload. The label
+				// is bot-authored HTML. In plain text mode the user bubble is escaped at
+				// render, so convert the label to text here, or "<b>Yes</b>" would
+				// show its tags.
+				if (typeof options.label === "string") {
+					displayMessage.text = disableHtmlInput
+						? htmlToPlainText(options.label)
+						: options.label;
+				}
 
 				next(setFullscreenMessage(undefined));
 
