@@ -718,6 +718,23 @@ describe("Previous Conversations", () => {
 			});
 		});
 
+		it("does not reconnect on tab visibility or network recovery after an earlier connection", () => {
+			openSeededListWithStubbedSocket({ startBehavior: { startBehavior: "none" } }, () => {
+				// Connect once, which arms the reconnect latch, then return to the home screen
+				cy.get(".webchat-homescreen-send-button").click();
+				cy.get("@connect").should("have.been.called");
+				cy.get("button.webchat-header-back-button").click();
+			});
+			cy.get("@connect").invoke("resetHistory");
+			confirmDeleteAll();
+
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "SET_PAGE_VISIBLE", visible: true });
+				webchat.store.dispatch({ type: "NETWORK_ON" });
+			});
+			cy.get("@connect").should("not.have.been.called");
+		});
+
 		it("does not connect before the System Use Notification for the new session is accepted", () => {
 			openSeededListWithStubbedSocket(
 				{
@@ -739,8 +756,12 @@ describe("Previous Conversations", () => {
 			cy.get("@connect").invoke("resetHistory");
 			confirmDeleteAll();
 
-			// The new session needs its own acceptance, and nothing connects before it
+			// The new session needs its own acceptance, and nothing connects before
+			// it — not even on network recovery
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "NETWORK_ON" });
+			});
 			cy.get("@connect").should("not.have.been.called");
 
 			// Accepting starts the conversation on the new session
