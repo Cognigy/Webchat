@@ -81,7 +81,9 @@ export const connection: Reducer<
 			// A session switch connects the socket directly, bypassing CONNECT.
 			// It is still a deliberate connection request, so it must arm the
 			// reconnect latch even if this first attempt fails (e.g. offline).
+			// A deferred switch does not connect, so it must not arm it (CGY-39639).
 			if (state.hasAttemptedConnection) return state;
+			if (action.type === "SWITCH_SESSION" && action.deferConnection) return state;
 
 			return {
 				...state,

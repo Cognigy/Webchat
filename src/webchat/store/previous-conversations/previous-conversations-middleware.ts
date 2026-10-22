@@ -1,4 +1,4 @@
-import { Middleware } from "redux";
+import { Dispatch, Middleware } from "redux";
 import { StoreState } from "../store";
 import { SwitchSessionAction, upsertPrevConversation } from "./previous-conversations-reducer";
 import { SendMessageAction, TriggerEngagementMessageAction } from "../messages/message-middleware";
@@ -6,7 +6,11 @@ import { ReceiveMessageAction } from "../messages/message-handler";
 import { RatingAction, ratingInitialState } from "../rating/rating-reducer";
 import { SetPrevStateAction, setPrevState } from "../reducer";
 import { SocketClient } from "@cognigy/socket-client";
-import { autoInjectHandledReset, triggerAutoInject } from "../autoinject/autoinject-reducer";
+import {
+	autoInjectHandledReset,
+	autoInjectRearm,
+	triggerAutoInject,
+} from "../autoinject/autoinject-reducer";
 import { setConnecting } from "../connection/connection-reducer";
 import { setOptions } from "../options/options-reducer";
 import { CompleteDeferredSessionSwitchAction, setPendingSessionSwitch } from "../ui/ui-reducer";
@@ -27,7 +31,7 @@ export const createPrevConversationsMiddleware =
 	(action: Actions) => {
 		switch (action.type) {
 			case "SWITCH_SESSION": {
-				const { sessionId, conversation } = action;
+				const { sessionId, conversation, deferConnection } = action;
 
 				const targetSession = sessionId || "";
 				const targetConversation = conversation ||
@@ -42,7 +46,14 @@ export const createPrevConversationsMiddleware =
 				const { config, ui } = store.getState();
 				const sunEnabled = !!config.settings?.systemUseNotification?.enabled;
 				if (sunEnabled && !ui.hasAcceptedSystemUseNotification) {
+					// The old session must not keep receiving messages meanwhile.
+					if (deferConnection) client.disconnect();
 					store.dispatch(setPendingSessionSwitch(targetSession, targetConversation));
+					break;
+				}
+
+				if (deferConnection) {
+					prepareSession(client, store.dispatch, targetSession, targetConversation);
 					break;
 				}
 
@@ -83,7 +94,7 @@ export const createPrevConversationsMiddleware =
  * immediate path (SUN not pending) and the deferred path (after SUN acceptance). */
 function doSwitchSession(
 	client: SocketClient,
-	dispatch: (action: unknown) => void,
+	dispatch: Dispatch,
 	targetSession: string,
 	targetConversation: Parameters<typeof setPrevState>[0],
 ) {
@@ -101,4 +112,21 @@ function doSwitchSession(
 			// TODO: should we do something else if switching connection goes wrong?
 			dispatch(setConnecting(false));
 		});
+}
+
+/** Switches to a session without connecting the socket: the endpoint only learns
+ * about the session once the user starts a conversation, which connects (CONNECT
+ * on SHOW_CHAT_SCREEN / SEND_MESSAGE) and sends the re-armed auto-inject message.
+ * Connecting here would start a session nobody asked for (CGY-39639). */
+function prepareSession(
+	client: SocketClient,
+	dispatch: Dispatch,
+	targetSession: string,
+	targetConversation: Parameters<typeof setPrevState>[0],
+) {
+	client.disconnect();
+	client.socketOptions.sessionId = targetSession;
+	dispatch(setPrevState(targetConversation));
+	dispatch(setOptions(client.socketOptions));
+	dispatch(autoInjectRearm());
 }
