@@ -1,4 +1,5 @@
 import { Dispatch, Middleware } from "redux";
+import { v4 as uuidv4 } from "uuid";
 import { StoreState } from "../store";
 import { SwitchSessionAction, upsertPrevConversation } from "./previous-conversations-reducer";
 import { SendMessageAction, TriggerEngagementMessageAction } from "../messages/message-middleware";
@@ -46,8 +47,6 @@ export const createPrevConversationsMiddleware =
 				const { config, ui } = store.getState();
 				const sunEnabled = !!config.settings?.systemUseNotification?.enabled;
 				if (sunEnabled && !ui.hasAcceptedSystemUseNotification) {
-					// The old session must not keep receiving messages meanwhile.
-					if (deferConnection) client.disconnect();
 					store.dispatch(setPendingSessionSwitch(targetSession, targetConversation));
 					break;
 				}
@@ -125,7 +124,8 @@ function prepareSession(
 	targetConversation: Parameters<typeof setPrevState>[0],
 ) {
 	client.disconnect();
-	client.socketOptions.sessionId = targetSession;
+	// Same fallback as client.switchSession() for when randomUUID is unavailable.
+	client.socketOptions.sessionId = targetSession || `session-${uuidv4()}`;
 	dispatch(setPrevState(targetConversation));
 	dispatch(setOptions(client.socketOptions));
 	dispatch(autoInjectRearm());

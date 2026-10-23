@@ -1,5 +1,4 @@
 import { Reducer } from "redux";
-import { v4 as uuidv4 } from "uuid";
 import { IMessage } from "../../../common/interfaces/message";
 import { RatingState } from "../rating/rating-reducer";
 import { IMessageEvent } from "../../../common/interfaces/event";
@@ -19,8 +18,7 @@ const SWITCH_SESSION = "SWITCH_SESSION";
  * is left disconnected (see `switchToUnconnectedSession`).
  */
 export const switchSession = (
-	// Same fallback as the socket client's switchSession() when randomUUID is unavailable
-	sessionId: string = (self.crypto as any)?.randomUUID?.() ?? `session-${uuidv4()}`,
+	sessionId = (self.crypto as any)?.randomUUID?.(),
 	conversation?: PrevConversationsState[string],
 	deferConnection = false,
 ) => ({
