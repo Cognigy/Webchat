@@ -615,6 +615,73 @@ describe("Previous Conversations", () => {
 				});
 			});
 		});
+
+		// Not wrapped in cy.session: on a retry a restored session would skip
+		// the callback — and every assertion in it — turning the test into a no-op.
+		// The outer beforeEach already visited the webchat page, so the seeded
+		// conversations land in its localStorage before initWebchat reads them.
+		describe("customTranslations.dateLocale (CGY-3745)", () => {
+			const seedTodayYesterdayAndTwoDaysAgo = () => {
+				const today = new Date();
+				today.setHours(12, 0, 0, 0);
+				const yesterday = new Date(today);
+				yesterday.setDate(today.getDate() - 1);
+				const twoDaysAgo = new Date(today);
+				twoDaysAgo.setDate(today.getDate() - 2);
+
+				setupConversationWithTimestamp(Date.now(), "session-locale-1");
+				setupConversationWithTimestamp(yesterday.getTime(), "session-locale-2");
+				return setupConversationWithTimestamp(twoDaysAgo.getTime(), "session-locale-3");
+			};
+
+			it("formats the relative time in the configured locale", () => {
+				const localOptions = seedTodayYesterdayAndTwoDaysAgo();
+
+				cy.initWebchat({
+					...localOptions,
+					settings: { customTranslations: { dateLocale: "de" } },
+				}).openWebchat();
+				cy.get("button").contains("Previous conversations").click();
+				cy.get(".webchat-prev-conversations-item").should("have.length", 3);
+
+				cy.get(".webchat-prev-conversations-time").then($times => {
+					expect([...$times].map(el => el.textContent)).to.deep.equal([
+						"Heute",
+						"Gestern",
+						// German has its own word for "2 days ago"; sentence-cased
+						// like the other labels
+						"Vorgestern",
+					]);
+				});
+				// Marks the language of the part for screen readers (SC 3.1.2)
+				cy.get(".webchat-prev-conversations-time").each($time => {
+					expect($time).to.have.attr("lang", "de");
+				});
+				// The accessible name carries the localized time too
+				cy.get(".webchat-prev-conversations-item")
+					.first()
+					.should("have.attr", "aria-label")
+					.and("contain", "Heute");
+				// axe's valid-lang rule checks the lang attribute
+				cy.checkA11yCompliance("[data-cognigy-webchat-root]");
+			});
+
+			it("falls back to the browser locale for an invalid tag", () => {
+				const localOptions = seedTodayYesterdayAndTwoDaysAgo();
+
+				cy.initWebchat({
+					...localOptions,
+					settings: { customTranslations: { dateLocale: "not a locale!" } },
+				}).openWebchat();
+				cy.get("button").contains("Previous conversations").click();
+				cy.get(".webchat-prev-conversations-item").should("have.length", 3);
+
+				cy.get(".webchat-prev-conversations-time")
+					.first()
+					.should("have.text", "Today")
+					.and("not.have.attr", "lang");
+			});
+		});
 	});
 
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.

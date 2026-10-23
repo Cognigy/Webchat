@@ -794,6 +794,10 @@ interface IWebchatSettings {
 		conversation_deleted?: string;
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
+		// BCP 47 language tag ("de", "fr-CA") for dates and times: the relative time in the
+		// previous-conversations list ("Heute", "Gestern") and the time in each message header.
+		// Unset or invalid: the visitor's browser locale is used
+		dateLocale?: string;
 		// Speech-to-text failure messages (shown as a notification)
 		speech_recognition_not_allowed?: string;
 		speech_recognition_no_microphone?: string;
