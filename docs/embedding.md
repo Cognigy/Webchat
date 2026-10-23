@@ -249,6 +249,8 @@ With either `enableIndicator` or `enableBadge` on, the unread count is also anno
 | enableDeleteAllConversations   | boolean | `false`                       | If enabled, a delete button is provided in previous conversations screen. This button can be used to delete all conversations. Confirmation is required before the delete operation |
 | emptyListText                  | string  | `"No previous conversations"` | Text shown in the list when there are no previous conversations. After "Delete all conversations" is confirmed, focus moves to this text so screen readers read the outcome         |
 
+The time of each conversation ("Today", "Yesterday", "3 days ago", …) is shown in the browser language. To show it in another language, set [`customTranslations.dateLocale`](#date-and-time-language).
+
 ##### Conversation Starters
 
 | Name     | Type                                      | Default | Description                                         |
@@ -448,6 +450,7 @@ In the above example only the texts outside the `{}` braces needs to be translat
 | cancel                                | string | "Cancel"                                                                                    | Label for canceling a delete or confirm action.                                                                                                                                  |
 | datePickerMonthLabel                  | string | "Month"                                                                                     | This text is used as the label for the Month select field in the date-picker.                                                                                                    |
 | datePickerYearLabel                   | string | "Year"                                                                                      | This text is used as the label for the Year input field in the date-picker.                                                                                                      |
+| dateLocale                            | string | browser language                                                                            | Language for dates and times, as a BCP 47 tag such as `"de"` or `"fr-CA"`. See [Date and time language](#date-and-time-language).                                                |
 | speech_recognition_not_allowed        | string | "Microphone access is blocked. Allow it in your browser settings to use speech input."      | Shown when the browser or the user has blocked microphone access for the page.                                                                                                   |
 | speech_recognition_no_microphone      | string | "No microphone was found. Connect one to use speech input."                                 | Shown when no capture device is available for speech input.                                                                                                                      |
 | speech_recognition_no_speech          | string | "No speech was detected. Please try again."                                                 | Shown when a dictation ended without the engine recognizing anything.                                                                                                            |
@@ -456,6 +459,33 @@ In the above example only the texts outside the `{}` braces needs to be translat
 | file_upload_infected                  | string | "Infected File"                                                                             | Reason shown after `file_upload_failed` in the attachment chip ("Upload Failed: Infected File") when the malware scan rejected the uploaded file.                                |
 | file_upload_too_large                 | string | "File size > {maxSizeInMb}MB"                                                               | Reason shown after `file_upload_failed` in the attachment chip ("Upload Failed: File size > 10MB") when a file exceeds `fileAttachmentMaxSize`; `{maxSizeInMb}` is interpolated. |
 | ariaLabels                            | object | [Aria Labels](#aria-labels)                                                                 | Object containing the default ARIA labels for accessible UI elements.                                                                                                            |
+
+#### Date and time language
+
+By default, Webchat shows dates and times in the language of the visitor's browser. Set `dateLocale` to show them in a fixed language instead, for example the language of your bot:
+
+```json
+{
+	"dateLocale": "de"
+}
+```
+
+The value is a [BCP 47 language tag](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locales_argument): a language code (`"de"`), optionally with a region (`"de-AT"`, `"fr-CA"`). Tags are not case-sensitive, so `"DE-de"` works too.
+
+`dateLocale` applies to:
+
+| Where                       | Browser in English, no `dateLocale`   | `"dateLocale": "de"`                |
+| --------------------------- | ------------------------------------- | ----------------------------------- |
+| Previous conversations list | "Today", "Yesterday", "2 days ago", … | "Heute", "Gestern", "Vorgestern", … |
+| Time above each message     | "02:05 PM"                            | "14:05"                             |
+
+The time above each message is rendered by `@cognigy/chat-components`. It follows `dateLocale` once Webchat ships a chat-components version that includes the setting ([Cognigy/chat-components#293](https://github.com/Cognigy/chat-components/pull/293)). Until then, only the previous conversations list changes.
+
+`dateLocale` changes only the format of dates and times. The words around them still come from the other custom translations, for example `ariaLabels.messageHeader.timestamp` ("At {time},").
+
+Webchat ignores the setting and uses the browser language when the value is empty, is not a valid language tag, or names a language the browser cannot format dates in (for example `"tlh"`). Webchat never fails to render because of this setting.
+
+For screen readers, Webchat marks a localized date or time with its language (the HTML `lang` attribute), so it is pronounced correctly even when the page uses a different language (WCAG 3.1.2). Webchat does not add this marking when it falls back to the browser language.
 
 #### Aria Labels
 
@@ -574,7 +604,7 @@ Message header related accessibility text content used by screen reader in messa
 | --------- | ------ | ------- | ----------- |
 | user | string | "You said:" | The screen reader text used for announcing user messages |
 | bot | string | "{name} said:" | The screen reader text used for announcing bot message header. The name is the name of the bot configured in the endpoint editor |
-| timestamp | string | "At {time}" | The time at which the message was sent |
+| timestamp | string | "At {time}" | The time at which the message was sent. `{time}` is formatted in the [`dateLocale`](#date-and-time-language) language, or the browser language when it is not set |
 
 #### Settings Interface
 

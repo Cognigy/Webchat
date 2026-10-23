@@ -666,20 +666,27 @@ describe("Previous Conversations", () => {
 				cy.checkA11yCompliance("[data-cognigy-webchat-root]");
 			});
 
-			it("falls back to the browser locale for an invalid tag", () => {
-				const localOptions = seedTodayYesterdayAndTwoDaysAgo();
+			// "tlh" (Klingon) is a valid tag that browsers cannot format dates in:
+			// the text falls back to the browser locale, so it must not claim lang="tlh"
+			[
+				["an invalid tag", "not a locale!"],
+				["a valid but unsupported tag", "tlh"],
+			].forEach(([description, dateLocale]) => {
+				it(`falls back to the browser locale for ${description}`, () => {
+					const localOptions = seedTodayYesterdayAndTwoDaysAgo();
 
-				cy.initWebchat({
-					...localOptions,
-					settings: { customTranslations: { dateLocale: "not a locale!" } },
-				}).openWebchat();
-				cy.get("button").contains("Previous conversations").click();
-				cy.get(".webchat-prev-conversations-item").should("have.length", 3);
+					cy.initWebchat({
+						...localOptions,
+						settings: { customTranslations: { dateLocale } },
+					}).openWebchat();
+					cy.get("button").contains("Previous conversations").click();
+					cy.get(".webchat-prev-conversations-item").should("have.length", 3);
 
-				cy.get(".webchat-prev-conversations-time")
-					.first()
-					.should("have.text", "Today")
-					.and("not.have.attr", "lang");
+					cy.get(".webchat-prev-conversations-time")
+						.first()
+						.should("have.text", "Today")
+						.and("not.have.attr", "lang");
+				});
 			});
 		});
 	});
