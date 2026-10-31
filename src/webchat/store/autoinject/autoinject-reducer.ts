@@ -32,6 +32,16 @@ export const autoInjectHandledReset = () => ({
 });
 export type TAutoInjectResetAction = ReturnType<typeof autoInjectHandledReset>;
 
+/**
+ * Re-arms the auto-inject message for a session that is not connected yet:
+ * like on a fresh page load, it is sent once the chat screen is shown again.
+ */
+const AUTO_INJECT_REARM = "AUTO_INJECT_REARM";
+export const autoInjectRearm = () => ({
+	type: AUTO_INJECT_REARM as "AUTO_INJECT_REARM",
+});
+export type TAutoInjectRearmAction = ReturnType<typeof autoInjectRearm>;
+
 export type TAutoInjectAction =
 	| SetConnectedAction
 	| ShowChatScreenAction
@@ -39,7 +49,8 @@ export type TAutoInjectAction =
 	| SetConfigAction
 	| TTriggerAutoInjectAction
 	| TAutoInjectTriggeredAction
-	| TAutoInjectResetAction;
+	| TAutoInjectResetAction
+	| TAutoInjectRearmAction;
 
 /**
  * This reducer collects and manages information about
@@ -115,6 +126,14 @@ export const autoInject: Reducer<TAutoInjectState, TAutoInjectAction> = (
 			}
 
 			break;
+		}
+
+		case "AUTO_INJECT_REARM": {
+			return {
+				...state,
+				isChatOpenedOnce: false,
+				isAutoInjectHandled: false,
+			};
 		}
 	}
 
