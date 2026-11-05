@@ -7,10 +7,17 @@ import {
 	ShowChatScreenAction,
 	SetPageVisibleAction,
 	SetHasAcceptedTermsAction,
+	SetHasAcceptedSystemUseNotificationAction,
 	SetOpenAction,
 } from "./ui-reducer";
 import { getStorage } from "../../helper/storage";
-import { setHasAcceptedTermsInStorage } from "../../helper/privacyPolicy";
+import {
+	setHasAcceptedTermsInStorage,
+	setHasAcceptedSunInStorage,
+	hasAcceptedSunInStorage,
+} from "../../helper/privacyPolicy";
+import { setHasAcceptedSystemUseNotification, completeDeferredSessionSwitch } from "./ui-reducer";
+import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 export const uiMiddleware: Middleware<object, StoreState> =
 	store =>
@@ -21,7 +28,9 @@ export const uiMiddleware: Middleware<object, StoreState> =
 			| SetOpenAction
 			| ShowChatScreenAction
 			| SetPageVisibleAction
-			| SetHasAcceptedTermsAction,
+			| SetHasAcceptedTermsAction
+			| SetHasAcceptedSystemUseNotificationAction
+			| SwitchSessionAction,
 	) => {
 		const { disableLocalStorage, useSessionStorage } =
 			store.getState().config.settings.embeddingConfiguration;
@@ -78,7 +87,49 @@ export const uiMiddleware: Middleware<object, StoreState> =
 
 				break;
 			}
+
+			// System Use Notification (AC-8 / FedRAMP) — store accepted sessionId and
+			// complete any deferred session switch that was waiting for acceptance.
+			case "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION": {
+				// Read the pending switch BEFORE next() — the reducer clears it afterward.
+				const pendingSwitch = store.getState().ui.pendingSessionSwitch;
+
+				if (browserStorage) {
+					setHasAcceptedSunInStorage(browserStorage, action.sessionId);
+					// Also record the target session so page-reloads within that session skip the notice.
+					if (pendingSwitch?.sessionId) {
+						setHasAcceptedSunInStorage(browserStorage, pendingSwitch.sessionId);
+					}
+				}
+
+				const result = next(action);
+
+				// Complete the deferred socket switch now that SUN is accepted.
+				if (pendingSwitch) {
+					store.dispatch(
+						completeDeferredSessionSwitch(
+							pendingSwitch.sessionId,
+							pendingSwitch.conversation,
+						),
+					);
+				}
+
+				return result;
+			}
 		}
 
-		return next(action);
+		// Run the reducer (and all downstream middleware) first so the state is updated.
+		const result = next(action);
+
+		// After SWITCH_SESSION the reducer has reset hasAcceptedSystemUseNotification to false.
+		// Re-check storage: if the incoming sessionId was already accepted in a prior page visit
+		// (e.g. user returns to an existing conversation), restore the acceptance so the notice
+		// does not re-appear for that session.
+		if (action.type === "SWITCH_SESSION" && action.sessionId) {
+			if (hasAcceptedSunInStorage(browserStorage, action.sessionId)) {
+				store.dispatch(setHasAcceptedSystemUseNotification(action.sessionId));
+			}
+		}
+
+		return result;
 	};

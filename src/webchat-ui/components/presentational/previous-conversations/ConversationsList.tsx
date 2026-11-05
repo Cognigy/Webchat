@@ -36,6 +36,27 @@ const ConversationsList = styled.div(({ theme }) => ({
 	},
 }));
 
+// Programmatic focus target (tabIndex -1, not in the Tab order): after
+// "Delete all conversations" focus lands here so the outcome is read out
+// without a live region (SC 4.1.3, CGY-39786). Centred in the empty list;
+// the focus ring shows for keyboard-initiated focus (SC 2.4.7).
+const EmptyListText = styled.p(({ theme }) => ({
+	margin: "auto",
+	padding: "4px 8px",
+	fontSize: 16,
+	fontWeight: 400,
+	lineHeight: "24px",
+	textAlign: "center",
+	color: theme.black10,
+	"&:focus": {
+		outline: "none",
+	},
+	"&:focus-visible": {
+		outline: `2px solid ${theme.primaryColorFocus}`,
+		outlineOffset: 2,
+	},
+}));
+
 const ConversationsListActions = styled.div(({ theme }) => ({
 	alignSelf: "flex-end",
 	display: "flex",
@@ -63,6 +84,7 @@ interface IPrevConversationsListProps {
 	onSetShowPrevConversations: (show: boolean) => void;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
 	startNewConversationButtonRef?: React.RefObject<HTMLButtonElement>;
+	emptyListTextRef?: React.RefObject<HTMLParagraphElement>;
 }
 
 export const PrevConversationsList = (props: IPrevConversationsListProps) => {
@@ -73,6 +95,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 		onSwitchSession,
 		currentSession,
 		startNewConversationButtonRef,
+		emptyListTextRef,
 	} = props;
 
 	// we sort the conversation based on last message timestamp
@@ -100,6 +123,16 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 	return (
 		<ConversationsListRoot className="webchat-prev-conversations-root">
 			<ConversationsList className="webchat-prev-conversations-content">
+				{sessions.length === 0 && (
+					<EmptyListText
+						className="webchat-prev-conversations-empty"
+						ref={emptyListTextRef}
+						tabIndex={-1}
+					>
+						{config.settings.homeScreen?.previousConversations?.emptyListText ||
+							"No previous conversations"}
+					</EmptyListText>
+				)}
 				{sessions.length > 0 &&
 					sessions.map((session, i) => {
 						return (

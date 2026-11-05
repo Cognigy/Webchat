@@ -61,6 +61,25 @@ const FAB = styled(IconButton)(({ theme }) => ({
 		animationFillMode: "both",
 	},
 
+	// Reveals the opt-in animation pause control (IconAnimationPauseButton, the
+	// launcher's following sibling) while the launcher is hovered or keyboard
+	// focused. Lives here because the stylis isolate plugin prefixes the root
+	// selector in front of `&`, so the rule must start with the launcher.
+	"&:hover ~ .webchat-toggle-button-animation-pause, &:focus-visible ~ .webchat-toggle-button-animation-pause":
+		{
+			opacity: 1,
+		},
+
+	// SC 2.3.3 / project rule: no launcher motion under reduced motion. Same
+	// selectors as the burst rules above (equal specificity, declared later),
+	// so this wins; a shorter selector would lose to them.
+	"@media (prefers-reduced-motion: reduce)": {
+		"&.burst.bounce .iconAnimationContainer.optionActive, &.burst.swing .iconAnimationContainer.optionActive, &.burst.pulse .iconAnimationContainer.optionActive":
+			{
+				animationName: "none",
+			},
+	},
+
 	"@keyframes bounceBurst": {
 		"0%": { transform: "translateY(0)" },
 		"30%": { transform: "translateY(calc(-1 * var(--icon-bounce-amp)))" },

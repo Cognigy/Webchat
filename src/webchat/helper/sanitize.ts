@@ -258,12 +258,58 @@ export const sanitizeHTML = (text: string) => {
 	return DOMPurify.sanitize(text, configToUse).toString();
 };
 
-export const stripHtmlToInertText = (text: string): string => {
-	// 1. strip tags: parse as HTML and keep only the text content
-	const stripped = new DOMParser().parseFromString(text, "text/html").body.textContent || "";
-	// 2. re-escape so <, >, & render as literal characters and can never
-	//    be reinterpreted as markup downstream (robust to nested encoding)
-	const escaper = document.createElement("div");
-	escaper.textContent = stripped;
-	return escaper.innerHTML;
+const textContentOf = (html: string): string =>
+	// DOMParser is inert: no scripts run and no resources load.
+	new DOMParser().parseFromString(html, "text/html").body.textContent || "";
+
+const MAX_STRIP_PASSES = 10;
+
+// A Private Use Area character that does not occur in the text. The HTML parser
+// treats it as plain text everywhere, so it can stand in for "&". Returns
+// undefined only if the text contains all 6400 of them.
+const unusedPrivateUseCharacter = (text: string): string | undefined => {
+	for (let code = 0xe000; code <= 0xf8ff; code++) {
+		const character = String.fromCharCode(code);
+		if (!text.includes(character)) return character;
+	}
+	return undefined;
 };
+
+/**
+ * Removes HTML tags from user input and keeps everything else exactly as typed
+ * (used for disableHtmlInput). This is the text the endpoint, flows and intents
+ * receive (CGY-36060, CGY-40199):
+ *
+ * - No escaping: a typed "&" stays "&" (Webchat 3.48–3.53 sent "&amp;").
+ * - No entity decoding: every "&" is swapped for a placeholder before parsing
+ *   and restored after, so "?a=1&region=eu" does not become "?a=1®ion=eu",
+ *   and a typed "&#60;img…&#62;" stays that inert text instead of turning into
+ *   a real "<img…>" tag. A placeholder, not "&amp;", because the parser does
+ *   not decode entities inside raw-text elements such as <script> and <style>:
+ *   "<script>a & b</script>" would otherwise come out as "a &amp; b".
+ * - Repeated until stable: one pass turns "<<b>img …>" into "<img …>".
+ *
+ * The result contains no markup, but can contain "<" or ">" characters
+ * ("a < b"). chat-components escapes user text at render time when
+ * disableHtmlInput is set.
+ */
+export const stripHtmlTags = (text: string): string => {
+	let result = text;
+	for (let pass = 0; pass < MAX_STRIP_PASSES; pass++) {
+		const placeholder = unusedPrivateUseCharacter(result);
+		const stripped = placeholder
+			? textContentOf(result.split("&").join(placeholder)).split(placeholder).join("&")
+			: textContentOf(result.replace(/&/g, "&amp;"));
+		if (stripped === result) return result;
+		result = stripped;
+	}
+	// Pathological nesting: give up on keeping "<" rather than risk markup.
+	return result.replace(/</g, "");
+};
+
+/**
+ * Plain text of a bot-authored HTML string, such as a quick reply title shown
+ * in the user bubble after a click. Unlike user input, this is HTML, so its
+ * entities are decoded ("Caf&eacute;" → "Café").
+ */
+export const htmlToPlainText = (html: string): string => textContentOf(html);

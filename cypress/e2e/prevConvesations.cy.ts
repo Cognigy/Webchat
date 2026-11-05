@@ -725,6 +725,134 @@ describe("Previous Conversations", () => {
 			cy.get("#webchatStatusLiveRegion").should("contain.text", "Chat window home screen");
 		});
 
+		it("shows the empty-state text when there are no previous conversations (CGY-39786)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: {
+							enabled: true,
+							buttonText: "View previous conversations",
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("View previous conversations").click();
+			cy.get(".webchat-prev-conversations-item").should("have.length", 0);
+			// Programmatic focus target only: not in the Tab order; centred in the list
+			cy.get(".webchat-prev-conversations-empty")
+				.should("be.visible")
+				.and("have.text", "No previous conversations")
+				.and("have.attr", "tabindex", "-1")
+				.and("have.css", "text-align", "center");
+		});
+
+		it("honors the configurable emptyListText (CGY-39786)", () => {
+			cy.initMockWebchat({
+				settings: {
+					homeScreen: {
+						enabled: true,
+						previousConversations: {
+							enabled: true,
+							buttonText: "View previous conversations",
+							emptyListText: "Keine früheren Unterhaltungen",
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.get("button").contains("View previous conversations").click();
+			cy.get(".webchat-prev-conversations-empty").should(
+				"have.text",
+				"Keine früheren Unterhaltungen",
+			);
+		});
+
+		describe("Delete all conversations (SC 4.1.3 / 2.4.3, CGY-39786)", () => {
+			const localOptions = {
+				userId: "user-delete-all",
+				sessionId: "session-delete-all-1",
+				channel: "channel-delete-all",
+			};
+
+			// Same key layout as getOptionsKey (src/webchat/store/options/options.ts);
+			// the URLToken is the mocked endpoint's "fake-url-token".
+			const seedConversation = (sessionId: string) => {
+				const key = ["webchat-client", localOptions.userId, sessionId, "fake-url-token"];
+				const conversationData = {
+					messages: [
+						{ text: "seeded message", source: "user", timestamp: Date.now() },
+						{
+							text: "You said 'seeded message'.",
+							data: {},
+							source: "bot",
+							timestamp: Date.now(),
+						},
+					],
+				};
+				cy.window().then(window => {
+					window.localStorage.setItem(
+						JSON.stringify(key),
+						JSON.stringify(conversationData),
+					);
+				});
+			};
+
+			const openSeededList = () => {
+				seedConversation("session-delete-all-1");
+				seedConversation("session-delete-all-2");
+				cy.initMockWebchat({
+					...localOptions,
+					settings: {
+						homeScreen: {
+							enabled: true,
+							previousConversations: {
+								enabled: true,
+								enableDeleteAllConversations: true,
+								buttonText: "View previous conversations",
+							},
+						},
+					},
+				});
+				cy.openWebchat();
+				cy.get("button").contains("View previous conversations").click();
+				cy.get(".webchat-prev-conversations-item").should("have.length", 2);
+				cy.get(".webchat-prev-conversations-empty").should("not.exist");
+			};
+
+			it("moves focus to the empty-state text after the deletion is confirmed", () => {
+				openSeededList();
+
+				cy.get(".webchat-header-delete-all-conversations-button").click();
+				cy.get(".webchat-modal-root").should("exist");
+				cy.get(".webchat-delete-confirmation-confirm-button").click();
+
+				cy.get(".webchat-modal-root").should("not.exist");
+				cy.get(".webchat-prev-conversations-item").should("have.length", 0);
+				// The header delete button is gone with the last conversation …
+				cy.get(".webchat-header-delete-all-conversations-button").should("not.exist");
+				// … so focus lands on the empty-state text, which a screen reader
+				// then reads as the outcome of the action
+				cy.get(".webchat-prev-conversations-empty")
+					.should("have.text", "No previous conversations")
+					.and("have.focus");
+				// Tab continues to the start button
+				cy.get("[data-testid=webchat-start-chat-button]").should("exist");
+			});
+
+			it("returns focus to the header delete button when the dialog is cancelled", () => {
+				openSeededList();
+
+				cy.get(".webchat-header-delete-all-conversations-button").click();
+				cy.get(".webchat-delete-confirmation-cancel-button").click();
+
+				cy.get(".webchat-modal-root").should("not.exist");
+				cy.get(".webchat-prev-conversations-item").should("have.length", 2);
+				cy.get(".webchat-header-delete-all-conversations-button").should("have.focus");
+			});
+		});
+
 		it("previous conversations list has no detectable a11y violations", () => {
 			cy.initMockWebchat({
 				settings: {

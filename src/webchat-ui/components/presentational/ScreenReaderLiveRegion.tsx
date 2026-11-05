@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "../../../webchat/helper/useSelector";
-import { cleanUpText, getTextFromDOM } from "../../utils/live-region-announcement";
+import {
+	cleanUpText,
+	getTextFromDOM,
+	htmlToAnnouncementText,
+} from "../../utils/live-region-announcement";
 import getMessagesListWithoutControlCommands from "../../utils/filter-out-control-commands";
 import { IStreamingMessage } from "../../../common/interfaces/message";
 import { SrOnlyLiveRegion, LiveRegionMessage } from "./SrOnlyLiveRegion";
@@ -140,7 +144,11 @@ const ScreenReaderLiveRegion: React.FC<ScreenReaderLiveRegionProps> = ({
 				// Rendered: announce exactly one message per effect run.
 				// Fall back to "A new message" for rendered-but-textless nodes.
 				announcedIdsRef.current.add(id);
-				const text = cleanUpText(liveText || domText || "A new message");
+				// chat-components live text is HTML (decode it once); DOM text is
+				// plain (never decode it, or "&region" would be read as "®ion").
+				const text = liveText
+					? htmlToAnnouncementText(liveText)
+					: cleanUpText(domText || "A new message");
 				setLiveMessage({ id, text });
 				return;
 			}

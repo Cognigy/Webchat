@@ -37,6 +37,7 @@ export const getInitialState = (): ConfigState => ({
 			enableGenericHTMLStyling: false,
 			disableHtmlContentSanitization: false,
 			disableUrlButtonSanitization: false,
+			enableIconAnimationPauseButton: false,
 			watermark: "default",
 			watermarkText: "Powered by Cognigy.AI",
 			watermarkUrl: "",
@@ -144,6 +145,12 @@ export const getInitialState = (): ConfigState => ({
 				enabled: false,
 				items: [],
 			},
+		},
+		systemUseNotification: {
+			enabled: false,
+			title: "System Use Notification",
+			text: "You are accessing a U.S. Government information system. Information system usage may be monitored, recorded, and subject to audit. Unauthorized use of the information system is prohibited and subject to criminal and civil penalties. Use of the information system indicates consent to monitoring and recording.",
+			submitButtonText: "I acknowledge and accept",
 		},
 		privacyNotice: {
 			enabled: false,

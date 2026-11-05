@@ -8,14 +8,29 @@ import { SrOnlyLiveRegion, LiveRegionMessage } from "./SrOnlyLiveRegion";
 // mounted instance would announce every other instance's statuses.
 type StatusListener = (text: string) => void;
 const statusListeners = new Set<StatusListener>();
+const pendingAnnouncements = new Set<ReturnType<typeof setTimeout>>();
 let statusCounter = 0;
 
 /**
  * Announces arbitrary status text (e.g. a screen change) through the
  * <StatusLiveRegion>. No-op while the region is not mounted (webchat closed).
+ *
+ * `delayMs` defers the announcement, e.g. past a focus move that would
+ * otherwise cancel it. Pending delayed announcements belong to the region:
+ * they are dropped when it unmounts (webchat closed), so a result from a
+ * previous chat window is never voiced in the next one — and the caller
+ * (typically a screen that unmounts right away) owns no timer.
  */
-export function announceStatus(text: string) {
-	statusListeners.forEach(listener => listener(text));
+export function announceStatus(text: string, options?: { delayMs?: number }) {
+	if (!options?.delayMs) {
+		statusListeners.forEach(listener => listener(text));
+		return;
+	}
+	const handle = setTimeout(() => {
+		pendingAnnouncements.delete(handle);
+		statusListeners.forEach(listener => listener(text));
+	}, options.delayMs);
+	pendingAnnouncements.add(handle);
 }
 
 /**
@@ -31,7 +46,14 @@ export function announceStatus(text: string) {
  *   role="status" wrapper) to the DOM only when the notification fires,
  *   which live-region processing ignores — so toasts are mirrored here and
  *   silenced at the source (see silencedAriaProps in Notifications.tsx);
- * - direct announcements via announceStatus() (e.g. "home screen appeared").
+ * - direct announcements via announceStatus() (e.g. "home screen appeared",
+ *   file upload outcomes and removals).
+ *
+ * Renders in "append" mode: these messages are independent of each other
+ * and can land moments apart (a rejected attachment, then its sibling's
+ * upload finishing), so each keeps its own node until its own 15s clear
+ * instead of being swapped out by the next — a swap would let a screen
+ * reader drop the earlier one before voicing it. See SrOnlyLiveRegion.
  */
 export const StatusLiveRegion: FC = () => {
 	const { toasts } = useToasterStore();
@@ -43,6 +65,8 @@ export const StatusLiveRegion: FC = () => {
 		statusListeners.add(listener);
 		return () => {
 			statusListeners.delete(listener);
+			pendingAnnouncements.forEach(clearTimeout);
+			pendingAnnouncements.clear();
 		};
 	}, []);
 
@@ -69,5 +93,12 @@ export const StatusLiveRegion: FC = () => {
 		setStatus({ id: latest.id, text: latest.message as string });
 	}, [toasts]);
 
-	return <SrOnlyLiveRegion id="webchatStatusLiveRegion" role="status" message={status} />;
+	return (
+		<SrOnlyLiveRegion
+			id="webchatStatusLiveRegion"
+			role="status"
+			mode="append"
+			message={status}
+		/>
+	);
 };

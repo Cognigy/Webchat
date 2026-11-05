@@ -1,3 +1,9 @@
+import {
+	cleanUpText,
+	extractTextForScreenReader,
+	htmlToAnnouncementText,
+} from "../../src/webchat-ui/utils/live-region-announcement";
+
 describe("Screen Reader Live Region", () => {
 	const liveRegionSelector = "#webchatMessageContainerScreenReaderLiveRegion";
 
@@ -13,6 +19,47 @@ describe("Screen Reader Live Region", () => {
 		// Wait past the 100ms debounce in ScreenReaderLiveRegion.
 		cy.wait(500);
 		cy.get(liveRegionSelector).should("contain", "Hello there");
+	});
+
+	// The announced text comes from chat-components as HTML. User text in the
+	// default plain text mode (disableHtmlInput) is escaped for rendering, so
+	// "&" arrives as "&amp;". The live region must decode entities, or screen
+	// readers say "foo amp bar" (CGY-36060).
+	it("announces a user message with & and < as typed, not as entities", () => {
+		cy.sendMessage("foo & bar < baz");
+
+		cy.wait(500);
+		cy.get(liveRegionSelector)
+			.should("contain.text", "foo & bar < baz")
+			.and("not.contain.text", "&amp;")
+			.and("not.contain.text", "&lt;");
+	});
+
+	it("announces entities in a bot message as the characters they encode", () => {
+		cy.receiveMessage("Terms &amp; Conditions");
+
+		cy.wait(500);
+		cy.get(liveRegionSelector)
+			.should("contain.text", "Terms & Conditions")
+			.and("not.contain.text", "&amp;");
+	});
+
+	it("replaces the previous announcement: one atomic node holding the latest message", () => {
+		// Chat-message announcements supersede each other, so this region keeps
+		// the shared primitive's default "replace" mode — unlike the status
+		// region, which appends (see rating.cy.ts). Guards the default.
+		cy.get(liveRegionSelector).should("have.attr", "aria-atomic", "true");
+
+		cy.receiveMessage("First message");
+		cy.wait(500);
+		cy.get(liveRegionSelector).should("contain.text", "First message");
+
+		cy.receiveMessage("Second message");
+		cy.wait(500);
+		cy.get(`${liveRegionSelector} > div`)
+			.should("have.length", 1)
+			.and("contain.text", "Second message")
+			.and("not.contain.text", "First message");
 	});
 
 	it("does not announce a data-only message that is not rendered in the chat log", () => {
@@ -397,5 +444,34 @@ describe("Screen Reader Live Region", () => {
 		cy.get(liveRegionSelector).should("contain", "Second message");
 		// ...and the data-only message never triggered the generic fallback.
 		cy.get(liveRegionSelector).should("not.contain", "A new message");
+	});
+
+	// Two kinds of text reach the live region, and they must be cleaned
+	// differently. chat-components reports HTML, whose entities must be decoded
+	// once ("&amp;" is an "&"). Text read from the DOM is already what the user
+	// sees, so decoding it again would change it: "&region" would be read as
+	// "®ion" (CGY-36060 review).
+	describe("announcement text helpers", () => {
+		it("decodes entities in chat-components HTML exactly once", () => {
+			expect(htmlToAnnouncementText("foo &amp; bar &lt; baz")).to.equal("foo & bar < baz");
+			expect(htmlToAnnouncementText("Tom &amp;amp; Jerry")).to.equal("Tom &amp; Jerry");
+			expect(htmlToAnnouncementText("<p>Hello <b>there</b></p>")).to.equal("Hello there");
+		});
+
+		it("does not decode visible DOM text (DOM fallback path)", () => {
+			const root = document.createElement("div");
+			const paragraph = document.createElement("p");
+			// textContent: these characters are shown literally on screen
+			paragraph.textContent = "?a=1&region=eu and &lt;account&gt;";
+			root.appendChild(paragraph);
+			document.body.appendChild(root);
+
+			const domText = extractTextForScreenReader(root);
+			expect(domText).to.equal("?a=1&region=eu and &lt;account&gt;");
+			// ScreenReaderLiveRegion cleans the fallback text once more
+			expect(cleanUpText(domText)).to.equal("?a=1&region=eu and &lt;account&gt;");
+
+			root.remove();
+		});
 	});
 });

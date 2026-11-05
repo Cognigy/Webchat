@@ -472,5 +472,54 @@ describe("Rating", () => {
 			cy.tick(15100);
 			cy.get("#webchatStatusLiveRegion").should("be.empty");
 		});
+
+		it("keeps an earlier status announcement when the next one lands moments later", () => {
+			// Independent status messages can arrive a few hundred ms apart (a
+			// rejected attachment, then its sibling's upload finishing). Swapping
+			// the node would let NVDA drop the queued first one before voicing
+			// it, so the status region appends a node per message instead.
+			cy.initMockWebchat({});
+			cy.openWebchat().startConversation();
+
+			cy.get("#webchatStatusLiveRegion")
+				.should("have.attr", "aria-atomic", "false")
+				.and("have.attr", "aria-relevant", "additions text");
+
+			cy.getWebchat().then(webchat => webchat.showNotification("first status"));
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "first status");
+			cy.get("#webchatStatusLiveRegion > div").then($first => {
+				cy.getWebchat().then(webchat => webchat.showNotification("second status"));
+				cy.get("#webchatStatusLiveRegion > div").should($now => {
+					expect($now).to.have.length(2);
+					// the first node is untouched, so its queued announcement survives
+					expect($now[0]).to.equal($first[0]);
+					expect($now[1].textContent).to.equal("second status");
+				});
+			});
+		});
+
+		it("clears each status announcement 15 seconds after its own arrival", () => {
+			cy.initMockWebchat({});
+			cy.openWebchat().startConversation();
+			cy.clock();
+
+			cy.getWebchat().then(webchat => webchat.showNotification("first status"));
+			cy.tick(100);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "first status");
+
+			cy.tick(5000);
+			cy.getWebchat().then(webchat => webchat.showNotification("second status"));
+			cy.tick(100);
+			cy.get("#webchatStatusLiveRegion").should("contain.text", "second status");
+
+			// 15s after the first, the second (5s younger) is still there
+			cy.tick(10000);
+			cy.get("#webchatStatusLiveRegion")
+				.should("not.contain.text", "first status")
+				.and("contain.text", "second status");
+
+			cy.tick(5100);
+			cy.get("#webchatStatusLiveRegion").should("be.empty");
+		});
 	});
 });
