@@ -49,6 +49,27 @@ jobs:
             - name: Checkout PR branch
               uses: actions/checkout@v4
 
+            # Mint the App token and clone Webchat-Testing BEFORE any PR-controlled
+            # code (npm ci / build scripts) runs, so the App private key never
+            # reaches a step after untrusted code has executed on this runner.
+            - name: Mint read-only token for Webchat-Testing
+              id: testing-token
+              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+              with:
+                  app-id: ${{ secrets.PR_AUTOPILOT_APP_ID }}
+                  private-key: ${{ secrets.PR_AUTOPILOT_APP_PRIVATE_KEY }}
+                  owner: Cognigy
+                  repositories: Webchat-Testing
+                  permission-contents: read
+
+            - name: Clone Webchat-Testing
+              uses: actions/checkout@v4
+              with:
+                  repository: Cognigy/Webchat-Testing
+                  path: _testing
+                  token: ${{ steps.testing-token.outputs.token }}
+                  persist-credentials: false
+
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
@@ -82,23 +103,6 @@ jobs:
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
 
             # ── 3. Build preview app (Webchat-Testing) ─────────────────────────
-            - name: Mint read-only token for Webchat-Testing
-              id: testing-token
-              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-              with:
-                  app-id: ${{ secrets.PR_AUTOPILOT_APP_ID }}
-                  private-key: ${{ secrets.PR_AUTOPILOT_APP_PRIVATE_KEY }}
-                  owner: Cognigy
-                  repositories: Webchat-Testing
-                  permission-contents: read
-
-            - name: Clone Webchat-Testing
-              uses: actions/checkout@v4
-              with:
-                  repository: Cognigy/Webchat-Testing
-                  path: _testing
-                  token: ${{ steps.testing-token.outputs.token }}
-
             - name: Compute Pages preview URL
               id: pages-url
               env:
