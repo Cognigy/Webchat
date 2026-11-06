@@ -617,6 +617,162 @@ describe("Previous Conversations", () => {
 		});
 	});
 
+	describe("Delete all conversations (CGY-39639)", () => {
+		const userId = "user-delete-all-session";
+		const seededSessions = ["session-delete-all-a", "session-delete-all-b"];
+
+		// Same key layout as getOptionsKey (src/webchat/store/options/options.ts);
+		// the URLToken is the mocked endpoint's "fake-url-token".
+		const seedConversation = (sessionId: string) => {
+			const key = ["webchat-client", userId, sessionId, "fake-url-token"];
+			const conversationData = {
+				messages: [{ text: "seeded message", source: "user", timestamp: Date.now() }],
+			};
+			cy.window().then(window => {
+				window.localStorage.setItem(JSON.stringify(key), JSON.stringify(conversationData));
+			});
+		};
+
+		// Seeds two conversations, opens the list and replaces the socket
+		// connection and sending with stubs, so any attempt to start a session
+		// is observable and nothing reaches a real endpoint.
+		const openSeededListWithStubbedSocket = (
+			extraSettings: Record<string, unknown> = {},
+			beforeOpeningList: () => void = () => {},
+		) => {
+			seededSessions.forEach(seedConversation);
+			cy.initMockWebchat(
+				{
+					userId,
+					channel: "channel-delete-all-session",
+					settings: {
+						startBehavior: {
+							startBehavior: "injection",
+							getStartedPayload: "GET_STARTED",
+							getStartedText: "Get started",
+						},
+						homeScreen: {
+							enabled: true,
+							previousConversations: {
+								enabled: true,
+								enableDeleteAllConversations: true,
+								buttonText: "View previous conversations",
+							},
+						},
+						...extraSettings,
+					},
+				},
+				undefined,
+				"http://mock-endpoint.invalid/asdfqwer",
+			);
+			cy.getWebchat().then(webchat => {
+				cy.stub(webchat.client, "connect")
+					.callsFake(() => {
+						webchat.store.dispatch({ type: "SET_CONNECTED", connected: true });
+						return Promise.resolve(webchat.client);
+					})
+					.as("connect");
+				cy.stub(webchat.client, "sendMessage").as("sendMessage");
+			});
+			cy.openWebchat();
+			beforeOpeningList();
+			cy.get("button").contains("View previous conversations").click();
+			cy.get(".webchat-prev-conversations-item").should("have.length", 2);
+		};
+
+		const confirmDeleteAll = () => {
+			cy.get(".webchat-header-delete-all-conversations-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+			cy.get(".webchat-prev-conversations-item").should("have.length", 0);
+		};
+
+		it("does not start a new session", () => {
+			openSeededListWithStubbedSocket();
+			confirmDeleteAll();
+
+			// An eager session switch calls connect() synchronously on confirm
+			cy.get("@connect").should("not.have.been.called");
+			cy.get("@sendMessage").should("not.have.been.called");
+			cy.get(".webchat-prev-conversations-item").should("have.length", 0);
+			cy.getWebchat().then(webchat => {
+				const state = webchat.store.getState();
+				expect(state.prevConversations).to.deep.equal({});
+				expect(state.messages.messageHistory).to.have.length(0);
+				expect(seededSessions).not.to.include(webchat.client.socketOptions.sessionId);
+			});
+		});
+
+		it("starts a new session with the get-started message once the user starts a conversation", () => {
+			openSeededListWithStubbedSocket();
+			confirmDeleteAll();
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get(".webchat-homescreen-send-button").click();
+
+			cy.get("@connect").should("have.been.called");
+			cy.get("@sendMessage").should("have.been.calledWith", "GET_STARTED");
+			cy.getWebchat().then(webchat => {
+				const sessionId = webchat.client.socketOptions.sessionId;
+				expect(seededSessions).not.to.include(sessionId);
+				expect(webchat.store.getState().options.sessionId).to.equal(sessionId);
+			});
+		});
+
+		it("does not reconnect on tab visibility or network recovery after an earlier connection", () => {
+			openSeededListWithStubbedSocket({ startBehavior: { startBehavior: "none" } }, () => {
+				// Connect once, which arms the reconnect latch, then return to the home screen
+				cy.get(".webchat-homescreen-send-button").click();
+				cy.get("@connect").should("have.been.called");
+				cy.get("button.webchat-header-back-button").click();
+			});
+			cy.get("@connect").invoke("resetHistory");
+			confirmDeleteAll();
+
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "SET_PAGE_VISIBLE", visible: true });
+				webchat.store.dispatch({ type: "NETWORK_ON" });
+			});
+			cy.get("@connect").should("not.have.been.called");
+		});
+
+		it("does not connect before the System Use Notification for the new session is accepted", () => {
+			openSeededListWithStubbedSocket(
+				{
+					startBehavior: { startBehavior: "none" },
+					systemUseNotification: {
+						enabled: true,
+						title: "System Use Notification",
+						text: "Notice text",
+						submitButtonText: "Accept",
+					},
+				},
+				() => {
+					// Accept the notice for the current session, then return to the home screen
+					cy.get(".webchat-homescreen-send-button").click();
+					cy.get(".webchat-system-use-notification-accept-button").click();
+					cy.get("button.webchat-header-back-button").click();
+				},
+			);
+			cy.get("@connect").invoke("resetHistory");
+			confirmDeleteAll();
+
+			// The new session needs its own acceptance, and nothing connects before
+			// it — not even on network recovery
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "NETWORK_ON" });
+			});
+			cy.get("@connect").should("not.have.been.called");
+
+			// Accepting starts the conversation on the new session
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("@connect").should("have.been.called");
+			cy.getWebchat().then(webchat => {
+				expect(seededSessions).not.to.include(webchat.client.socketOptions.sessionId);
+			});
+		});
+	});
+
 	// Accessibility (WCAG 2.2 AA) — scoped to the widget root. See docs/accessibility.md.
 	describe("Accessibility (WCAG 2.2 AA)", () => {
 		// Not wrapped in cy.session: on a retry a restored session would skip
