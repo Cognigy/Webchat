@@ -11,8 +11,9 @@
 #
 # Required setup:
 #   - Enable GitHub Pages on the `gh-pages` branch (root /)
-#   - Set repository secret  GH_PAT  with a PAT that has read access to Cognigy/Webchat-Testing
-#     (classic PAT with `repo` scope, or fine-grained PAT with Contents:read on Webchat-Testing)
+#   - Org secrets PR_AUTOPILOT_APP_ID / PR_AUTOPILOT_APP_PRIVATE_KEY (cognigy-pr-autopilot App,
+#     installed on all repos). A short-lived token scoped to Contents:read on Webchat-Testing
+#     is minted per run, so there is no PAT to expire.
 #   - (Optional) Set repository variable  PREVIEW_ENDPOINT_URL  with a default endpoint
 
 name: PR Preview Deploy
@@ -48,6 +49,27 @@ jobs:
             - name: Checkout PR branch
               uses: actions/checkout@v4
 
+            # Mint the App token and clone Webchat-Testing BEFORE any PR-controlled
+            # code (npm ci / build scripts) runs, so the App private key never
+            # reaches a step after untrusted code has executed on this runner.
+            - name: Mint read-only token for Webchat-Testing
+              id: testing-token
+              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+              with:
+                  app-id: ${{ secrets.PR_AUTOPILOT_APP_ID }}
+                  private-key: ${{ secrets.PR_AUTOPILOT_APP_PRIVATE_KEY }}
+                  owner: Cognigy
+                  repositories: Webchat-Testing
+                  permission-contents: read
+
+            - name: Clone Webchat-Testing
+              uses: actions/checkout@v4
+              with:
+                  repository: Cognigy/Webchat-Testing
+                  path: _testing
+                  token: ${{ steps.testing-token.outputs.token }}
+                  persist-credentials: false
+
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
@@ -81,23 +103,6 @@ jobs:
                   echo "endpoint=${ENDPOINT}" >> "$GITHUB_OUTPUT"
 
             # ── 3. Build preview app (Webchat-Testing) ─────────────────────────
-            - name: Verify GH_PAT secret is configured
-              env:
-                  HAS_TOKEN: ${{ secrets.GH_PAT != '' }}
-              run: |
-                  if [ "$HAS_TOKEN" != "true" ]; then
-                    echo "::error::Repository secret GH_PAT is not set. This token is required to clone the private Cognigy/Webchat-Testing repo."
-                    echo "::error::Create a PAT with read access to Cognigy/Webchat-Testing and add it as a repository secret named GH_PAT."
-                    exit 1
-                  fi
-
-            - name: Clone Webchat-Testing
-              uses: actions/checkout@v4
-              with:
-                  repository: Cognigy/Webchat-Testing
-                  path: _testing
-                  token: ${{ secrets.GH_PAT }}
-
             - name: Compute Pages preview URL
               id: pages-url
               env:
