@@ -1931,7 +1931,8 @@ export class WebchatUI extends React.PureComponent<
 			// If the privacy notice also needs to be shown, let it render next naturally.
 			// Otherwise connect immediately so storedMessage is flushed — unless the
 			// notice was shown over the conversations list: accepting it there does
-			// not start a conversation (CGY-39639).
+			// not start a conversation (CGY-39639). Picking or starting a conversation
+			// connects, and the acceptance carries over to it (CGY-45543).
 			if (
 				(!config.settings.privacyNotice.enabled || hasAcceptedTerms) &&
 				!showPrevConversations

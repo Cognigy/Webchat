@@ -169,9 +169,12 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.openWebchat();
 			cy.startConversation();
 
-			// Accept SUN for the first session
+			// Accept SUN for the first session and use it, so it is a real conversation.
+			// An accepted session without user messages carries its acceptance over to
+			// the next session instead (covered under "Previous Conversations interaction").
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("#webchatChatHistory").should("exist");
+			cy.sendMessage("hello");
 
 			// The harness exposes the Webchat instance as window.webchat (commands.ts).
 			cy.window()
@@ -249,9 +252,10 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.openWebchat();
 			cy.startConversation();
 
-			// Accept SUN for the first session
+			// Accept SUN for the first session and send a message in it
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("#webchatChatHistory").should("exist");
+			cy.sendMessage("hello");
 
 			// Start a new conversation (SWITCH_SESSION resets hasAcceptedSystemUseNotification)
 			cy.window().then(win => {
@@ -261,6 +265,49 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			// SUN reappears — delete-all must be hidden again
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 			cy.get(".webchat-header-delete-all-conversations-button").should("not.exist");
+		});
+
+		it("shows SUN once when accepted on Previous conversations and then starting a new conversation (CGY-45543)", () => {
+			cy.visitWebchat().initMockWebchat({ settings: prevConvSettings });
+			cy.openWebchat();
+
+			// The gate stays in front of Previous conversations
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get(".webchat-prev-conversations-content").should("exist");
+
+			// Browsing the list must not connect or fire getStarted on the initial session
+			cy.window().its("webchat.client.connected").should("equal", false);
+
+			// Starting a new conversation must not ask again: the accepted session was never used
+			cy.get(".webchat-prev-conversations-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+			cy.get("#webchatChatHistory").should("exist");
+			cy.window()
+				.its("webchat.store")
+				.invoke("getState")
+				.its("ui")
+				.should(ui => {
+					expect(ui.hasAcceptedSystemUseNotification).to.equal(true);
+					expect(ui.pendingSessionSwitch).to.equal(null);
+				});
+			cy.window().its("webchat.client.connected").should("equal", true);
+		});
+
+		it("still shows SUN for a new conversation after the user sent a message in the accepted one", () => {
+			cy.visitWebchat().initMockWebchat({ settings: prevConvSettings });
+			cy.openWebchat();
+			cy.startConversation();
+
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
+			cy.sendMessage("hello");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-prev-conversations-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
 		});
 
 		it("opening from teaser shows SUN, not chat history", () => {
