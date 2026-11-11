@@ -342,6 +342,11 @@ export interface IWebchatSettings {
 		conversation_deleted?: string;
 		datePickerMonthLabel?: string;
 		datePickerYearLabel?: string;
+		/** BCP 47 language tag ("de", "fr-CA") used to format dates and times: the
+		 *  relative time in the previous-conversations list and the time in each
+		 *  message header (the latter is read by @cognigy/chat-components). Falls
+		 *  back to the browser's locale when unset or invalid (CGY-3745). */
+		dateLocale?: string;
 		/** Shown when the microphone is blocked for the page (SC 3.3.1). */
 		speech_recognition_not_allowed?: string;
 		/** Shown when no capture device is available. */
