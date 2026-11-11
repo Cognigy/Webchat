@@ -48,6 +48,7 @@ type FromState = Pick<
 	| "connected"
 	| "connecting"
 	| "reconnectionLimit"
+	| "hasAttemptedConnection"
 >;
 
 type FromDispatch = Pick<
@@ -79,7 +80,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			},
 			unseenMessages,
 			prevConversations,
-			connection: { connected, connecting, reconnectionLimit },
+			connection: { connected, connecting, reconnectionLimit, hasAttemptedConnection },
 			ui: {
 				open,
 				typing,
@@ -125,6 +126,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			connected,
 			connecting,
 			reconnectionLimit,
+			hasAttemptedConnection,
 			showRatingScreen,
 			hasGivenRating,
 			requestRatingScreenTitle,
