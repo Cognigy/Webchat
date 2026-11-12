@@ -15,6 +15,9 @@ type WebchatHandle = {
 	client: { sendMessage: (text: string, data: object | null) => void };
 };
 
+// Makes this file a module, so the type above does not clash with other specs.
+export {};
+
 describe("collated file inputs", () => {
 	const fileAttachment = {
 		runtimeFileId: "runtime-file-1",
