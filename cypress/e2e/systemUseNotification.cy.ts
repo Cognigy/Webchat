@@ -400,6 +400,31 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 				});
 		});
 
+		it("shows SUN again after deleting a conversation the user chatted in", () => {
+			cy.visitWebchat().initMockWebchat({ settings: prevConvSettings });
+			cy.openWebchat();
+			cy.startConversation();
+
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
+			cy.sendMessage("hello");
+
+			// Delete All and Delete conversation clear the messages before switching to a new
+			// session. The cleared history must not make the used acceptance carry over.
+			cy.window().then(win => {
+				const { store } = (win as any).webchat;
+				store.dispatch({ type: "CLEAR_MESSAGES" });
+				store.dispatch({ type: "SWITCH_SESSION", sessionId: "session-after-delete" });
+			});
+
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.window()
+				.its("webchat.store")
+				.invoke("getState")
+				.its("ui.hasAcceptedSystemUseNotification")
+				.should("equal", false);
+		});
+
 		it("opening from teaser shows SUN, not chat history", () => {
 			// openConversationFromTeaser uses isNoticePending; when SUN is pending it
 			// must NOT dispatch SHOW_CHAT_SCREEN (which would connect the socket).

@@ -20,16 +20,14 @@ import { setHasAcceptedSystemUseNotification, completeDeferredSessionSwitch } fr
 import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 /**
- * True when SUN is enabled, the current session's notice has been accepted, and the
- * user has not sent a message in that session yet. Such an acceptance carries over
- * to the next session (CGY-45543). Bot and engagement messages don't count: only a
- * user message — including the getStarted auto-inject — makes the session "used".
+ * True when SUN is enabled and the user accepted the notice but has not sent a message
+ * since. Such an acceptance carries over to the next session (CGY-45543). Bot and
+ * engagement messages don't count: only a user message — including the getStarted
+ * auto-inject — uses it up. Acceptances restored from storage never carry over.
  */
 function isAcceptedSessionUnused(state: StoreState): boolean {
 	if (!state.config.settings?.systemUseNotification?.enabled) return false;
-	if (!state.ui.hasAcceptedSystemUseNotification) return false;
-
-	return !state.messages.messageHistory?.some(message => message.source === "user");
+	return state.ui.hasAcceptedSystemUseNotification && state.ui.isSunAcceptanceUnused;
 }
 
 export const uiMiddleware: Middleware<object, StoreState> =
@@ -154,7 +152,7 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				// sent a message in it (e.g. accepted on Previous conversations, then clicked
 				// "Start new conversation"). Carry the acceptance over instead of asking
 				// twice: they have seen and accepted the notice before any interaction.
-				store.dispatch(setHasAcceptedSystemUseNotification(action.sessionId || ""));
+				store.dispatch(setHasAcceptedSystemUseNotification(action.sessionId || "", true));
 			}
 		}
 
