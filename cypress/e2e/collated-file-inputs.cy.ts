@@ -5,7 +5,16 @@
  * collated message with `data: undefined`, which discarded the uploaded file
  * attachments (`data.attachments`). As a result no file payload reached the flow.
  * These tests assert that attachments survive collation.
+ *
+ * Each collated input is shown right away as its own message (CGY-48210); the
+ * flow receives one input with every attachment, read from `client.sendMessage`.
  */
+
+// The parts of the Webchat instance these tests use.
+type WebchatHandle = {
+	client: { sendMessage: (text: string, data: object | null) => void };
+};
+
 describe("collated file inputs", () => {
 	const fileAttachment = {
 		runtimeFileId: "runtime-file-1",
@@ -33,7 +42,12 @@ describe("collated file inputs", () => {
 				},
 			})
 			.openWebchat()
-			.startConversation();
+			.startConversation()
+			.then(webchat => {
+				cy.stub((webchat as unknown as WebchatHandle).client, "sendMessage").as(
+					"sendMessage",
+				);
+			});
 
 	beforeEach(() => {
 		cy.visitWebchat();
@@ -53,6 +67,9 @@ describe("collated file inputs", () => {
 				message.data?.attachments?.length === 1 &&
 				message.data.attachments[0].fileName === "myfile.txt",
 		);
+		cy.get("@sendMessage").should("have.been.calledOnceWith", "here is the file", {
+			attachments: [fileAttachment],
+		});
 	});
 
 	it("keeps attachments for an attachment-only message (no text)", () => {
@@ -63,6 +80,9 @@ describe("collated file inputs", () => {
 		cy.getMessageFromHistory(
 			(message: any) => message.source === "user" && message.data?.attachments?.length === 1,
 		);
+		cy.get("@sendMessage").should("have.been.calledOnceWith", "", {
+			attachments: [fileAttachment],
+		});
 	});
 
 	it("merges attachments from multiple collated inputs into a single message", () => {
@@ -75,11 +95,18 @@ describe("collated file inputs", () => {
 			collate: true,
 		});
 
-		cy.getMessageFromHistory(
-			(message: any) =>
-				message.source === "user" &&
-				message.text === "look at this" &&
-				message.data?.attachments?.length === 2,
-		);
+		cy.get("@sendMessage").should("have.been.calledOnceWith", "look at this", {
+			attachments: [fileAttachment, secondAttachment],
+		});
+
+		// one message per input in the chat, attachments on the input that carried them
+		cy.getHistory().then(history => {
+			const userMessages = history.filter((message: any) => message.source === "user");
+			expect(userMessages.map((message: any) => message.text)).to.deep.equal([
+				"look",
+				"at this",
+			]);
+			expect((userMessages[1] as any).data.attachments).to.have.length(2);
+		});
 	});
 });
