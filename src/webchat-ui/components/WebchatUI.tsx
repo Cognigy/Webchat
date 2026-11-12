@@ -1273,7 +1273,15 @@ export class WebchatUI extends React.PureComponent<
 			});
 		} else {
 			this.props.onSwitchSession();
-			this.props.onSendMessage(text, data, options);
+			if (this.props.config.settings.systemUseNotification?.enabled) {
+				// With SUN enabled the session switch may be deferred until the user accepts
+				// the notice for the new session. Sending now would deliver the starter on the
+				// old socket session. Queue it instead: the session switch sends it on the
+				// target session once the socket has switched.
+				this.props.onSetStoredMessage({ text, data, options });
+			} else {
+				this.props.onSendMessage(text, data, options);
+			}
 		}
 	};
 

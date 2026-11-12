@@ -323,6 +323,83 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 		});
 
+		it("sends a conversation starter on the new session, not the old one, after SUN acceptance", () => {
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					...prevConvSettings,
+					homeScreen: {
+						...prevConvSettings.homeScreen,
+						conversationStarters: {
+							enabled: true,
+							starters: [
+								{
+									type: "postback",
+									title: "Postback starter",
+									payload: "postback-payload",
+								},
+							],
+						},
+					},
+				},
+			});
+			cy.openWebchat();
+			cy.startConversation();
+
+			// Accept SUN and use the session, so the next conversation needs a new acceptance
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
+			cy.sendMessage("hello");
+
+			cy.window()
+				.its("webchat.client.socketOptions.sessionId")
+				.then(firstSessionId => {
+					// Record which socket session every outgoing payload is sent on.
+					const sent: { text: string; sessionId: string }[] = [];
+					cy.window().then(win => {
+						const client = (win as any).webchat.client;
+						cy.stub(client, "sendMessage").callsFake((text: string) => {
+							sent.push({ text, sessionId: client.socketOptions.sessionId });
+						});
+						// The mock socket never connects, so the real switchSession() never
+						// resolves. Resolve it like a successful reconnect to the new session.
+						cy.stub(client, "switchSession").callsFake((sessionId?: string) => {
+							client.socketOptions.sessionId = sessionId || "session-starter-test";
+							return Promise.resolve(client);
+						});
+					});
+
+					cy.get("button.webchat-header-back-button").click();
+					cy.contains("button", "Postback starter").click();
+
+					// SUN gates the new conversation; the starter is queued, not sent on the
+					// old session
+					cy.get(".webchat-system-use-notification-root").should("be.visible");
+					cy.window()
+						.its("webchat.store")
+						.invoke("getState")
+						.its("ui.storedMessage.text")
+						.should("equal", "postback-payload");
+					cy.wrap(sent).should("have.length", 0);
+					cy.window()
+						.its("webchat.client.socketOptions.sessionId")
+						.should("equal", firstSessionId);
+
+					// After acceptance the socket switches and the starter is sent there, once
+					cy.get(".webchat-system-use-notification-accept-button").click();
+					cy.wrap(sent).should(calls => {
+						expect(calls).to.have.length(1);
+						expect(calls[0].text).to.equal("postback-payload");
+						expect(calls[0].sessionId).to.not.equal(firstSessionId);
+					});
+					cy.window()
+						.its("webchat.store")
+						.invoke("getState")
+						.should(state => {
+							expect(state.ui.storedMessage).to.equal(null);
+						});
+				});
+		});
+
 		it("opening from teaser shows SUN, not chat history", () => {
 			// openConversationFromTeaser uses isNoticePending; when SUN is pending it
 			// must NOT dispatch SHOW_CHAT_SCREEN (which would connect the socket).
