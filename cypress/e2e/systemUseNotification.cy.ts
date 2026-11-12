@@ -277,22 +277,35 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get(".webchat-prev-conversations-content").should("exist");
 
-			// Browsing the list must not connect or fire getStarted on the initial session
-			cy.window().its("webchat.client.connected").should("equal", false);
-
-			// Starting a new conversation must not ask again: the accepted session was never used
-			cy.get(".webchat-prev-conversations-send-button").click();
-			cy.get(".webchat-system-use-notification-root").should("not.exist");
-			cy.get("#webchatChatHistory").should("exist");
+			// Browsing the list must not open the chat screen, which would connect and fire
+			// getStarted on the initial session. The mock socket never really connects, so
+			// check the chat-screen flag rather than client.connected.
 			cy.window()
 				.its("webchat.store")
 				.invoke("getState")
-				.its("ui")
-				.should(ui => {
-					expect(ui.hasAcceptedSystemUseNotification).to.equal(true);
-					expect(ui.pendingSessionSwitch).to.equal(null);
+				.its("autoInject.isChatOpenedOnce")
+				.should("equal", false);
+
+			cy.window()
+				.its("webchat.client.socketOptions.sessionId")
+				.then(initialSessionId => {
+					// Starting a new conversation must not ask again: the accepted session was never used
+					cy.get(".webchat-prev-conversations-send-button").click();
+					cy.get(".webchat-system-use-notification-root").should("not.exist");
+					cy.get("#webchatChatHistory").should("exist");
+					cy.window()
+						.its("webchat.store")
+						.invoke("getState")
+						.its("ui")
+						.should(ui => {
+							expect(ui.hasAcceptedSystemUseNotification).to.equal(true);
+							expect(ui.pendingSessionSwitch).to.equal(null);
+						});
+					// The deferred session switch completed: the socket moved to a new session
+					cy.window()
+						.its("webchat.client.socketOptions.sessionId")
+						.should("not.equal", initialSessionId);
 				});
-			cy.window().its("webchat.client.connected").should("equal", true);
 		});
 
 		it("still shows SUN for a new conversation after the user sent a message in the accepted one", () => {
