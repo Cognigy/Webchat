@@ -175,6 +175,7 @@ export interface WebchatUIProps {
 	hasAcceptedTerms: boolean;
 	onAcceptTerms: (userId: string) => void;
 	hasAcceptedSystemUseNotification: boolean;
+	hasAcceptedSunInThisVisit: boolean;
 	onAcceptSystemUseNotification: (sessionId: string) => void;
 	onSetStoredMessage: (message: UIState["storedMessage"]) => void;
 	isXAppOverlayOpen: boolean;
@@ -1824,6 +1825,7 @@ export class WebchatUI extends React.PureComponent<
 			hasAcceptedTerms,
 			onAcceptTerms,
 			hasAcceptedSystemUseNotification,
+			hasAcceptedSunInThisVisit,
 			onAcceptSystemUseNotification,
 			onSetStoredMessage,
 			isDropZoneVisible,
@@ -1929,6 +1931,15 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const sun = config.settings.systemUseNotification;
+		// The notice is shown in place of the current screen while it is pending, including
+		// Previous conversations on a first visit. Once the user has accepted in this page
+		// visit, the list stays visible while the notice for the next conversation is
+		// pending (e.g. right after deleting a conversation, CGY-48501); starting or opening
+		// a conversation from the list still shows the notice.
+		const isSunGatePending =
+			!!sun?.enabled &&
+			!hasAcceptedSystemUseNotification &&
+			!(showPrevConversations && hasAcceptedSunInThisVisit);
 		const handleAcceptSystemUseNotification = () => {
 			// Use config.initialSessionId (populated from client.socketOptions.sessionId
 			// in Webchat.tsx before the first connect) so the recorded sessionId matches
@@ -1954,7 +1965,7 @@ export class WebchatUI extends React.PureComponent<
 
 			// System Use Notification (AC-8 / FedRAMP) is shown BEFORE the privacy notice.
 			// It is gated per session: a new conversation (new sessionId) requires re-acceptance.
-			if (sun?.enabled && !hasAcceptedSystemUseNotification)
+			if (sun?.enabled && isSunGatePending)
 				return (
 					<SystemUseNotification
 						systemUseNotification={sun}
@@ -2056,7 +2067,7 @@ export class WebchatUI extends React.PureComponent<
 			if (showInformationMessage && informTitle) {
 				return informTitle;
 			}
-			if (sun?.enabled && !hasAcceptedSystemUseNotification) {
+			if (sun?.enabled && isSunGatePending) {
 				return sun.title || "System Use Notification";
 			}
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled) {
@@ -2092,7 +2103,8 @@ export class WebchatUI extends React.PureComponent<
 
 		const showDeleteAllConversationButton = !!(
 			!isNoticePending(config.settings, {
-				hasAcceptedSystemUseNotification,
+				// The list is usable once the SUN gate no longer covers it.
+				hasAcceptedSystemUseNotification: !isSunGatePending,
 				hasAcceptedTerms,
 			}) &&
 			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&

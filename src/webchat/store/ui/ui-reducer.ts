@@ -30,6 +30,12 @@ export interface UIState {
 	 */
 	isSunAcceptanceUnused: boolean;
 	/**
+	 * True once the user has accepted the SUN (or had an acceptance restored) in this page
+	 * visit. Never reset until reload. Lets the Previous conversations list stay visible
+	 * after a delete while the notice for the next conversation is still pending.
+	 */
+	hasAcceptedSunInThisVisit: boolean;
+	/**
 	 * When SUN is enabled and a SWITCH_SESSION is dispatched before the user
 	 * has accepted for the new session, the socket switch is deferred here.
 	 * The switch is completed by completeDeferredSessionSwitch() once the user
@@ -220,6 +226,7 @@ const getInitialState = (): UIState => ({
 	hasAcceptedTerms: false,
 	hasAcceptedSystemUseNotification: false,
 	isSunAcceptanceUnused: false,
+	hasAcceptedSunInThisVisit: false,
 	pendingSessionSwitch: null,
 	storedMessage: null,
 	ttsActive: false,
@@ -339,6 +346,7 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 				...state,
 				hasAcceptedSystemUseNotification: true,
 				isSunAcceptanceUnused: action.unused,
+				hasAcceptedSunInThisVisit: true,
 			};
 		}
 

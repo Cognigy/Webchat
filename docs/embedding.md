@@ -345,7 +345,7 @@ A notice the user must accept before using the Webchat, for deployments that mus
 
 **Where the notice is shown**
 
-- Before any screen in the chat window except the home screen, including **Previous conversations**. The list shows previews of stored conversations, so the notice is shown before the user can see it.
+- Before any screen in the chat window except the home screen, including **Previous conversations**. The list shows previews of stored conversations, so the notice is shown before the user can see it the first time. Once the user has accepted the notice in this page visit, the list stays visible, and the notice is shown when they start or open a conversation from it.
 - Until the notice is accepted, Webchat does not connect to the endpoint for the new session and does not send the get-started message. A conversation starter clicked while the notice is shown is sent after the user accepts, in the new conversation.
 
 **When the user has to accept again**
@@ -355,7 +355,8 @@ Acceptance is stored per session (conversation), in the browser storage set by [
 One acceptance covers one conversation:
 
 - If the user accepts and then starts a conversation without having sent a message yet, they are not asked again in the same page visit. For example, they accept on Previous conversations, then click **Start new conversation** or open a conversation from the list.
-- Once the user has sent a message (including the get-started message), every new conversation shows the notice again. This applies to **Start new conversation**, a conversation starter on the home screen, opening a different conversation from Previous conversations, **Delete conversation**, **Delete all conversations**, and `webchat.endSession()`.
+- Once the user has sent a message (including the get-started message), every new conversation shows the notice again. This applies to **Start new conversation**, a conversation starter on the home screen, opening a different conversation from Previous conversations, and `webchat.endSession()`.
+- **Delete conversation** and **Delete all conversations** leave the user on the Previous conversations list (when `homeScreen.previousConversations` is enabled) instead of starting a new conversation. If the user had sent a message, the notice is shown when they start or open the next conversation. Without the list, Delete conversation starts a new conversation and the notice is shown right away.
 
 #### Maintenance
 

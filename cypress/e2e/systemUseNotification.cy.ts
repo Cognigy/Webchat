@@ -425,6 +425,73 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 				.should("equal", false);
 		});
 
+		it("shows the list, not the notice, after Delete conversation; asks again on the next conversation (CGY-48501)", () => {
+			cy.visitWebchat().initMockWebchat({
+				settings: {
+					...prevConvSettings,
+					chatOptions: { enabled: true, enableDeleteConversation: true },
+				},
+			});
+			cy.openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get("#webchatChatHistory").should("exist");
+			cy.sendMessage("hello");
+
+			cy.get("[data-header-menu-button]").click();
+			cy.get(".webchat-delete-conversation-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+
+			// The user lands on Previous conversations; the list isn't covered by the notice
+			cy.get(".webchat-prev-conversations-content").should("exist");
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+
+			// The next conversation still needs a new acceptance
+			cy.get(".webchat-prev-conversations-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+		});
+
+		it("keeps the empty list visible after Delete all; asks again on the next conversation (CGY-48501)", () => {
+			const localOptions = {
+				userId: "user-sun-delete-all",
+				sessionId: "session-sun-delete-all-1",
+				channel: "channel-sun-delete-all",
+			};
+			// Same key layout as getOptionsKey; "fake-url-token" is the mocked endpoint's URLToken
+			const seedConversation = (sessionId: string) => {
+				const key = ["webchat-client", localOptions.userId, sessionId, "fake-url-token"];
+				const conversation = {
+					messages: [{ text: "seeded message", source: "user", timestamp: Date.now() }],
+				};
+				cy.window().then(win => {
+					win.localStorage.setItem(JSON.stringify(key), JSON.stringify(conversation));
+				});
+			};
+
+			cy.visitWebchat();
+			seedConversation("session-sun-delete-all-2");
+			seedConversation("session-sun-delete-all-3");
+			cy.initMockWebchat({ ...localOptions, settings: prevConvSettings });
+			cy.openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.sendMessage("hello");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-prev-conversations-item").should("have.length.at.least", 2);
+
+			cy.get(".webchat-header-delete-all-conversations-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+
+			// The emptied list stays visible; no notice over it
+			cy.get(".webchat-prev-conversations-empty").should("exist");
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+
+			cy.get(".webchat-prev-conversations-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+		});
+
 		it("opening from teaser shows SUN, not chat history", () => {
 			// openConversationFromTeaser uses isNoticePending; when SUN is pending it
 			// must NOT dispatch SHOW_CHAT_SCREEN (which would connect the socket).

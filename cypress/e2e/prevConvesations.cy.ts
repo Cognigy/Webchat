@@ -834,22 +834,24 @@ describe("Previous Conversations", () => {
 			cy.get("@connect").invoke("resetHistory");
 			confirmDeleteAll();
 
-			// The new session needs its own acceptance, and nothing connects before
-			// it — not even on network recovery
-			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			// The new session needs its own acceptance. The emptied list stays visible
+			// (the user accepted in this visit, CGY-48501), and nothing connects before
+			// the notice is accepted — not even on network recovery
+			cy.get(".webchat-prev-conversations-empty").should("be.visible");
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
 			cy.getWebchat().then(webchat => {
 				webchat.store.dispatch({ type: "NETWORK_ON" });
 			});
 			cy.get("@connect").should("not.have.been.called");
 
-			// Accepting it over the list does not start a conversation either …
-			cy.get(".webchat-system-use-notification-accept-button").click();
-			cy.get(".webchat-prev-conversations-empty").should("be.visible");
-			cy.get("@connect").should("not.have.been.called");
-
-			// … starting one does, on the new session
+			// Starting a conversation shows the notice first …
 			cy.get("button.webchat-header-back-button").click();
 			cy.get(".webchat-homescreen-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.get("@connect").should("not.have.been.called");
+
+			// … and connects on the new session once it is accepted
+			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("@connect").should("have.been.called");
 			cy.getWebchat().then(webchat => {
 				expect(seededSessions).not.to.include(webchat.client.socketOptions.sessionId);
