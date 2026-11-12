@@ -177,9 +177,6 @@ const PreviewUploadedFiles: FC = () => {
 						<RemoveFileButton
 							type="button"
 							onClick={event => onRemoveFileButtonClick(index, event)}
-							// Position + file name: the chip's own text is not part of the
-							// button's name, and a failed chip shows the reason, not the name.
-							aria-label={`${ariaLabels?.removeFileAttachment ?? "Remove file attachment"} ${index + 1}, ${item.file.name}`}
 						>
 							<CloseIcon />
 						</RemoveFileButton>
