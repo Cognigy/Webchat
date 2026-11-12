@@ -120,15 +120,16 @@ jobs:
                   track_progress: "true"
                   classify_inline_comments: "true"
                   use_sticky_comment: "false"
-                  # Same flags as the shared review engine: Task lets the
-                  # agent start the a11y-reviewer subagent, and headless runs
-                  # need the permission skip to post comments. The action
-                  # restores .claude/ from the base branch, so a PR cannot
-                  # rewrite the reviewer's own instructions.
+                  # Task lets the agent start the a11y-reviewer subagent. The
+                  # inline comment tool is only wired up when it is allowed
+                  # here; without it every finding lands in the summary.
+                  # Headless runs need the permission skip to post comments.
+                  # The action restores .claude/ from the base branch, so a
+                  # PR cannot rewrite the reviewer's own instructions.
                   claude_args: >-
                       --model arn:aws:bedrock:eu-central-1:139532768001:application-inference-profile/sobtqgdeed7i
                       --max-turns 60
-                      --allowedTools "Task"
+                      --allowedTools "Task,mcp__github_inline_comment__create_inline_comment"
                       --dangerously-skip-permissions
                   prompt: |
                       Review pull request #${{ steps.pr.outputs.number }} in ${{ github.repository }} for accessibility (WCAG 2.2 Level AA) only.
