@@ -40,8 +40,17 @@ export const inputCollation: Reducer<InputCollationState, InputCollationAction> 
 			};
 		}
 
-		case "SUBMIT_COLLATED_MESSAGES":
 		case "SEND_MESSAGE": {
+			// Showing a collated message must keep the batch it was just added to.
+			if (action.only === "display") return state;
+
+			return {
+				...state,
+				messages: [],
+			};
+		}
+
+		case "SUBMIT_COLLATED_MESSAGES": {
 			return {
 				...state,
 				messages: [],

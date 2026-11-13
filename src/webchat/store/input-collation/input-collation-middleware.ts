@@ -14,6 +14,10 @@ type InputCollationMiddlewareAction = SendMessageAction | SubmitCollatedMessages
  * creates a middleware which can take care of "input collation" for messages
  * that were flagged with "collate" in their options.
  *
+ * Each collated message is shown as its own bubble right away. Only the socket
+ * send waits: when the collation timeout ends, the texts are joined and sent as
+ * one input, without another bubble.
+ *
  * IMPORTANT: this has to be loaded before the "message middleware" because it
  * intercepts actions
  */
@@ -58,17 +62,19 @@ export const createInputCollationMiddleware = (): Middleware<object, StoreState>
 					const { enableInputCollation, inputCollationTimeout } =
 						store.getState().config.settings.layout;
 
-					if (!enableInputCollation) break;
+					// A "transmit" action is this middleware's own submit of a batch it already took.
+					if (!enableInputCollation || action.only === "transmit") break;
 
 					const isCollateMessage = action.options?.collate;
 
 					/**
 					 * In case we're handling a message that's not intended for collation,
-					 * we have to send our collated message first and then continue with that message
+					 * we have to send our collated message first and then continue with that message.
+					 * The collated messages are already on screen, so they are only sent.
 					 */
 					if (!isCollateMessage) {
 						clearCollationTimeout();
-						next(sendMessage(getCollatedMessage()));
+						next(sendMessage(getCollatedMessage(), {}, "transmit"));
 						return next(action);
 					}
 
@@ -82,11 +88,12 @@ export const createInputCollationMiddleware = (): Middleware<object, StoreState>
 						store.dispatch(submitCollatedMessages());
 					}, inputCollationTimeout);
 
+					next(addCollatedMessage(action.message));
+
 					/**
-					 * "intercept" the "SEND_MESSAGE" action and continue with
-					 * an "add to collation" action instead.
+					 * Show the message now. Its text is sent later, as part of the collated message.
 					 */
-					return next(addCollatedMessage(action.message));
+					return next({ ...action, only: "display" });
 				}
 
 				case "SUBMIT_COLLATED_MESSAGES": {
@@ -98,7 +105,7 @@ export const createInputCollationMiddleware = (): Middleware<object, StoreState>
 
 					const message = getCollatedMessage();
 					next(action);
-					store.dispatch(sendMessage(message));
+					store.dispatch(sendMessage(message, {}, "transmit"));
 
 					return;
 				}
