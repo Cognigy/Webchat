@@ -49,6 +49,7 @@ type FromState = Pick<
 	| "connecting"
 	| "reconnectionLimit"
 	| "hasAttemptedConnection"
+	| "hasPendingSessionSwitch"
 >;
 
 type FromDispatch = Pick<
@@ -92,6 +93,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 				hasAcceptedTerms,
 				hasAcceptedSystemUseNotification,
 				hasAcceptedSunInThisVisit,
+				pendingSessionSwitch,
 				ttsActive,
 				lastInputId,
 			},
@@ -113,6 +115,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 
 		return {
 			currentSession: sessionId,
+			hasPendingSessionSwitch: !!pendingSessionSwitch,
 			messages,
 			visibleOutputMessages,
 			unseenMessages,

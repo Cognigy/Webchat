@@ -350,13 +350,14 @@ A notice the user must accept before using the Webchat, for deployments that mus
 
 **When the user has to accept again**
 
-Acceptance is stored per session (conversation), in the browser storage set by [Embedding Configuration](#embedding-configuration). Reloading the page in the same session does not show the notice again. If browser storage is disabled, the notice is shown on every page load.
+Acceptance is kept in memory for the current page only. It is never written to browser storage, so after a page reload the notice is shown again, even when the user continues the same conversation.
 
-One acceptance covers one conversation:
+Within one page load:
 
-- If the user accepts and then starts a conversation without having sent a message yet, they are not asked again in the same page visit. For example, they accept on Previous conversations, then click **Start new conversation** or open a conversation from the list.
-- Once the user has sent a message (including the get-started message), every new conversation shows the notice again. This applies to **Start new conversation**, a conversation starter on the home screen, opening a different conversation from Previous conversations, and `webchat.endSession()`.
-- **Delete conversation** and **Delete all conversations** leave the user on the Previous conversations list (when `homeScreen.previousConversations` is enabled) instead of starting a new conversation. If the user had sent a message, the notice is shown when they start or open the next conversation. Without the list, Delete conversation starts a new conversation and the notice is shown right away.
+- **New conversations** always show the notice (**Start new conversation**, a conversation starter on the home screen, `webchat.endSession()`). The one exception: if the user accepted the notice and hasn't sent a message since (for example, they accepted it on Previous conversations), the next conversation starts without asking again.
+- **Previous conversations** (other than the current one) show the notice the first time the user opens one. After that, other previous conversations open without it.
+- **The current conversation**, or one already accepted in this page load, opens without the notice.
+- **Delete conversation** and **Delete all conversations** leave the user on the Previous conversations list (when `homeScreen.previousConversations` is enabled) instead of starting a new conversation. The notice is shown when they start or open the next conversation, following the rules above. Without the list, Delete conversation starts a new conversation and the notice is shown right away.
 
 #### Maintenance
 

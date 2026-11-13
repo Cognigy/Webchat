@@ -11,23 +11,32 @@ import {
 	SetOpenAction,
 } from "./ui-reducer";
 import { getStorage } from "../../helper/storage";
+import { setHasAcceptedTermsInStorage } from "../../helper/privacyPolicy";
 import {
-	setHasAcceptedTermsInStorage,
-	setHasAcceptedSunInStorage,
-	hasAcceptedSunInStorage,
-} from "../../helper/privacyPolicy";
-import { setHasAcceptedSystemUseNotification, completeDeferredSessionSwitch } from "./ui-reducer";
+	setHasAcceptedSystemUseNotification,
+	completeDeferredSessionSwitch,
+	setSunAcceptedForPrevConversations,
+} from "./ui-reducer";
 import { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
 
 /**
  * True when SUN is enabled and the user accepted the notice but has not sent a message
  * since. Such an acceptance carries over to the next session (CGY-45543). Bot and
  * engagement messages don't count: only a user message — including the getStarted
- * auto-inject — uses it up. Acceptances restored from storage never carry over.
+ * auto-inject — uses it up. Restored acceptances never carry over.
  */
 function isAcceptedSessionUnused(state: StoreState): boolean {
 	if (!state.config.settings?.systemUseNotification?.enabled) return false;
 	return state.ui.hasAcceptedSystemUseNotification && state.ui.isSunAcceptanceUnused;
+}
+
+/** A previous conversation from the list, other than the one the socket is on. */
+function isOtherPrevConversation(state: StoreState, sessionId: string | undefined): boolean {
+	return (
+		!!sessionId &&
+		!!state.prevConversations?.[sessionId] &&
+		sessionId !== state.options.sessionId
+	);
 }
 
 export const uiMiddleware: Middleware<object, StoreState> =
@@ -99,25 +108,25 @@ export const uiMiddleware: Middleware<object, StoreState> =
 				break;
 			}
 
-			// System Use Notification (AC-8 / FedRAMP) — store accepted sessionId and
-			// complete any deferred session switch that was waiting for acceptance.
+			// System Use Notification (AC-8 / FedRAMP) — record the accepted session in page
+			// memory (never in storage: a reload shows the notice again) and complete any
+			// deferred session switch that was waiting for acceptance.
 			case "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION": {
-				// Read the pending switch BEFORE next() — the reducer clears it afterward.
-				const pendingSwitch = store.getState().ui.pendingSessionSwitch;
+				// Read BEFORE next(): the pending switch is cleared once it completes.
+				const state = store.getState();
+				const pendingSwitch = state.ui.pendingSessionSwitch;
 
-				if (browserStorage) {
-					// A carried-over acceptance for a brand-new session has no sessionId yet
-					// (socket-client generates it on switch); don't overwrite storage with "".
-					if (action.sessionId) {
-						setHasAcceptedSunInStorage(browserStorage, action.sessionId);
-					}
-					// Also record the target session so page-reloads within that session skip the notice.
-					if (pendingSwitch?.sessionId) {
-						setHasAcceptedSunInStorage(browserStorage, pendingSwitch.sessionId);
-					}
+				// While a switch waits, the acceptance is for its target session.
+				const result = next(
+					pendingSwitch?.sessionId
+						? { ...action, sessionId: pendingSwitch.sessionId }
+						: action,
+				);
+
+				// Opening a previous conversation asks once per page load.
+				if (isOtherPrevConversation(state, pendingSwitch?.sessionId)) {
+					store.dispatch(setSunAcceptedForPrevConversations());
 				}
-
-				const result = next(action);
 
 				// Complete the deferred socket switch now that SUN is accepted.
 				if (pendingSwitch) {
@@ -134,18 +143,30 @@ export const uiMiddleware: Middleware<object, StoreState> =
 		}
 
 		// Read before next(): the reducer resets hasAcceptedSystemUseNotification on SWITCH_SESSION.
-		const carryOverSunAcceptance =
-			action.type === "SWITCH_SESSION" && isAcceptedSessionUnused(store.getState());
+		const stateBefore = store.getState();
+		const isSwitch = action.type === "SWITCH_SESSION";
+		const targetSession = isSwitch ? action.sessionId : undefined;
+		const sunEnabled = !!stateBefore.config.settings?.systemUseNotification?.enabled;
+		const carryOverSunAcceptance = isSwitch && isAcceptedSessionUnused(stateBefore);
+		// Accepted earlier in this page load (e.g. switching back to the current conversation)
+		const wasAcceptedThisPage =
+			sunEnabled &&
+			!!targetSession &&
+			stateBefore.ui.sunAcceptedSessionIds.includes(targetSession);
+		// Another previous conversation, after one was already opened with the notice accepted
+		const isCoveredPrevConversation =
+			sunEnabled &&
+			stateBefore.ui.hasAcceptedSunForPrevConversations &&
+			isOtherPrevConversation(stateBefore, targetSession);
 
 		// Run the reducer (and all downstream middleware) first so the state is updated.
 		const result = next(action);
 
 		// After SWITCH_SESSION the reducer has reset hasAcceptedSystemUseNotification to false.
 		if (action.type === "SWITCH_SESSION") {
-			if (action.sessionId && hasAcceptedSunInStorage(browserStorage, action.sessionId)) {
-				// The incoming sessionId was already accepted in a prior page visit (e.g. the
-				// user returns to an existing conversation): restore the acceptance so the
-				// notice does not re-appear for that session.
+			if (action.sessionId && (wasAcceptedThisPage || isCoveredPrevConversation)) {
+				// No notice: this session was already accepted in this page load, or the
+				// one-time notice for previous conversations was already accepted.
 				store.dispatch(setHasAcceptedSystemUseNotification(action.sessionId));
 			} else if (carryOverSunAcceptance) {
 				// The user accepted the notice for the session they are leaving but never

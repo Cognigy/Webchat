@@ -126,15 +126,18 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 	});
 
 	describe("Per-session gating", () => {
-		it("does not show the SUN again on page refresh within the same session", () => {
-			cy.visitWebchat().initMockWebchat({ settings: sunSettings }).openWebchat();
+		it("shows the SUN again after a page reload, even for the same session", () => {
+			const options = { sessionId: "session-reload", settings: sunSettings };
+			cy.visitWebchat().initMockWebchat(options).openWebchat();
 			cy.startConversation();
 			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get(".webchat-system-use-notification-root").should("not.exist");
 
-			// Re-init the webchat (simulates page reload with same sessionId in storage)
-			cy.initMockWebchat({ settings: sunSettings }).openWebchat();
-			cy.get(".webchat-system-use-notification-root").should("not.exist");
+			// Acceptance lives in page memory only: a reload asks again
+			cy.reload();
+			cy.initMockWebchat(options).openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
 		});
 	});
 
@@ -488,6 +491,241 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-prev-conversations-empty").should("exist");
 			cy.get(".webchat-system-use-notification-root").should("not.exist");
 
+			cy.get(".webchat-prev-conversations-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+		});
+
+		describe("an abandoned conversation starter is not sent", () => {
+			const starterSettings = {
+				...prevConvSettings,
+				homeScreen: {
+					...prevConvSettings.homeScreen,
+					conversationStarters: {
+						enabled: true,
+						starters: [
+							{
+								type: "postback",
+								title: "Postback starter",
+								payload: "postback-payload",
+							},
+						],
+					},
+				},
+			};
+
+			// Chats in a first session, stubs the socket, then clicks the starter so it is
+			// queued behind the notice for a new session. Returns the payloads sent.
+			const queueStarterBehindNotice = () => {
+				const sent: string[] = [];
+				cy.visitWebchat().initMockWebchat({ settings: starterSettings });
+				cy.openWebchat();
+				cy.startConversation();
+				cy.get(".webchat-system-use-notification-accept-button").click();
+				cy.sendMessage("hello");
+
+				cy.window().then(win => {
+					const client = (win as any).webchat.client;
+					cy.stub(client, "sendMessage").callsFake((text: string) => {
+						sent.push(text);
+					});
+					// The mock socket never connects; resolve switches like a reconnect.
+					cy.stub(client, "switchSession").callsFake((sessionId?: string) => {
+						client.socketOptions.sessionId = sessionId || "session-new";
+						return Promise.resolve(client);
+					});
+				});
+
+				cy.get("button.webchat-header-back-button").click();
+				cy.contains("button", "Postback starter").click();
+				cy.get(".webchat-system-use-notification-root").should("be.visible");
+				cy.window()
+					.its("webchat.store")
+					.invoke("getState")
+					.its("ui.storedMessage.text")
+					.should("equal", "postback-payload");
+				return sent;
+			};
+
+			it("when the user switches to a conversation accepted earlier in this page load", () => {
+				const sent = queueStarterBehindNotice();
+
+				// What picking that conversation from Previous conversations dispatches: it was
+				// accepted earlier in this page load, so the switch completes immediately.
+				cy.window().then(win => {
+					const acceptedSessionId = (win as any).webchat.store.getState().ui
+						.sunAcceptedSessionIds[0];
+					expect(acceptedSessionId).to.be.a("string").and.not.be.empty;
+					(win as any).webchat.store.dispatch({
+						type: "SWITCH_SESSION",
+						sessionId: acceptedSessionId,
+					});
+				});
+
+				cy.get(".webchat-system-use-notification-root").should("not.exist");
+				cy.window()
+					.its("webchat.store")
+					.invoke("getState")
+					.should(state => {
+						expect(state.ui.pendingSessionSwitch).to.equal(null);
+						expect(state.ui.storedMessage).to.equal(null);
+					});
+				// Negative check: give the async switch time to send anything it would send
+				cy.wait(300);
+				cy.wrap(sent).should("not.include", "postback-payload");
+			});
+
+			it("when the user goes back and picks the current conversation from the list", () => {
+				const sent: { text: string; sessionId: string }[] = [];
+				cy.visitWebchat().initMockWebchat({ settings: starterSettings });
+				// Let the socket "connect", so the session gets an id and the conversation is
+				// saved to the list, as with a real endpoint.
+				cy.getWebchat().then(webchat => {
+					const client = (webchat as any).client;
+					cy.stub(client, "connect").callsFake(() => {
+						(webchat as any).store.dispatch({ type: "SET_CONNECTED", connected: true });
+						return Promise.resolve(client);
+					});
+					cy.stub(client, "sendMessage").callsFake((text: string) => {
+						sent.push({ text, sessionId: client.socketOptions.sessionId });
+					});
+					cy.stub(client, "switchSession").callsFake((sessionId?: string) => {
+						client.socketOptions.sessionId = sessionId || "session-new";
+						return Promise.resolve(client);
+					});
+				});
+				cy.openWebchat();
+				cy.startConversation();
+				cy.get(".webchat-system-use-notification-accept-button").click();
+				cy.window()
+					.its("webchat.store")
+					.invoke("getState")
+					.its("options.sessionId")
+					.should("be.a", "string")
+					.and("not.be.empty")
+					.then(currentSessionId => {
+						cy.sendMessage("hello");
+
+						// Click the starter: a switch to a new session waits behind the notice
+						cy.get("button.webchat-header-back-button").click();
+						cy.contains("button", "Postback starter").click();
+						cy.get(".webchat-system-use-notification-root").should("be.visible");
+
+						// Go back and pick the conversation the user was just in
+						cy.get("button.webchat-header-back-button").click();
+						cy.get("button").contains("Previous conversations").click();
+						cy.get(".webchat-prev-conversations-item").should("have.length", 1).click();
+
+						// The user lands in that conversation, without the notice
+						cy.get(".webchat-system-use-notification-root").should("not.exist");
+						cy.get("#webchatChatHistory").should("exist");
+						cy.window()
+							.its("webchat.store")
+							.invoke("getState")
+							.should(state => {
+								expect(state.ui.pendingSessionSwitch).to.equal(null);
+								expect(state.ui.hasAcceptedSystemUseNotification).to.equal(true);
+							});
+						cy.window()
+							.its("webchat.client.socketOptions.sessionId")
+							.should("equal", currentSessionId);
+						// Negative check: give the async switch time to send anything it would send
+						cy.wait(300);
+						cy.wrap(sent).should(calls => {
+							expect(calls.map(c => c.text)).not.to.include("postback-payload");
+						});
+					});
+			});
+
+			it("when the user goes back from the notice and starts a conversation instead", () => {
+				const sent = queueStarterBehindNotice();
+
+				cy.get("button.webchat-header-back-button").click();
+				cy.get(".webchat-homescreen-send-button").click();
+				cy.get(".webchat-system-use-notification-accept-button").click();
+
+				cy.window()
+					.its("webchat.store")
+					.invoke("getState")
+					.should(state => {
+						expect(state.ui.pendingSessionSwitch).to.equal(null);
+						expect(state.ui.storedMessage).to.equal(null);
+					});
+				// Negative check: give the async switch time to send anything it would send
+				cy.wait(300);
+				cy.wrap(sent).should("not.include", "postback-payload");
+			});
+		});
+
+		it("asks once per page load for previous conversations; new conversations always ask", () => {
+			const userId = "user-sun-prev-once";
+			const seed = (sessionId: string, text: string) => {
+				const key = ["webchat-client", userId, sessionId, "fake-url-token"];
+				// Stored conversations carry a rating state; switching into one restores it
+				const conversation = {
+					messages: [{ text, source: "user", timestamp: Date.now() }],
+					rating: {
+						hasGivenRating: false,
+						showRatingScreen: false,
+						requestRatingScreenTitle: "",
+						customRatingTitle: "",
+						customRatingCommentText: "",
+						requestRatingSubmitButtonText: "",
+						requestRatingEventBannerText: "",
+						requestRatingChatStatusBadgeText: "",
+					},
+				};
+				cy.window().then(win => {
+					win.localStorage.setItem(JSON.stringify(key), JSON.stringify(conversation));
+				});
+			};
+
+			cy.visitWebchat();
+			seed("session-prev-b", "message B");
+			seed("session-prev-c", "message C");
+			cy.initMockWebchat({
+				userId,
+				channel: "channel-sun-prev-once",
+				settings: prevConvSettings,
+			});
+			cy.getWebchat().then(webchat => {
+				const client = (webchat as any).client;
+				// The mock socket never connects; resolve switches like a reconnect.
+				cy.stub(client, "switchSession").callsFake((sessionId?: string) => {
+					client.socketOptions.sessionId = sessionId || "session-new";
+					return Promise.resolve(client);
+				});
+			});
+			cy.openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.sendMessage("hello");
+
+			const openPrevConversation = (text: string) => {
+				cy.get("button.webchat-header-back-button").click();
+				cy.get("button").contains("Previous conversations").click();
+				cy.contains(".webchat-prev-conversations-item", text).click();
+			};
+
+			// The first previous conversation asks once
+			openPrevConversation("message B");
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.window()
+				.its("webchat.client.socketOptions.sessionId")
+				.should("equal", "session-prev-b");
+			cy.sendMessage("in B");
+
+			// Other previous conversations open without the notice
+			openPrevConversation("message C");
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+			cy.window()
+				.its("webchat.client.socketOptions.sessionId")
+				.should("equal", "session-prev-c");
+			cy.sendMessage("in C");
+
+			// A new conversation still asks
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
 			cy.get(".webchat-prev-conversations-send-button").click();
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 		});

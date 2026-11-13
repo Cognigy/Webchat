@@ -97,6 +97,7 @@ import classNames from "classnames";
 
 export interface WebchatUIProps {
 	currentSession: string;
+	hasPendingSessionSwitch?: boolean;
 	messages: (IMessage | IMessageEvent)[];
 	visibleOutputMessages: string[];
 	unseenMessages: IMessage[];
@@ -1894,6 +1895,16 @@ export class WebchatUI extends React.PureComponent<
 
 		const handleOnGoBack = () => {
 			if (!showChatOptionsScreen && !showRatingScreen) {
+				// Going back from a pending notice abandons a queued conversation starter;
+				// otherwise it would be sent when the user later starts a conversation.
+				if (
+					isNoticePending(config.settings, {
+						hasAcceptedSystemUseNotification,
+						hasAcceptedTerms,
+					})
+				) {
+					onSetStoredMessage(null);
+				}
 				onSetShowPrevConversations(false);
 				onSetShowHomeScreen(true);
 				// Set timeout to focus on close button in header of home screen after animation
@@ -1941,12 +1952,11 @@ export class WebchatUI extends React.PureComponent<
 			!hasAcceptedSystemUseNotification &&
 			!(showPrevConversations && hasAcceptedSunInThisVisit);
 		const handleAcceptSystemUseNotification = () => {
-			// Use config.initialSessionId (populated from client.socketOptions.sessionId
-			// in Webchat.tsx before the first connect) so the recorded sessionId matches
-			// what Webchat.tsx checks on page reload. state.options.sessionId is only
-			// populated after the first connect, which happens after SUN acceptance —
-			// using it would always persist "" as the accepted sessionId.
-			onAcceptSystemUseNotification(config.initialSessionId || "");
+			// Record the acceptance for the session the user is in. Before the first connect
+			// state.options.sessionId (currentSession) is still empty, so fall back to
+			// config.initialSessionId, the session the socket will connect with. While a
+			// session switch is pending, ui-middleware records it for the switch target.
+			onAcceptSystemUseNotification(currentSession || config.initialSessionId || "");
 			// If the privacy notice also needs to be shown, let it render next naturally.
 			// Otherwise connect immediately so storedMessage is flushed — unless the
 			// notice was shown over the conversations list: accepting it there does
@@ -1992,6 +2002,7 @@ export class WebchatUI extends React.PureComponent<
 						onSwitchSession={onSwitchSession}
 						config={config}
 						currentSession={currentSession}
+						hasPendingSessionSwitch={this.props.hasPendingSessionSwitch}
 						startNewConversationButtonRef={this.startNewConversationButtonRef}
 						emptyListTextRef={this.emptyPrevConversationsTextRef}
 					/>

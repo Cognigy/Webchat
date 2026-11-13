@@ -36,6 +36,17 @@ export interface UIState {
 	 */
 	hasAcceptedSunInThisVisit: boolean;
 	/**
+	 * Sessions whose SUN was accepted in this page load. Kept in memory only: a reload
+	 * resets it, so the notice is shown again before the first conversation.
+	 */
+	sunAcceptedSessionIds: string[];
+	/**
+	 * True once the user has opened a previous conversation (other than the current one)
+	 * with the notice accepted in this page load. Other previous conversations then open
+	 * without the notice. Page memory only.
+	 */
+	hasAcceptedSunForPrevConversations: boolean;
+	/**
 	 * When SUN is enabled and a SWITCH_SESSION is dispatched before the user
 	 * has accepted for the new session, the socket switch is deferred here.
 	 * The switch is completed by completeDeferredSessionSwitch() once the user
@@ -152,7 +163,7 @@ export type SetHasAcceptedTermsAction = ReturnType<typeof setHasAcceptedTerms>;
 const SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION = "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION";
 /**
  * @param unused true when the user just accepted (or the acceptance is carried over from
- * an unused one); false when restoring an acceptance from storage.
+ * an unused one); false when restoring an acceptance from earlier in this page load.
  */
 export const setHasAcceptedSystemUseNotification = (sessionId: string, unused = false) => ({
 	type: SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION as "SET_HAS_ACCEPTED_SYSTEM_USE_NOTIFICATION",
@@ -161,6 +172,14 @@ export const setHasAcceptedSystemUseNotification = (sessionId: string, unused = 
 });
 export type SetHasAcceptedSystemUseNotificationAction = ReturnType<
 	typeof setHasAcceptedSystemUseNotification
+>;
+
+const SET_SUN_ACCEPTED_FOR_PREV_CONVERSATIONS = "SET_SUN_ACCEPTED_FOR_PREV_CONVERSATIONS" as const;
+export const setSunAcceptedForPrevConversations = () => ({
+	type: SET_SUN_ACCEPTED_FOR_PREV_CONVERSATIONS,
+});
+export type SetSunAcceptedForPrevConversationsAction = ReturnType<
+	typeof setSunAcceptedForPrevConversations
 >;
 
 const SET_PENDING_SESSION_SWITCH = "SET_PENDING_SESSION_SWITCH" as const;
@@ -227,6 +246,8 @@ const getInitialState = (): UIState => ({
 	hasAcceptedSystemUseNotification: false,
 	isSunAcceptanceUnused: false,
 	hasAcceptedSunInThisVisit: false,
+	sunAcceptedSessionIds: [],
+	hasAcceptedSunForPrevConversations: false,
 	pendingSessionSwitch: null,
 	storedMessage: null,
 	ttsActive: false,
@@ -252,6 +273,7 @@ type UIAction =
 	| SetLastInputIdAction
 	| SwitchSessionAction
 	| SetPendingSessionSwitchAction
+	| SetSunAcceptedForPrevConversationsAction
 	| CompleteDeferredSessionSwitchAction
 	| SendMessageAction;
 
@@ -347,6 +369,18 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 				hasAcceptedSystemUseNotification: true,
 				isSunAcceptanceUnused: action.unused,
 				hasAcceptedSunInThisVisit: true,
+				sunAcceptedSessionIds:
+					action.sessionId && !state.sunAcceptedSessionIds.includes(action.sessionId)
+						? [...state.sunAcceptedSessionIds, action.sessionId]
+						: state.sunAcceptedSessionIds,
+			};
+		}
+
+		case SET_SUN_ACCEPTED_FOR_PREV_CONVERSATIONS: {
+			if (state.hasAcceptedSunForPrevConversations) return state;
+			return {
+				...state,
+				hasAcceptedSunForPrevConversations: true,
 			};
 		}
 
@@ -365,6 +399,11 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 			return {
 				...state,
 				hasAcceptedSystemUseNotification: false,
+				// A starter queued for an earlier switch belongs to that switch only. Drop it
+				// so it isn't sent into the session switched to now (e.g. a conversation
+				// picked from the list). Starter handlers queue the message after dispatching
+				// their own SWITCH_SESSION, so their starter is kept.
+				storedMessage: null,
 			};
 		}
 
