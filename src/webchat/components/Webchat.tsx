@@ -8,7 +8,6 @@ import { sendMessage } from "../store/messages/message-middleware";
 import { MessageSender } from "../../webchat-ui/interfaces";
 import {
 	setHasAcceptedTerms,
-	setHasAcceptedSystemUseNotification,
 	setOpen,
 	setShowHomeScreen,
 	showChatScreen,
@@ -27,11 +26,7 @@ import { setInitialSessionId, updateSettings } from "../store/config/config-redu
 import { createOutputHandler } from "../store/messages/message-handler";
 import { createNotification } from "../../webchat-ui/components/presentational/Notifications";
 import { getStorage } from "../helper/storage";
-import {
-	hasAcceptedTermsInStorage,
-	hasAcceptedSunInStorage,
-	isNoticePending,
-} from "../helper/privacyPolicy";
+import { hasAcceptedTermsInStorage, isNoticePending } from "../helper/privacyPolicy";
 import { setUserId } from "../store/options/options-reducer";
 import { switchSession } from "../store/previous-conversations/previous-conversations-reducer";
 import { clearMessages } from "../store/messages/message-reducer";
@@ -80,17 +75,14 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 			this.store.dispatch(setHasAcceptedTerms(userId));
 		}
 
-		// System Use Notification (AC-8 / FedRAMP): restore per-session acceptance.
-		// If the current sessionId was already accepted in this browser session, skip the notice.
+		// System Use Notification (AC-8 / FedRAMP) acceptance is kept in page memory only and
+		// is never restored here: after a reload the notice is shown again.
 		const sessionId = this.client.socketOptions.sessionId || "";
-		if (sessionId && hasAcceptedSunInStorage(browserStorage, sessionId)) {
-			this.store.dispatch(setHasAcceptedSystemUseNotification(sessionId));
-		}
 
 		this.store.dispatch(loadConfig());
 		// Always sync the Redux options.sessionId from the socket client so that
-		// handleAcceptSystemUseNotification in WebchatUI reads the same sessionId
-		// that was used to check SUN acceptance in storage above.
+		// handleAcceptSystemUseNotification in WebchatUI records the acceptance for the
+		// session the socket will connect with.
 		if (sessionId) {
 			this.store.dispatch(setInitialSessionId(sessionId));
 		} else if (this.props.options?.sessionId) {

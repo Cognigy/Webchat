@@ -3,7 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { Typography } from "@cognigy/chat-components";
 import { deletePrevConversation } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { getStorage } from "../../../../webchat/helper/storage";
-import { setShowChatOptionsScreen } from "../../../../webchat/store/ui/ui-reducer";
+import {
+	setShowChatOptionsScreen,
+	setShowPrevConversations,
+} from "../../../../webchat/store/ui/ui-reducer";
 import { StoreState } from "../../../../webchat/store/store";
 import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
@@ -73,6 +76,17 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 		onDeleteModalStateChange(false);
 		deleteButtonRef.current?.focus();
 		dispatch(setShowChatOptionsScreen(false));
+		// With SUN enabled the next conversation needs a new acceptance. Land on the
+		// Previous conversations list instead of a new, notice-gated chat; the notice
+		// shows when the user starts or opens a conversation (CGY-48501).
+		const { homeScreen, systemUseNotification } = props.config.settings;
+		if (
+			systemUseNotification?.enabled &&
+			homeScreen?.enabled &&
+			homeScreen.previousConversations?.enabled
+		) {
+			dispatch(setShowPrevConversations(true));
+		}
 		// Status message for the completed deletion (SC 4.1.3, CGY-39786). The
 		// live region lives in the open chat window and survives this screen's
 		// unmount.

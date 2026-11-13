@@ -80,6 +80,8 @@ const StartButton = styled(PrimaryButton)(({ theme }) => ({
 interface IPrevConversationsListProps {
 	config: IWebchatConfig;
 	currentSession?: string;
+	/** A session switch is waiting for SUN acceptance (e.g. after a conversation starter). */
+	hasPendingSessionSwitch?: boolean;
 	conversations: PrevConversationsState;
 	onSetShowPrevConversations: (show: boolean) => void;
 	onSwitchSession: (sessionId?: string, conversation?: PrevConversationsState[string]) => void;
@@ -94,6 +96,7 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 		onSetShowPrevConversations,
 		onSwitchSession,
 		currentSession,
+		hasPendingSessionSwitch,
 		startNewConversationButtonRef,
 		emptyListTextRef,
 	} = props;
@@ -112,12 +115,15 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 
 	const switchSession = useCallback(
 		(sessionId?: string, conversation?: PrevConversationsState[string]) => {
-			if (sessionId && sessionId !== currentSession) {
+			// Picking the current conversation normally just shows it. If a switch to another
+			// session is pending (SUN not yet accepted), switch back explicitly so the pending
+			// switch is replaced; otherwise accepting would land in that other session.
+			if (sessionId && (sessionId !== currentSession || hasPendingSessionSwitch)) {
 				onSwitchSession(sessionId, conversation);
 			}
 			onSetShowPrevConversations(false);
 		},
-		[],
+		[currentSession, hasPendingSessionSwitch, onSwitchSession, onSetShowPrevConversations],
 	);
 
 	return (

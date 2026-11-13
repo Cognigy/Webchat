@@ -679,11 +679,13 @@ describe("Previous Conversations", () => {
 		const openSeededListWithStubbedSocket = (
 			extraSettings: Record<string, unknown> = {},
 			beforeOpeningList: () => void = () => {},
+			// The seeded conversations, plus one if beforeOpeningList sends a message
+			expectedConversations = seededSessions.length,
 		) => {
 			initSeededWebchatWithStubbedSocket(extraSettings);
 			beforeOpeningList();
 			cy.get("button").contains("View previous conversations").click();
-			cy.get(".webchat-prev-conversations-item").should("have.length", 2);
+			cy.get(".webchat-prev-conversations-item").should("have.length", expectedConversations);
 		};
 
 		const confirmDeleteAll = () => {
@@ -790,16 +792,20 @@ describe("Previous Conversations", () => {
 			cy.get(".webchat-prev-conversations-item").should("have.length", 2);
 
 			confirmDeleteAll();
-			cy.get(".webchat-system-use-notification-accept-button").click();
 
-			// Neither acceptance started a session or sent the get-started message
+			// The acceptance was never used (no message sent), so it carries over to the new
+			// session: no second notice (CGY-45543)
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+
+			// Neither accepting nor deleting started a session or sent the get-started message
 			cy.get(".webchat-prev-conversations-empty").should("be.visible");
 			cy.get("@connect").should("not.have.been.called");
 			cy.get("@sendMessage").should("not.have.been.called");
 
-			// Starting a conversation does
+			// Starting a conversation does, without asking again
 			cy.get("button.webchat-header-back-button").click();
 			cy.get(".webchat-homescreen-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
 			cy.get("@connect").should("have.been.called");
 			cy.get("@sendMessage").should("have.been.calledWith", "GET_STARTED");
 		});
@@ -816,31 +822,36 @@ describe("Previous Conversations", () => {
 					},
 				},
 				() => {
-					// Accept the notice for the current session, then return to the home screen
+					// Accept the notice for the current session and use it (send a message), so
+					// the next session needs its own acceptance; then return to the home screen
 					cy.get(".webchat-homescreen-send-button").click();
 					cy.get(".webchat-system-use-notification-accept-button").click();
+					cy.sendMessage("hello");
 					cy.get("button.webchat-header-back-button").click();
 				},
+				seededSessions.length + 1,
 			);
 			cy.get("@connect").invoke("resetHistory");
 			confirmDeleteAll();
 
-			// The new session needs its own acceptance, and nothing connects before
-			// it — not even on network recovery
-			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			// The new session needs its own acceptance. The emptied list stays visible
+			// (the user accepted in this visit, CGY-48501), and nothing connects before
+			// the notice is accepted — not even on network recovery
+			cy.get(".webchat-prev-conversations-empty").should("be.visible");
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
 			cy.getWebchat().then(webchat => {
 				webchat.store.dispatch({ type: "NETWORK_ON" });
 			});
 			cy.get("@connect").should("not.have.been.called");
 
-			// Accepting it over the list does not start a conversation either …
-			cy.get(".webchat-system-use-notification-accept-button").click();
-			cy.get(".webchat-prev-conversations-empty").should("be.visible");
-			cy.get("@connect").should("not.have.been.called");
-
-			// … starting one does, on the new session
+			// Starting a conversation shows the notice first …
 			cy.get("button.webchat-header-back-button").click();
 			cy.get(".webchat-homescreen-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			cy.get("@connect").should("not.have.been.called");
+
+			// … and connects on the new session once it is accepted
+			cy.get(".webchat-system-use-notification-accept-button").click();
 			cy.get("@connect").should("have.been.called");
 			cy.getWebchat().then(webchat => {
 				expect(seededSessions).not.to.include(webchat.client.socketOptions.sessionId);

@@ -79,6 +79,7 @@ See the [Settings Interface](#settings-interface) for full reference.
 | teaserMessage | object | see [Teaser Message](#teaser-message) | Configure the Teaser Message, shown to users while the Webchat is still minimized |
 | chatOptions | object | see [Chat Options](#chat-options) | Configure the Chat Options, providing further options to your users |
 | privacyNotice | object | see [Privacy Notice](#privacy-notice) | Configure the privacy notice, optionally shown to be accepted by users before any message is sent |
+| systemUseNotification | object | see [System Use Notification](#system-use-notification) | Configure the System Use Notification (FedRAMP AC-8), shown to be accepted by users before each new conversation |
 | fileAttachmentMaxSize | number | 10485760 | The max size for file attachments uploaded by users **in bytes**, set to **10MB** as default |
 | maintenance | object | see [Maintenance](#maintenance) | Configures the maintenance mode to prevent the user from using the Webchat during maintenance |
 | demoWebchat | object | see [Demo Webchat](#demo-webchat) | Configure the Cognigy.AI demo webchat. Only relevant if you copy the Demo Webchat implementation. |
@@ -330,6 +331,33 @@ With either `enableIndicator` or `enableBadge` on, the unread count is also anno
 | submitButtonText | string  | `"Submit"`                                             | Configure the "submit" button text on the Privacy Notice screen                        |
 | urlText          | string  | `"Privacy policy"`                                     | Text on the link button, linking to your full Privacy Notice                           |
 | url              | string  | `"https://www.cognigy.com/"`                           | The URL to your full Privacy Notice                                                    |
+
+#### System Use Notification
+
+A notice the user must accept before using the Webchat, for deployments that must meet FedRAMP AC-8 (System Use Notification). It is separate from the [Privacy Notice](#privacy-notice). When both are enabled, the System Use Notification is shown first.
+
+| Name             | Type    | Default                                                                        | Description                                                                      |
+| ---------------- | ------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| enabled          | boolean | `false`                                                                        | If enabled, the user needs to accept the notice before a conversation is started |
+| title            | string  | `"System Use Notification"`                                                    | Header title of the System Use Notification screen                               |
+| text             | string  | `"You are accessing a U.S. Government information system. …"` (full AC-8 text) | The notice text. Supports Markdown; HTML is sanitized                            |
+| submitButtonText | string  | `"I acknowledge and accept"`                                                   | Text of the accept button                                                        |
+
+**Where the notice is shown**
+
+- Before any screen in the chat window except the home screen, including **Previous conversations**. The list shows previews of stored conversations, so the notice is shown before the user can see it the first time. Once the user has accepted the notice in this page visit, the list stays visible, and the notice is shown when they start or open a conversation from it.
+- Until the notice is accepted, Webchat does not connect to the endpoint for the new session and does not send the get-started message. A conversation starter clicked while the notice is shown is sent after the user accepts, in the new conversation.
+
+**When the user has to accept again**
+
+Acceptance is kept in memory for the current page only. It is never written to browser storage, so after a page reload the notice is shown again, even when the user continues the same conversation.
+
+Within one page load:
+
+- **New conversations** always show the notice (**Start new conversation**, a conversation starter on the home screen, `webchat.endSession()`). The one exception: if the user accepted the notice and hasn't sent a message since (for example, they accepted it on Previous conversations), the next conversation starts without asking again.
+- **Previous conversations** (other than the current one) show the notice the first time the user opens one. After that, other previous conversations open without it.
+- **The current conversation**, or one already accepted in this page load, opens without the notice.
+- **Delete conversation** and **Delete all conversations** leave the user on the Previous conversations list (when `homeScreen.previousConversations` is enabled) instead of starting a new conversation. The notice is shown when they start or open the next conversation, following the rules above. Without the list, Delete conversation starts a new conversation and the notice is shown right away.
 
 #### Maintenance
 
@@ -746,6 +774,12 @@ interface IWebchatSettings {
 		submitButtonText: string;
 		urlText: string;
 		url: string;
+	};
+	systemUseNotification?: {
+		enabled: boolean;
+		title: string;
+		text: string;
+		submitButtonText: string;
 	};
 	fileAttachmentMaxSize: number;
 	maintenance: {

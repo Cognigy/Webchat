@@ -18,3 +18,12 @@ import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Message fixtures load images from picsum.photos. Serve them from a local 200×200
+// image so the image specs don't fail when that external service is slow or down.
+beforeEach(() => {
+	cy.intercept("GET", "https://picsum.photos/**", {
+		fixture: "images/square-200.png",
+		headers: { "content-type": "image/png" },
+	});
+});

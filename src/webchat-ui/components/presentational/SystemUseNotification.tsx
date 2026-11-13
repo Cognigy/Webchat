@@ -34,6 +34,7 @@ const Message = styled.div(({ theme }) => ({
 }));
 
 const Actions = styled.div({
+	width: "100%",
 	display: "flex",
 	alignItems: "center",
 	flexDirection: "column",
