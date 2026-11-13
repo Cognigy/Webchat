@@ -6,9 +6,8 @@ import { getStorage } from "../../../../webchat/helper/storage";
 import { StoreState } from "../../../../webchat/store/store";
 import DeleteConfirmModal from "../../Modal/DeleteConfirmModal";
 import { Typography } from "@cognigy/chat-components";
-import { disconnect } from "../../../../webchat/store/connection/connection-middleware";
 import { clearMessages } from "../../../../webchat/store/messages/message-reducer";
-import { switchSession } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
+import { switchToUnconnectedSession } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 
 interface DeleteAllConversationsProps {
 	config: IWebchatConfig;
@@ -27,8 +26,8 @@ const DeleteAllConversationsModal = (
 	const handleConfirmDelete = () => {
 		dispatch(setConversations({}));
 		dispatch(clearMessages()); // Clear any existing messages
-		dispatch(switchSession()); // Switch the session to a new one
-		dispatch(disconnect()); // Disconnect the socket to prevent from receiving any new messages. Socket will be reconnected upon starting a new conversation
+		// Remove the stored conversations before switching: the switch reloads the
+		// conversation list from storage.
 		const storage = getStorage({
 			disableLocalStorage:
 				config.settings.embeddingConfiguration?.disableLocalStorage ?? false,
@@ -41,6 +40,9 @@ const DeleteAllConversationsModal = (
 				}
 			});
 		}
+		// Leave the socket disconnected: no new session is started until the user
+		// starts a conversation (CGY-39639).
+		dispatch(switchToUnconnectedSession());
 		onOpenChange(false, true);
 	};
 

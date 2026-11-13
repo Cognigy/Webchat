@@ -129,6 +129,8 @@ export interface WebchatUIProps {
 	connected: boolean;
 	connecting: boolean;
 	reconnectionLimit: boolean;
+	/** False after "Delete all conversations" until the user starts a conversation again. */
+	hasAttemptedConnection?: boolean;
 
 	hasGivenRating: boolean;
 	showRatingScreen: boolean;
@@ -1125,7 +1127,11 @@ export class WebchatUI extends React.PureComponent<
 		return (
 			this.props.config.settings.behavior.enableConnectionStatusIndicator &&
 			!this.props.connected &&
-			this.state.hadConnection
+			this.state.hadConnection &&
+			// A deliberate disconnect ("Delete all conversations") is not a lost
+			// connection: nothing should reconnect until the user starts a
+			// conversation (CGY-39639).
+			this.props.hasAttemptedConnection !== false
 		);
 	}
 
@@ -1923,8 +1929,13 @@ export class WebchatUI extends React.PureComponent<
 			// using it would always persist "" as the accepted sessionId.
 			onAcceptSystemUseNotification(config.initialSessionId || "");
 			// If the privacy notice also needs to be shown, let it render next naturally.
-			// Otherwise connect immediately so storedMessage is flushed.
-			if (!config.settings.privacyNotice.enabled || hasAcceptedTerms) {
+			// Otherwise connect immediately so storedMessage is flushed — unless the
+			// notice was shown over the conversations list: accepting it there does
+			// not start a conversation (CGY-39639).
+			if (
+				(!config.settings.privacyNotice.enabled || hasAcceptedTerms) &&
+				!showPrevConversations
+			) {
 				onShowChatScreen();
 			}
 		};
