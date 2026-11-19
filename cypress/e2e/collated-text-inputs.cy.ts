@@ -13,7 +13,10 @@ import * as moment from "moment";
 // The parts of the Webchat instance these tests use.
 type AnalyticsEvent = { type: string; payload?: any };
 type WebchatHandle = {
-	client: { sendMessage: (text: string, data: object | null) => void };
+	client: {
+		sendMessage: (text: string, data: object | null) => void;
+		socketOptions: { sessionId: string };
+	};
 	registerAnalyticsService: (handler: (event: AnalyticsEvent) => void) => void;
 };
 
@@ -228,6 +231,106 @@ describe("collated text inputs", () => {
 
 		expectSentTexts(["hi", "from the page"]);
 		expectUserBubbles(["hi", "from the page"]);
+	});
+
+	it("sends pending messages when collation is switched off before they are sent", () => {
+		// Far above the command timeout, so only the next send can send "hi".
+		cy.initMockWebchat(collationSettings({ inputCollationTimeout: 60000 }))
+			.openWebchat()
+			.startConversation();
+		stubSendMessage();
+
+		typeAndSend("hi");
+		cy.updateSettings({ layout: { enableInputCollation: false } });
+		typeAndSend("whats up");
+
+		expectSentTexts(["hi", "whats up"]);
+		expectUserBubbles(["hi", "whats up"]);
+	});
+
+	/**
+	 * Pending messages are on screen in the conversation they were typed in, so
+	 * they are sent to that conversation, or not at all if it is deleted.
+	 */
+	describe("leaving the conversation while messages are pending", () => {
+		const socketOptions = {
+			userId: "collation-user",
+			sessionId: "collation-session",
+			channel: "collation-channel",
+		};
+		// Same key layout as getOptionsKey; the URLToken is the mocked endpoint's.
+		const storageKey = JSON.stringify([
+			"webchat-client",
+			socketOptions.userId,
+			socketOptions.sessionId,
+			"fake-url-token",
+		]);
+		let sent: { text: string; sessionId: string }[];
+
+		beforeEach(() => {
+			sent = [];
+			cy.window().then(window => window.localStorage.clear());
+			// An unroutable endpoint keeps the socket closed, so the test sets the
+			// session options a connect would set.
+			cy.initMockWebchat(
+				{ ...socketOptions, ...collationSettings() },
+				undefined,
+				"http://mock-endpoint.invalid/asdfqwer",
+			)
+				.openWebchat()
+				.startConversation();
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "SET_OPTIONS", options: socketOptions });
+				const { client } = webchat as unknown as WebchatHandle;
+				cy.stub(client, "sendMessage").callsFake((text: string) => {
+					sent.push({ text, sessionId: client.socketOptions.sessionId });
+				});
+			});
+		});
+
+		it("sends them to the conversation they are shown in when the user switches conversations", () => {
+			typeAndSend("hi");
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({ type: "SWITCH_SESSION", sessionId: "next-session" });
+			});
+
+			cy.wrap(sent).should("deep.equal", [
+				{ text: "hi", sessionId: socketOptions.sessionId },
+			]);
+			// the collation timeout passes without another send
+			cy.wait(1500);
+			cy.wrap(sent).should("have.length", 1);
+			cy.get(".webchat-message-row.user").should("not.exist");
+			cy.window().then(window => {
+				const stored = JSON.parse(window.localStorage.getItem(storageKey) ?? "{}");
+				const userTexts = (stored.messages ?? [])
+					.filter((message: { source: string }) => message.source === "user")
+					.map((message: { text: string }) => message.text);
+				expect(userTexts).to.deep.equal(["hi"]);
+			});
+		});
+
+		it("doesn't send them when the user deletes the conversation", () => {
+			typeAndSend("hi");
+			// what the "Delete conversation" confirm button dispatches
+			cy.getWebchat().then(webchat => {
+				webchat.store.dispatch({
+					type: "DELETE_PREV_CONVERSATION",
+					sessionId: socketOptions.sessionId,
+				});
+				webchat.store.dispatch({ type: "CLEAR_MESSAGES" });
+				webchat.store.dispatch({ type: "SWITCH_SESSION", sessionId: "next-session" });
+			});
+
+			// the collation timeout passes without a send
+			cy.wait(1500);
+			cy.wrap(sent).should("deep.equal", []);
+			cy.getWebchat().then(webchat => {
+				expect(webchat.store.getState().prevConversations).not.to.have.property(
+					socketOptions.sessionId,
+				);
+			});
+		});
 	});
 
 	describe("Template Actions", () => {
