@@ -821,6 +821,83 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 					});
 			});
 
+			it("by a reconnect of the current conversation while the starter waits", () => {
+				const sent: { text: string; sessionId: string }[] = [];
+
+				cy.visitWebchat().initMockWebchat({ settings: starterSettings });
+				// The mock socket never connects, so the test plays the socket: connected or
+				// dropped, with connects and switches that resolve like a real one.
+				const setSocketConnected = (connected: boolean) =>
+					cy.getWebchat().then(webchat => {
+						Object.defineProperty((webchat as any).client, "connected", {
+							configurable: true,
+							get: () => connected,
+						});
+						(webchat as any).store.dispatch({ type: "SET_CONNECTED", connected });
+					});
+				cy.getWebchat().then(webchat => {
+					const client = (webchat as any).client;
+					cy.stub(client, "connect").callsFake(() => {
+						Object.defineProperty(client, "connected", {
+							configurable: true,
+							get: () => true,
+						});
+						(webchat as any).store.dispatch({ type: "SET_CONNECTED", connected: true });
+						return Promise.resolve(client);
+					});
+					cy.stub(client, "sendMessage").callsFake((text: string) => {
+						sent.push({ text, sessionId: client.socketOptions.sessionId });
+					});
+					cy.stub(client, "switchSession").callsFake((sessionId?: string) => {
+						client.socketOptions.sessionId = sessionId || "session-new";
+						return Promise.resolve(client);
+					});
+				});
+				cy.openWebchat();
+				cy.startConversation();
+				cy.get(".webchat-system-use-notification-accept-button").click();
+				cy.sendMessage("hello");
+
+				const uiState = () => cy.window().its("webchat.store").invoke("getState").its("ui");
+				const starters = () => sent.filter(message => message.text === "postback-payload");
+
+				// The starter waits behind the notice for a new conversation
+				cy.get("button.webchat-header-back-button").click();
+				cy.contains("button", "Postback starter").click();
+				cy.get(".webchat-system-use-notification-root").should("be.visible");
+				uiState().its("storedMessage.text").should("equal", "postback-payload");
+
+				// The connection drops and the network comes back: the current conversation
+				// reconnects. The starter is not its message to send.
+				setSocketConnected(false);
+				cy.getWebchat().then((webchat: any) => {
+					webchat.store.dispatch({ type: "NETWORK_ON" });
+				});
+				cy.window()
+					.its("webchat.store")
+					.invoke("getState")
+					.its("connection.connected")
+					.should("be.true");
+				// Negative check: give the reconnect time to send anything it would send
+				cy.wait(300);
+				cy.then(() => {
+					expect(starters(), "starter sent before acceptance").to.have.length(0);
+				});
+				cy.get(".webchat-system-use-notification-root").should("be.visible");
+				uiState().its("storedMessage.text").should("equal", "postback-payload");
+
+				// After acceptance the starter goes out once, on the new conversation
+				uiState()
+					.its("pendingSessionSwitch.sessionId")
+					.then(newSessionId => {
+						cy.get(".webchat-system-use-notification-accept-button").click();
+						cy.wrap(sent).should(() => {
+							expect(starters()).to.have.length(1);
+							expect(starters()[0].sessionId).to.equal(newSessionId);
+						});
+					});
+			});
+
 			it("when the user switches to a conversation accepted earlier in this page load", () => {
 				const sent = queueStarterBehindNotice();
 
