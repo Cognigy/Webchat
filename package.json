@@ -1,6 +1,6 @@
 {
 	"name": "@cognigy/webchat",
-	"version": "3.55.0",
+	"version": "3.56.0",
 	"description": "Webchat for Cognigy.AI",
 	"author": "Cognigy GmbH <info@cognigy.com>",
 	"contributors": [
@@ -56,14 +56,14 @@
 	},
 	"dependencies": {
 		"@braintree/sanitize-url": "^6.0.0",
-		"@cognigy/chat-components": "0.84.0",
+		"@cognigy/chat-components": "0.85.0",
 		"@cognigy/socket-client": "5.0.0-beta.26",
 		"@emotion/cache": "^10.0.29",
 		"@emotion/react": "^11.13.0",
 		"@emotion/serialize": "1.3.3",
 		"@emotion/styled": "^11.13.0",
 		"@reduxjs/toolkit": "^2.2.7",
-		"axios": "1.21.0",
+		"axios": "1.21.1",
 		"classnames": "2.5.1",
 		"dompurify": "3.4.17",
 		"license-checker": "25.0.1",
@@ -99,12 +99,12 @@
 		"@eslint/js": "^9.0.0",
 		"@redux-devtools/extension": "^3.3.0",
 		"@svgr/webpack": "8.1.0",
-		"@types/dom-speech-recognition": "0.0.4",
+		"@types/dom-speech-recognition": "0.0.12",
 		"@types/dompurify": "^2.0.0",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.1",
-		"@types/react-redux": "7.1.31",
-		"@types/react-transition-group": "4.4.10",
+		"@types/react-redux": "7.1.35",
+		"@types/react-transition-group": "4.4.12",
 		"@types/remarkable": "^2.0.3",
 		"@types/resize-observer-browser": "^0.1.11",
 		"@types/tinycolor2": "^1.4.3",
@@ -148,7 +148,8 @@
 		"cross-spawn": ">=7.0.5",
 		"loader-utils": "2.0.4",
 		"ws": "^8.21.0",
-		"browserslist": "^4.28.7"
+		"browserslist": "^4.28.7",
+		"qs": "6.17.1"
 	},
 	"lint-staged": {
 		"src/**/*.{ts,tsx,js,jsx}": "eslint --config eslint.a11y.config.mjs"
