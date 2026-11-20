@@ -15,6 +15,11 @@ export interface MessageState {
 	 * (CGY-3519) to stay silent on reloads.
 	 */
 	hasRestoredPersistedHistory?: boolean;
+	/**
+	 * True once SET_PREV_STATE loaded a conversation for a session switch. Tells
+	 * RESET_STATE that the history already holds the stored conversation.
+	 */
+	hasSwitchedConversation?: boolean;
 }
 
 const initialState: MessageState = {

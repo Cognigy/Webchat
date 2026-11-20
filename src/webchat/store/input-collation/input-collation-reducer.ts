@@ -1,6 +1,7 @@
 import { Reducer } from "redux";
 import { IMessage } from "../../../common/interfaces/message";
 import { SendMessageAction } from "../messages/message-middleware";
+import { ClearMessagesAction } from "../messages/message-reducer";
 
 export interface InputCollationState {
 	messages: IMessage[];
@@ -26,7 +27,8 @@ export type SubmitCollatedMessagesAction = ReturnType<typeof submitCollatedMessa
 type InputCollationAction =
 	| AddCollatedMessageAction
 	| SubmitCollatedMessagesAction
-	| SendMessageAction;
+	| SendMessageAction
+	| ClearMessagesAction;
 
 export const inputCollation: Reducer<InputCollationState, InputCollationAction> = (
 	state = getInitialState(),
@@ -40,8 +42,18 @@ export const inputCollation: Reducer<InputCollationState, InputCollationAction> 
 			};
 		}
 
-		case "SUBMIT_COLLATED_MESSAGES":
 		case "SEND_MESSAGE": {
+			// Showing a collated message must keep the batch it was just added to.
+			if (action.only === "display") return state;
+
+			return {
+				...state,
+				messages: [],
+			};
+		}
+
+		case "SUBMIT_COLLATED_MESSAGES":
+		case "CLEAR_MESSAGES": {
 			return {
 				...state,
 				messages: [],

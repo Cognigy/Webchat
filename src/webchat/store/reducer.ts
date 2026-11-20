@@ -61,7 +61,13 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 				state.messages.messageHistory.length === 0 ||
 				(state.messages.messageHistory.length === 1 &&
 					state.messages.messageHistory[0].source === "engagement");
-			const messages = isEmptyHistory ? action.state.messages : [];
+			// Before the first connect sets a session, the history only holds what was sent while
+			// connecting. That was never saved, so it must not block the restore, or the next save
+			// overwrites the stored conversation. A conversation opened by a session switch is
+			// already in the history.
+			const isFirstConnect =
+				!state.options.sessionId && !state.messages.hasSwitchedConversation;
+			const messages = isEmptyHistory || isFirstConnect ? action.state.messages : [];
 			// Mark restored bot/engagement messages animationState as done
 
 			const restoredMessages = messages.map(message => {
@@ -128,6 +134,7 @@ export const reducer = (state = rootReducer(undefined, { type: "" }), action) =>
 					messages: {
 						messageHistory: [...messages],
 						visibleOutputMessages,
+						hasSwitchedConversation: true,
 					},
 					rating: { showRatingScreen: false, ...rating },
 				},
