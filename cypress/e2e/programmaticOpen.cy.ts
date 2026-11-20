@@ -62,6 +62,21 @@ describe("Programmatic open APIs", () => {
 		});
 	});
 
+	it("webchat.show() emits webchat/open only once when called twice", () => {
+		const opens: string[] = [];
+
+		cy.getWebchat().then(async (webchat: any) => {
+			webchat.registerAnalyticsService((event: { type: string }) => {
+				if (event.type === "webchat/open") opens.push(event.type);
+			});
+
+			await webchat.show();
+			await webchat.show();
+		});
+
+		cy.wrap(opens).should("have.length", 1);
+	});
+
 	it("webchat.toggle() still toggles", () => {
 		cy.getWebchat().then((webchat: any) => {
 			webchat.toggle();

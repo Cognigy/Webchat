@@ -162,6 +162,11 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	};
 
 	_show = () => {
+		// Already open: do nothing. Dispatching SET_OPEN again would emit a
+		// duplicate `webchat/open` analytics event, and _prepareChatScreen()
+		// would move the user off the screen they are on.
+		if (this.store.getState().ui.open) return;
+
 		this._prepareChatScreen();
 
 		this.store.dispatch(setOpen(true));
