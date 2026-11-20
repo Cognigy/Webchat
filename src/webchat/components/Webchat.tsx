@@ -142,7 +142,7 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 	};
 
 	// TODO: move the logic to middleware
-	_open = () => {
+	_prepareChatScreen = () => {
 		const { settings } = this.store.getState().config;
 		const ui = this.store.getState().ui;
 
@@ -153,11 +153,26 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 			this.store.dispatch(setShowChatOptionsScreen(false));
 			this.store.dispatch(showChatScreen());
 		}
+	};
+
+	_open = () => {
+		this._prepareChatScreen();
 
 		this.store.dispatch(toggleOpen());
 	};
 
-	open = async () => {
+	_show = () => {
+		// Already open: do nothing. Dispatching SET_OPEN again would emit a
+		// duplicate `webchat/open` analytics event, and _prepareChatScreen()
+		// would move the user off the screen they are on.
+		if (this.store.getState().ui.open) return;
+
+		this._prepareChatScreen();
+
+		this.store.dispatch(setOpen(true));
+	};
+
+	_waitForConfig = async () => {
 		/*
 		 * Here was the logic for maintenance and business hours
 		 *
@@ -182,7 +197,25 @@ export class Webchat extends React.PureComponent<WebchatProps> {
 				timeoutReached = true;
 			}
 		}
+	};
+
+	/**
+	 * Opens the Webchat if it is closed, and closes it if it is already open
+	 * (it dispatches a toggle). Use `show()` to open without ever closing.
+	 */
+	open = async () => {
+		await this._waitForConfig();
 		this._open();
+	};
+
+	/**
+	 * Opens the Webchat and leaves it open. Unlike `open()`, calling `show()`
+	 * on a Webchat that is already open does not close it, so it is safe to
+	 * call from every "Start chat" button on a page.
+	 */
+	show = async () => {
+		await this._waitForConfig();
+		this._show();
 	};
 
 	close = () => {
