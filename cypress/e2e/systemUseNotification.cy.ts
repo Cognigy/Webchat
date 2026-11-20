@@ -742,6 +742,85 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 				return sent;
 			};
 
+			it("by a slower switch to another conversation that completes while the starter waits", () => {
+				const sent: { text: string; sessionId: string }[] = [];
+				// Switches resolve only when the test releases them
+				const releaseSwitch: (() => void)[] = [];
+
+				cy.visitWebchat().initMockWebchat({
+					settings: {
+						...starterSettings,
+						behavior: { enableConnectionStatusIndicator: false },
+					},
+				});
+				cy.getWebchat().then(webchat => {
+					const client = (webchat as any).client;
+					cy.stub(client, "sendMessage").callsFake((text: string) => {
+						sent.push({ text, sessionId: client.socketOptions.sessionId });
+					});
+					// The mock socket never connects; switches resolve when released.
+					cy.stub(client, "switchSession").callsFake(
+						(sessionId?: string) =>
+							new Promise(resolve => {
+								releaseSwitch.push(() => {
+									client.socketOptions.sessionId = sessionId || "session-new";
+									resolve(client);
+								});
+							}),
+					);
+				});
+				cy.openWebchat();
+				cy.startConversation();
+				cy.get(".webchat-system-use-notification-accept-button").click();
+				cy.sendMessage("hello");
+
+				const uiState = () => cy.window().its("webchat.store").invoke("getState").its("ui");
+
+				// A slow switch to the conversation accepted earlier in this page load: it
+				// needs no notice, so the socket switch starts, and stays in flight.
+				cy.window().then(win => {
+					const store = (win as any).webchat.store;
+					store.dispatch({
+						type: "SWITCH_SESSION",
+						sessionId: store.getState().ui.sunAcceptedSessionIds[0],
+					});
+				});
+				cy.wrap(releaseSwitch).should("have.length", 1);
+
+				// Meanwhile the user queues a starter for a new conversation behind its notice
+				cy.get("button.webchat-header-back-button").click();
+				cy.contains("button", "Postback starter").click();
+				cy.get(".webchat-system-use-notification-root").should("be.visible");
+				uiState().its("storedMessage.text").should("equal", "postback-payload");
+
+				// The slow switch completes now. The starter is not its message to send.
+				cy.then(() => releaseSwitch[0]());
+				// Negative check: give the completed switch time to send anything it would send
+				cy.wait(300);
+				cy.wrap(sent).should(messages => {
+					expect(messages.map(message => message.text)).to.not.include(
+						"postback-payload",
+					);
+				});
+				uiState().its("storedMessage.text").should("equal", "postback-payload");
+
+				// After acceptance the starter goes out once, on the new conversation
+				uiState()
+					.its("pendingSessionSwitch.sessionId")
+					.then(newSessionId => {
+						cy.get(".webchat-system-use-notification-accept-button").click();
+						cy.wrap(releaseSwitch).should("have.length", 2);
+						cy.then(() => releaseSwitch[1]());
+						cy.wrap(sent).should(messages => {
+							const starters = messages.filter(
+								message => message.text === "postback-payload",
+							);
+							expect(starters).to.have.length(1);
+							expect(starters[0].sessionId).to.equal(newSessionId);
+						});
+					});
+			});
+
 			it("when the user switches to a conversation accepted earlier in this page load", () => {
 				const sent = queueStarterBehindNotice();
 

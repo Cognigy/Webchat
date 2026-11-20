@@ -106,6 +106,10 @@ export const createPrevConversationsMiddleware =
 		return next(action);
 	};
 
+/** Number of socket switches started per client, so a completing switch can tell
+ * whether a later one has started since. */
+const startedSwitches = new WeakMap<SocketClient, number>();
+
 /** Performs the actual socket switch and triggers auto-inject. Shared by both the
  * immediate path (SUN not pending) and the deferred path (after SUN acceptance). */
 function doSwitchSession(
@@ -115,6 +119,8 @@ function doSwitchSession(
 	targetConversation: Parameters<typeof setPrevState>[0],
 ) {
 	const { dispatch } = store;
+	const thisSwitch = (startedSwitches.get(client) ?? 0) + 1;
+	startedSwitches.set(client, thisSwitch);
 	dispatch(setPrevState(targetConversation));
 	dispatch(setConnecting(true));
 	client
@@ -124,8 +130,14 @@ function doSwitchSession(
 			// A conversation starter clicked while the switch was deferred for SUN is
 			// queued as storedMessage; send it now that the socket is on the target session.
 			// Sent before auto-inject, which then skips because the history is not empty.
-			const { storedMessage } = store.getState().ui;
-			if (storedMessage) {
+			// The queued starter belongs to the switch it was queued for, not to whichever
+			// switch completes first. A slow switch can complete after the user has queued
+			// a starter for another conversation: that starter is left for its own switch
+			// if that switch still waits for the notice, or has started since.
+			const { storedMessage, pendingSessionSwitch } = store.getState().ui;
+			const isStarterForLaterSwitch =
+				!!pendingSessionSwitch || thisSwitch !== startedSwitches.get(client);
+			if (storedMessage && !isStarterForLaterSwitch) {
 				dispatch(
 					sendMessage(
 						{ text: storedMessage.text, data: storedMessage.data },
