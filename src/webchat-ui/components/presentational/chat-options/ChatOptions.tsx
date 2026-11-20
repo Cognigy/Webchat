@@ -56,6 +56,7 @@ interface IChatOptionsProps {
 	onEmitAnalytics: WebchatUIProps["onEmitAnalytics"];
 	onSendActionButtonMessage: WebchatUIProps["onSendMessage"];
 	onDeleteModalStateChange: (open: boolean) => void;
+	onShowPrevConversationsAfterDelete?: () => void;
 }
 
 /**
@@ -75,6 +76,7 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 		onEmitAnalytics,
 		onSendActionButtonMessage,
 		onDeleteModalStateChange,
+		onShowPrevConversationsAfterDelete,
 	} = props;
 	const { settings } = config;
 	const { chatOptions } = settings;
@@ -147,6 +149,9 @@ export const ChatOptions = (props: IChatOptionsProps) => {
 						{showDeleteConversation && (
 							<DeleteConversation
 								onDeleteModalStateChange={onDeleteModalStateChange}
+								onShowPrevConversationsAfterDelete={
+									onShowPrevConversationsAfterDelete
+								}
 								config={config}
 							/>
 						)}
