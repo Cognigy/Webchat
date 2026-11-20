@@ -931,6 +931,97 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			});
 		});
 
+		it("opens a new conversation for a starter clicked after backing out of a previous conversation's notice", () => {
+			const sent: { text: string; sessionId: string }[] = [];
+			const localOptions = {
+				userId: "user-sun-starter-retarget",
+				sessionId: "session-sun-starter-retarget-current",
+				channel: "channel-sun-starter-retarget",
+			};
+			const storedSessionId = "session-sun-starter-retarget-stored";
+			const uiState = () => cy.getWebchat().its("store").invoke("getState").its("ui");
+
+			cy.visitWebchat();
+			// Same key layout as getOptionsKey; "fake-url-token" is the mocked endpoint's URLToken
+			cy.window().then(win => {
+				win.localStorage.setItem(
+					JSON.stringify([
+						"webchat-client",
+						localOptions.userId,
+						storedSessionId,
+						"fake-url-token",
+					]),
+					JSON.stringify({
+						messages: [
+							{ text: "stored conversation", source: "user", timestamp: Date.now() },
+						],
+					}),
+				);
+			});
+			cy.initMockWebchat({
+				...localOptions,
+				settings: {
+					...prevConvSettings,
+					homeScreen: {
+						...prevConvSettings.homeScreen,
+						conversationStarters: {
+							enabled: true,
+							starters: [
+								{
+									type: "postback",
+									title: "Postback starter",
+									payload: "postback-payload",
+								},
+							],
+						},
+					},
+				},
+			});
+			cy.getWebchat().then(webchat => {
+				const client = (webchat as any).client;
+				cy.stub(client, "sendMessage").callsFake((text: string) => {
+					sent.push({ text, sessionId: client.socketOptions.sessionId });
+				});
+				// The mock socket never connects; resolve switches like a reconnect.
+				cy.stub(client, "switchSession").callsFake((sessionId?: string) => {
+					client.socketOptions.sessionId = sessionId || "session-new";
+					return Promise.resolve(client);
+				});
+			});
+			cy.openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.sendMessage("hello");
+
+			// Pick the stored conversation: its notice is pending. Back out of it.
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.contains(".webchat-prev-conversations-item", "stored conversation").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			uiState().its("pendingSessionSwitch.sessionId").should("equal", storedSessionId);
+			cy.get("button.webchat-header-back-button").click();
+
+			// The starter is for a new conversation, not the one the user backed out of
+			cy.contains("button", "Postback starter").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			uiState()
+				.its("pendingSessionSwitch.sessionId")
+				.should("be.a", "string")
+				.and("not.equal", storedSessionId)
+				.then(newSessionId => {
+					cy.get(".webchat-system-use-notification-accept-button").click();
+					cy.get(".webchat-system-use-notification-root").should("not.exist");
+					cy.wrap(sent).should(messages => {
+						const starters = messages.filter(
+							message => message.text === "postback-payload",
+						);
+						expect(starters).to.have.length(1);
+						expect(starters[0].sessionId).to.equal(newSessionId);
+					});
+					cy.contains("stored conversation").should("not.exist");
+				});
+		});
+
 		it("asks once per page load for previous conversations; new conversations always ask", () => {
 			const userId = "user-sun-prev-once";
 			const seed = (sessionId: string, text: string) => {

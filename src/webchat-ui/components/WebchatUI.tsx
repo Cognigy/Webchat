@@ -1286,6 +1286,16 @@ export class WebchatUI extends React.PureComponent<
 				!this.props.hasAcceptedSystemUseNotification) ||
 			(this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms)
 		) {
+			// A switch that still waits for the System Use Notification is not the starter's
+			// conversation: the user picked it (e.g. a previous conversation) and then went
+			// back. Replace it with a switch to a new session, so the starter opens a new
+			// conversation once the notice is accepted, instead of landing in that one.
+			if (
+				this.props.config.settings.systemUseNotification?.enabled &&
+				this.props.hasPendingSessionSwitch
+			) {
+				this.props.onSwitchSession();
+			}
 			this.props.onSetStoredMessage({
 				text,
 				data,
