@@ -14,6 +14,7 @@ import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { PrevConversationsState } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import { Typography } from "@cognigy/chat-components";
 import { IMessage } from "../../../../common/interfaces/message";
+import { getDateLocale } from "../../../utils/date-locale";
 
 const ListItem = styled.div(({ theme }) => ({
 	display: "flex",
@@ -129,7 +130,8 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 		config.settings.customTranslations?.ariaLabels?.openConversation ?? "Open conversation";
 
 	const lastMessagePreview = getLastMessagePreview(messages);
-	const relativeTime = getRelativeTime(messages);
+	const dateLocale = getDateLocale(config);
+	const relativeTime = getRelativeTime(messages, dateLocale);
 	const participants = getParticipants(messages, config);
 
 	// WCAG 2.5.3 Label in Name: the name must start with the visible preview text
@@ -183,7 +185,10 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 				<CenterMeta variant="title2-regular" component="div">
 					<MetaNames>{participants}</MetaNames>
 					<Ellipsis />
-					<MetaTime className="webchat-prev-conversations-time">{relativeTime}</MetaTime>
+					{/* lang marks the time when it may differ from the page language (SC 3.1.2) */}
+					<MetaTime className="webchat-prev-conversations-time" lang={dateLocale}>
+						{relativeTime}
+					</MetaTime>
 				</CenterMeta>
 			</Center>
 			<Right>

@@ -13,14 +13,27 @@ export type PrevConversationsState = {
 const getInitialState = (): PrevConversationsState => ({});
 
 const SWITCH_SESSION = "SWITCH_SESSION";
+/**
+ * @param deferConnection when true, the session id is switched but the socket
+ * is left disconnected (see `switchToUnconnectedSession`).
+ */
 export const switchSession = (
 	sessionId = (self.crypto as any)?.randomUUID?.(),
 	conversation?: PrevConversationsState[string],
+	deferConnection = false,
 ) => ({
 	type: SWITCH_SESSION as "SWITCH_SESSION",
 	sessionId,
 	conversation,
+	deferConnection,
 });
+/**
+ * Switches to a new, empty session without connecting the socket: no session is
+ * started on the endpoint and no auto-inject message is sent until the user
+ * starts a conversation. Used by "Delete all conversations", which must not
+ * create a new session (CGY-39639).
+ */
+export const switchToUnconnectedSession = () => switchSession(undefined, undefined, true);
 export type SwitchSessionAction = ReturnType<typeof switchSession>;
 
 const SET_CONVERSATIONS = "SET_CONVERSATIONS" as const;

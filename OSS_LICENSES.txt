@@ -1,4 +1,4 @@
-Created on 30-10-2026 at 09:56:45
+Created on 16-11-2026 at 11:31:05
 
 {
   "@babel/code-frame@7.29.7": {
@@ -157,7 +157,7 @@ Created on 30-10-2026 at 09:56:45
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.84.0": {
+  "@cognigy/chat-components@0.85.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
@@ -170,7 +170,7 @@ Created on 30-10-2026 at 09:56:45
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.55.0": {
+  "@cognigy/webchat@3.56.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -689,7 +689,7 @@ Created on 30-10-2026 at 09:56:45
     "licenseFile": "node_modules/autolinker/LICENSE",
     "copyright": "Copyright (c) 2014 Gregory Jacobs (http://greg-jacobs.com)"
   },
-  "axios@1.21.0": {
+  "axios@1.21.1": {
     "licenses": "MIT",
     "repository": "https://github.com/axios/axios",
     "publisher": "Matt Zabriskie",

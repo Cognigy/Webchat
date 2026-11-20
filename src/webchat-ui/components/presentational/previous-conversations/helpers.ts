@@ -7,8 +7,9 @@ import { PrevConversationsState } from "../../../../webchat/store/previous-conve
 /**
  * Returns a human-readable relative time label for the last message in a conversation.
  * Uses Intl.RelativeTimeFormat with calendar-based date calculations for accurate relative time display.
+ * `locale` comes from `getDateLocale`; `undefined` uses the browser's locale.
  */
-export const getRelativeTime = (messages: IMessage[]) => {
+export const getRelativeTime = (messages: IMessage[], locale?: string) => {
 	const lastMessage = messages[messages.length - 1];
 	if (!lastMessage?.timestamp) return "";
 
@@ -29,26 +30,30 @@ export const getRelativeTime = (messages: IMessage[]) => {
 		(todayStart.getTime() - messageDayStart.getTime()) / (1000 * 60 * 60 * 24),
 	);
 
-	// Create RelativeTimeFormat instance (uses browser's preferred locale)
-	const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+	// Create RelativeTimeFormat instance (falls back to the browser's preferred locale)
+	const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
 
-	// Helper to capitalize first letter
-	const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+	// The label stands alone, so sentence-case it ("Yesterday", "Last week",
+	// German "Vorgestern") with the locale's casing rules
+	const format = (value: number, unit: Intl.RelativeTimeFormatUnit) => {
+		const label = rtf.format(value, unit);
+		return label.charAt(0).toLocaleUpperCase(locale) + label.slice(1);
+	};
 
 	// For today and yesterday (0-1 days ago)
 	if (daysDiff >= 0 && daysDiff <= 1) {
-		return capitalize(rtf.format(-daysDiff, "day"));
+		return format(-daysDiff, "day");
 	}
 
 	// For recent days (2-6 days ago)
 	if (daysDiff >= 2 && daysDiff < 7) {
-		return rtf.format(-daysDiff, "day");
+		return format(-daysDiff, "day");
 	}
 
 	// For weeks (less than ~4 weeks)
 	const weeksDiff = Math.floor(daysDiff / 7);
 	if (weeksDiff <= 4 && daysDiff < 31) {
-		return rtf.format(-weeksDiff, "week");
+		return format(-weeksDiff, "week");
 	}
 
 	// For months (less than a year)
@@ -62,17 +67,17 @@ export const getRelativeTime = (messages: IMessage[]) => {
 
 	// Safeguard: ensure monthsDiff is positive (message is from the past)
 	if (monthsDiff > 0 && monthsDiff < 12) {
-		return rtf.format(-monthsDiff, "month");
+		return format(-monthsDiff, "month");
 	}
 
 	// For years - calculate based on months to be more accurate
 	const accurateYearsDiff = Math.floor(monthsDiff / 12);
 	if (accurateYearsDiff > 0) {
-		return rtf.format(-accurateYearsDiff, "year");
+		return format(-accurateYearsDiff, "year");
 	}
 
 	// Fallback for edge cases (shouldn't normally reach here)
-	return rtf.format(-Math.floor(monthsDiff / 12), "year");
+	return format(-Math.floor(monthsDiff / 12), "year");
 };
 
 export const getLastMessagePreview = (messages: IMessage[]) => {
