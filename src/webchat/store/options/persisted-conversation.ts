@@ -21,12 +21,9 @@ import { getStorage } from "../../helper/storage";
  * same helpers is what keeps the prediction and the restore aligned —
  * including when they agree on "no": if the endpoint config (and with it
  * `URLToken`) has not loaded yet, the key misses here exactly as it
- * misses there, and nothing is restored either. The one case where they
- * part company is benign: a message sent before the first connect is
- * dispatched ahead of `setOptions`, so `RESET_STATE` finds a non-empty
- * history and skips the restore while this still says "continued" — the
- * session IS a continuation for the backend, so staying silent remains
- * the right outcome.
+ * misses there, and nothing is restored either. A message sent before the
+ * first connect is dispatched ahead of `setOptions`; `RESET_STATE` still
+ * restores the stored conversation in front of it, so both say "continued".
  *
  * `config.initialSessionId` is the pinned `sessionId` from the embedding
  * options. Without one, the socket client mints a fresh session id per

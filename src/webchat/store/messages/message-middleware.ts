@@ -23,14 +23,23 @@ export interface ISendMessageOptions {
 	collate: boolean;
 }
 
+/**
+ * Input collation splits a message: "display" shows the bubble without sending,
+ * "transmit" sends without a bubble. Unset means both. Internal only, not part of
+ * the public `sendMessage` options.
+ */
+export type SendMessagePart = "display" | "transmit";
+
 const SEND_MESSAGE = "SEND_MESSAGE";
 export const sendMessage = (
 	message: Omit<IMessage, "source">,
 	options: Partial<ISendMessageOptions> = {},
+	only?: SendMessagePart,
 ) => ({
 	type: SEND_MESSAGE as "SEND_MESSAGE",
 	message: { ...message, source: "user" } as IMessage,
 	options,
+	only,
 });
 export type SendMessageAction = ReturnType<typeof sendMessage>;
 
@@ -116,7 +125,7 @@ export const createMessageMiddleware =
 	) => {
 		switch (action.type) {
 			case "SEND_MESSAGE": {
-				const { message, options } = action;
+				const { message, options, only } = action;
 				let { text, data } = message;
 
 				const { disableHtmlInput, disableTextInputSanitization } =
@@ -139,7 +148,9 @@ export const createMessageMiddleware =
 				// don't send empty messages!
 				if (!text && !data) break;
 
-				client.sendMessage(text || "", data);
+				if (only !== "display") client.sendMessage(text || "", data);
+
+				if (only === "transmit") break;
 
 				const messageId = generateRandomId();
 
