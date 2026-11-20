@@ -454,6 +454,63 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 		});
 
+		describe("focus after Delete conversation lands on the list", () => {
+			const deleteCurrentConversation = () => {
+				cy.openWebchat();
+				cy.startConversation();
+				cy.get(".webchat-system-use-notification-accept-button").click();
+				cy.get("#webchatChatHistory").should("exist");
+				cy.sendMessage("hello");
+
+				cy.get("[data-header-menu-button]").click();
+				cy.get(".webchat-delete-conversation-button").click();
+				cy.get(".webchat-delete-confirmation-confirm-button").click();
+				cy.get(".webchat-prev-conversations-content").should("exist");
+			};
+			const settings = {
+				...prevConvSettings,
+				chatOptions: { enabled: true, enableDeleteConversation: true },
+			};
+
+			it("moves focus to the empty-state text when the last conversation was deleted", () => {
+				cy.visitWebchat().initMockWebchat({ settings });
+				deleteCurrentConversation();
+
+				cy.get(".webchat-prev-conversations-empty").should("have.focus");
+			});
+
+			it("moves focus to the Start new conversation button when other conversations remain", () => {
+				const localOptions = {
+					userId: "user-sun-delete-focus",
+					sessionId: "session-sun-delete-focus-current",
+					channel: "channel-sun-delete-focus",
+				};
+
+				cy.visitWebchat();
+				// Same key layout as getOptionsKey; "fake-url-token" is the mocked endpoint's URLToken
+				cy.window().then(win => {
+					win.localStorage.setItem(
+						JSON.stringify([
+							"webchat-client",
+							localOptions.userId,
+							"session-sun-delete-focus-stored",
+							"fake-url-token",
+						]),
+						JSON.stringify({
+							messages: [
+								{ text: "seeded message", source: "user", timestamp: Date.now() },
+							],
+						}),
+					);
+				});
+				cy.initMockWebchat({ ...localOptions, settings });
+				deleteCurrentConversation();
+
+				cy.get(".webchat-prev-conversations-item").should("have.length", 1);
+				cy.get(".webchat-prev-conversations-send-button").should("have.focus");
+			});
+		});
+
 		it("keeps the empty list visible after Delete all; asks again on the next conversation (CGY-48501)", () => {
 			const localOptions = {
 				userId: "user-sun-delete-all",

@@ -1123,6 +1123,24 @@ export class WebchatUI extends React.PureComponent<
 		);
 	};
 
+	// Deleting a conversation with the System Use Notification enabled lands on the
+	// Previous conversations list (CGY-48501). The Delete button that had focus is
+	// gone with the chat options screen, so move focus into the list: the empty-state
+	// text if that was the last conversation, otherwise the "Start new conversation"
+	// button. Deferred like the Delete All focus move, and sharing its timeout: the
+	// target is rendered by the same update, and the confirm dialog's close effect
+	// restores focus first.
+	private focusPrevConversationsListAfterDelete = () => {
+		if (this.deleteAllFocusTimeout) clearTimeout(this.deleteAllFocusTimeout);
+		this.deleteAllFocusTimeout = setTimeout(() => {
+			this.deleteAllFocusTimeout = null;
+			(
+				this.emptyPrevConversationsTextRef.current ??
+				this.startNewConversationButtonRef.current
+			)?.focus();
+		}, 200);
+	};
+
 	// Whether the blocking connection-lost overlay is shown. Single source for
 	// render and the focus trap in handleKeydown — the two must stay in sync.
 	private get showDisconnectOverlay() {
@@ -2037,6 +2055,9 @@ export class WebchatUI extends React.PureComponent<
 						onDeleteModalStateChange={open => {
 							this.setState({ deleteConversationsModalState: open });
 						}}
+						onShowPrevConversationsAfterDelete={
+							this.focusPrevConversationsListAfterDelete
+						}
 					/>
 				);
 

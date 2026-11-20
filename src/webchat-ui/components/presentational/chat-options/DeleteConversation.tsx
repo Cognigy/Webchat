@@ -40,10 +40,15 @@ const DeleteButton = styled(ConfirmDeleteButton)``;
 interface DeleteConversationProps {
 	config: IWebchatConfig;
 	onDeleteModalStateChange: (open: boolean) => void;
+	/**
+	 * Called when the deletion lands on the Previous conversations list instead of
+	 * a new chat, so the parent can move focus into that screen.
+	 */
+	onShowPrevConversationsAfterDelete?: () => void;
 }
 
 const DeleteConversation = (props: DeleteConversationProps) => {
-	const { config, onDeleteModalStateChange } = props;
+	const { config, onDeleteModalStateChange, onShowPrevConversationsAfterDelete } = props;
 	const { userId, sessionId, channel } = useSelector((state: StoreState) => state.options);
 	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -86,6 +91,9 @@ const DeleteConversation = (props: DeleteConversationProps) => {
 			homeScreen.previousConversations?.enabled
 		) {
 			dispatch(setShowPrevConversations(true));
+			// This screen, and the Delete button that had focus, are replaced by the
+			// list: without a focus move, keyboard focus would fall back to <body>.
+			onShowPrevConversationsAfterDelete?.();
 		}
 		// Status message for the completed deletion (SC 4.1.3, CGY-39786). The
 		// live region lives in the open chat window and survives this screen's
