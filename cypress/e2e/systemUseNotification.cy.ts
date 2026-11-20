@@ -571,6 +571,69 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			connectionState().its("hasAttemptedConnection").should("be.true");
 		});
 
+		it("does not reopen a deleted conversation that was waiting for the notice before Delete all", () => {
+			const localOptions = {
+				userId: "user-sun-delete-pending",
+				sessionId: "session-sun-delete-pending-current",
+				channel: "channel-sun-delete-pending",
+			};
+			const storedSessionId = "session-sun-delete-pending-stored";
+			const uiState = () => cy.getWebchat().its("store").invoke("getState").its("ui");
+
+			cy.visitWebchat();
+			// Same key layout as getOptionsKey; "fake-url-token" is the mocked endpoint's URLToken
+			cy.window().then(win => {
+				win.localStorage.setItem(
+					JSON.stringify([
+						"webchat-client",
+						localOptions.userId,
+						storedSessionId,
+						"fake-url-token",
+					]),
+					JSON.stringify({
+						messages: [
+							{ text: "deleted conversation", source: "user", timestamp: Date.now() },
+						],
+					}),
+				);
+			});
+			cy.initMockWebchat({ ...localOptions, settings: prevConvSettings });
+			cy.openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.sendMessage("hello");
+
+			// Pick the stored conversation: its notice is pending. Back out of it.
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.contains(".webchat-prev-conversations-item", "deleted conversation").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+			uiState().its("pendingSessionSwitch.sessionId").should("equal", storedSessionId);
+			cy.get("button.webchat-header-back-button").click();
+
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-header-delete-all-conversations-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+			cy.get(".webchat-prev-conversations-empty").should("exist");
+			// Delete all switched to a fresh session; nothing waits for the notice any more
+			uiState().should(ui => {
+				expect(ui.pendingSessionSwitch).to.equal(null);
+			});
+
+			// Starting from the home screen opens the fresh session, not the deleted one
+			cy.get("button.webchat-header-back-button").click();
+			cy.get(".webchat-homescreen-send-button").click();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+			cy.get(".webchat-input").should("be.visible");
+			cy.contains("deleted conversation").should("not.exist");
+			cy.getWebchat()
+				.its("store")
+				.invoke("getState")
+				.its("options.sessionId")
+				.should("not.equal", storedSessionId);
+		});
+
 		describe("an abandoned conversation starter is not sent", () => {
 			const starterSettings = {
 				...prevConvSettings,

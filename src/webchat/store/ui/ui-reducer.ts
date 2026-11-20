@@ -404,6 +404,11 @@ export const ui: Reducer<UIState, UIAction> = (state = getInitialState(), action
 				// picked from the list). Starter handlers queue the message after dispatching
 				// their own SWITCH_SESSION, so their starter is kept.
 				storedMessage: null,
+				// A switch without connecting (Delete All) replaces whatever switch was
+				// still waiting for the notice. Keeping it would reopen that conversation,
+				// with its deleted history, when the notice is accepted next. A switch that
+				// waits for the notice sets its own pending target in the middleware.
+				...(action.deferConnection ? { pendingSessionSwitch: null } : {}),
 			};
 		}
 
