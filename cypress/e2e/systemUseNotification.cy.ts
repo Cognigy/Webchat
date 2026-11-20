@@ -495,6 +495,82 @@ describe("System Use Notification (WCH-AC8-001)", () => {
 			cy.get(".webchat-system-use-notification-root").should("be.visible");
 		});
 
+		it("keeps the notice usable after Delete all when the connection status indicator is on", () => {
+			const connectionState = () =>
+				cy.getWebchat().its("store").invoke("getState").its("connection");
+			// The socket never connects in this test (unroutable host), so the connection
+			// state is driven by hand: the overlay needs a session that was connected once.
+			const setConnected = (connected: boolean) =>
+				cy.getWebchat().then((webchat: any) => {
+					webchat.store.dispatch({ type: "SET_CONNECTED", connected });
+				});
+
+			cy.visitWebchat();
+			// A stored conversation, so the list offers Delete all. Same key layout as
+			// getOptionsKey; "fake-url-token" is the mocked endpoint's URLToken.
+			cy.window().then(win => {
+				win.localStorage.setItem(
+					JSON.stringify([
+						"webchat-client",
+						"user-sun-delete-all-indicator",
+						"session-sun-delete-all-indicator-stored",
+						"fake-url-token",
+					]),
+					JSON.stringify({
+						messages: [
+							{ text: "seeded message", source: "user", timestamp: Date.now() },
+						],
+					}),
+				);
+			});
+			cy.initMockWebchat(
+				{
+					userId: "user-sun-delete-all-indicator",
+					sessionId: "session-sun-delete-all-indicator",
+					channel: "channel-sun-delete-all-indicator",
+					settings: {
+						...prevConvSettings,
+						behavior: { enableConnectionStatusIndicator: true },
+					},
+				},
+				undefined,
+				"http://mock-endpoint.invalid/asdfqwer",
+			);
+			cy.openWebchat();
+			cy.startConversation();
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			setConnected(true);
+			cy.sendMessage("hello");
+
+			cy.get("button.webchat-header-back-button").click();
+			cy.get("button").contains("Previous conversations").click();
+			cy.get(".webchat-header-delete-all-conversations-button").click();
+			cy.get(".webchat-delete-confirmation-confirm-button").click();
+			cy.get(".webchat-prev-conversations-empty").should("exist");
+			// Delete all disconnects the socket
+			setConnected(false);
+
+			cy.get(".webchat-prev-conversations-send-button").click();
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+
+			// The new conversation waits for acceptance: it is not a connection attempt
+			// yet, so there is no connection-lost overlay over the notice...
+			connectionState().its("hasAttemptedConnection").should("be.false");
+			cy.get("[data-disconnect-overlay]").should("not.exist");
+
+			// ...and nothing reconnects behind the notice when the tab becomes visible
+			cy.getWebchat().then((webchat: any) => {
+				webchat.store.dispatch({ type: "SET_PAGE_VISIBLE", visible: true });
+			});
+			connectionState().its("connecting").should("be.false");
+			cy.get(".webchat-system-use-notification-root").should("be.visible");
+
+			// Accepting starts the switch, which is the deliberate connection request
+			cy.get(".webchat-system-use-notification-accept-button").click();
+			cy.get(".webchat-system-use-notification-root").should("not.exist");
+			connectionState().its("hasAttemptedConnection").should("be.true");
+		});
+
 		describe("an abandoned conversation starter is not sent", () => {
 			const starterSettings = {
 				...prevConvSettings,

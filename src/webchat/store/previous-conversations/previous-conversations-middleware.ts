@@ -68,7 +68,9 @@ export const createPrevConversationsMiddleware =
 					!!store.getState().config.settings?.systemUseNotification?.enabled;
 				if (sunEnabled) {
 					store.dispatch(setPendingSessionSwitch(targetSession, targetConversation));
-					break;
+					// Tell the reducers that this switch has not started yet: the
+					// connection reducer must not treat it as a connection attempt.
+					return next({ ...action, awaitsSunAcceptance: true });
 				}
 
 				doSwitchSession(client, store, targetSession, targetConversation);
