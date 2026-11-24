@@ -49,6 +49,7 @@ type FromState = Pick<
 	| "connecting"
 	| "reconnectionLimit"
 	| "hasAttemptedConnection"
+	| "hasPendingSessionSwitch"
 >;
 
 type FromDispatch = Pick<
@@ -91,6 +92,8 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 				showChatOptionsScreen,
 				hasAcceptedTerms,
 				hasAcceptedSystemUseNotification,
+				hasAcceptedSunInThisVisit,
+				pendingSessionSwitch,
 				ttsActive,
 				lastInputId,
 			},
@@ -112,6 +115,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 
 		return {
 			currentSession: sessionId,
+			hasPendingSessionSwitch: !!pendingSessionSwitch,
 			messages,
 			visibleOutputMessages,
 			unseenMessages,
@@ -144,6 +148,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			showChatOptionsScreen,
 			hasAcceptedTerms,
 			hasAcceptedSystemUseNotification,
+			hasAcceptedSunInThisVisit,
 			isXAppOverlayOpen,
 			userId,
 			ttsActive,
@@ -170,7 +175,7 @@ export const ConnectedWebchatUI = connect<FromState, FromDispatch, FromProps, Me
 			dispatch(switchSession(sessionId, conversation)),
 		onAcceptTerms: (userId: string) => dispatch(setHasAcceptedTerms(userId)),
 		onAcceptSystemUseNotification: (sessionId: string) =>
-			dispatch(setHasAcceptedSystemUseNotification(sessionId)),
+			dispatch(setHasAcceptedSystemUseNotification(sessionId, true)),
 		onSetStoredMessage: (message: UIState["storedMessage"]) =>
 			dispatch(setStoredMessage(message)),
 		onSetDropZoneVisible: (isVisible: boolean) => dispatch(setDropZoneVisible(isVisible)),

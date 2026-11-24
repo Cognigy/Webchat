@@ -58,7 +58,14 @@ export const createConnectionMiddleware =
 							store.dispatch(setConnecting(false));
 							store.dispatch(setReconnectionLimit(false));
 
-							if (storedMessage) {
+							// A message queued for a session switch that still waits for the
+							// System Use Notification belongs to that switch, which sends it
+							// once the notice is accepted. This connection is for the session
+							// the socket is on now (e.g. a reconnect after the network came
+							// back), so leave the message queued.
+							const waitsForSessionSwitch =
+								!!store.getState().ui.pendingSessionSwitch;
+							if (storedMessage && !waitsForSessionSwitch) {
 								store.dispatch(
 									sendMessage(
 										{ text: storedMessage.text, data: storedMessage.data },

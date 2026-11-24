@@ -97,6 +97,7 @@ import classNames from "classnames";
 
 export interface WebchatUIProps {
 	currentSession: string;
+	hasPendingSessionSwitch?: boolean;
 	messages: (IMessage | IMessageEvent)[];
 	visibleOutputMessages: string[];
 	unseenMessages: IMessage[];
@@ -175,6 +176,7 @@ export interface WebchatUIProps {
 	hasAcceptedTerms: boolean;
 	onAcceptTerms: (userId: string) => void;
 	hasAcceptedSystemUseNotification: boolean;
+	hasAcceptedSunInThisVisit: boolean;
 	onAcceptSystemUseNotification: (sessionId: string) => void;
 	onSetStoredMessage: (message: UIState["storedMessage"]) => void;
 	isXAppOverlayOpen: boolean;
@@ -1121,6 +1123,24 @@ export class WebchatUI extends React.PureComponent<
 		);
 	};
 
+	// Deleting a conversation with the System Use Notification enabled lands on the
+	// Previous conversations list (CGY-48501). The Delete button that had focus is
+	// gone with the chat options screen, so move focus into the list: the empty-state
+	// text if that was the last conversation, otherwise the "Start new conversation"
+	// button. Deferred like the Delete All focus move, and sharing its timeout: the
+	// target is rendered by the same update, and the confirm dialog's close effect
+	// restores focus first.
+	private focusPrevConversationsListAfterDelete = () => {
+		if (this.deleteAllFocusTimeout) clearTimeout(this.deleteAllFocusTimeout);
+		this.deleteAllFocusTimeout = setTimeout(() => {
+			this.deleteAllFocusTimeout = null;
+			(
+				this.emptyPrevConversationsTextRef.current ??
+				this.startNewConversationButtonRef.current
+			)?.focus();
+		}, 200);
+	};
+
 	// Whether the blocking connection-lost overlay is shown. Single source for
 	// render and the focus trap in handleKeydown — the two must stay in sync.
 	private get showDisconnectOverlay() {
@@ -1266,6 +1286,16 @@ export class WebchatUI extends React.PureComponent<
 				!this.props.hasAcceptedSystemUseNotification) ||
 			(this.props.config.settings.privacyNotice.enabled && !this.props.hasAcceptedTerms)
 		) {
+			// A switch that still waits for the System Use Notification is not the starter's
+			// conversation: the user picked it (e.g. a previous conversation) and then went
+			// back. Replace it with a switch to a new session, so the starter opens a new
+			// conversation once the notice is accepted, instead of landing in that one.
+			if (
+				this.props.config.settings.systemUseNotification?.enabled &&
+				this.props.hasPendingSessionSwitch
+			) {
+				this.props.onSwitchSession();
+			}
 			this.props.onSetStoredMessage({
 				text,
 				data,
@@ -1273,7 +1303,15 @@ export class WebchatUI extends React.PureComponent<
 			});
 		} else {
 			this.props.onSwitchSession();
-			this.props.onSendMessage(text, data, options);
+			if (this.props.config.settings.systemUseNotification?.enabled) {
+				// With SUN enabled the session switch may be deferred until the user accepts
+				// the notice for the new session. Sending now would deliver the starter on the
+				// old socket session. Queue it instead: the session switch sends it on the
+				// target session once the socket has switched.
+				this.props.onSetStoredMessage({ text, data, options });
+			} else {
+				this.props.onSendMessage(text, data, options);
+			}
 		}
 	};
 
@@ -1816,6 +1854,7 @@ export class WebchatUI extends React.PureComponent<
 			hasAcceptedTerms,
 			onAcceptTerms,
 			hasAcceptedSystemUseNotification,
+			hasAcceptedSunInThisVisit,
 			onAcceptSystemUseNotification,
 			onSetStoredMessage,
 			isDropZoneVisible,
@@ -1884,6 +1923,16 @@ export class WebchatUI extends React.PureComponent<
 
 		const handleOnGoBack = () => {
 			if (!showChatOptionsScreen && !showRatingScreen) {
+				// Going back from a pending notice abandons a queued conversation starter;
+				// otherwise it would be sent when the user later starts a conversation.
+				if (
+					isNoticePending(config.settings, {
+						hasAcceptedSystemUseNotification,
+						hasAcceptedTerms,
+					})
+				) {
+					onSetStoredMessage(null);
+				}
 				onSetShowPrevConversations(false);
 				onSetShowHomeScreen(true);
 				// Set timeout to focus on close button in header of home screen after animation
@@ -1921,17 +1970,26 @@ export class WebchatUI extends React.PureComponent<
 		};
 
 		const sun = config.settings.systemUseNotification;
+		// The notice is shown in place of the current screen while it is pending, including
+		// Previous conversations on a first visit. Once the user has accepted in this page
+		// visit, the list stays visible while the notice for the next conversation is
+		// pending (e.g. right after deleting a conversation, CGY-48501); starting or opening
+		// a conversation from the list still shows the notice.
+		const isSunGatePending =
+			!!sun?.enabled &&
+			!hasAcceptedSystemUseNotification &&
+			!(showPrevConversations && hasAcceptedSunInThisVisit);
 		const handleAcceptSystemUseNotification = () => {
-			// Use config.initialSessionId (populated from client.socketOptions.sessionId
-			// in Webchat.tsx before the first connect) so the recorded sessionId matches
-			// what Webchat.tsx checks on page reload. state.options.sessionId is only
-			// populated after the first connect, which happens after SUN acceptance —
-			// using it would always persist "" as the accepted sessionId.
-			onAcceptSystemUseNotification(config.initialSessionId || "");
+			// Record the acceptance for the session the user is in. Before the first connect
+			// state.options.sessionId (currentSession) is still empty, so fall back to
+			// config.initialSessionId, the session the socket will connect with. While a
+			// session switch is pending, ui-middleware records it for the switch target.
+			onAcceptSystemUseNotification(currentSession || config.initialSessionId || "");
 			// If the privacy notice also needs to be shown, let it render next naturally.
 			// Otherwise connect immediately so storedMessage is flushed — unless the
 			// notice was shown over the conversations list: accepting it there does
-			// not start a conversation (CGY-39639).
+			// not start a conversation (CGY-39639). Picking or starting a conversation
+			// connects, and the acceptance carries over to it (CGY-45543).
 			if (
 				(!config.settings.privacyNotice.enabled || hasAcceptedTerms) &&
 				!showPrevConversations
@@ -1945,7 +2003,7 @@ export class WebchatUI extends React.PureComponent<
 
 			// System Use Notification (AC-8 / FedRAMP) is shown BEFORE the privacy notice.
 			// It is gated per session: a new conversation (new sessionId) requires re-acceptance.
-			if (sun?.enabled && !hasAcceptedSystemUseNotification)
+			if (sun?.enabled && isSunGatePending)
 				return (
 					<SystemUseNotification
 						systemUseNotification={sun}
@@ -1972,6 +2030,7 @@ export class WebchatUI extends React.PureComponent<
 						onSwitchSession={onSwitchSession}
 						config={config}
 						currentSession={currentSession}
+						hasPendingSessionSwitch={this.props.hasPendingSessionSwitch}
 						startNewConversationButtonRef={this.startNewConversationButtonRef}
 						emptyListTextRef={this.emptyPrevConversationsTextRef}
 					/>
@@ -2006,6 +2065,9 @@ export class WebchatUI extends React.PureComponent<
 						onDeleteModalStateChange={open => {
 							this.setState({ deleteConversationsModalState: open });
 						}}
+						onShowPrevConversationsAfterDelete={
+							this.focusPrevConversationsListAfterDelete
+						}
 					/>
 				);
 
@@ -2047,7 +2109,7 @@ export class WebchatUI extends React.PureComponent<
 			if (showInformationMessage && informTitle) {
 				return informTitle;
 			}
-			if (sun?.enabled && !hasAcceptedSystemUseNotification) {
+			if (sun?.enabled && isSunGatePending) {
 				return sun.title || "System Use Notification";
 			}
 			if (!hasAcceptedTerms && config.settings.privacyNotice.enabled) {
@@ -2083,7 +2145,8 @@ export class WebchatUI extends React.PureComponent<
 
 		const showDeleteAllConversationButton = !!(
 			!isNoticePending(config.settings, {
-				hasAcceptedSystemUseNotification,
+				// The list is usable once the SUN gate no longer covers it.
+				hasAcceptedSystemUseNotification: !isSunGatePending,
 				hasAcceptedTerms,
 			}) &&
 			config.settings.homeScreen.previousConversations.enableDeleteAllConversations &&
