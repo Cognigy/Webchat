@@ -72,16 +72,14 @@ const BackButtonWrapper = styled.div(() => ({
 const HeaderIconsWrapper = styled.div(() => ({
 	display: "flex",
 	alignItems: "flex-start",
-	gap: 16,
+	gap: 4,
 }));
 
 const HeaderIconButton = styled(IconButton)<{ iconColor?: string }>(({ theme, iconColor }) => ({
 	color: getContrastColor(theme.backgroundWebchat, theme),
 	borderRadius: 4,
-	"&:focus-visible": {
-		outline: `2px solid ${getAccessiblePrimaryVariant(theme.primaryColor, theme.backgroundWebchat)}`,
-		outlineOffset: 2,
-	},
+	minWidth: 16,
+	minHeight: 16,
 	"& svg": {
 		fill: iconColor ? iconColor : getContrastColor(theme.backgroundWebchat, theme),
 		width: 16,
@@ -201,11 +199,7 @@ const Header: FC<HeaderProps> = props => {
 				<div className={classnames("webchat-header-logo-name-container")}>
 					{showChatScreen &&
 						(logoUrl ? (
-							<Logo
-								src={logoUrl}
-								className={classnames("webchat-header-logo")}
-								alt=""
-							/>
+							<Logo src={logoUrl} className={classnames("webchat-header-logo")} />
 						) : (
 							<CognigyAIAvatar
 								title="Cognigy.AI Logo"
@@ -266,7 +260,7 @@ const Header: FC<HeaderProps> = props => {
 								data-header-minimize-button
 								onClick={onMinimize}
 								className="webchat-header-minimize-button"
-								aria-label={ariaLabels?.minimizeChat ?? "Minimize chat"}
+								aria-label="Minimize chat"
 							>
 								<MinimizeIcon />
 							</HeaderIconButton>

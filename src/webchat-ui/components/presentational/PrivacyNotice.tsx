@@ -89,7 +89,7 @@ export const PrivacyNotice = (props: IPrivacyNoticeProps) => {
 					url={url || "https://www.cognigy.com/"}
 					target="_blank"
 					className="webchat-privacy-policy-link"
-					text={urlText || "Privacy policy"}
+					text={urlText || "Click here"}
 				/>
 			</PrivacyActions>
 		</PrivacyNoticeRoot>

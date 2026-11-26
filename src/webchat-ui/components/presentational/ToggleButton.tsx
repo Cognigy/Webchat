@@ -43,10 +43,6 @@ const StyledToggleButtonOuter = styled.button<IToggleStyleProps>(
 			outlineOffset: 2,
 		},
 
-		"@media (prefers-reduced-motion: reduce)": {
-			transition: "none",
-		},
-
 		"&.active": {
 			backgroundColor: disabled ? theme.secondaryColorDisabled : theme.secondaryColor,
 
@@ -67,10 +63,6 @@ const StyledToggleButtonInner = styled.div<IToggleStyleProps>(({ theme, isActive
 	cursor: disabled ? "default" : "pointer",
 	transform: isActive ? "translateX(14px)" : "translateX(0px)",
 	transition: "transform 0.2s ease-in-out, background-color 0.2s ease-in-out",
-
-	"@media (prefers-reduced-motion: reduce)": {
-		transition: "none",
-	},
 
 	"&:hover": {
 		backgroundColor: disabled ? theme.secondaryColorDisabled : theme.secondaryColorHover,

@@ -182,7 +182,6 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
 	const dialogRef = useRef<HTMLDialogElement>(null);
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
-	const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
 	const defaultCloseButtonAriaLabel =
 		useSelector(state => state.config.settings.customTranslations?.ariaLabels?.closeDialog) ??
@@ -193,38 +192,24 @@ const Modal: React.FC<ModalProps> = ({
 	};
 
 	// Move focus once when the dialog opens; it then stays where the user
-	// puts it (SC 3.2.1, 2.4.3). On close, focus returns to the element that
-	// was focused before the dialog opened (if it is still in the document —
-	// e.g. not when closing the dialog closed the whole chat window). Only
-	// active when the consumer opts in via initialFocusRef — see the prop docs.
+	// puts it (SC 3.2.1, 2.4.3). Only active when the consumer opts in via
+	// initialFocusRef — see the prop docs.
 	useEffect(() => {
-		if (!initialFocusRef) return;
-		if (isOpen) {
-			previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-			// Deferred: focusing a control in the same task that inserted it is
-			// not reliably announced by screen readers — the focus event races
-			// the accessibility-tree update for the new dialog subtree.
-			const focusTimer = window.setTimeout(() => {
-				(initialFocusRef.current ?? closeButtonRef.current)?.focus();
-			}, 200);
-			return () => window.clearTimeout(focusTimer);
-		} else {
-			const previouslyFocused = previouslyFocusedRef.current;
-			previouslyFocusedRef.current = null;
-			if (previouslyFocused && document.contains(previouslyFocused)) {
-				previouslyFocused.focus();
-			}
-		}
+		if (!initialFocusRef || !isOpen) return;
+		// Deferred: focusing a control in the same task that inserted it is
+		// not reliably announced by screen readers — the focus event races
+		// the accessibility-tree update for the new dialog subtree.
+		const focusTimer = window.setTimeout(() => {
+			(initialFocusRef.current ?? closeButtonRef.current)?.focus();
+		}, 200);
+		return () => window.clearTimeout(focusTimer);
 	}, [isOpen, initialFocusRef]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			// Inert means another modal surface (e.g. the disconnect overlay)
-			// is stacked on top — leave Esc/Tab to that surface.
+			// is stacked on top — leave Tab to that surface.
 			if (dialogRef.current?.closest("[inert]")) return;
-			if (event.key === "Escape") {
-				handleOnClose();
-			}
 			const isTabKey =
 				event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey;
 			const focusedElement = document.activeElement as HTMLElement | null;

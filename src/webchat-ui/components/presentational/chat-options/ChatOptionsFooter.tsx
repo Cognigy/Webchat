@@ -56,6 +56,7 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 			<Link
 				href={footerItem1URL}
 				target="_blank"
+				role="button"
 				id="footer-text-1"
 				aria-label={`${footerItem1Text}. ${opensInNewTab}`}
 				className="webchat-chat-options-footer-link"
@@ -71,6 +72,7 @@ export const ChatOptionsFooter = (props: IChatOptionsFooterProps) => {
 				<Link
 					href={footerItem2URL}
 					target="_blank"
+					role="button"
 					id="footer-text-2"
 					aria-label={`${footerItem2Text}. ${opensInNewTab}`}
 				>

@@ -64,7 +64,7 @@ const CenterMeta = styled(Typography)(({ theme }) => ({
 const MetaNames = styled.span(() => ({}));
 
 const MetaTime = styled.span(({ theme }) => ({
-	color: theme.black40,
+	color: theme.black60,
 }));
 
 const Right = styled.div(({ theme }) => ({
@@ -117,15 +117,6 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 		switchSession(sessionId, conversation);
 	};
 
-	const handleKeyDown = e => {
-		e.stopPropagation();
-		if (e.key === "Enter" || e.key === " ") {
-			// Space must activate too (APG button pattern); prevent page scroll
-			e.preventDefault();
-			handleClick();
-		}
-	};
-
 	const openConversationAriaLabel =
 		config.settings.customTranslations?.ariaLabels?.openConversation ?? "Open conversation";
 
@@ -154,9 +145,6 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 		<ListItem
 			className="webchat-prev-conversations-item"
 			onClick={handleClick}
-			onKeyDown={handleKeyDown}
-			tabIndex={0}
-			role="button"
 			aria-label={itemAriaLabel}
 		>
 			<Left>
@@ -184,7 +172,7 @@ export const ConversationsListItem = (props: IConversationsListItemProps) => {
 				</CenterTitle>
 				<CenterMeta variant="title2-regular" component="div">
 					<MetaNames>{participants}</MetaNames>
-					<Ellipsis />
+					<Ellipsis aria-hidden="true" />
 					{/* lang marks the time when it may differ from the page language (SC 3.1.2) */}
 					<MetaTime className="webchat-prev-conversations-time" lang={dateLocale}>
 						{relativeTime}
