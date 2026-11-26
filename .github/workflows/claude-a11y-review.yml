@@ -93,6 +93,15 @@ jobs:
                       echo "skip=true" >> "$GITHUB_OUTPUT"
                       exit 0
                   fi
+                  # The PR author must have write access too, whoever triggered
+                  # the run: a teammate's /review or label never starts a
+                  # review on a PR opened by someone outside the team.
+                  author=$(jq -r '.user.login' <<<"$pr")
+                  if ! can_write "$author"; then
+                      echo "::notice::PR #${PR_NUMBER} was opened by ${author}, who has no write access to ${GITHUB_REPOSITORY}; not reviewing."
+                      echo "skip=true" >> "$GITHUB_OUTPUT"
+                      exit 0
+                  fi
                   if [[ "$(jq -r '.draft' <<<"$pr")" == "true" ]]; then
                       echo "::notice::PR #${PR_NUMBER} is a draft; mark it ready for review first."
                       echo "skip=true" >> "$GITHUB_OUTPUT"
