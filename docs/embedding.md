@@ -249,6 +249,7 @@ With either `enableIndicator` or `enableBadge` on, the unread count is also anno
 | title                          | string  | `""`                          | Configure the Header of the "Previous Conversations" page                                                                                                                           |
 | enableDeleteAllConversations   | boolean | `false`                       | If enabled, a delete button is provided in previous conversations screen. This button can be used to delete all conversations. Confirmation is required before the delete operation |
 | emptyListText                  | string  | `"No previous conversations"` | Text shown in the list when there are no previous conversations. After "Delete all conversations" is confirmed, focus moves to this text so screen readers read the outcome         |
+| enableSearch                   | boolean | `true`                        | Shows a search field and a sort menu above the list of previous conversations                                                                                                       |
 
 The time of each conversation ("Today", "Yesterday", "3 days ago", …) is shown in the browser language. To show it in another language, set [`customTranslations.dateLocale`](#date-and-time-language).
 
@@ -740,6 +741,7 @@ interface IWebchatSettings {
 			buttonText: string;
 			title: string;
 			emptyListText?: string;
+			enableSearch?: boolean;
 		};
 		conversationStarters: {
 			enabled: boolean;

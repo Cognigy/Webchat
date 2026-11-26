@@ -241,6 +241,8 @@ export interface IWebchatSettings {
 			/** Shown in the list when there are no previous conversations; also
 			 *  the text focus lands on after "Delete all conversations" (CGY-39786). */
 			emptyListText?: string;
+			/** Shows a search field and a sort menu above the list. Defaults to `true`. */
+			enableSearch?: boolean;
 		};
 		conversationStarters: {
 			enabled: boolean;

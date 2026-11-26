@@ -149,21 +149,47 @@ export const getAvatars = (messages: IMessage[]) => {
 	return uniqueAvatars;
 };
 
-export const sortConversationsByFreshness = (conversations: PrevConversationsState) => {
-	const sortedConversations: PrevConversationsState = Object.entries(conversations)
-		.sort(
-			([, a], [, b]) =>
-				(b.messages[b.messages.length - 1]?.timestamp || 0) -
-				(a.messages[a.messages.length - 1]?.timestamp || 0),
-		)
-		.reduce(
-			(r, [k, v]) => ({
-				...r,
-				[k]: v,
-			}),
-			{},
-		);
-	return sortedConversations;
+export type ConversationsSortOrder = "newest" | "oldest";
+
+const getLastMessageTimestamp = (conversation: PrevConversationsState[string]) =>
+	conversation.messages[conversation.messages.length - 1]?.timestamp || 0;
+
+/**
+ * Sorts conversations by the timestamp of their last message.
+ * "newest" puts the most recently updated conversation on top.
+ */
+export const sortConversations = (
+	conversations: PrevConversationsState,
+	order: ConversationsSortOrder = "newest",
+) => {
+	const entries = Object.entries(conversations).sort(
+		([, a], [, b]) => getLastMessageTimestamp(b) - getLastMessageTimestamp(a),
+	);
+
+	if (order === "oldest") entries.reverse();
+
+	return entries.reduce<PrevConversationsState>((result, [sessionId, conversation]) => {
+		result[sessionId] = conversation;
+		return result;
+	}, {});
+};
+
+export const sortConversationsByFreshness = (conversations: PrevConversationsState) =>
+	sortConversations(conversations, "newest");
+
+/**
+ * Returns the ids of the sessions whose last message preview contains `query`.
+ * An empty query matches every session.
+ */
+export const filterSessionsByQuery = (conversations: PrevConversationsState, query: string) => {
+	const sessions = Object.keys(conversations);
+	if (!query) return sessions;
+
+	return sessions.filter(sessionId => {
+		const preview = getLastMessagePreview(conversations[sessionId].messages as IMessage[]);
+		const text = (Array.isArray(preview) ? preview.join("") : preview) || "";
+		return text.includes(query);
+	});
 };
 
 export const isConversationEnded = (messages: IMessage[]) => {

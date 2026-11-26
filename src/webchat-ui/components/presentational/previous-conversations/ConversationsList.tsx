@@ -1,11 +1,13 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { IWebchatConfig } from "../../../../common/interfaces/webchat-config";
 import { ConversationsListItem } from "./ConversationsListItem";
+import { ConversationsToolbar } from "./ConversationsToolbar";
 import PrimaryButton from "../PrimaryButton";
 import { PrevConversationsState } from "../../../../webchat/store/previous-conversations/previous-conversations-reducer";
 import Branding from "../../branding/Branding";
-import { sortConversationsByFreshness } from "./helpers";
+import { ConversationsSortOrder, filterSessionsByQuery, sortConversations } from "./helpers";
+import { useDebouncedValue } from "../../../utils/use-debounced-value";
 
 const ConversationsListRoot = styled.div(({ theme }) => ({
 	height: "100%",
@@ -57,6 +59,16 @@ const EmptyListText = styled.p(({ theme }) => ({
 	},
 }));
 
+const NoResultsText = styled.p(({ theme }) => ({
+	margin: "auto",
+	padding: "4px 8px",
+	fontSize: 16,
+	fontWeight: 400,
+	lineHeight: "24px",
+	textAlign: "center",
+	color: theme.black10,
+}));
+
 const ConversationsListActions = styled.div(({ theme }) => ({
 	alignSelf: "flex-end",
 	display: "flex",
@@ -101,11 +113,19 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 		emptyListTextRef,
 	} = props;
 
+	const [query, setQuery] = useState("");
+	const [sortOrder, setSortOrder] = useState<ConversationsSortOrder>("newest");
+	const debouncedQuery = useDebouncedValue(query, 250);
+
+	const isSearchEnabled =
+		config.settings.homeScreen?.previousConversations?.enableSearch !== false;
+
 	// we sort the conversation based on last message timestamp
-	// result: the last updated conversation goes on top
-	const sortedConversations = sortConversationsByFreshness(conversations);
+	// result: by default the last updated conversation goes on top
+	const sortedConversations = sortConversations(conversations, sortOrder);
 
 	const sessions = Object.keys(sortedConversations);
+	const visibleSessions = filterSessionsByQuery(sortedConversations, debouncedQuery);
 
 	const handleStartButtonClick = () => {
 		// we initialize a new session
@@ -128,6 +148,14 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 
 	return (
 		<ConversationsListRoot className="webchat-prev-conversations-root">
+			{isSearchEnabled && sessions.length > 0 && (
+				<ConversationsToolbar
+					query={query}
+					sortOrder={sortOrder}
+					onQueryChange={setQuery}
+					onSortOrderChange={setSortOrder}
+				/>
+			)}
 			<ConversationsList className="webchat-prev-conversations-content">
 				{sessions.length === 0 && (
 					<EmptyListText
@@ -139,8 +167,13 @@ export const PrevConversationsList = (props: IPrevConversationsListProps) => {
 							"No previous conversations"}
 					</EmptyListText>
 				)}
-				{sessions.length > 0 &&
-					sessions.map((session, i) => {
+				{sessions.length > 0 && visibleSessions.length === 0 && (
+					<NoResultsText className="webchat-prev-conversations-no-results" role="status">
+						No conversations found
+					</NoResultsText>
+				)}
+				{visibleSessions.length > 0 &&
+					visibleSessions.map((session, i) => {
 						return (
 							<ConversationsListItem
 								key={i}
