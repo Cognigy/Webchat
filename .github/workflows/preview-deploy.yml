@@ -47,14 +47,14 @@ jobs:
         steps:
             # ── 1. Build webchat ────────────────────────────────────────────────
             - name: Checkout PR branch
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
             # Mint the App token and clone Webchat-Testing BEFORE any PR-controlled
             # code (npm ci / build scripts) runs, so the App private key never
             # reaches a step after untrusted code has executed on this runner.
             - name: Mint read-only token for Webchat-Testing
               id: testing-token
-              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+              uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
               with:
                   app-id: ${{ secrets.PR_AUTOPILOT_APP_ID }}
                   private-key: ${{ secrets.PR_AUTOPILOT_APP_PRIVATE_KEY }}
@@ -63,7 +63,7 @@ jobs:
                   permission-contents: read
 
             - name: Clone Webchat-Testing
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
               with:
                   repository: Cognigy/Webchat-Testing
                   path: _testing
@@ -71,7 +71,7 @@ jobs:
                   persist-credentials: false
 
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
               with:
                   node-version: 24.x
                   cache: "npm"
