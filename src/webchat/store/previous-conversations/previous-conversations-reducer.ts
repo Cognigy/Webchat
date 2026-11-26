@@ -34,7 +34,14 @@ export const switchSession = (
  * create a new session (CGY-39639).
  */
 export const switchToUnconnectedSession = () => switchSession(undefined, undefined, true);
-export type SwitchSessionAction = ReturnType<typeof switchSession>;
+export type SwitchSessionAction = ReturnType<typeof switchSession> & {
+	/**
+	 * Set by the previous-conversations middleware when the switch waits for the
+	 * System Use Notification to be accepted. Nothing connects until then, so the
+	 * switch is not a connection attempt yet.
+	 */
+	awaitsSunAcceptance?: boolean;
+};
 
 const SET_CONVERSATIONS = "SET_CONVERSATIONS" as const;
 export const setConversations = (conversations: PrevConversationsState) => ({

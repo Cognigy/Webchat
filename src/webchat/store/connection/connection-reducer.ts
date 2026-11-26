@@ -1,5 +1,6 @@
 import { Reducer } from "redux";
 import type { SwitchSessionAction } from "../previous-conversations/previous-conversations-reducer";
+import type { CompleteDeferredSessionSwitchAction } from "../ui/ui-reducer";
 
 export interface ConnectionState {
 	connected: boolean;
@@ -50,6 +51,7 @@ export const connection: Reducer<
 	| SetConnectingAction
 	| ConnectAction
 	| SwitchSessionAction
+	| CompleteDeferredSessionSwitchAction
 > = (state = initialState, action) => {
 	switch (action.type) {
 		case "SET_CONNECTED": {
@@ -77,7 +79,8 @@ export const connection: Reducer<
 		}
 
 		case "CONNECT":
-		case "SWITCH_SESSION": {
+		case "SWITCH_SESSION":
+		case "COMPLETE_DEFERRED_SESSION_SWITCH": {
 			// A session switch connects the socket directly, bypassing CONNECT.
 			// It is still a deliberate connection request, so it must arm the
 			// reconnect latch even if this first attempt fails (e.g. offline).
@@ -88,6 +91,14 @@ export const connection: Reducer<
 				return state.hasAttemptedConnection
 					? { ...state, hasAttemptedConnection: false }
 					: state;
+			}
+			// A switch waiting for the System Use Notification has not connected
+			// anything yet, so it leaves the latch as it is. Arming it here would
+			// show the connection-lost overlay over the notice and let the socket
+			// reconnect before the notice is accepted. The latch is armed when the
+			// switch actually starts (COMPLETE_DEFERRED_SESSION_SWITCH).
+			if (action.type === "SWITCH_SESSION" && action.awaitsSunAcceptance) {
+				return state;
 			}
 			if (state.hasAttemptedConnection) return state;
 
