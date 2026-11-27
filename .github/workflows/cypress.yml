@@ -11,7 +11,19 @@ jobs:
                   node-version: 24.x
                   cache: "npm"
             - run: npm ci
-            - run: npm test
+            # Cypress 14 aborts on the second spec with Chrome 158 ("* is not a valid URL"),
+            # fixed only in Cypress 16.3.0: https://github.com/cypress-io/cypress/issues/35195
+            # Pin Chrome 157 until Cypress is upgraded, then go back to `npm test`.
+            - uses: browser-actions/setup-chrome@v2
+              id: setup-chrome
+              with:
+                  chrome-version: 157
+            - name: Run E2E (Chrome 157)
+              env:
+                  CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+              run: |
+                  npm run cypress:serve &
+                  npx cypress run --browser "$CHROME_PATH" --quiet
             - name: Upload screenshots
               uses: actions/upload-artifact@v4
               if: failure()
