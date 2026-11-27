@@ -222,9 +222,6 @@ const Modal: React.FC<ModalProps> = ({
 			// Inert means another modal surface (e.g. the disconnect overlay)
 			// is stacked on top — leave Esc/Tab to that surface.
 			if (dialogRef.current?.closest("[inert]")) return;
-			if (event.key === "Escape") {
-				handleOnClose();
-			}
 			const isTabKey =
 				event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey;
 			const focusedElement = document.activeElement as HTMLElement | null;
