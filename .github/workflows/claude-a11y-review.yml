@@ -105,6 +105,14 @@ jobs:
                   fetch-depth: 0
                   persist-credentials: false
 
+            # The model gets no shell (Bash is denied below), so it cannot run
+            # git or gh with this job's token. It reads the diff from a file.
+            - name: Write the PR diff
+              if: steps.pr.outputs.skip == 'false'
+              env:
+                  BASE_REF: ${{ steps.pr.outputs.base_ref }}
+              run: git diff "origin/${BASE_REF}...HEAD" > "${RUNNER_TEMP}/pr.diff"
+
             - name: Configure AWS credentials via OIDC
               if: steps.pr.outputs.skip == 'false'
               uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
@@ -125,16 +133,24 @@ jobs:
                   classify_inline_comments: "true"
                   use_sticky_comment: "false"
                   include_comments_by_actor: ${{ steps.pr.outputs.commenters }}
+                  # No permission bypass: in a headless run every tool that is
+                  # not allowed here is refused. The model can read the checkout
+                  # and the diff, start the subagent, fetch w3.org and post
+                  # review comments, nothing else. Bash is denied so neither it
+                  # nor the subagent can call gh or the API and read comments
+                  # the filter above removed. github.com is denied by name
+                  # because WebFetch pre-approves it, and a public PR page shows
+                  # every comment. /proc is denied so the job's credentials
+                  # cannot be read from the process environment.
                   claude_args: >-
                       --model arn:aws:bedrock:eu-central-1:139532768001:application-inference-profile/sobtqgdeed7i
                       --max-turns 60
-                      --allowedTools "Task,mcp__github_inline_comment__create_inline_comment"
-                      --disallowedTools "Write,Edit,MultiEdit,NotebookEdit,WebSearch"
-                      --dangerously-skip-permissions
+                      --allowedTools "Task,Agent,WebFetch(domain:www.w3.org),WebFetch(domain:w3.org),mcp__github_inline_comment__create_inline_comment"
+                      --disallowedTools "Bash,Write,Edit,MultiEdit,NotebookEdit,WebSearch,WebFetch(domain:github.com),WebFetch(domain:api.github.com),Read(//proc/**)"
                   prompt: |
                       Review pull request #${{ steps.pr.outputs.number }} in ${{ github.repository }} for accessibility (WCAG 2.2 Level AA) only.
 
-                      The PR head is checked out. Get the diff with `git diff origin/${{ steps.pr.outputs.base_ref }}...HEAD`.
+                      The PR head is checked out, and its diff against `${{ steps.pr.outputs.base_ref }}` is in the file `${{ runner.temp }}/pr.diff`. Read that file with the Read tool, in parts if it is long, and give its path to the subagent. There is no shell in this run, so do not try `git` or `gh`.
 
                       Run the `a11y-reviewer` subagent from `.claude/agents/a11y-reviewer.md` on that diff and follow it exactly, including its checks against `CLAUDE.md`, `docs/accessibility.md` and `.claude/skills/wcag-component/`. You are running headless: run the subagent synchronously and wait for its result in this session. Do not end your turn while it is still running.
 
