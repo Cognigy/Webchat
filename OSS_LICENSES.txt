@@ -1,4 +1,4 @@
-Created on 16-11-2026 at 11:31:05
+Created on 27-11-2026 at 17:25:43
 
 {
   "@babel/code-frame@7.29.7": {
@@ -157,7 +157,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/@cognigy/chat-components/node_modules/@braintree/sanitize-url/LICENSE",
     "copyright": "Copyright (c) 2017 Braintree"
   },
-  "@cognigy/chat-components@0.85.0": {
+  "@cognigy/chat-components@0.86.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/chat-components",
     "licenseFile": "node_modules/@cognigy/chat-components/LICENSE",
@@ -170,7 +170,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/@cognigy/socket-client/LICENSE",
     "copyright": "Copyright (c) 2019 Cognigy GmbH"
   },
-  "@cognigy/webchat@3.56.0": {
+  "@cognigy/webchat@3.57.0": {
     "licenses": "MIT*",
     "repository": "https://github.com/Cognigy/Webchat",
     "publisher": "Cognigy GmbH",
@@ -580,7 +580,7 @@ Created on 16-11-2026 at 11:31:05
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react-dom/LICENSE"
   },
-  "@types/react-redux@7.1.31": {
+  "@types/react-redux@7.1.35": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseFile": "node_modules/@types/react-redux/LICENSE"
@@ -1053,7 +1053,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/dom-helpers/LICENSE",
     "copyright": "Copyright (c) 2015 Jason Quense"
   },
-  "dompurify@3.4.17": {
+  "dompurify@3.4.18": {
     "licenses": "(MPL-2.0 OR Apache-2.0)",
     "repository": "https://github.com/cure53/DOMPurify",
     "publisher": "Dr.-Ing. Mario Heiderich, Cure53",
@@ -1088,7 +1088,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/engine.io-parser/LICENSE",
     "copyright": "Copyright (c) 2014-present Guillermo Rauch and Socket.IO contributors"
   },
-  "entities@6.0.1": {
+  "entities@9.0.0": {
     "licenses": "BSD-2-Clause",
     "repository": "https://github.com/fb55/entities",
     "publisher": "Felix Boehm",
@@ -1354,7 +1354,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/hast-util-parse-selector/license",
     "copyright": "Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>"
   },
-  "hast-util-raw@9.1.0": {
+  "hast-util-raw@9.2.1": {
     "licenses": "MIT",
     "repository": "https://github.com/syntax-tree/hast-util-raw",
     "publisher": "Titus Wormer",
@@ -2227,7 +2227,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/parse-json/license",
     "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
   },
-  "parse5@7.3.0": {
+  "parse5@8.1.1": {
     "licenses": "MIT",
     "repository": "https://github.com/inikulin/parse5",
     "publisher": "Ivan Nikulin",
@@ -2307,7 +2307,7 @@ Created on 16-11-2026 at 11:31:05
     "licenseFile": "node_modules/url/node_modules/punycode/LICENSE-MIT.txt",
     "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>"
   },
-  "qs@6.14.3": {
+  "qs@6.17.1": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/ljharb/qs",
     "licenseFile": "node_modules/qs/LICENSE.md",
